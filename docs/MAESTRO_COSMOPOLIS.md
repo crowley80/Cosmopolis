@@ -304,3 +304,13 @@ No se volverán a preguntar decisiones que ya estén registradas, salvo que sea 
 - app.js muestra la aventura, recoge acciones escritas libremente y actualiza el historial y la narración.
 - Pendiente: ampliar el motor narrativo para interpretar acciones libres, recordar acontecimientos y generar consecuencias coherentes.
 - Pendiente: revisar Character.create(), porque actualmente Save.save({ character }) guarda únicamente la ficha y puede sustituir datos anteriores de la partida.
+
+## Respaldo GitHub — 12/11/2026
+
+Primer respaldo remoto completado correctamente.
+Repositorio privado: https://github.com/crowley80/Cosmopolis
+Rama principal: main.
+Primer commit: 7f36a4e (Primer respaldo de Cosmopolis).
+GitHub CLI autenticado y rama local conectada con origin/main.
+Registro detallado de la sesión: docs/SESION_2026-11-12_RESPALDO_GITHUB.md.
+No repetir la configuración inicial del repositorio en futuras sesiones.
