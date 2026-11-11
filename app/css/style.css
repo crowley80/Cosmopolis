@@ -1,0 +1,383 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    color-scheme: dark;
+    --gold: #d6b56d;
+    --gold-soft: #a88b51;
+    --background: #11131b;
+    --panel: #1b1e29;
+    --field: #12151e;
+    --text: #eee9dc;
+    --muted: #aaa69b;
+}
+
+body {
+    margin: 0;
+    padding: 24px 14px;
+    background:
+        radial-gradient(ellipse at top, #292438 0%, #11131b 65%);
+    color: var(--text);
+    font-family: Georgia, serif;
+    line-height: 1.6;
+}
+
+#app {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.main-header {
+    text-align: center;
+    padding: 35px 15px 25px;
+    border-bottom: 1px solid #51452f;
+}
+
+.main-header h1 {
+    margin: 8px 0;
+    color: var(--gold);
+    font-size: clamp(2.5rem, 10vw, 4rem);
+    letter-spacing: 3px;
+}
+
+.main-header p {
+    color: var(--muted);
+    margin: 5px 0;
+}
+
+.eyebrow {
+    color: var(--gold);
+    font-family: Arial, sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 2px;
+}
+
+.welcome {
+    text-align: center;
+    padding: 25px 10px;
+}
+
+.welcome h2 {
+    color: var(--gold);
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+}
+
+.welcome p {
+    color: var(--muted);
+    margin: 0;
+}
+
+.character-creation {
+    margin: 15px auto 35px;
+    padding: 22px;
+    background: rgba(27, 30, 41, 0.96);
+    border: 1px solid #51452f;
+    border-radius: 14px;
+    box-shadow: 0 12px 35px #0006;
+}
+
+.section-heading {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.section-heading h2 {
+    color: var(--gold);
+    font-size: 1.8rem;
+    margin: 8px 0;
+}
+
+.section-heading p {
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+fieldset {
+    min-width: 0;
+    margin: 0 0 22px;
+    padding: 18px;
+    border: 1px solid #51452f;
+    border-radius: 10px;
+    background: #171a24;
+}
+
+legend {
+    padding: 4px 10px;
+    color: var(--gold);
+    font-size: 1.05rem;
+    font-weight: bold;
+}
+
+label {
+    display: block;
+    margin: 12px 0 7px;
+    color: #e1d2ad;
+    font-size: 0.95rem;
+}
+
+input,
+textarea {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #454353;
+    border-radius: 7px;
+    background: var(--field);
+    color: var(--text);
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    outline: none;
+}
+
+textarea {
+    min-height: 105px;
+    resize: vertical;
+}
+
+input:focus,
+textarea:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px #d6b56d22;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #777783;
+}
+
+button {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    margin-top: 28px;
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    background: linear-gradient(135deg, #b89550, #806333);
+    color: #17130c;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+#message {
+    color: var(--gold);
+    text-align: center;
+    margin-top: 18px;
+}
+
+footer {
+    padding: 20px;
+    border-top: 1px solid #51452f;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 12px 9px;
+    }
+
+    .character-creation {
+        padding: 15px;
+    }
+
+    fieldset {
+        padding: 13px;
+    }
+}
+
+/* INTERFAZ TEXTUAL: LECTURA Y ESCRITURA FIJAS */
+.adventure-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    width: 100%;
+    max-width: 760px;
+    height: 100vh;
+    height: 100dvh;
+    margin: 0 auto;
+    padding: 10px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    overflow: hidden;
+    background: radial-gradient(ellipse at top, #292438 0%, #11131b 68%);
+}
+
+.adventure-header {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 3px 2px 9px;
+    border-bottom: 1px solid rgba(214, 181, 109, 0.3);
+}
+
+.adventure-header h1 {
+    margin: 0;
+    color: var(--gold);
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+
+.adventure-header p {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-family: Arial, sans-serif;
+    font-size: 0.72rem;
+}
+
+.adventure-header button {
+    width: auto;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 10px 13px;
+    font-size: 0.85rem;
+}
+
+.story-panel {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold-soft) transparent;
+    background: rgba(27, 30, 41, 0.97);
+    border: 1px solid rgba(190, 160, 100, 0.3);
+    border-radius: 14px;
+}
+
+.narrative-panel {
+    padding: 18px;
+    line-height: 1.8;
+}
+
+.narrative-panel h2 {
+    margin: 9px 0 17px;
+    color: var(--gold);
+    font-size: 1.35rem;
+}
+
+.story-content {
+    font-size: 1rem;
+    line-height: 1.9;
+    overflow-wrap: anywhere;
+}
+
+.story-entry {
+    padding: 8px 0 16px;
+}
+
+.current-action {
+    margin: 0 0 16px;
+    padding: 11px 13px;
+    color: #d8bd83;
+    background: rgba(255, 255, 255, 0.045);
+    border-left: 3px solid #b9a477;
+    border-radius: 5px;
+    line-height: 1.6;
+}
+
+.world-response {
+    color: var(--text);
+    line-height: 1.9;
+    overflow-wrap: anywhere;
+}
+
+.player-panel {
+    flex: 0 0 auto;
+    min-height: 0;
+    padding: 13px 14px 15px;
+    background: #201c30;
+    border: 1px solid rgba(165, 139, 208, 0.5);
+    border-radius: 14px;
+}
+
+.player-heading {
+    margin-bottom: 9px;
+}
+
+.player-heading h3 {
+    margin: 3px 0;
+    color: var(--gold);
+    font-size: 1.08rem;
+}
+
+.player-panel form {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.player-panel textarea {
+    display: block;
+    width: 100%;
+    min-height: 100px;
+    max-height: 150px;
+    padding: 13px;
+    box-sizing: border-box;
+    resize: none;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.player-panel button {
+    width: 100%;
+    min-height: 49px;
+    margin: 0;
+    padding: 12px;
+    font-size: 1rem;
+}
+
+@media (max-height: 700px) {
+    .adventure-screen {
+        padding: 7px;
+        gap: 6px;
+    }
+
+    .adventure-header {
+        padding-bottom: 6px;
+    }
+
+    .player-panel {
+        padding: 9px 11px 10px;
+    }
+
+    .player-heading {
+        margin-bottom: 5px;
+    }
+
+    .player-panel textarea {
+        min-height: 70px;
+        max-height: 100px;
+    }
+
+    .narrative-panel {
+        padding: 13px;
+    }
+}
+
+@media (max-width: 380px) {
+    .adventure-header h1 {
+        font-size: 1.25rem;
+    }
+
+    .adventure-header p {
+        font-size: 0.65rem;
+    }
+
+    .adventure-screen {
+        padding: 7px;
+    }
+}
