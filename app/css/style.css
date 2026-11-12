@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=UnifrakturMaguntia&display=swap');
 * {
     box-sizing: border-box;
 }
@@ -798,7 +799,6 @@ body {
 
 
 /* Maqueta de pergamino: composición y ornamentación del manuscrito original. */
-@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=UnifrakturMaguntia&display=swap');
 
 :root {
   --parchment-ink: #321907;
