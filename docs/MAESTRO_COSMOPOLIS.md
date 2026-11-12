@@ -608,3 +608,13 @@ Ejecución 1:
 - Commit del flujo: `7cf8c9d`; corrección del texto de prueba: `ec0f8a5`.
 
 Siguiente paso: inspeccionar la segunda captura corregida y aplicar ajustes visuales pequeños y respaldados por la comparación; no modificar a ciegas la composición que ya se ve correctamente.
+
+
+### Textura orgánica del pergamino — 12 de noviembre de 2026
+
+A partir de la comparación de la captura corregida con la maqueta original, se ha eliminado el patrón cuadriculado regular que aparecía en la hoja. Se ha sustituido por una capa sutil de ruido fractal SVG embebido y veladuras radiales irregulares en tonos sepia/ocre, manteniendo el color base y el sombreado quemado de los bordes. El cambio afecta únicamente al fondo del folio; no altera la distribución, tipografía, controles ni lógica de juego.
+
+- CSS: commit `2bbe809`.
+- Caché CSS/JS: commit `d9b8a40`, versión `20261112-textura-organica`.
+- La actualización está guardada en `main`.
+- Pendiente: inspeccionar la siguiente captura automática para comprobar que la textura SVG se renderiza correctamente en Chromium y que se acerca más al aspecto irregular del papel original.
