@@ -163,3 +163,6 @@ Las ejecuciones #98, #99, #100 y #101 de GitHub Actions finalizaron correctament
 
 El prompt de `Narrator.buildMessages()` distingue percepción directa, deducción e incertidumbre. Prohíbe revelar como conocidos pensamientos privados, identidades ocultas o acontecimientos fuera de escena sin una fuente válida, y pide describir señales observables antes de inferir conclusiones al examinar algo. La prueba automatizada verifica la presencia de estas reglas en el mensaje de sistema. Su cumplimiento efectivo debe observarse también con Qwen3.5-4B en el dispositivo.
 
+
+
+Corrección del 12 de noviembre de 2026: Chromium detectó un separador ausente entre dos instrucciones del prompt al incorporar los límites de conocimiento. Se corrigió en narrator.js y se renovó la clave de caché. La validación funcional queda pendiente del nuevo run automatizado.
