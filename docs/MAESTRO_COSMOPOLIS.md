@@ -893,3 +893,12 @@ Se inspeccionó directamente la imagen original de referencia «Cosmopolis: aven
 Se retiran por completo los cuatro nodos `.paper-fold` del marcado HTML y sus reglas CSS. Se refuerza el oscurecimiento irregular de las cuatro esquinas y se modera el tono base del papiro, conservando la silueta irregular existente y el fondo negro. No se introducen triángulos, polígonos ni pseudo-elementos de pliegue. La estructura, composición y controles permanecen intactos.
 
 **Validación visual:** queda pendiente renderizar en Chromium móvil y comparar la captura resultante con la referencia original antes de considerarlo aprobado. La automatización de vista previa debe ejecutarse sobre este commit; no se afirma todavía que la fidelidad visual esté verificada.
+
+
+### Revisión de captura y corrección de la silueta del papiro — 12 de noviembre de 2026
+
+Se descargó e inspeccionó el artefacto real de Chromium del run 26 (43253173126), tanto en móvil como en escritorio, y se comparó con la fotografía original recuperada de la biblioteca. La captura reveló un defecto que no debía haberse pasado por alto: aunque se habían retirado las piezas triangulares, la máscara clip-path: polygon(...) del propio papel conservaba una secuencia de dientes laterales muy regulares y agresivos. El render también quedaba demasiado pálido frente al ámbar tostado de la referencia.
+
+Corrección aplicada en app/css/style.css (commit bda4f3c): se elimina la silueta poligonal dentada y se sustituye por una máscara SVG con desplazamiento de ruido fractal, para obtener un contorno irregular más orgánico y no geométrico. Se refuerza la textura de grano y se devuelve saturación cálida al degradado base, reduciendo el velo crema central que lavaba el tono. No se añaden elementos de esquina ni piezas superpuestas.
+
+**Validación pendiente:** el commit ha disparado una nueva vista previa automática. Hay que descargar e inspeccionar el siguiente artefacto móvil/escritorio y contrastarlo con la imagen original antes de considerar resuelto el borde o el color. El run 26 sí terminó correctamente y sus capturas se inspeccionaron; el problema descrito arriba se detectó en ellas. No se ha probado nada en el teléfono durante esta sesión.
