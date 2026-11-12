@@ -998,3 +998,20 @@ Commits:
 - `7bef390`: probar recuerdos individuales y persistencia de relaciones.
 
 La prueba sigue siendo una simulación controlada del endpoint; no afirma que Qwen3.5-4B haya sido probado en el teléfono. Queda pendiente el ensayo de generación real y la inspección visual del usuario.
+
+
+### Reloj interno y paso del tiempo — 12 de noviembre de 2026
+
+Se ha separado el tiempo ficticio de la hora real del teléfono. La cabecera del manuscrito muestra ahora ubicación actual, momento del día y número de jornada de la aventura. El estado inicial empieza en el día 1, por la mañana.
+
+El narrador devuelve `time` y `day` dentro del contrato JSON. El cliente valida ambos campos, conserva el momento anterior si llega vacío y limita el número de día a un entero positivo. Las instrucciones narrativas establecen que el tiempo solo avanza cuando la acción lo justifica y que la jornada cambia al cruzar al día siguiente. Al no existir un temporizador de fondo, el mundo permanece congelado cuando se cierra la partida, tal como se acordó.
+
+La prueba de navegador simula dos acciones y verifica el cambio de «Media mañana» a «Mediodía», la persistencia de la hora interna tras recargar y la conservación del inventario, la relación y los recuerdos de Elia.
+
+Commits:
+- `3f48f17`: añadir reloj y día propios del mundo narrativo.
+- `935d838`: integrar el paso del tiempo en la memoria narrativa.
+- `668c34e`: mostrar el reloj interno en la cabecera del manuscrito.
+- `57655ce`: probar reloj interno y avance de jornada.
+
+El cambio está en GitHub; la generación real de esos valores por Qwen3.5-4B queda pendiente de prueba en el dispositivo. La automatización usa respuestas simuladas y no se debe confundir con una prueba del modelo.
