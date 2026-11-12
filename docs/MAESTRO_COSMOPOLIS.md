@@ -1030,3 +1030,14 @@ Commits:
 - `061c1ca`: probar alta y memoria persistente de nuevos personajes.
 
 Pendiente: confirmar que el modelo local real utiliza con fiabilidad este contrato en el dispositivo; el flujo automatizado valida el cliente con respuestas simuladas.
+
+
+### Actualización de ubicación y actitud de personajes — 12 de noviembre de 2026
+
+Se añade `characterUpdates` al contrato del narrador para mantener actualizadas la ubicación y la actitud de personajes existentes. Solo se modifican personajes ya registrados, se ignoran nombres desconocidos y campos vacíos y se limita cada respuesta a diez actualizaciones. La información queda dentro de `adventure.state.characters`, se guarda y vuelve a formar parte del contexto de la IA.
+
+La prueba automatizada cambia la actitud de Elia después de encontrar el medallón y desplaza a Tomás a la entrada de la posada tras la segunda acción. Comprueba que ambos datos, junto con los recuerdos individuales, se conservan al recargar.
+
+Commits:
+- `6b3acb5`: mantener ubicación y actitud de personajes persistentes.
+- `5d7f379`: probar cambios de ubicación y actitud de personajes.
