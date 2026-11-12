@@ -8,6 +8,7 @@
 - Candidato inicial de prueba: Qwen3.5-4B Q4_K_M. No descargar otro modelo.
 - Cosmopolis web se sirve en `http://127.0.0.1:8080`.
 - El servidor de inferencia se reserva en `http://127.0.0.1:8081`, para no competir con el servidor web.
+- **Arranque verificado en el Samsung (12/11/2026):** Qwen3.5-4B Q4_K_M cargado, `llama-server` escuchando en el puerto 8081 y `/health` devuelve `{"status":"ok"}`. PID comunicado por Termux: 2537. No iniciar una segunda instancia.
 
 ## Integración incorporada
 
@@ -32,13 +33,13 @@ bash scripts/iniciar_ia_local.sh
 
 El registro se escribe en `$HOME/cosmopolis-llama-server.log`. La disponibilidad se comprueba mediante `http://127.0.0.1:8081/health`.
 
-## Pruebas pendientes en el dispositivo
+## Estado de las pruebas en el dispositivo
 
-1. Iniciar el servidor con el script y comprobar que el modelo termina de cargar.
-2. Consultar `/health` y comprobar respuesta HTTP 200.
-3. Enviar una acción sencilla desde Cosmopolis y confirmar que se usa la IA local.
-4. Comprobar que el texto generado se guarda y que hechos, pistas, ubicación y relación sobreviven a recargar la página.
-5. Detener el servidor y comprobar que el juego vuelve al director provisional sin perder la partida.
-6. Medir tiempo de primera respuesta, tokens por segundo, memoria y temperatura; ajustar hilos/contexto solo a partir de datos reales.
+1. **Completado:** iniciar el servidor y comprobar que el modelo termina de cargar.
+2. **Completado:** consultar `/health`; respuesta HTTP 200 con `{"status":"ok"}`.
+3. **Pendiente:** enviar una acción sencilla desde Cosmopolis y confirmar que se usa la IA local.
+4. **Pendiente:** comprobar que el texto generado se guarda y que hechos, pistas, ubicación y relación sobreviven a recargar la página.
+5. **Pendiente:** detener el servidor y comprobar que el juego vuelve al director provisional sin perder la partida.
+6. **Pendiente:** medir tiempo de primera respuesta, tokens por segundo, memoria y temperatura; ajustar hilos/contexto solo a partir de datos reales.
 
-No se declara la integración probada hasta completar estas pruebas en el Samsung. No borrar ni sustituir ninguno de los modelos existentes.
+La carga del modelo y la salud del servidor están verificadas, pero no se declara la integración narrativa completa hasta completar las pruebas restantes en el Samsung. No borrar ni sustituir ninguno de los modelos existentes.
