@@ -171,3 +171,6 @@ Corrección del 12 de noviembre de 2026: Chromium detectó un separador ausente 
 ### Presentación narrativa de iniciativas autónomas — 12 de noviembre de 2026
 
 El prompt exige que toda iniciativa declarada en `characterActions` aparezca también dentro de `reply`, integrada en la escena y nunca como lista o ficha. El cliente persiste la acción en `lastAutonomousAction` y en la memoria individual, y solo la añade como respaldo si falta en el texto narrativo. Así se evita duplicarla cuando el modelo ya la ha narrado. Los saltos de línea del respaldo son caracteres de nueva línea reales. La prueba automatizada comprueba la presencia de la iniciativa, la ausencia de la etiqueta mecánica `Nombre: acción` y la ausencia de secuencias `\\n` visibles. La naturalidad de la generación debe validarse con Qwen3.5-4B en Android.
+
+
+Corrección de prueba — 12 de noviembre de 2026: la verificación visual de `characterActions` se realiza ahora inmediatamente después de la acción que genera la iniciativa. La interfaz muestra solo la narración de la acción actual, por lo que comprobar la iniciativa anterior tras enviar otra acción no era válido. El cambio afecta al orden de la prueba, no al comportamiento de persistencia. Commit: `a595a391d346aded934167d937841ebb237f6abf`; nueva ejecución pendiente.
