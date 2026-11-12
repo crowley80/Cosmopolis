@@ -716,3 +716,19 @@ La captura posterior al ajuste de escala confirmó que los marcos ya cubren todo
 - CSS: commit `cd13bff`.
 - Caché: commit `889fd7a`, versión `20261112-volutas-compactas`.
 - Pendiente: verificar la nueva escala en ambas resoluciones.
+
+
+### Validación de marcos ornamentales en móvil y escritorio — 12 de noviembre de 2026
+
+La ejecución `43213175518` terminó correctamente y se inspeccionaron las dos capturas generadas con el SVG estirado y las volutas compactas.
+
+- Artefacto: `cosmopolis-visual-preview`, ID `13942571997`.
+- Run: `43213175518`, conclusión `success`.
+- En móvil (390 × 844), las volutas quedan en las esquinas y ya no invaden la pluma, el campo de escritura, el botón Enviar ni «Mi ficha».
+- En escritorio (1024 × 900), los marcos recorren el ancho del panel y las esquinas siguen siendo proporcionadas; se corrige el problema de centrado anterior.
+- La barra inferior conserva sus cuatro botones y sus separadores; los adornos quedan en el contorno.
+- No se han modificado los controles, los textos ni la lógica de guardado.
+
+Estado visual: la composición está más cerca de la maqueta en textura, borde rasgado y filigrana inferior. Sigue sin ser una coincidencia exacta: la maqueta tiene un acabado de tinta y papel más complejo y el marco de escritura aún es una aproximación vectorial. No declarar aprobada hasta que el usuario la vea en su dispositivo.
+
+Todos los cambios de esta pasada están guardados en `main`; CSS `4eec70f` + corrección de escala `5afef7e` + volutas compactas `cd13bff`; caché final `889fd7a`. La documentación se actualiza aquí para conservar continuidad.
