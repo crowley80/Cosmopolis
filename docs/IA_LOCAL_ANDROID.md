@@ -149,3 +149,7 @@ Se refuerza el ciclo de vida de las metas para que un NPC no abandone un propós
 Cada personaje mantiene `completedGoals`, un archivo independiente de hasta 20 metas cumplidas con su motivo y número de acción. `goalHistory` conserva las diez transiciones más recientes y `completedGoals` evita que el archivo de metas cerradas dependa de ese historial limitado. Las partidas antiguas se adaptan al vuelo cuando se procesa el siguiente cambio de objetivo, sin exigir migración ni borrar datos.
 
 La regresión automatizada simula tres casos: completar una meta y abrir otra archivando la anterior; rechazar la sustitución de una meta aún en progreso; y evitar que una meta completada vuelva a estado activo. La prueba utiliza respuestas simuladas y no valida por sí sola la calidad narrativa de Qwen3.5-4B en el dispositivo.
+
+### Archivo de metas cumplidas en el contexto de IA — 12 de noviembre de 2026
+
+`Narrator.buildMessages()` incorpora al contexto hasta cinco transiciones recientes de `goalHistory` y ocho entradas de `completedGoals`, con objetivo y motivo. Las instrucciones piden evitar repetir metas archivadas sin una motivación nueva respaldada por hechos. Los límites se aplican exclusivamente a la copia compacta enviada al modelo; los datos completos de la partida permanecen intactos. La prueba de Chromium comprueba el límite de ocho entradas y que las diez metas originales continúan guardadas.
