@@ -59,7 +59,7 @@ jobs:
             };
             const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
             await context.addInitScript(({ character, adventure }) => {
-              localStorage.setItem('cosmopolis_save', JSON.stringify({ character, adventure, actions: [], world: { events: [], facts: [], relationships: {} } }));
+              if (!localStorage.getItem('cosmopolis_save')) { localStorage.setItem('cosmopolis_save', JSON.stringify({ character, adventure, actions: [], world: { events: [], facts: [], relationships: {} } })); }
             }, { character, adventure });
             const page = await context.newPage();
             page.on('pageerror', error => console.error('PAGE ERROR:', error.message));
@@ -176,9 +176,7 @@ jobs:
                 data.adventure.state.characters.Tomás.location === 'Entrada de la posada' &&
                 data.adventure.state.time === 'Mediodía' && data.adventure.state.day === 1;
             });
-            console.log('TEST_BEFORE_RELOAD');
             await page.reload({ waitUntil: 'networkidle' });
-            console.log('TEST_AFTER_RELOAD', await page.locator('#app').textContent());
             await page.waitForFunction(() => {
               const story = document.querySelector('#storyContent');
               return story && story.textContent.trim().length > 0;
@@ -213,7 +211,7 @@ jobs:
             await context.close();
             const desktop = await browser.newContext({ viewport: { width: 1024, height: 900 }, deviceScaleFactor: 1 });
             await desktop.addInitScript(({ character, adventure }) => {
-              localStorage.setItem('cosmopolis_save', JSON.stringify({ character, adventure, actions: [], world: { events: [], facts: [], relationships: {} } }));
+              if (!localStorage.getItem('cosmopolis_save')) { localStorage.setItem('cosmopolis_save', JSON.stringify({ character, adventure, actions: [], world: { events: [], facts: [], relationships: {} } })); }
             }, { character, adventure });
             const desktopPage = await desktop.newPage();
             const desktopErrors = [];
