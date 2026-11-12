@@ -79,7 +79,7 @@ const Narrator = {
                     'event: una frase factual que registre lo ocurrido.',
                     'location: ubicación actual; conserva la existente si no hay desplazamiento.',
                     'factsToAdd y cluesToAdd: solo datos nuevos realmente descubiertos, sin duplicados.',
-                    'eliaTrustDelta: cambio justificado de confianza de Elia, normalmente -1, 0 o 1.',
+                    'relationshipChanges: cambios justificados de confianza hacia personajes registrados, con character, delta entre -1 y 1 y reason breve. Usa cambios pequeños y no alteres relaciones sin una interacción significativa.',
                     'itemsToAdd: objetos que el personaje obtiene realmente y puede llevar consigo; no incluyas objetos solo vistos o examinados.',
                     'itemsToRemove: objetos que pierde, entrega, consume o deja atrás realmente; usa el nombre exacto del inventario.',
                     'charactersToAdd: personajes nuevos que realmente entran en escena; incluye nombre, función, ubicación, actitud y un primer recuerdo significativo. No añadas figurantes irrelevantes.',
@@ -117,7 +117,19 @@ const Narrator = {
                 location: { type: 'string' },
                 factsToAdd: { type: 'array', items: { type: 'string' } },
                 cluesToAdd: { type: 'array', items: { type: 'string' } },
-                eliaTrustDelta: { type: 'integer', minimum: -1, maximum: 1 },
+                relationshipChanges: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        properties: {
+                            character: { type: 'string' },
+                            delta: { type: 'integer', minimum: -1, maximum: 1 },
+                            reason: { type: 'string' }
+                        },
+                        required: ['character', 'delta', 'reason']
+                    }
+                },
                 itemsToAdd: { type: 'array', items: { type: 'string' } },
                 itemsToRemove: { type: 'array', items: { type: 'string' } },
                 time: { type: 'string' },
@@ -163,7 +175,7 @@ const Narrator = {
                     }
                 }
             },
-            required: ['reply', 'event', 'category', 'location', 'factsToAdd', 'cluesToAdd', 'eliaTrustDelta', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd', 'charactersToAdd', 'characterUpdates', 'time', 'day']
+            required: ['reply', 'event', 'category', 'location', 'factsToAdd', 'cluesToAdd', 'relationshipChanges', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd', 'charactersToAdd', 'characterUpdates', 'time', 'day']
         };
 
         const controller = new AbortController();
@@ -297,14 +309,36 @@ const Narrator = {
             state.events.push(result.event.trim().slice(0, 300));
             if (state.events.length > 100) state.events = state.events.slice(-100);
 
-            const delta = Math.max(-1, Math.min(1, Number(result.eliaTrustDelta) || 0));
-            if (delta !== 0) {
-                state.characters = state.characters || {};
-                state.characters.Elia = state.characters.Elia || { trust: 0 };
-                const trust = Number(state.characters.Elia.trust) || 0;
-                state.characters.Elia.trust = Math.max(-5, Math.min(10, trust + delta));
-                state.eliaTrust = state.characters.Elia.trust;
-            }
+            result.relationshipChanges.slice(0, 10).forEach(change => {
+                if (!change || typeof change.character !== 'string' ||
+                    !Number.isInteger(change.delta) || change.delta < -1 || change.delta > 1) return;
+
+                const requestedName = change.character.trim().toLocaleLowerCase('es');
+                const key = Object.keys(state.characters).find(name =>
+                    name.toLocaleLowerCase('es') === requestedName ||
+                    String(state.characters[name] && state.characters[name].name || '').toLocaleLowerCase('es') === requestedName
+                );
+                if (!key || change.delta === 0) return;
+
+                const person = state.characters[key];
+                const currentTrust = Number.isFinite(Number(person.trust))
+                    ? Number(person.trust)
+                    : 0;
+                person.trust = Math.max(-5, Math.min(10, currentTrust + change.delta));
+
+                const reason = typeof change.reason === 'string' ? change.reason.trim().slice(0, 240) : '';
+                if (reason) {
+                    person.memories = Array.isArray(person.memories) ? person.memories : [];
+                    if (!person.memories.some(memory => String(memory).toLocaleLowerCase('es') === reason.toLocaleLowerCase('es'))) {
+                        person.memories.push(reason);
+                        if (person.memories.length > 30) person.memories = person.memories.slice(-30);
+                    }
+                }
+
+                if (key.toLocaleLowerCase('es') === 'elia') {
+                    state.eliaTrust = person.trust;
+                }
+            });
 
             state.lastAction = action;
             state.actionCount = previousActions.length + 1;
