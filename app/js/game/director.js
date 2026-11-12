@@ -102,7 +102,7 @@ const Director = {
             category = 'investigation';
             reply = 'El viejo pozo ocupa el centro de la plaza. La losa está sellada con cadenas y la piedra del brocal está húmeda, aunque no ha llovido. Desde el fondo llega un silencio extraño, como si el pozo estuviera esperando.';
             event = `${name} ha prestado atención al pozo.`;
-        } else if (asks && addressedCharacter) {
+        } else if (addressedCharacter) {
             category = 'dialogue';
             const [npcKey, npc] = addressedCharacter;
             const npcGoal = typeof npc.personalGoal === 'string' ? npc.personalGoal.trim() : '';
