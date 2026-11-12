@@ -107,7 +107,7 @@ const Director = {
             const [npcKey, npc] = addressedCharacter;
             const npcGoal = typeof npc.personalGoal === 'string' ? npc.personalGoal.trim() : '';
             reply = npcGoal
-                ? `${npcKey} te escucha con cautela.\n\n—Ahora mismo intento ${npcGoal.charAt(0).toLocaleLowerCase('es') + npcGoal.slice(1)}. No es algo que pueda resolver de un día para otro.`
+                ? `${npcKey} te escucha con cautela.\n\n—Mi objetivo ahora es este: ${npcGoal}. No es algo que pueda resolver de un día para otro.`
                 : `${npcKey} te escucha con cautela, aunque parece medir cuidadosamente lo que está dispuesto a contarte.`;
             event = `${name} ha conversado con ${npcKey}.`;
         } else if (asks) {
