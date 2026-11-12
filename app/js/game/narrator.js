@@ -352,6 +352,7 @@ const Narrator = {
                     personalGoal: typeof entry.goal === 'string' ? entry.goal.trim().slice(0, 240) : '',
                     goalStatus: 'active',
                     goalHistory: [],
+                    completedGoals: [],
                     trust: 0,
                     memories: memory ? [memory] : []
                 };
