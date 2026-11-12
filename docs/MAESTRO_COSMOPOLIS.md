@@ -315,14 +315,13 @@ GitHub CLI autenticado y rama local conectada con origin/main.
 Registro detallado de la sesión: docs/SESION_2026-11-12_RESPALDO_GITHUB.md.
 No repetir la configuración inicial del repositorio en futuras sesiones.
 
-
 ## ACTUALIZACIÓN DE DISEÑO Y PLAN DE TRABAJO — 12 DE NOVIEMBRE DE 2026
 
-Esta sección recoge las decisiones más recientes y prevalece sobre cualquier descripción anterior del documento que las contradiga. En particular, las referencias antiguas a escenas ilustradas, imágenes o paneles de personajes no representan la dirección visual y de interfaz actualmente aprobada.
+Esta sección recoge las decisiones más recientes y prevalece sobre cualquier descripción anterior del documento que las contradiga. Las referencias antiguas a escenas ilustradas, imágenes o paneles de personajes no representan la dirección visual y de interfaz actualmente aprobada.
 
 ### Identidad visual aprobada
 
-Se aprueba como referencia estética para Cosmopolis la maqueta de pergamino/papiro antiguo que se ha mostrado y que el usuario ha valorado positivamente.
+Se aprueba como referencia estética la maqueta de pergamino/papiro antiguo que el usuario ha valorado positivamente.
 
 - Papel crema envejecido, con textura y desgaste sutil.
 - Tinta marrón oscura y contraste suficiente para leer cómodamente en móvil.
@@ -344,7 +343,7 @@ La estructura móvil ya validada se conserva como base:
 
 ### Narración y personajes
 
-La narración será el centro de la experiencia. Se elimina el apartado o panel permanente «Personajes cercanos».
+La narración será el centro de la experiencia. Se elimina el apartado o panel permanente «Personajes cercanos» para liberar espacio y evitar una interfaz dominada por paneles.
 
 Los personajes se presentarán dentro de la narración cuando entren en escena o sean relevantes. El narrador describirá de forma natural su presencia, aspecto, gestos, palabras, comportamiento y reacciones. El jugador decidirá qué hacer con ellos mediante texto libre: hablar, ignorar, seguir, ayudar, engañar, observar o cualquier otra acción razonable.
 
