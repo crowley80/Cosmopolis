@@ -884,3 +884,12 @@ Se ha recuperado y consultado la fotografía original aprobada «Cosmopolis: ave
 Corrección preparada en CSS: se sustituyen las máscaras poligonales por pliegues curvos con bordes redondeados, iluminación y sombra suaves; se mantienen los cuatro puntos de doblado, el contorno irregular del papel y la composición general. No se modifica la cabecera, el contenido narrativo, los controles ni la lógica de juego.
 
 **Validación pendiente:** ejecutar la vista previa automatizada de móvil y escritorio e inspeccionar visualmente las capturas junto a la fotografía original aprobada. Esta modificación no se declara finalizada ni fiel hasta completar esa comparación; si los pliegues curvos siguen pareciendo formas geométricas, se retirarán y se replantearán antes de darla por buena.
+
+
+### Retirada de los pliegues artificiales y refuerzo del borde quemado — 12 de noviembre de 2026
+
+Se inspeccionó directamente la imagen original de referencia «Cosmopolis: aventura en la Ciudadela de Ámbar.png». La referencia presenta el papel recortado de forma orgánica, con esquinas integradas en la silueta y dobleces discretas; no lleva cuatro adornos independientes superpuestos. La primera corrección con gradientes curvos aún mantenía cuatro piezas añadidas y no resolvía fielmente el problema.
+
+Se retiran por completo los cuatro nodos `.paper-fold` del marcado HTML y sus reglas CSS. Se refuerza el oscurecimiento irregular de las cuatro esquinas y se modera el tono base del papiro, conservando la silueta irregular existente y el fondo negro. No se introducen triángulos, polígonos ni pseudo-elementos de pliegue. La estructura, composición y controles permanecen intactos.
+
+**Validación visual:** queda pendiente renderizar en Chromium móvil y comparar la captura resultante con la referencia original antes de considerarlo aprobado. La automatización de vista previa debe ejecutarse sobre este commit; no se afirma todavía que la fidelidad visual esté verificada.
