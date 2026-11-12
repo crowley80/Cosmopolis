@@ -256,7 +256,7 @@ body {
   width: min(100%, 760px);
   height: 100vh;
   height: 100dvh;
-  padding: 7px 7px max(7px, env(safe-area-inset-bottom));
+  padding: 3px 5px max(5px, env(safe-area-inset-bottom));
   flex-direction: column;
   gap: 0;
   overflow: hidden;
@@ -349,12 +349,12 @@ body {
 
 .manuscript-header {
   flex: 0 0 auto;
-  min-height: 108px;
+  min-height: 92px;
   display: grid;
   grid-template-columns: 58px minmax(0,1fr) minmax(118px,.96fr) 58px;
   align-items: center;
   gap: 7px;
-  padding: 8px 9px 10px;
+  padding: 4px 8px 6px;
   border: 2px solid rgba(95,48,14,.82);
   outline: 1px solid rgba(255,224,168,.66);
   outline-offset: -5px;
@@ -575,7 +575,7 @@ body {
   .player-heading button { font-size:.62rem; }
 }
 @media (max-height:700px) {
-  .manuscript-header { min-height:78px; padding-top:5px; padding-bottom:6px; }
+  .manuscript-header { min-height:72px; padding-top:3px; padding-bottom:4px; }
   .compass { width:43px; height:43px; }
   .narrative-panel { padding-top:12px; }
   .player-panel { padding-top:8px; padding-bottom:9px; }
@@ -585,24 +585,37 @@ body {
 }
 
 
-/* Barra inferior del manuscrito: cuatro accesos de la maqueta original. */
+/* Barra inferior: marco de pergamino y cuatro emblemas de la maqueta. */
 .manuscript-toolbar {
-  flex: 0 0 auto;
-  display: grid;
-  grid-template-columns: minmax(0,1fr) 1px minmax(0,1fr) 1px minmax(0,1fr) 1px minmax(0,1fr);
-  align-items: stretch;
-  min-height: 68px;
-  margin-top: 7px;
-  padding: 5px 7px;
-  border: 2px solid #704017;
-  outline: 1px solid rgba(255,220,158,.7);
-  outline-offset: -5px;
+  position:relative;
+  flex:0 0 auto;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 1px minmax(0,1fr) 1px minmax(0,1fr) 1px minmax(0,1fr);
+  align-items:stretch;
+  min-height:68px;
+  margin-top:5px;
+  padding:5px 7px;
+  border:3px double #63320f;
+  border-radius:13px;
+  outline:1px solid rgba(255,220,158,.78);
+  outline-offset:-6px;
   background:
-    radial-gradient(ellipse at 50% 0,rgba(255,228,177,.48),transparent 75%),
-    repeating-linear-gradient(3deg,rgba(104,57,18,.035) 0 1px,transparent 1px 5px),
-    linear-gradient(145deg,#e8b66d,#d49a50);
-  box-shadow: inset 0 0 15px rgba(91,42,10,.25),0 2px 6px rgba(69,31,8,.2);
+    radial-gradient(ellipse at 8% 50%,rgba(116,57,13,.13),transparent 16%),
+    radial-gradient(ellipse at 92% 50%,rgba(116,57,13,.13),transparent 16%),
+    repeating-linear-gradient(2deg,rgba(104,57,18,.045) 0 1px,transparent 1px 5px),
+    linear-gradient(180deg,#efc783 0%,#dba65f 48%,#e9bd7a 100%);
+  box-shadow:inset 0 0 0 2px rgba(255,226,170,.56),inset 0 0 14px rgba(91,42,10,.25),0 2px 6px rgba(69,31,8,.2);
 }
+.manuscript-toolbar::before,.manuscript-toolbar::after {
+  position:absolute;
+  left:8px;right:8px;height:5px;
+  content:"";
+  pointer-events:none;
+  border-top:1px solid rgba(91,43,12,.8);
+  border-bottom:1px solid rgba(255,224,165,.75);
+}
+.manuscript-toolbar::before {top:3px;}
+.manuscript-toolbar::after {bottom:3px;}
 .toolbar-button {
   display:flex;
   flex-direction:row;
@@ -625,29 +638,29 @@ body {
 }
 .toolbar-button svg {
   flex:0 0 auto;
-  width:clamp(23px,6.4vw,34px);
-  height:clamp(23px,6.4vw,34px);
-  fill:none;
+  width:clamp(25px,6.7vw,36px);
+  height:clamp(25px,6.7vw,36px);
+  fill:rgba(94,48,15,.12);
   stroke:#542b0d;
   stroke-width:2;
   stroke-linecap:round;
   stroke-linejoin:round;
   filter:drop-shadow(0 1px rgba(255,225,169,.65));
 }
-.toolbar-button:active { transform:translateY(1px); background:rgba(105,57,17,.1); }
+.toolbar-button:active {transform:translateY(1px);background:rgba(105,57,17,.1);}
 .toolbar-divider {
   align-self:center;
   width:1px;
-  height:70%;
-  background:linear-gradient(180deg,transparent,#67390f 15%,#67390f 85%,transparent);
-  box-shadow:1px 0 rgba(255,224,165,.55);
+  height:76%;
+  background:linear-gradient(180deg,transparent,#67390f 12%,#67390f 88%,transparent);
+  box-shadow:1px 0 rgba(255,224,165,.65);
 }
 @media (max-width:390px) {
-  .manuscript-toolbar { min-height:58px; margin-top:5px; padding:4px 3px; }
-  .toolbar-button { gap:3px; font-size:clamp(.59rem,2.8vw,.76rem); }
-  .toolbar-button svg { width:22px; height:22px; }
+  .manuscript-toolbar {min-height:60px;margin-top:4px;padding:4px 3px;}
+  .toolbar-button {gap:3px;font-size:clamp(.59rem,2.8vw,.76rem);}
+  .toolbar-button svg {width:23px;height:23px;}
 }
 @media (max-height:700px) {
-  .manuscript-toolbar { min-height:52px; margin-top:4px; padding:3px; }
-  .toolbar-button svg { width:21px; height:21px; }
+  .manuscript-toolbar {min-height:52px;margin-top:3px;padding:3px;}
+  .toolbar-button svg {width:21px;height:21px;}
 }
