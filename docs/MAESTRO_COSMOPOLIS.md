@@ -937,3 +937,44 @@ Se descargaron e inspeccionaron las capturas móvil y escritorio del run 33 (432
 ### Captura final inspeccionada del ajuste de pliegues — 12 de noviembre de 2026
 
 La vista previa del run 34 (43257402434) se descargó y se inspeccionó en móvil. La ejecución de Chromium completó los pasos de renderizado y subida del artefacto correctamente. El resultado conserva la hoja completa, la textura dorada y el borde irregular sin pestañas triangulares. Los trazos curvos de las esquinas se integran en la textura y son deliberadamente discretos; al quedar parcialmente bajo las piezas de cabecera y controles, no se leen como dobleces prominentes. Por tanto, se considera corregido el defecto de los triángulos y la máscara dentada, pero no se afirma que las dobleces de esquina reproduzcan exactamente la fotografía. El commit de código más reciente es 354f5a0; el historial maestro queda actualizado en este commit.
+
+
+## Paneles de aventura, exploración e inventario — 12 de noviembre de 2026
+
+Se ha continuado la programación pendiente sobre la rama `main`, manteniendo la interfaz exclusivamente textual y la composición de pergamino aprobada.
+
+### Funciones implementadas
+
+- Historial: panel de crónica que muestra las acciones del jugador, sus respuestas narrativas y la fecha registrada, sin desplegar permanentemente el historial en la página principal.
+- Mapa: panel textual de lugares visitados/conocidos y pistas reunidas. No inventa conexiones ni dibuja territorios que el personaje todavía desconoce.
+- Inventario: panel de pertenencias persistentes. Los objetos se añaden o retiran mediante cambios explícitos del narrador, no por el mero hecho de examinar algo.
+- Opciones: muestra personaje, ubicación y número de acciones guardadas; permite guardar manualmente y consultar la ficha. El guardado automático existente se conserva.
+- Exploración: botón discreto junto al área de escritura con cuatro sugerencias opcionales: observar alrededor, buscar personajes, examinar el lugar y escuchar. Cada sugerencia se envía como texto normal al narrador; la escritura libre sigue disponible.
+- Memoria: cada acción registra la ubicación actual en `visitedLocations`; el estado de aventura incorpora `inventory`.
+- IA local: el contexto enviado al modelo incluye inventario y lugares visitados. El esquema JSON incorpora `itemsToAdd` y `itemsToRemove`; el cliente valida ambos campos, evita duplicados y limita el inventario a 50 entradas.
+
+### Archivos modificados
+
+- `app/js/app.js`: paneles accesibles superpuestos al manuscrito y accesos de consulta/exploración.
+- `app/css/style.css`: estilos de los paneles y controles de exploración adaptados a la paleta de pergamino.
+- `app/js/game/adventure.js`: inicialización del inventario y de los lugares conocidos.
+- `app/js/game/session.js`: persistencia de lugares visitados e inventario.
+- `app/js/game/narrator.js`: contexto y contrato JSON para cambios reales de pertenencias.
+- `docs/IA_LOCAL_ANDROID.md`: documentación de la memoria del inventario.
+- `.github/workflows/visual-preview.yml`: prueba de interacción automatizada con Chromium.
+
+### Validación y límites
+
+La automatización se ha ampliado para probar Historial, Mapa, Inventario vacío, guardado manual, las sugerencias de exploración y la persistencia de un objeto devuelto por una respuesta JSON simulada del endpoint local. La captura móvil y de escritorio se sigue generando en el mismo flujo.
+
+**No confundir la simulación automatizada con una prueba del modelo real.** Sigue pendiente comprobar en el Samsung que Qwen3.5-4B genera el nuevo esquema, que el navegador se comunica con el servidor local y que la partida conserva el inventario tras recargar. Tampoco se declara validada la apariencia en el teléfono: la inspección visual final queda para cuando el usuario pueda verla esta noche.
+
+Commits de esta tanda:
+- `82fa290`: preparar inventario y lugares conocidos.
+- `5619255`: persistir lugares visitados e inventario.
+- `3823a6a`: ampliar memoria narrativa con objetos.
+- `f46a41c`: implementar paneles de aventura y ayudas de exploración.
+- `705e45e`: estilos de paneles y controles.
+- `fa386c3`: pruebas automatizadas de paneles, exploración y guardado.
+
+Próximo paso: esperar el resultado del flujo de Chromium, corregir cualquier fallo detectado, revisar el resto de las funciones de guardado y navegación y dejar una nueva captura lista. No solicitar al usuario pasos en Termux ni nuevas confirmaciones durante esta continuación.
