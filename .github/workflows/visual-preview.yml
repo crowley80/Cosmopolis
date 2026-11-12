@@ -263,7 +263,7 @@ jobs:
                 savedMemoryCount: probe.state.characters.Elia.memories.length
               };
             });
-            assert.deepEqual(contextProbe, { eventCount: 20, memoryCount: 8, eliaGoal: 'Averiguar por qué la campana suena desde debajo del pozo y qué altera sus mapas.', historyCount: 6, savedMemoryCount: 12 },
+            assert.deepEqual(contextProbe, { eventCount: 20, memoryCount: 8, eliaGoal: 'Averiguar por qué suenan las campanas.', historyCount: 6, savedMemoryCount: 12 },
               'El contexto enviado al modelo debe limitarse sin borrar recuerdos de la partida');
 
             await page.waitForFunction(() => {
