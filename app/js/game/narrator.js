@@ -82,7 +82,9 @@ const Narrator = {
                     'eliaTrustDelta: cambio justificado de confianza de Elia, normalmente -1, 0 o 1.',
                     'itemsToAdd: objetos que el personaje obtiene realmente y puede llevar consigo; no incluyas objetos solo vistos o examinados.',
                     'itemsToRemove: objetos que pierde, entrega, consume o deja atrás realmente; usa el nombre exacto del inventario.',
-                    'characterMemoriesToAdd: recuerdos concretos y duraderos de personajes que ya existen en el estado; no inventes personajes ni guardes detalles triviales.'
+                    'characterMemoriesToAdd: recuerdos concretos y duraderos de personajes que ya existen en el estado; no inventes personajes ni guardes detalles triviales.',
+                    'time: momento del día dentro del mundo; no uses la hora real del teléfono y no avances el tiempo sin motivo narrativo.',
+                    'day: número del día dentro de la aventura; solo aumenta cuando la historia cruza realmente al día siguiente.'
                 ].join(' ')
             },
             {
@@ -116,6 +118,8 @@ const Narrator = {
                 eliaTrustDelta: { type: 'integer', minimum: -1, maximum: 1 },
                 itemsToAdd: { type: 'array', items: { type: 'string' } },
                 itemsToRemove: { type: 'array', items: { type: 'string' } },
+                time: { type: 'string' },
+                day: { type: 'integer', minimum: 1, maximum: 9999 },
                 characterMemoriesToAdd: {
                     type: 'array',
                     items: {
@@ -129,7 +133,7 @@ const Narrator = {
                     }
                 }
             },
-            required: ['reply', 'event', 'category', 'location', 'factsToAdd', 'cluesToAdd', 'eliaTrustDelta', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd']
+            required: ['reply', 'event', 'category', 'location', 'factsToAdd', 'cluesToAdd', 'eliaTrustDelta', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd', 'time', 'day']
         };
 
         const controller = new AbortController();
@@ -165,12 +169,15 @@ const Narrator = {
                 typeof result.event !== 'string' || typeof result.location !== 'string' ||
                 !Array.isArray(result.factsToAdd) || !Array.isArray(result.cluesToAdd) ||
                 !Array.isArray(result.itemsToAdd) || !Array.isArray(result.itemsToRemove) ||
-                !Array.isArray(result.characterMemoriesToAdd)) {
+                !Array.isArray(result.characterMemoriesToAdd) ||
+                typeof result.time !== 'string' || !Number.isInteger(result.day)) {
                 throw new Error('La respuesta no cumple el formato narrativo');
             }
 
             const updated = JSON.parse(JSON.stringify(adventure));
             const state = updated.state || {};
+            state.time = result.time.trim().slice(0, 60) || state.time || 'Mañana';
+            state.day = Math.max(1, Math.min(9999, result.day || Number(state.day) || 1));
             state.currentLocation = result.location.trim().slice(0, 120) ||
                 state.currentLocation || updated.location || 'Lugar desconocido';
             state.knownFacts = Array.isArray(state.knownFacts) ? state.knownFacts : [];
