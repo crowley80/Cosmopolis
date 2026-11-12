@@ -465,3 +465,26 @@ Alcance de esta auditoría:
 
 Norma reforzada por el usuario: la referencia debe respetarse en composición, formas, detalles ornamentales, tipografía, textura, proporciones y matices de color; no basta con copiar la paleta cromática. Las exclusiones funcionales (ilustración y panel permanente de personajes) se mantienen.
 
+
+
+## Corrección estructural de fidelidad visual — 12 de noviembre de 2026
+
+Se recuperó y examinó la imagen original «Cosmopolis: aventura en la Ciudadela de Ámbar.png» desde la Biblioteca de ChatGPT. Se utilizó como referencia visual directa; no se pidió al usuario volver a adjuntarla.
+
+Hallazgo principal: `app/css/style.css` había acumulado 1.172 líneas y varias iteraciones superpuestas, con cinco bloques distintos para `.adventure-screen`, cuatro para `.adventure-screen::before` y múltiples redefiniciones de los mismos selectores. Esa cascada hacía difícil controlar el resultado y mantener proporciones coherentes. Además, `.manuscript-header button` ocupaba una fila adicional y alteraba la composición de cabecera de la maqueta.
+
+Cambios preparados en esta iteración:
+- Se conserva intacta la primera parte de CSS dedicada a creación de personaje y ficha.
+- Se sustituye el conjunto de iteraciones visuales duplicadas por una única sección coherente para la pantalla de aventura.
+- Se mantienen la hoja ocre, el borde irregular oscurecido, la cabecera en cuatro columnas, el bloque de ubicación/hora/día, la zona narrativa desplazable y el área fija de escritura.
+- Se dibujan las rosas de los vientos con SVG vectorial en vez de usar un símbolo tipográfico genérico.
+- El acceso «Mi ficha» se traslada fuera de la cabecera para que no deforme su composición.
+- Se mantienen la pluma y el tintero vectoriales, sin incorporar ilustraciones de escenas, castillo ni panel permanente de personajes.
+- Se actualizan las versiones de caché de CSS y JavaScript.
+
+Pruebas pendientes:
+- Sincronizar los cambios en Termux.
+- Ejecutar `node --check app/js/app.js`.
+- Recargar `http://127.0.0.1:8080/index.html` en Chrome y comparar la composición con la referencia.
+- No declarar el diseño aprobado hasta que el usuario confirme la apariencia real en su teléfono.
+
