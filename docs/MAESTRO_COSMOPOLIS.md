@@ -1041,3 +1041,12 @@ La prueba automatizada cambia la actitud de Elia después de encontrar el medall
 Commits:
 - `6b3acb5`: mantener ubicación y actitud de personajes persistentes.
 - `5d7f379`: probar cambios de ubicación y actitud de personajes.
+
+
+### Actualización inmediata de la cabecera — 12 de noviembre de 2026
+
+La cabecera del manuscrito se actualiza después de cada acción guardada. Se vuelven a leer los datos persistidos y se reflejan sin recargar la página la ubicación actual, el momento del día y la jornada interna. La prueba automatizada verifica el cambio a «Mediodía» en pantalla inmediatamente después de la segunda acción y vuelve a comprobarlo tras recargar.
+
+Commits:
+- `88d6198`: actualizar ubicación y reloj del manuscrito tras cada acción.
+- `a6a4e90`: probar actualización inmediata del reloj y ubicación.
