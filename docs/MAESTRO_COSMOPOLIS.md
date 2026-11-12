@@ -732,3 +732,16 @@ La ejecución `43213175518` terminó correctamente y se inspeccionaron las dos c
 Estado visual: la composición está más cerca de la maqueta en textura, borde rasgado y filigrana inferior. Sigue sin ser una coincidencia exacta: la maqueta tiene un acabado de tinta y papel más complejo y el marco de escritura aún es una aproximación vectorial. No declarar aprobada hasta que el usuario la vea en su dispositivo.
 
 Todos los cambios de esta pasada están guardados en `main`; CSS `4eec70f` + corrección de escala `5afef7e` + volutas compactas `cd13bff`; caché final `889fd7a`. La documentación se actualiza aquí para conservar continuidad.
+
+
+### Confirmación de volutas compactas — 12 de noviembre de 2026
+
+La ejecución `43213175518` completó correctamente y se inspeccionaron las capturas de móvil y escritorio.
+
+- Artefacto: `cosmopolis-visual-preview`, ID `13942571997`.
+- En móvil, las cuatro volutas quedan dentro de las esquinas del panel de escritura y dejan libres la pluma, «Mi ficha», el campo y «Enviar».
+- En escritorio, el marco se adapta a la anchura completa sin volver a concentrar los adornos en el centro.
+- La barra inferior conserva la disposición de cuatro botones y los adornos de esquina.
+- No se detectan desbordamientos en la medición móvil anterior (390 px de documento para 390 px de viewport).
+
+La corrección de escala y la reducción de volutas quedan verificadas por captura automatizada. La fidelidad global sigue siendo aproximada, no una reproducción exacta; no se solicita todavía la validación final en el teléfono.
