@@ -21,6 +21,7 @@ const Adventure = {
             state: {
                 currentLocation: 'Plaza del pozo',
                 time: 'Mañana',
+                day: 1,
                 bellRings: 3,
                 bellInvestigated: false,
                 wellInspected: false,
