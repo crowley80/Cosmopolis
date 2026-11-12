@@ -863,3 +863,15 @@ El usuario sincronizó correctamente `main` en Termux mediante `git pull --ff-on
 ### Modelo Qwen3.5-4B cargado y servidor listo — 12 de noviembre de 2026
 
 El usuario ejecutó en Termux la consulta del registro y del endpoint de salud. El registro confirma que llama.cpp cargó el archivo `$HOME/models/cosmopolis/Qwen3.5-4B-Q4_K_M.gguf`, inicializó un único slot con contexto de 4096 tokens y cuatro hilos, informó `model loaded` y quedó escuchando en `http://127.0.0.1:8081`. La petición a `http://127.0.0.1:8081/health` devolvió `{"status":"ok"}`. Por tanto, el proceso PID 2537 está operativo y el modelo está cargado; no se necesita descargar ni iniciar otra instancia. Próximo paso: abrir Cosmopolis en el navegador del teléfono (`http://127.0.0.1:8080/index.html`) y probar una acción narrativa real. La generación, el formato JSON, la aplicación de cambios y la persistencia todavía no están validados.
+
+
+### Revisión de la integración tras cargar el modelo — 12 de noviembre de 2026
+
+Se ha revisado el flujo actual de `narrator.js`, `app.js` y `game/session.js` en la rama `main`:
+
+- El cliente consulta `/health` antes de llamar a `/v1/chat/completions`, limita la espera de generación a 90 segundos y vuelve a `Director.respond()` si el servidor falla o la respuesta no se puede validar.
+- La petición utiliza `response_format` con `type: "json_schema"` y un esquema que restringe los campos narrativos. La documentación de llama.cpp confirma que `/v1/chat/completions` admite respuestas JSON restringidas por esquema: https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md.
+- La respuesta validada se convierte en una nueva aventura; `Session.addAction()` guarda acción, narración, aventura actualizada y evento mediante `Save.save()`. El historial anterior se mantiene en el almacenamiento local.
+- La guía `docs/IA_LOCAL_ANDROID.md` se actualizó para marcar como completados el arranque del modelo y la comprobación de salud.
+
+**Límite de esta revisión:** es una inspección estática del código remoto. No demuestra todavía que el modelo haya generado una respuesta real desde el navegador, ni que CORS, la generación JSON, el rendimiento y la persistencia tras recarga funcionen en el dispositivo. La siguiente prueba necesaria sigue siendo enviar una acción desde la página del juego y revisar el resultado. No se ha reiniciado ni duplicado el servidor y no se ha descargado ningún archivo.
