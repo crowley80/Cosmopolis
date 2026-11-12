@@ -86,7 +86,7 @@ const Narrator = {
                     'characterUpdates: cambios de ubicación o actitud de personajes ya registrados; conserva sus valores si no han cambiado y no muevas personajes sin motivo narrativo.',
                     'characterMemoriesToAdd: recuerdos concretos y duraderos de personajes que ya existen en el estado; no inventes personajes ni guardes detalles triviales.',
                     'time: momento del día dentro del mundo; no uses la hora real del teléfono y no avances el tiempo sin motivo narrativo.',
-                    'day: número del día dentro de la aventura; solo aumenta cuando la historia cruza realmente al día siguiente.'
+                    'day: número del día dentro de la aventura; solo aumenta cuando la historia cruza realmente al día siguiente. Nunca reduzcas el día ya alcanzado.'
                 ].join(' ')
             },
             {
@@ -209,7 +209,10 @@ const Narrator = {
             const updated = JSON.parse(JSON.stringify(adventure));
             const state = updated.state || {};
             state.time = result.time.trim().slice(0, 60) || state.time || 'Mañana';
-            state.day = Math.max(1, Math.min(9999, result.day || Number(state.day) || 1));
+            const previousDay = Number.isInteger(Number(state.day))
+                ? Math.max(1, Math.min(9999, Number(state.day)))
+                : 1;
+            state.day = Math.max(previousDay, Math.max(1, Math.min(9999, result.day)));
             state.currentLocation = result.location.trim().slice(0, 120) ||
                 state.currentLocation || updated.location || 'Lugar desconocido';
             state.knownFacts = Array.isArray(state.knownFacts) ? state.knownFacts : [];
