@@ -1207,3 +1207,8 @@ La regresión automatizada simula tres casos: completar una meta y abrir otra ar
 ### Corrección de regresión del archivo de objetivos — 12 de noviembre de 2026
 
 La primera ejecución de la nueva prueba de ciclo de vida detectó una expectativa desactualizada en la comprobación del contexto compacto: el escenario de prueba crea deliberadamente a Elia con el objetivo breve `Averiguar por qué suenan las campanas.`, mientras que la expectativa se había cambiado al objetivo inicial de la aventura. Se corrigió únicamente esa expectativa para que refleje el dato real del escenario; la prueba de interacción principal sigue verificando por separado que el objetivo de Elia progresa hacia el texto completo definido por la respuesta simulada. No era un fallo del código de objetivos ni de la partida.
+
+
+### Ajuste del escenario de interacción de objetivos — 12 de noviembre de 2026
+
+La ejecución #96 encontró una segunda inconsistencia en el escenario simulado: el personaje de prueba nacía con el objetivo `Averiguar por qué suenan las campanas.`, pero la respuesta mock intentaba reemplazarlo por el objetivo inicial largo de la aventura mientras solo cambiaba el estado a progreso. La nueva protección impide correctamente sustituir una meta pendiente. Se ajustaron el mock y su aserción para conservar el objetivo breve del escenario y probar únicamente la transición `active` → `progress`. El objetivo largo de la aventura real permanece intacto.
