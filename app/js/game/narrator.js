@@ -41,26 +41,72 @@ const Narrator = {
             response: item.response || ''
         }));
 
+        const shortList = (value, count, maxLength = 240) =>
+            (Array.isArray(value) ? value : [])
+                .slice(-count)
+                .map(item => typeof item === 'string' ? item.slice(0, maxLength) : item);
+
+        const currentLocation = state.currentLocation || adventure.location || '';
+        const allCharacters = Object.entries(state.characters || {});
+        const nearby = allCharacters.filter(([, person]) =>
+            person && person.location && person.location === currentLocation
+        );
+        const elia = allCharacters.filter(([key]) => key.toLocaleLowerCase('es') === 'elia');
+        const recent = allCharacters.slice(-20).reverse();
+        const selectedCharacters = [];
+        [...nearby, ...elia, ...recent].forEach(entry => {
+            if (!selectedCharacters.some(([key]) => key === entry[0]) && selectedCharacters.length < 20) {
+                selectedCharacters.push(entry);
+            }
+        });
+        const compactCharacters = Object.fromEntries(selectedCharacters.map(([key, person]) => [
+            key,
+            {
+                ...person,
+                role: typeof person.role === 'string' ? person.role.slice(0, 100) : '',
+                location: typeof person.location === 'string' ? person.location.slice(0, 120) : '',
+                attitude: typeof person.attitude === 'string' ? person.attitude.slice(0, 120) : '',
+                memories: shortList(person.memories, 8, 180)
+            }
+        ]));
+
+        const compactState = {
+            ...state,
+            events: shortList(state.events, 20),
+            knownFacts: shortList(state.knownFacts, 25),
+            clues: shortList(state.clues, 25),
+            inventory: shortList(state.inventory, 30, 120),
+            visitedLocations: shortList(state.visitedLocations, 25, 120),
+            characters: compactCharacters
+        };
+
+        const compactPlayer = {
+            name: String(character.name || 'Viajero').slice(0, 100),
+            nature: String(character.nature || '').slice(0, 400),
+            appearance: String(character.appearance || '').slice(0, 400),
+            history: String(character.history || '').slice(0, 600),
+            abilities: String(character.abilities || '').slice(0, 400),
+            personality: String(character.personality || '').slice(0, 400)
+        };
+
         const context = {
-            player: character,
+            player: compactPlayer,
             currentAdventure: {
-                title: adventure.title || '',
-                location: state.currentLocation || adventure.location || '',
-                time: state.time || '',
-                state,
-                knownFacts: state.knownFacts || [],
-                clues: state.clues || [],
-                inventory: state.inventory || [],
-                visitedLocations: state.visitedLocations || [],
-                characters: state.characters || {}
+                title: String(adventure.title || '').slice(0, 160),
+                location: currentLocation,
+                time: String(state.time || '').slice(0, 60),
+                state: compactState
             },
             persistentWorld: {
-                facts: (world.facts || []).slice(-50),
-                events: (world.events || []).slice(-20),
-                relationships: world.relationships || {}
+                facts: shortList(world.facts, 25),
+                events: shortList(world.events, 12),
+                relationships: Object.fromEntries(Object.entries(world.relationships || {}).slice(-20))
             },
-            recentHistory: history,
-            currentAction: action
+            recentHistory: history.slice(-6).map(item => ({
+                action: String(item.text || '').slice(0, 500),
+                response: String(item.response || '').slice(0, 900)
+            })),
+            currentAction: String(action || '').slice(0, 1200)
         };
 
         return [
