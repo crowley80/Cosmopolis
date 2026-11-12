@@ -133,3 +133,6 @@ Se refuerza el uso activo de `personalGoal`: el prompt de la IA local pide que l
 
 
 Ajuste de legibilidad — 12 de noviembre de 2026: el narrador alternativo expresa el objetivo de un NPC con una frase directa y conserva literalmente el objetivo almacenado. Se renueva la caché de `director.js`.
+
+
+Ajuste de selección de diálogo — 12 de noviembre de 2026: la ruta alternativa reconoce al NPC presente por su nombre y puede expresar su objetivo sin depender de una lista cerrada de expresiones interrogativas.
