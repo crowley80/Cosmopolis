@@ -45,6 +45,7 @@ const Adventure = {
                         personalGoal: 'Averiguar por qué la campana suena desde debajo del pozo y qué altera sus mapas.',
                         goalStatus: 'active',
                         goalHistory: [],
+                        completedGoals: [],
                         trust: 0,
                         memories: ['Ha conocido al personaje en la plaza del pozo.']
                     }
