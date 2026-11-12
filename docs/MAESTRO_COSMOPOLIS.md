@@ -875,3 +875,12 @@ Se ha revisado el flujo actual de `narrator.js`, `app.js` y `game/session.js` en
 - La guía `docs/IA_LOCAL_ANDROID.md` se actualizó para marcar como completados el arranque del modelo y la comprobación de salud.
 
 **Límite de esta revisión:** es una inspección estática del código remoto. No demuestra todavía que el modelo haya generado una respuesta real desde el navegador, ni que CORS, la generación JSON, el rendimiento y la persistencia tras recarga funcionen en el dispositivo. La siguiente prueba necesaria sigue siendo enviar una acción desde la página del juego y revisar el resultado. No se ha reiniciado ni duplicado el servidor y no se ha descargado ningún archivo.
+
+
+### Corrección de las dobleces de las esquinas — 12 de noviembre de 2026
+
+Se ha recuperado y consultado la fotografía original aprobada «Cosmopolis: aventura en la Ciudadela de Ámbar.png» como referencia visual. La revisión del código identificó el origen del defecto señalado: cuatro elementos `.paper-fold` dibujaban las esquinas con `clip-path: polygon(...)`, produciendo pestañas triangulares ajenas al acabado orgánico del papiro.
+
+Corrección preparada en CSS: se sustituyen las máscaras poligonales por pliegues curvos con bordes redondeados, iluminación y sombra suaves; se mantienen los cuatro puntos de doblado, el contorno irregular del papel y la composición general. No se modifica la cabecera, el contenido narrativo, los controles ni la lógica de juego.
+
+**Validación pendiente:** ejecutar la vista previa automatizada de móvil y escritorio e inspeccionar visualmente las capturas junto a la fotografía original aprobada. Esta modificación no se declara finalizada ni fiel hasta completar esa comparación; si los pliegues curvos siguen pareciendo formas geométricas, se retirarán y se replantearán antes de darla por buena.
