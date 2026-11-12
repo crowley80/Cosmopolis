@@ -1238,3 +1238,8 @@ Se amplía la regresión de Chromium para comprobar que el prompt contiene estas
 
 El usuario ha revisado las capturas de la aplicación y confirma que, aunque la interfaz no reproduce exactamente la fotografía de referencia, la estética actual le parece suficientemente buena y mucho más trabajada que la versión anterior. Se acepta el pergamino actual como base visual para continuar el desarrollo. No se perseguirá una copia literal a costa de la legibilidad o del uso táctil. Se mantiene la decisión de interfaz exclusivamente textual y sin ilustraciones dentro del juego.
 
+
+
+### Corrección de sintaxis en el prompt — 12 de noviembre de 2026
+
+La primera ejecución de Chromium tras añadir los límites de conocimiento detectó que faltaba una coma entre dos instrucciones del array del prompt. Se corrigió el separador y se renovó de nuevo la caché de narrator.js. La ejecución fallida no llegó a completar la interacción, por lo que no se considera validación funcional; se espera una nueva ejecución con el arreglo.
