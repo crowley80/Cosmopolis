@@ -482,6 +482,12 @@ Cambios preparados en esta iteración:
 - Se mantienen la pluma y el tintero vectoriales, sin incorporar ilustraciones de escenas, castillo ni panel permanente de personajes.
 - Se actualizan las versiones de caché de CSS y JavaScript.
 
+Commits creados en GitHub (rama main):
+- `507b3b2` — unificación de la hoja CSS de aventura (de 1.172 a 636 líneas; un único bloque principal de `.adventure-screen`).
+- `a249aed` — rosas de los vientos vectoriales y traslado de «Mi ficha» fuera de la cabecera.
+- `a8ef42b` — actualización de caché para CSS y JavaScript.
+- `93aa9c8` — registro de esta corrección en el documento maestro.
+
 Pruebas pendientes:
 - Sincronizar los cambios en Termux.
 - Ejecutar `node --check app/js/app.js`.
