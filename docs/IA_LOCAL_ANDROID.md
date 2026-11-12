@@ -95,3 +95,10 @@ Después de guardar cada acción, la interfaz vuelve a leer la aventura persisti
 ## Protección contra retrocesos del calendario — 12 de noviembre de 2026
 
 El cliente aplica una regla adicional de continuidad: `state.day` nunca puede ser inferior al día que ya estaba guardado. Si el modelo devuelve por error un día anterior, se conserva el día alcanzado. El valor sigue limitado al intervalo 1–9999. La prueba automatizada de Chromium incluye una regresión deliberada del modelo (día 2 seguido de día 1) y exige conservar el día 2.
+
+
+## Relaciones dinámicas de personajes — 12 de noviembre de 2026
+
+El contrato JSON sustituye el ajuste exclusivo `eliaTrustDelta` por `relationshipChanges`, aplicable a cualquier NPC que ya exista en `adventure.state.characters`. Cada cambio contiene el nombre del personaje, un delta entero entre -1 y 1 y un motivo breve. El cliente ignora nombres desconocidos y cambios fuera de rango, limita cada respuesta a diez modificaciones y acota la confianza entre -5 y 10. El motivo se incorpora a la memoria individual del personaje, sin duplicados y conservando los 30 recuerdos más recientes. En el caso de Elia se mantiene sincronizado el campo heredado `eliaTrust`.
+
+La prueba de Chromium simula cambios de relación de Elia y Tomás y verifica la persistencia de puntuaciones y recuerdos. La inferencia real del modelo Qwen3.5-4B sigue pendiente de validación en el Samsung.
