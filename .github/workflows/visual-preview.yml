@@ -168,6 +168,85 @@ jobs:
             assert(goalFallbackProbe.includes('Proteger a los vecinos de los peligros del pozo.'),
               'El narrador alternativo debe tener en cuenta el objetivo personal al conversar con un NPC');
 
+            const goalLifecycleProbe = await page.evaluate(async () => {
+              const originalFetch = window.fetch;
+              const originalAvailability = Narrator.isAvailable;
+              const responseFor = goalUpdate => ({
+                reply: 'La historia deja claro el siguiente paso.',
+                event: 'Un objetivo personal ha cambiado con fundamento.',
+                category: 'dialogue',
+                location: 'Plaza del pozo',
+                factsToAdd: [], cluesToAdd: [], relationshipChanges: [],
+                itemsToAdd: [], itemsToRemove: [], charactersToAdd: [],
+                characterUpdates: [], characterActions: [], characterMemoriesToAdd: [],
+                goalUpdates: [goalUpdate], time: 'Tarde', day: 2
+              });
+              const run = async (person, goalUpdate) => {
+                const probe = Adventure.createOpening({ name: 'Ariadna' });
+                probe.state.characters.Elia = { ...probe.state.characters.Elia, ...person };
+                window.fetch = async () => ({
+                  ok: true,
+                  json: async () => ({ choices: [{ message: { content: JSON.stringify(responseFor(goalUpdate)) } }] })
+                });
+                const result = await Narrator.respond('Continúo hablando con Elia.', { name: 'Ariadna' }, probe, []);
+                return result.adventure.state.characters.Elia;
+              };
+              Narrator.isAvailable = async () => true;
+              try {
+                const completed = await run({
+                  personalGoal: 'Descubrir el origen de la campana.',
+                  goalStatus: 'completed',
+                  goalHistory: [{ goal: 'Descubrir el origen de la campana.', status: 'completed', reason: 'La campana ha sido localizada.', changedAtAction: 4 }],
+                  completedGoals: [], memories: []
+                }, {
+                  character: 'Elia',
+                  goal: 'Investigar quién construyó la cámara bajo el pozo.',
+                  status: 'active',
+                  reason: 'Al localizar la campana descubre una cámara que plantea una nueva pregunta.'
+                });
+                const pending = await run({
+                  personalGoal: 'Encontrar la cámara secreta.',
+                  goalStatus: 'progress',
+                  goalHistory: [], completedGoals: [], memories: []
+                }, {
+                  character: 'Elia',
+                  goal: 'Convertirse en alcaldesa.',
+                  status: 'active',
+                  reason: 'Cambio sin relación con los hechos.'
+                });
+                const regression = await run({
+                  personalGoal: 'Salvar los mapas.',
+                  goalStatus: 'completed',
+                  goalHistory: [{ goal: 'Salvar los mapas.', status: 'completed', reason: 'Mapas recuperados.', changedAtAction: 2 }],
+                  completedGoals: [], memories: []
+                }, {
+                  character: 'Elia',
+                  goal: 'Salvar los mapas.',
+                  status: 'active',
+                  reason: 'No debe reabrirse una meta cumplida.'
+                });
+                return {
+                  newGoal: completed.personalGoal,
+                  newStatus: completed.goalStatus,
+                  archivedGoal: completed.completedGoals[0] && completed.completedGoals[0].goal,
+                  pendingGoal: pending.personalGoal,
+                  pendingStatus: pending.goalStatus,
+                  completedStatus: regression.goalStatus
+                };
+              } finally {
+                window.fetch = originalFetch;
+                Narrator.isAvailable = originalAvailability;
+              }
+            });
+            assert.deepEqual(goalLifecycleProbe, {
+              newGoal: 'Investigar quién construyó la cámara bajo el pozo.',
+              newStatus: 'active',
+              archivedGoal: 'Descubrir el origen de la campana.',
+              pendingGoal: 'Encontrar la cámara secreta.',
+              pendingStatus: 'progress',
+              completedStatus: 'completed'
+            }, 'Una meta nueva solo puede abrirse tras completar la anterior, que debe quedar archivada');
+
             const contextProbe = await page.evaluate(() => {
               const saved = Save.load();
               const probe = JSON.parse(JSON.stringify(saved.adventure));
