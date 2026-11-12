@@ -99,7 +99,7 @@ jobs:
                   characterUpdates: [{ character: 'Elia', location: 'Plaza del pozo', attitude: 'Más confiada' }],
                   characterMemoriesToAdd: [{ character: 'Elia', memory: 'Ariadna encontró un medallón de cobre junto al pozo.' }],
                   time: 'Media mañana',
-                  day: 1
+                  day: 2
                 } : {
                   reply: 'Entregas el medallón a Elia. Ella lo guarda con cuidado en su tubo de mapas.',
                   event: 'Ariadna ha entregado el medallón de cobre a Elia.',
@@ -174,7 +174,7 @@ jobs:
                 data.adventure.state.characters.Tomás.memories.includes('Tomás vio a Ariadna entregar el medallón a Elia.') &&
                 data.adventure.state.characters.Elia.attitude === 'Más confiada' &&
                 data.adventure.state.characters.Tomás.location === 'Entrada de la posada' &&
-                data.adventure.state.time === 'Mediodía' && data.adventure.state.day === 1;
+                data.adventure.state.time === 'Mediodía' && data.adventure.state.day === 2;
             });
             const liveMeta = await page.locator('.manuscript-meta').textContent();
             assert.ok(liveMeta.includes('Momento: Mediodía'), 'La cabecera debe actualizarse sin recargar: ' + liveMeta);
