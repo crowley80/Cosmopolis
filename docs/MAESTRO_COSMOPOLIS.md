@@ -1152,3 +1152,8 @@ También se probó la compactación del contexto: se simularon 30 eventos y 12 r
 La vista móvil de 390 × 844 se generó sin desbordamiento horizontal ni solapamientos: narración 378 × 547, panel de escritura 378 × 145 y barra inferior 378 × 60. La prueba completa de interacciones, guardado y recarga terminó correctamente. Artefacto `cosmopolis-visual-preview`, ID `13975217633`.
 
 La ejecución del commit de renovación de caché `bf5317a` (run 67) sigue pendiente de completar. Las pruebas de Chromium usan respuestas simuladas y no sustituyen la validación de Qwen3.5-4B real en el Samsung.
+
+
+### Validación tras renovar caché del narrador — run 67 — 12 de noviembre de 2026
+
+La ejecución `43287906891`, sobre el commit `bf5317a`, terminó con conclusión `success`. Chromium cargó la nueva URL versionada de `narrator.js`, generó las vistas móvil y escritorio, completó las interacciones y subió el artefacto de vista previa. La actualización de caché queda validada; se mantienen pendientes únicamente las pruebas de inferencia real con Qwen3.5-4B en el Samsung y la revisión visual directa del usuario en su navegador.
