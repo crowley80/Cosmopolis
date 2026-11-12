@@ -130,6 +130,7 @@ const Narrator = {
                     'itemsToRemove: objetos que pierde, entrega, consume o deja atrás realmente; usa el nombre exacto del inventario.',
                     'charactersToAdd: personajes nuevos que realmente entran en escena; incluye nombre, función, ubicación, actitud y un primer recuerdo significativo. No añadas figurantes irrelevantes.',
                     'characterUpdates: cambios de ubicación o actitud de personajes ya registrados; conserva sus valores si no han cambiado y no muevas personajes sin motivo narrativo.',
+                    'characterActions: pequeñas iniciativas autónomas de personajes que ya están presentes en la ubicación actual. Solo acciones visibles y coherentes con su personalidad y recuerdos; máximo dos. No cambies su ubicación con este campo, no inventes sucesos fuera de escena y usa una acción vacía si nadie actúa.',
                     'characterMemoriesToAdd: recuerdos concretos y duraderos de personajes que ya existen en el estado; no inventes personajes ni guardes detalles triviales.',
                     'time: momento del día dentro del mundo; no uses la hora real del teléfono y no avances el tiempo sin motivo narrativo.',
                     'day: número del día dentro de la aventura; solo aumenta cuando la historia cruza realmente al día siguiente. Nunca reduzcas el día ya alcanzado.'
@@ -208,6 +209,18 @@ const Narrator = {
                         required: ['character', 'location', 'attitude']
                     }
                 },
+                characterActions: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        properties: {
+                            character: { type: 'string' },
+                            action: { type: 'string' }
+                        },
+                        required: ['character', 'action']
+                    }
+                },
                 characterMemoriesToAdd: {
                     type: 'array',
                     items: {
@@ -221,7 +234,7 @@ const Narrator = {
                     }
                 }
             },
-            required: ['reply', 'event', 'category', 'location', 'factsToAdd', 'cluesToAdd', 'relationshipChanges', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd', 'charactersToAdd', 'characterUpdates', 'time', 'day']
+            required: ['reply', 'event', 'category', 'location', 'factsToAdd', 'cluesToAdd', 'relationshipChanges', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd', 'charactersToAdd', 'characterUpdates', 'characterActions', 'time', 'day']
         };
 
         const controller = new AbortController();
@@ -259,7 +272,7 @@ const Narrator = {
                 !Array.isArray(result.itemsToAdd) || !Array.isArray(result.itemsToRemove) ||
                 !Array.isArray(result.characterMemoriesToAdd) ||
                 !Array.isArray(result.charactersToAdd) ||
-                !Array.isArray(result.characterUpdates) ||
+                !Array.isArray(result.characterUpdates) || !Array.isArray(result.characterActions) ||
                 typeof result.time !== 'string' || !Number.isInteger(result.day)) {
                 throw new Error('La respuesta no cumple el formato narrativo');
             }
@@ -351,6 +364,32 @@ const Narrator = {
                     if (person.memories.length > 30) person.memories = person.memories.slice(-30);
                 }
             });
+
+            const autonomousNotes = [];
+            result.characterActions.slice(0, 2).forEach(entry => {
+                if (!entry || typeof entry.character !== 'string' || typeof entry.action !== 'string') return;
+                const requestedName = entry.character.trim().toLocaleLowerCase('es');
+                const key = Object.keys(state.characters).find(name =>
+                    name.toLocaleLowerCase('es') === requestedName ||
+                    String(state.characters[name] && state.characters[name].name || '').toLocaleLowerCase('es') === requestedName
+                );
+                if (!key) return;
+                const person = state.characters[key];
+                if (person.location && person.location !== state.currentLocation) return;
+                const actionText = entry.action.trim().slice(0, 220);
+                if (!actionText) return;
+                autonomousNotes.push(`${key}: ${actionText}`);
+                person.lastAutonomousAction = actionText;
+                person.memories = Array.isArray(person.memories) ? person.memories : [];
+                if (!person.memories.some(memory => String(memory).toLocaleLowerCase('es') === actionText.toLocaleLowerCase('es'))) {
+                    person.memories.push(actionText);
+                    if (person.memories.length > 30) person.memories = person.memories.slice(-30);
+                }
+            });
+
+            if (autonomousNotes.length) {
+                result.reply = result.reply.trim() + '\\n\\n' + autonomousNotes.join('\\n');
+            }
 
             state.events.push(result.event.trim().slice(0, 300));
             if (state.events.length > 100) state.events = state.events.slice(-100);
