@@ -507,3 +507,291 @@ footer {
     .narrative-panel { padding: 16px 13px 19px; }
     .player-heading h3 { font-size: .98rem; }
 }
+
+
+/* RECONSTRUCCIÓN FIEL DE LA ESTÉTICA DE LA MAQUETA: PAPIRO Y BORDES QUEMADOS */
+html, body {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    background: #28170d;
+}
+
+body {
+    overflow: hidden;
+    color: #321907;
+    font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    background:
+        radial-gradient(ellipse at 50% 45%, #79502a 0%, #3b2413 68%, #1b1009 100%);
+}
+
+#app {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    margin: 0;
+}
+
+.adventure-screen {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    padding: max(12px, env(safe-area-inset-top)) 15px max(12px, env(safe-area-inset-bottom));
+    gap: 9px;
+    overflow: hidden;
+    transform: none;
+    left: 0;
+    color: #321907;
+    background-color: #d99a4d;
+    background-image:
+        radial-gradient(ellipse at 48% 42%, rgba(255, 218, 153, .62) 0 35%, transparent 72%),
+        radial-gradient(ellipse at 3% 4%, rgba(74, 30, 7, .76), transparent 16%),
+        radial-gradient(ellipse at 98% 7%, rgba(83, 34, 8, .78), transparent 15%),
+        radial-gradient(ellipse at 1% 48%, rgba(75, 29, 7, .72), transparent 13%),
+        radial-gradient(ellipse at 99% 51%, rgba(75, 29, 7, .72), transparent 13%),
+        radial-gradient(ellipse at 3% 96%, rgba(70, 27, 6, .82), transparent 17%),
+        radial-gradient(ellipse at 97% 96%, rgba(70, 27, 6, .82), transparent 17%),
+        repeating-linear-gradient(7deg, rgba(89, 46, 13, .10) 0 1px, transparent 1px 5px),
+        repeating-linear-gradient(93deg, rgba(255, 226, 169, .13) 0 1px, transparent 1px 8px),
+        linear-gradient(112deg, #e9b86e, #d99a4d 42%, #edbd78 72%, #c98237);
+    border: 0;
+    border-radius: 2.5% 1.3% 2% 1.7% / 1.1% 1.7% 1.2% 1.8%;
+    outline: 0;
+    box-shadow:
+        inset 0 0 13px 5px rgba(69, 29, 7, .68),
+        inset 0 0 34px 13px rgba(92, 43, 12, .37),
+        inset 0 0 70px rgba(255, 221, 158, .22),
+        0 0 0 3px #4a2a12,
+        0 0 24px 8px rgba(0, 0, 0, .58);
+}
+
+.adventure-screen::before {
+    inset: 7px;
+    border: 2px solid rgba(91, 44, 13, .72);
+    outline: 1px solid rgba(255, 220, 157, .65);
+    outline-offset: -5px;
+    box-shadow: inset 0 0 16px rgba(86, 38, 9, .32);
+    background:
+        radial-gradient(ellipse at 0 0, rgba(66, 27, 6, .48), transparent 12%),
+        radial-gradient(ellipse at 100% 0, rgba(66, 27, 6, .48), transparent 12%),
+        radial-gradient(ellipse at 0 100%, rgba(66, 27, 6, .52), transparent 13%),
+        radial-gradient(ellipse at 100% 100%, rgba(66, 27, 6, .52), transparent 13%);
+}
+
+.adventure-screen::after {
+    top: 7px;
+    content: "✥";
+    color: #6d390f;
+    font-size: 19px;
+    text-shadow: 0 1px rgba(255, 221, 164, .8);
+}
+
+.adventure-header {
+    min-height: 76px;
+    padding: 8px 8px 10px;
+    justify-content: flex-start;
+    gap: 12px;
+    border: 2px solid rgba(95, 48, 14, .8);
+    outline: 1px solid rgba(255, 224, 168, .65);
+    outline-offset: -5px;
+    background:
+        radial-gradient(ellipse at 50% 0, rgba(255, 226, 170, .55), transparent 72%),
+        linear-gradient(180deg, rgba(178, 111, 42, .18), rgba(255, 222, 164, .22));
+    box-shadow: inset 0 0 15px rgba(89, 42, 10, .22), 0 2px 5px rgba(69, 31, 8, .2);
+}
+
+.adventure-header::before {
+    content: "✥";
+    flex: 0 0 auto;
+    display: grid;
+    width: 48px;
+    height: 48px;
+    place-items: center;
+    color: #572907;
+    border: 3px double #704016;
+    border-radius: 50%;
+    font-size: 2rem;
+    text-shadow: 0 1px #f5d49a;
+    background: radial-gradient(circle, rgba(255, 225, 168, .55), rgba(139, 79, 24, .12));
+}
+
+.adventure-header > div { flex: 1; text-align: left; }
+
+.adventure-header h1 {
+    color: #381906;
+    font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    font-size: clamp(1.65rem, 7vw, 2.55rem);
+    font-weight: 700;
+    letter-spacing: .015em;
+    text-shadow: 1px 1px rgba(255, 220, 157, .8);
+}
+
+.adventure-header p {
+    color: #66370f;
+    font-size: .83rem;
+    font-style: italic;
+}
+
+.adventure-header button {
+    padding: 8px 10px;
+    color: #f8dfb1;
+    background: linear-gradient(#8c5527, #4b260e);
+    border: 2px solid #6a3a16;
+    box-shadow: inset 0 0 0 2px rgba(236, 188, 112, .35);
+}
+
+.story-panel {
+    flex: 1 1 0;
+    padding: 4px 5px;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+    scrollbar-color: #75431c transparent;
+}
+
+.narrative-panel {
+    padding: 15px 12px 20px;
+    background: transparent;
+}
+
+.narrative-panel::before,
+.narrative-panel::after {
+    color: #754016;
+    font-size: 1rem;
+    letter-spacing: .55em;
+    text-shadow: 0 1px rgba(255, 221, 164, .7);
+}
+
+.narrative-panel h2 {
+    margin: 5px 0 15px;
+    padding: 0 0 10px;
+    color: #3a1b07;
+    border: 0;
+    text-shadow: 0 1px rgba(255, 225, 171, .8);
+    font-size: clamp(1.25rem, 5vw, 1.65rem);
+}
+
+.narrative-panel h2::after {
+    display: block;
+    width: 72%;
+    height: 9px;
+    margin: 9px auto 0;
+    content: "────── ◈ ──────";
+    color: #754016;
+    font-size: .75rem;
+    letter-spacing: .12em;
+}
+
+.narrative-panel > .eyebrow {
+    color: #744016;
+    font-size: .72rem;
+    letter-spacing: .14em;
+}
+
+.story-content {
+    color: #321907;
+    font-family: Georgia, "Palatino Linotype", serif;
+    font-size: clamp(1.04rem, 4.3vw, 1.2rem);
+    line-height: 1.72;
+    text-shadow: 0 1px rgba(255, 230, 184, .28);
+}
+
+.story-entry { padding: 5px 0 14px; }
+
+.current-action {
+    color: #5a2e0e;
+    background: rgba(110, 58, 16, .10);
+    border-left: 3px solid #814719;
+}
+
+.player-panel {
+    position: relative;
+    padding: 12px 12px 13px;
+    border: 2px solid #704017;
+    outline: 1px solid rgba(255, 220, 158, .7);
+    outline-offset: -5px;
+    border-radius: 3px;
+    background:
+        radial-gradient(ellipse at 50% 0, rgba(255, 228, 177, .5), transparent 75%),
+        linear-gradient(145deg, #e8b66d, #d49a50);
+    box-shadow: inset 0 0 18px rgba(91, 42, 10, .28), 0 3px 8px rgba(69, 31, 8, .26);
+}
+
+.player-panel::before,
+.player-panel::after {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    color: #704017;
+    text-align: center;
+    font-size: 13px;
+    content: "❧ ───────── ✦ ───────── ❧";
+    pointer-events: none;
+}
+.player-panel::before { top: 1px; }
+.player-panel::after { bottom: 0; }
+
+.player-heading {
+    margin: 5px 4px 8px;
+    justify-content: center;
+}
+.player-heading h3 {
+    color: #49250d;
+    font-size: 1.05rem;
+    font-style: italic;
+}
+.player-panel .eyebrow { color: #704017; }
+
+.player-panel form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 104px;
+    align-items: stretch;
+    gap: 9px;
+}
+
+.player-panel textarea {
+    min-height: 68px;
+    max-height: 110px;
+    padding: 10px 12px;
+    color: #321907;
+    background:
+        repeating-linear-gradient(180deg, transparent 0 26px, rgba(111, 66, 24, .16) 26px 27px),
+        rgba(255, 231, 190, .88);
+    border: 2px solid #875322;
+    box-shadow: inset 0 0 10px rgba(96, 51, 15, .14);
+    font-style: italic;
+}
+.player-panel button {
+    min-height: 68px;
+    padding: 8px;
+    color: #f9e3b9;
+    background:
+        linear-gradient(180deg, rgba(255, 225, 171, .2), transparent),
+        linear-gradient(145deg, #8b5427, #4b260f);
+    border: 3px double #d4a45c;
+    box-shadow: inset 0 0 0 2px rgba(54, 25, 8, .4), 0 2px 5px rgba(57, 26, 8, .3);
+    font-family: "Palatino Linotype", Georgia, serif;
+    font-size: 1.05rem;
+}
+
+@media (max-width: 420px) {
+    .adventure-screen { padding-left: 10px; padding-right: 10px; }
+    .adventure-header { gap: 8px; }
+    .adventure-header::before { width: 39px; height: 39px; font-size: 1.6rem; }
+    .adventure-header h1 { font-size: 1.55rem; }
+    .adventure-header p { font-size: .72rem; }
+    .player-panel form { grid-template-columns: minmax(0, 1fr) 88px; }
+    .player-panel button { font-size: .94rem; }
+}
+
+@media (max-height: 650px) {
+    .adventure-header { min-height: 58px; padding: 5px; }
+    .adventure-header::before { width: 35px; height: 35px; }
+    .narrative-panel { padding-top: 8px; }
+    .player-panel { padding-top: 8px; padding-bottom: 9px; }
+    .player-panel textarea, .player-panel button { min-height: 54px; }
+}
