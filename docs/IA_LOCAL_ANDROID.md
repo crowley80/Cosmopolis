@@ -157,3 +157,9 @@ La regresión automatizada simula tres casos: completar una meta y abrir otra ar
 ### Validación del archivo de metas en el contexto — 12 de noviembre de 2026
 
 Las ejecuciones #98, #99, #100 y #101 de GitHub Actions finalizaron correctamente. La prueba #101, sobre el commit `75eb4b4`, completó las interacciones de Chromium, el guardado y la recarga, y verificó el encaje del diseño móvil en 390 × 844. La prueba específica del contexto confirma que se transmiten como máximo ocho metas cumplidas y cinco transiciones recientes, sin recortar los datos persistidos. La validación de Chromium emplea respuestas simuladas: no sustituye la prueba real de generación, esquema JSON y persistencia con Qwen3.5-4B en el Samsung.
+
+
+### Límites de conocimiento narrativo — 12 de noviembre de 2026
+
+El prompt de `Narrator.buildMessages()` distingue percepción directa, deducción e incertidumbre. Prohíbe revelar como conocidos pensamientos privados, identidades ocultas o acontecimientos fuera de escena sin una fuente válida, y pide describir señales observables antes de inferir conclusiones al examinar algo. La prueba automatizada verifica la presencia de estas reglas en el mensaje de sistema. Su cumplimiento efectivo debe observarse también con Qwen3.5-4B en el dispositivo.
+
