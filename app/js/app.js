@@ -175,11 +175,11 @@ const Cosmopolis = {
         app.innerHTML =
             '<div class="adventure-screen">' +
                 '<header class="manuscript-header">' +
-                    '<div class="compass compass-left" aria-hidden="true"><span class="north">N</span><span class="east">E</span><span class="south">S</span><span class="west">O</span><i>✦</i></div>' +
+                    '<div class="compass compass-left" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="#63350f" stroke-width="2"/><circle cx="50" cy="50" r="35" fill="none" stroke="#8a5422" stroke-width="1"/><path d="M50 5 L59 41 L95 50 L59 59 L50 95 L41 59 L5 50 L41 41 Z" fill="#552a0c" stroke="#321907" stroke-width="1.5"/><path d="M50 17 L54 46 L83 50 L54 54 L50 83 L46 54 L17 50 L46 46 Z" fill="#e0b66e" stroke="#552a0c" stroke-width="1.5"/><path d="M18 18 L43 43 M82 18 L57 43 M82 82 L57 57 M18 82 L43 57" stroke="#63350f" stroke-width="2"/><circle cx="50" cy="50" r="5" fill="#63350f" stroke="#e0b66e" stroke-width="1.5"/></svg><span class="north">N</span><span class="east">E</span><span class="south">S</span><span class="west">O</span></div>' +
                     '<div class="wordmark"><h1>Cosmópolis</h1><p>Una aventura sin límites</p></div>' +
                     '<div class="manuscript-meta"><span>Ubicación: ' + this.escape(adventure.location || 'Tierras desconocidas') + '</span><span>Hora: ' + clock + '</span><span>Día: ' + dateLabel + '</span></div>' +
-                    '<div class="compass compass-right" aria-hidden="true"><span class="north">N</span><span class="east">E</span><span class="south">S</span><span class="west">O</span><i>✦</i></div>' +
-                    '<button id="backToProfile" type="button">Mi ficha</button>' +
+                    '<div class="compass compass-right" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="#63350f" stroke-width="2"/><circle cx="50" cy="50" r="35" fill="none" stroke="#8a5422" stroke-width="1"/><path d="M50 5 L59 41 L95 50 L59 59 L50 95 L41 59 L5 50 L41 41 Z" fill="#552a0c" stroke="#321907" stroke-width="1.5"/><path d="M50 17 L54 46 L83 50 L54 54 L50 83 L46 54 L17 50 L46 46 Z" fill="#e0b66e" stroke="#552a0c" stroke-width="1.5"/><path d="M18 18 L43 43 M82 18 L57 43 M82 82 L57 57 M18 82 L43 57" stroke="#63350f" stroke-width="2"/><circle cx="50" cy="50" r="5" fill="#63350f" stroke="#e0b66e" stroke-width="1.5"/></svg><span class="north">N</span><span class="east">E</span><span class="south">S</span><span class="west">O</span></div>' +
+                    
                 '</header>' +
                 '<main class="story-panel" id="storyPanel">' +
                     '<section class="narrative-panel">' +
@@ -190,7 +190,7 @@ const Cosmopolis = {
                     '</section>' +
                 '</main>' +
                 '<section class="player-panel">' +
-                    '<div class="player-heading"><span>Tu turno · Escribe tu acción</span></div>' +
+                    '<div class="player-heading"><span>Tu turno · Escribe tu acción</span><button id="backToProfile" type="button">Mi ficha</button></div>' +
                     '<form id="actionForm">' +
                         '<div class="quill-inkwell" aria-hidden="true">' +
                             '<svg viewBox="0 0 100 120" role="presentation"><path d="M48 8 C20 24 12 54 17 83 C31 59 46 35 48 8Z" fill="#684018" stroke="#321907" stroke-width="2"/><path d="M48 8 L22 76 M43 25 L28 42 M38 40 L17 55 M34 53 L22 67" fill="none" stroke="#e0b66e" stroke-width="2"/><path d="M19 82 L54 20" stroke="#321907" stroke-width="2"/><path d="M26 83 Q18 91 22 103 Q38 114 58 103 Q62 91 51 83Z" fill="#3a2111" stroke="#1f1008" stroke-width="3"/><ellipse cx="40" cy="85" rx="15" ry="5" fill="#9a672f" stroke="#321907" stroke-width="2"/><path d="M26 94 Q40 101 55 94" fill="none" stroke="#c08a48" stroke-width="2"/></svg>' +
