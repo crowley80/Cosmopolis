@@ -587,3 +587,24 @@ Se ha añadido `.github/workflows/visual-preview.yml` para superar la limitació
 Commit del flujo: `7cf8c9d`.
 
 Objetivo inmediato: recuperar el artefacto de esa ejecución, inspeccionar las capturas y contrastar la composición renderizada con la maqueta original. Esta automatización todavía no demuestra que la ejecución haya terminado correctamente ni que la apariencia sea fiel; ambas cosas quedan pendientes de verificación. No pedir al usuario que abra la página hasta completar esa comparación.
+
+
+### Primera comparación renderizada con la maqueta — 12 de noviembre de 2026
+
+Se recuperó de la Biblioteca de ChatGPT la referencia original y se inspeccionó junto a las capturas reales generadas por Chromium.
+
+Observaciones verificadas:
+- La estructura general sí está presente en el render móvil: cabecera horizontal con dos rosas, título/subtítulo, metadatos; folio narrativo; panel fijo de escritura; barra inferior de cuatro herramientas.
+- La proporción vertical de cabecera y la distribución general se aproximan a la referencia.
+- La versión renderizada mantiene los ornamentos principales, los pliegues de esquina y el fondo exterior negro.
+- Diferencias visibles que todavía requieren una pasada de detalle: la textura del papel actual es más regular y cuadriculada que la textura orgánica de la referencia; el borde quemado y recortado puede ganar irregularidad y profundidad; el marco del panel de escritura y los emblemas inferiores son menos ricos en filigrana que los de la maqueta.
+- La captura inicial mostró secuencias literales `\\n` entre párrafos, pero se comprobó que el origen era exclusivamente el texto ficticio de la prueba automatizada, no el renderizador de la aplicación. Se corrigió el escape en el flujo para que la siguiente captura use saltos de línea reales.
+
+Ejecución 1:
+- Workflow: `Visual preview`, run `43211352971`.
+- Resultado: instalación, servidor, renderizado y subida de artefactos completados correctamente.
+- Artefacto: `cosmopolis-visual-preview`, ID `13941422014`.
+- Capturas obtenidas: móvil 390 × 844 y escritorio 1024 × 900.
+- Commit del flujo: `7cf8c9d`; corrección del texto de prueba: `ec0f8a5`.
+
+Siguiente paso: inspeccionar la segunda captura corregida y aplicar ajustes visuales pequeños y respaldados por la comparación; no modificar a ciegas la composición que ya se ve correctamente.
