@@ -927,3 +927,8 @@ El render 31 (43256501459) muestra que el pergamino ya recupera una gama dorada 
 ### Pliegues orgánicos integrados en las esquinas — 12 de noviembre de 2026
 
 Tras inspeccionar el render 32 (43256742801), se confirma que la silueta erosionada ya es continua, sin los dientes grandes del polígono original, y que el color se ha acercado al ámbar de la referencia. Para recuperar el detalle de las esquinas dobladas sin repetir el error de las pestañas triangulares, se han añadido en CSS dos trazos curvos muy discretos por esquina, como líneas de tensión y luz integradas en la textura del propio papel (commit CSS d47e827). No son piezas superpuestas ni polígonos rellenos. Pendiente la última captura automática para comprobar que las curvas se leen como pliegues naturales y no como adornos.
+
+
+### Revisión de los pliegues y captura del run 33 — 12 de noviembre de 2026
+
+Se descargaron e inspeccionaron las capturas móvil y escritorio del run 33 (43257072180). El render confirma que el papel cubre toda la zona narrativa, conserva el tono ámbar, presenta un borde erosionado continuo y no muestra los antiguos dientes triangulares. Los primeros trazos de pliegue se perdían demasiado cerca de la sombra del borde; se han desplazado hacia dentro y reforzado ligeramente para que las esquinas dobladas se lean como pequeñas curvas de tensión y luz, no como triángulos ni piezas añadidas (commit CSS 354f5a0). Pendiente la captura automática final de este ajuste.
