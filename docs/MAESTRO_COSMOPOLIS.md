@@ -902,3 +902,8 @@ Se descargó e inspeccionó el artefacto real de Chromium del run 26 (4325317312
 Corrección aplicada en app/css/style.css (commit bda4f3c): se elimina la silueta poligonal dentada y se sustituye por una máscara SVG con desplazamiento de ruido fractal, para obtener un contorno irregular más orgánico y no geométrico. Se refuerza la textura de grano y se devuelve saturación cálida al degradado base, reduciendo el velo crema central que lavaba el tono. No se añaden elementos de esquina ni piezas superpuestas.
 
 **Validación pendiente:** el commit ha disparado una nueva vista previa automática. Hay que descargar e inspeccionar el siguiente artefacto móvil/escritorio y contrastarlo con la imagen original antes de considerar resuelto el borde o el color. El run 26 sí terminó correctamente y sus capturas se inspeccionaron; el problema descrito arriba se detectó en ellas. No se ha probado nada en el teléfono durante esta sesión.
+
+
+### Ajuste de escala de la máscara orgánica — 12 de noviembre de 2026
+
+La captura del run 28 (43255589587) mostró que la primera máscara SVG se estaba representando con su proporción interna cuadrada en la pantalla vertical: el papel quedaba visible solo en una franja central. Se detectó al inspeccionar la captura real, no se considera una corrección válida. Se ha añadido preserveAspectRatio='none' a las dos fuentes SVG de máscara para que ocupen toda la superficie del pergamino en móvil y escritorio. Nuevo commit CSS: 065cc9a. La vista previa automática del commit debe confirmar que el fondo vuelve a cubrir toda la hoja y que el borde mantiene su irregularidad orgánica; la validación visual sigue pendiente.
