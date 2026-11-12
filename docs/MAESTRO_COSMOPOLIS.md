@@ -912,3 +912,8 @@ La captura del run 28 (43255589587) mostró que la primera máscara SVG se estab
 ### Segunda comparación visual: máscara ya cubre toda la hoja — 12 de noviembre de 2026
 
 La captura real del run 29 (43255852452) confirma que el ajuste preserveAspectRatio='none' corrige el fallo anterior: el pergamino vuelve a cubrir toda la superficie en móvil y escritorio y desaparece la banda transparente. La máscara SVG funciona sin producir triángulos ni cortes rectos grandes. La comparación con la referencia original aún muestra un borde demasiado discreto y un papel algo lavado; por ello se ha aplicado otro ajuste en CSS (commit ace1c17): mayor desplazamiento orgánico del contorno, sombras interiores más anchas y oscuras, manchas de envejecimiento más visibles y menos velo crema en el centro. La vista previa del nuevo commit queda pendiente de inspección antes de cerrar el apartado.
+
+
+### Ajuste de tono ámbar y grano tras el render 30 — 12 de noviembre de 2026
+
+La captura móvil/escritorio del run 30 (43256134825) confirma que la máscara ya cubre toda la hoja, conserva el fondo y no crea recortes rectos ni pestañas triangulares. El borde quemado se ha hecho más ancho y oscuro, y el contorno se percibe más natural, aunque todavía es más regular que el de la fotografía. La comparación de color detectó que el centro del papel seguía demasiado apagado y rojizo respecto al oro/ocre luminoso de la referencia. Nuevo ajuste CSS (commit 41c4ac8): el degradado base pasa a una gama más dorada y luminosa, se refuerza ligeramente el grano y aumenta el desplazamiento de la máscara para dar más variación al borde. Pendiente inspeccionar el render siguiente; no se declara aún fidelidad final.
