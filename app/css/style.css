@@ -307,8 +307,12 @@ body {
     radial-gradient(ellipse at 0 50%, rgba(80,35,8,.58), transparent 8%),
     radial-gradient(ellipse at 100% 50%, rgba(80,35,8,.58), transparent 8%),
     radial-gradient(ellipse at 48% 42%, rgba(255,226,169,.48) 0 34%, transparent 78%),
-    repeating-linear-gradient(7deg, rgba(69,30,7,.13) 0 1px, transparent 1px 4px),
-    repeating-linear-gradient(93deg, rgba(255,226,177,.12) 0 1px, transparent 1px 7px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.13'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 14% 24%, rgba(99,48,12,.19) 0 1%, transparent 17%),
+    radial-gradient(ellipse at 73% 17%, rgba(110,55,13,.15) 0 2%, transparent 19%),
+    radial-gradient(ellipse at 36% 73%, rgba(122,58,14,.16) 0 2%, transparent 20%),
+    radial-gradient(ellipse at 84% 68%, rgba(98,45,12,.17) 0 1.5%, transparent 18%),
+    radial-gradient(ellipse at 54% 43%, rgba(255,231,179,.22) 0 12%, transparent 46%),
     linear-gradient(112deg, #c9823b 0%, #dfa052 42%, #efb96d 70%, #c17a34 100%);
   box-shadow: inset 0 0 20px 10px rgba(37,12,1,.92), inset 0 0 44px 18px rgba(78,31,4,.55);
   filter: drop-shadow(0 0 4px #000) drop-shadow(0 0 12px rgba(0,0,0,.95));
