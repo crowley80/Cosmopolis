@@ -131,6 +131,8 @@ const Narrator = {
                     'charactersToAdd: personajes nuevos que realmente entran en escena; incluye nombre, función, ubicación, actitud y un primer recuerdo significativo. No añadas figurantes irrelevantes.',
                     'characterUpdates: cambios de ubicación o actitud de personajes ya registrados; conserva sus valores si no han cambiado y no muevas personajes sin motivo narrativo.',
                     'characterActions: pequeñas iniciativas autónomas de personajes que ya están presentes en la ubicación actual. Solo acciones visibles y coherentes con su personalidad y recuerdos; máximo dos. No cambies su ubicación con este campo, no inventes sucesos fuera de escena y usa una acción vacía si nadie actúa.',
+                    'personalGoal: cada personaje puede tener un objetivo propio, breve y concreto, que refleje deseos, problemas o motivaciones. Ten en cuenta su objetivo actual al decidir cómo habla y actúa.',
+                    'goalUpdates: actualiza como máximo dos objetivos de personajes registrados solo cuando los hechos de esta acción justifiquen un cambio, avance, bloqueo o resolución. Incluye character, goal nuevo y reason breve. No inventes objetivos por rellenar ni cambies objetivos sin causa; usa una lista vacía si no hay cambios.',
                     'characterMemoriesToAdd: recuerdos concretos y duraderos de personajes que ya existen en el estado; no inventes personajes ni guardes detalles triviales.',
                     'time: momento del día dentro del mundo; no uses la hora real del teléfono y no avances el tiempo sin motivo narrativo.',
                     'day: número del día dentro de la aventura; solo aumenta cuando la historia cruza realmente al día siguiente. Nunca reduzcas el día ya alcanzado.'
@@ -191,7 +193,8 @@ const Narrator = {
                             role: { type: 'string' },
                             location: { type: 'string' },
                             attitude: { type: 'string' },
-                            memory: { type: 'string' }
+                            memory: { type: 'string' },
+                            goal: { type: 'string' }
                         },
                         required: ['name', 'role', 'location', 'attitude', 'memory']
                     }
@@ -207,6 +210,19 @@ const Narrator = {
                             attitude: { type: 'string' }
                         },
                         required: ['character', 'location', 'attitude']
+                    }
+                },
+                goalUpdates: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        properties: {
+                            character: { type: 'string' },
+                            goal: { type: 'string' },
+                            reason: { type: 'string' }
+                        },
+                        required: ['character', 'goal', 'reason']
                     }
                 },
                 characterActions: {
@@ -234,7 +250,7 @@ const Narrator = {
                     }
                 }
             },
-            required: ['reply', 'event', 'category', 'location', 'factsToAdd', 'cluesToAdd', 'relationshipChanges', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd', 'charactersToAdd', 'characterUpdates', 'characterActions', 'time', 'day']
+            required: ['reply', 'event', 'category', 'location', 'factsToAdd', 'cluesToAdd', 'relationshipChanges', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd', 'charactersToAdd', 'characterUpdates', 'characterActions', 'goalUpdates', 'time', 'day']
         };
 
         const controller = new AbortController();
@@ -273,6 +289,7 @@ const Narrator = {
                 !Array.isArray(result.characterMemoriesToAdd) ||
                 !Array.isArray(result.charactersToAdd) ||
                 !Array.isArray(result.characterUpdates) || !Array.isArray(result.characterActions) ||
+                !Array.isArray(result.goalUpdates) ||
                 typeof result.time !== 'string' || !Number.isInteger(result.day)) {
                 throw new Error('La respuesta no cumple el formato narrativo');
             }
@@ -331,6 +348,8 @@ const Narrator = {
                     role: typeof entry.role === 'string' ? entry.role.trim().slice(0, 100) : 'Personaje',
                     location: typeof entry.location === 'string' ? entry.location.trim().slice(0, 120) : state.currentLocation,
                     attitude: typeof entry.attitude === 'string' ? entry.attitude.trim().slice(0, 100) : 'Desconocida',
+                    personalGoal: typeof entry.goal === 'string' ? entry.goal.trim().slice(0, 240) : '',
+                    goalHistory: [],
                     trust: 0,
                     memories: memory ? [memory] : []
                 };
@@ -346,6 +365,34 @@ const Narrator = {
                 const person = state.characters[key];
                 if (typeof entry.location === 'string' && entry.location.trim()) person.location = entry.location.trim().slice(0, 120);
                 if (typeof entry.attitude === 'string' && entry.attitude.trim()) person.attitude = entry.attitude.trim().slice(0, 100);
+            });
+
+            result.goalUpdates.slice(0, 2).forEach(entry => {
+                if (!entry || typeof entry.character !== 'string' ||
+                    typeof entry.goal !== 'string' || typeof entry.reason !== 'string') return;
+                const requestedName = entry.character.trim().toLocaleLowerCase('es');
+                const key = Object.keys(state.characters).find(name =>
+                    name.toLocaleLowerCase('es') === requestedName ||
+                    String(state.characters[name] && state.characters[name].name || '').toLocaleLowerCase('es') === requestedName
+                );
+                const goal = entry.goal.trim().slice(0, 240);
+                const reason = entry.reason.trim().slice(0, 200);
+                if (!key || !goal) return;
+                const person = state.characters[key];
+                const previousGoal = typeof person.personalGoal === 'string' ? person.personalGoal.trim() : '';
+                if (previousGoal.toLocaleLowerCase('es') === goal.toLocaleLowerCase('es')) return;
+                person.personalGoal = goal;
+                person.goalHistory = Array.isArray(person.goalHistory) ? person.goalHistory : [];
+                person.goalHistory.push({ goal, reason, changedAtAction: previousActions.length + 1 });
+                if (person.goalHistory.length > 10) person.goalHistory = person.goalHistory.slice(-10);
+                if (reason) {
+                    person.memories = Array.isArray(person.memories) ? person.memories : [];
+                    const note = `Su objetivo cambia: ${goal}. Motivo: ${reason}`;
+                    if (!person.memories.some(memory => String(memory).toLocaleLowerCase('es') === note.toLocaleLowerCase('es'))) {
+                        person.memories.push(note);
+                        if (person.memories.length > 30) person.memories = person.memories.slice(-30);
+                    }
+                }
             });
 
             result.characterMemoriesToAdd.slice(0, 5).forEach(entry => {
