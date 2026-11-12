@@ -41,7 +41,8 @@ const Adventure = {
                         role: 'Cartógrafa',
                         location: 'Plaza del pozo',
                         attitude: 'Cautelosa',
-                        trust: 0
+                        trust: 0,
+                        memories: ['Ha conocido al personaje en la plaza del pozo.']
                     }
                 },
                 events: ['Llegada a Valdebruma', 'Encuentro con Elia', 'La campana vuelve a sonar']
