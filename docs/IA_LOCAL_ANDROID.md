@@ -166,3 +166,8 @@ El prompt de `Narrator.buildMessages()` distingue percepción directa, deducció
 
 
 Corrección del 12 de noviembre de 2026: Chromium detectó un separador ausente entre dos instrucciones del prompt al incorporar los límites de conocimiento. Se corrigió en narrator.js y se renovó la clave de caché. La validación funcional queda pendiente del nuevo run automatizado.
+
+
+### Presentación narrativa de iniciativas autónomas — 12 de noviembre de 2026
+
+El prompt exige que toda iniciativa declarada en `characterActions` aparezca también dentro de `reply`, integrada en la escena y nunca como lista o ficha. El cliente persiste la acción en `lastAutonomousAction` y en la memoria individual, y solo la añade como respaldo si falta en el texto narrativo. Así se evita duplicarla cuando el modelo ya la ha narrado. Los saltos de línea del respaldo son caracteres de nueva línea reales. La prueba automatizada comprueba la presencia de la iniciativa, la ausencia de la etiqueta mecánica `Nombre: acción` y la ausencia de secuencias `\\n` visibles. La naturalidad de la generación debe validarse con Qwen3.5-4B en Android.
