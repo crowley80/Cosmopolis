@@ -102,3 +102,10 @@ El cliente aplica una regla adicional de continuidad: `state.day` nunca puede se
 El contrato JSON sustituye el ajuste exclusivo `eliaTrustDelta` por `relationshipChanges`, aplicable a cualquier NPC que ya exista en `adventure.state.characters`. Cada cambio contiene el nombre del personaje, un delta entero entre -1 y 1 y un motivo breve. El cliente ignora nombres desconocidos y cambios fuera de rango, limita cada respuesta a diez modificaciones y acota la confianza entre -5 y 10. El motivo se incorpora a la memoria individual del personaje, sin duplicados y conservando los 30 recuerdos más recientes. En el caso de Elia se mantiene sincronizado el campo heredado `eliaTrust`.
 
 La prueba de Chromium simula cambios de relación de Elia y Tomás y verifica la persistencia de puntuaciones y recuerdos. La inferencia real del modelo Qwen3.5-4B sigue pendiente de validación en el Samsung.
+
+
+## Contexto acotado para modelos locales — 12 de noviembre de 2026
+
+Para reducir el riesgo de superar el contexto disponible en Qwen3.5-4B, `Narrator.buildMessages()` construye una vista compacta sin modificar la partida persistida. Prioriza personajes de la ubicación actual y Elia, incluye hasta 20 NPCs, ocho recuerdos por personaje, 20 eventos, 25 hechos y pistas, 30 objetos, 25 ubicaciones y seis acciones recientes. También limita la longitud de campos de ficha y texto histórico.
+
+La prueba automatizada amplía deliberadamente los recuerdos/eventos de una copia temporal y comprueba los límites del mensaje enviado al modelo, además de verificar que la copia original conserva todos sus recuerdos. La compactación no borra datos de la partida.
