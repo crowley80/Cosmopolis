@@ -97,6 +97,7 @@ jobs:
                   itemsToRemove: [],
                   charactersToAdd: [{ name: 'Tomás', role: 'Vecino', location: 'Plaza del pozo', attitude: 'Desconfiado', memory: 'Tomás vio a Ariadna encontrar el medallón.' }],
                   characterUpdates: [{ character: 'Elia', location: 'Plaza del pozo', attitude: 'Más confiada' }],
+                  characterActions: [{ character: 'Elia', action: 'Elia se inclina para examinar la marca de cobre junto a Ariadna.' }],
                   characterMemoriesToAdd: [{ character: 'Elia', memory: 'Ariadna encontró un medallón de cobre junto al pozo.' }],
                   time: 'Media mañana',
                   day: 2
@@ -115,6 +116,7 @@ jobs:
                   itemsToRemove: ['Medallón de cobre'],
                   charactersToAdd: [],
                   characterUpdates: [{ character: 'Tomás', location: 'Entrada de la posada', attitude: 'Atento' }],
+                  characterActions: [{ character: 'Tomás', action: 'Tomás observa desde la entrada y decide no interrumpir.' }],
                   characterMemoriesToAdd: [
                     { character: 'Elia', memory: 'Ariadna le entregó el medallón de cobre.' },
                     { character: 'Tomás', memory: 'Tomás vio a Ariadna entregar el medallón a Elia.' }
@@ -193,6 +195,8 @@ jobs:
                 data.adventure.state.characters.Tomás.trust === 1 &&
                 data.adventure.state.characters.Tomás.memories.includes('Tomás ha visto que Ariadna ha actuado con generosidad.') &&
                 data.adventure.state.characters.Elia.memories.includes('Ariadna encontró un medallón de cobre junto al pozo.') &&
+                data.adventure.state.characters.Elia.memories.includes('Elia se inclina para examinar la marca de cobre junto a Ariadna.') &&
+                data.adventure.state.characters.Elia.lastAutonomousAction === 'Elia se inclina para examinar la marca de cobre junto a Ariadna.' &&
                 data.adventure.state.characters.Elia.memories.includes('Ariadna le entregó el medallón de cobre.') &&
                 data.adventure.state.characters.Tomás.memories.includes('Tomás vio a Ariadna entregar el medallón a Elia.') &&
                 data.adventure.state.characters.Elia.attitude === 'Más confiada' &&
