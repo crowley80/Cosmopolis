@@ -572,3 +572,18 @@ Commits:
 - Caché: `3cb7840`.
 
 La corrección está guardada en GitHub `main`. Es un arreglo deducido directamente de la cascada CSS; todavía no se ha podido obtener una captura renderizada del navegador para verificar su aspecto final. No se declara aprobada la fidelidad visual.
+
+
+## Vista previa automática para comparación visual — 12 de noviembre de 2026
+
+Se ha añadido `.github/workflows/visual-preview.yml` para superar la limitación de no disponer de navegador automatizado en el entorno de trabajo:
+
+- GitHub Actions ejecuta Chromium mediante Playwright cuando cambian `app/**`, `index.html` o el propio flujo.
+- Arranca un servidor HTTP local y carga la aplicación con una partida ficticia de prueba en almacenamiento local.
+- Renderiza capturas de aventura en móvil (390 × 844) y escritorio (1024 × 900).
+- Publica ambas capturas como artefacto `cosmopolis-visual-preview`, con retención de siete días.
+- El flujo no modifica datos de juego ni requiere secretos; solo lee el repositorio.
+
+Commit del flujo: `7cf8c9d`.
+
+Objetivo inmediato: recuperar el artefacto de esa ejecución, inspeccionar las capturas y contrastar la composición renderizada con la maqueta original. Esta automatización todavía no demuestra que la ejecución haya terminado correctamente ni que la apariencia sea fiel; ambas cosas quedan pendientes de verificación. No pedir al usuario que abra la página hasta completar esa comparación.
