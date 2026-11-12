@@ -176,8 +176,7 @@ Sesiones y acciones.
 app/js/game/director.js:
 Dirección narrativa.
 
-app/js/core/save.js:
-Guardado y recuperación.
+app/js/core/save.js:Guardado y recuperación.
 
 app/css/style.css:
 Presentación visual.
@@ -357,7 +356,6 @@ El narrador distinguirá claramente:
 No debe revelar como hecho información que el personaje no pueda conocer.
 
 ### Exploración del entorno
-
 Se podrán ofrecer ayudas opcionales para consultar el entorno, sin convertirlas en límites ni sustituir la escritura libre. Ejemplos de intenciones:
 - Observar alrededor: averiguar qué hay a la vista.
 - Buscar personajes: preguntar quién está cerca o quién destaca en la escena.
@@ -439,3 +437,31 @@ Cambios aplicados en GitHub:
 - Commits: `4ec005e` (estructura), `f225560` (estética), `322384a` (caché).
 - Estado: guardado en GitHub; no probado todavía en el teléfono. La fuente ornamental remota requiere conexión; hay fuentes alternativas locales.
 - Próximo paso: sincronizar en Termux con `git status --short` y, si está limpio, `git pull --ff-only`; recargar Chrome y valorar la apariencia. No dar el diseño por aprobado hasta la confirmación del usuario.
+
+## Auditoría de fidelidad visual — 12 de noviembre de 2026
+
+Se ha iniciado la comparación de la implementación de GitHub (rama main) con la imagen original «Cosmopolis: aventura en la Ciudadela de Ámbar.png», recuperada de la Biblioteca de ChatGPT y mostrada al usuario en esta sesión.
+
+Archivos revisados sin modificarlos:
+- index.html
+- app/js/app.js
+- app/css/style.css
+- app/js/game/adventure.js
+- app/js/game/director.js
+
+Hallazgos de la implementación actual:
+- app.js sí construye una cabecera .manuscript-header con dos rosas de los vientos, el logotipo, el lema y el bloque de ubicación/hora/día.
+- La cabecera incluye además el botón «Mi ficha». La regla CSS .manuscript-header button lo coloca en una fila adicional (grid-column: 2 / 4), alterando la proporción y composición de la cabecera de referencia.
+- La zona narrativa actual contiene un adorno superior, un rótulo de ubicación, un título y texto a ancho completo. No contiene el separador ornamental horizontal completo de la maqueta ni las opciones de exploración visibles como sección.
+- La ilustración de la ciudad y el panel «Personajes cercanos» no aparecen en el marcado actual, coherente con las decisiones posteriores: interfaz exclusivamente textual y personajes integrados en la narración.
+- La zona inferior sí contiene el tintero y la pluma dibujados mediante SVG, el campo de escritura y el botón «Enviar», dispuestos en horizontal.
+- La hoja tiene capas de color ocre, texturas CSS, oscurecimiento de bordes y un polígono de contorno irregular. La implementación reproduce parte del lenguaje material, pero todavía no acredita fidelidad completa en proporciones, marcos, ornamentos ni distribución global.
+- No hay barra inferior de Historial/Mapa/Inventario/Opciones en el marcado actual; la interfaz aprobada posteriormente prioriza las dos zonas funcionales de narración y escritura.
+
+Alcance de esta auditoría:
+- Solo lectura de archivos en GitHub. No se ha modificado código ni se ha probado la versión actual en Chrome del teléfono.
+- No se declara aprobada la apariencia actual.
+- Próximo paso: comprobar el estado local en Termux antes de sincronizar GitHub, sin sobrescribir cambios locales. Después comparar la página real en el móvil con la referencia y decidir ajustes concretos, uno a uno.
+
+Norma reforzada por el usuario: la referencia debe respetarse en composición, formas, detalles ornamentales, tipografía, textura, proporciones y matices de color; no basta con copiar la paleta cromática. Las exclusiones funcionales (ilustración y panel permanente de personajes) se mantienen.
+
