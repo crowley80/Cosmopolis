@@ -64,3 +64,10 @@ El esquema del narrador incorpora `characterMemoriesToAdd`, una lista de recuerd
 Como los recuerdos forman parte de `state.characters`, se incluyen automáticamente en el contexto de las siguientes peticiones y sobreviven al guardado/recarga. La prueba de Chromium simula dos acciones: encontrar un medallón y entregárselo a Elia; comprueba que el objeto entra y sale del inventario, que cambia su confianza y que ambos recuerdos siguen guardados después de recargar.
 
 La prueba usa respuestas JSON simuladas y valida el contrato de integración; no reemplaza la prueba con el modelo real en Android.
+
+
+## Reloj interno del mundo — 12 de noviembre de 2026
+
+La cabecera ya no presenta la hora y fecha reales del teléfono como si fueran el calendario de la aventura. Muestra `state.time` y `state.day`, que pertenecen al mundo ficticio. El contrato del narrador devuelve ambos campos; el cliente valida el tipo, limita el día a un entero positivo y conserva el momento anterior si el texto recibido está vacío.
+
+El prompt indica que el tiempo no debe avanzar sin causa narrativa y que el día solo cambia al cruzar al siguiente. El reloj solo cambia cuando se procesa y guarda una acción, por lo que no simula tiempo mientras la partida está cerrada. La prueba de Chromium comprueba que dos respuestas sucesivas actualizan la cabecera de «Media mañana» a «Mediodía» y que el valor permanece tras recargar.
