@@ -907,3 +907,8 @@ Corrección aplicada en app/css/style.css (commit bda4f3c): se elimina la siluet
 ### Ajuste de escala de la máscara orgánica — 12 de noviembre de 2026
 
 La captura del run 28 (43255589587) mostró que la primera máscara SVG se estaba representando con su proporción interna cuadrada en la pantalla vertical: el papel quedaba visible solo en una franja central. Se detectó al inspeccionar la captura real, no se considera una corrección válida. Se ha añadido preserveAspectRatio='none' a las dos fuentes SVG de máscara para que ocupen toda la superficie del pergamino en móvil y escritorio. Nuevo commit CSS: 065cc9a. La vista previa automática del commit debe confirmar que el fondo vuelve a cubrir toda la hoja y que el borde mantiene su irregularidad orgánica; la validación visual sigue pendiente.
+
+
+### Segunda comparación visual: máscara ya cubre toda la hoja — 12 de noviembre de 2026
+
+La captura real del run 29 (43255852452) confirma que el ajuste preserveAspectRatio='none' corrige el fallo anterior: el pergamino vuelve a cubrir toda la superficie en móvil y escritorio y desaparece la banda transparente. La máscara SVG funciona sin producir triángulos ni cortes rectos grandes. La comparación con la referencia original aún muestra un borde demasiado discreto y un papel algo lavado; por ello se ha aplicado otro ajuste en CSS (commit ace1c17): mayor desplazamiento orgánico del contorno, sombras interiores más anchas y oscuras, manchas de envejecimiento más visibles y menos velo crema en el centro. La vista previa del nuevo commit queda pendiente de inspección antes de cerrar el apartado.
