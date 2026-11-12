@@ -35,6 +35,7 @@ const Narrator = {
 
     buildMessages(action, character, adventure, previousActions) {
         const state = adventure.state || {};
+        const world = Session.getWorld();
         const history = previousActions.slice(-6).map(item => ({
             action: item.text || '',
             response: item.response || ''
@@ -50,6 +51,11 @@ const Narrator = {
                 knownFacts: state.knownFacts || [],
                 clues: state.clues || [],
                 characters: state.characters || {}
+            },
+            persistentWorld: {
+                facts: (world.facts || []).slice(-50),
+                events: (world.events || []).slice(-20),
+                relationships: world.relationships || {}
             },
             recentHistory: history,
             currentAction: action
