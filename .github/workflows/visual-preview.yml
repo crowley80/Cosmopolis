@@ -71,6 +71,7 @@ jobs:
             const assert = require('node:assert/strict');
             const pageErrors = [];
             page.on('pageerror', error => pageErrors.push(error.message));
+            let narrativeCall = 0;
             await page.route('http://127.0.0.1:8081/**', async route => {
               const request = route.request();
               const headers = {
@@ -83,7 +84,7 @@ jobs:
               } else if (request.url().endsWith('/health')) {
                 await route.fulfill({ status: 200, headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'ok' }) });
               } else {
-                const result = {
+                const result = narrativeCall++ === 0 ? {
                   reply: 'La observación revela una pequeña marca de cobre entre las piedras.',
                   event: 'Ariadna ha encontrado un medallón de cobre junto al pozo.',
                   category: 'investigation',
@@ -93,6 +94,16 @@ jobs:
                   eliaTrustDelta: 0,
                   itemsToAdd: ['Medallón de cobre'],
                   itemsToRemove: []
+                } : {
+                  reply: 'Entregas el medallón a Elia. Ella lo guarda con cuidado en su tubo de mapas.',
+                  event: 'Ariadna ha entregado el medallón de cobre a Elia.',
+                  category: 'offer',
+                  location: 'Plaza del pozo',
+                  factsToAdd: ['Elia ha recibido el medallón de cobre.'],
+                  cluesToAdd: [],
+                  eliaTrustDelta: 1,
+                  itemsToAdd: [],
+                  itemsToRemove: ['Medallón de cobre']
                 };
                 await route.fulfill({
                   status: 200,
@@ -134,7 +145,27 @@ jobs:
             await page.locator('#openInventory').click();
             await page.locator('#toolOverlay').getByText('Medallón de cobre').waitFor();
             await page.locator('#closeToolPanel').click();
-            console.log('INTERACTION_TESTS_OK: history, map, inventory, options, exploration, AI response and persistence');
+
+            await page.locator('#playerAction').fill('Entrego el medallón de cobre a Elia.');
+            await page.locator('#actionForm button[type="submit"]').click();
+            await page.waitForFunction(() => {
+              const raw = localStorage.getItem('cosmopolis_save');
+              if (!raw) return false;
+              const data = JSON.parse(raw);
+              return data.actions && data.actions.length === 2 &&
+                !data.adventure.state.inventory.includes('Medallón de cobre') &&
+                data.adventure.state.characters.Elia.trust === 1;
+            });
+            await page.reload({ waitUntil: 'networkidle' });
+            await page.locator('#storyContent .current-action').getByText('Entrego el medallón de cobre a Elia.').waitFor();
+            await page.locator('#openInventory').click();
+            await page.locator('#toolOverlay').getByText('Tu inventario está vacío por ahora.').waitFor();
+            await page.locator('#closeToolPanel').click();
+            await page.locator('#openHistory').click();
+            await page.locator('#toolOverlay').getByText('Ariadna ha entregado el medallón de cobre a Elia.').waitFor();
+            await page.locator('#closeToolPanel').click();
+
+            console.log('INTERACTION_TESTS_OK: history, map, inventory add/remove, options, exploration, AI response, save and reload');
 
             const mobile = await page.evaluate(() => ({
               viewport: { width: innerWidth, height: innerHeight },
