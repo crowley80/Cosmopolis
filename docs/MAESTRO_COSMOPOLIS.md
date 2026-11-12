@@ -1216,3 +1216,7 @@ La ejecución #96 encontró una segunda inconsistencia en el escenario simulado:
 ### Corrección de regresión en el objetivo de Tomás — 12 de noviembre de 2026
 
 La ejecución #97 superó la instalación, el arranque y la primera interacción, pero agotó el tiempo de espera tras la segunda acción. El escenario simulado intentaba sustituir el objetivo activo con el que se había creado Tomás por otro distinto y marcarlo como bloqueado. La protección del ciclo de vida rechaza correctamente esa sustitución; por tanto, la prueba no estaba modelando un cambio de estado válido. Se ajustó el objetivo inicial de Tomás en el fixture para que coincida con el que después pasa a estado `blocked`. La regresión sigue comprobando el bloqueo, el historial, las relaciones, los recuerdos y que Tomás no actúe fuera de escena. No se ha relajado la protección del motor.
+
+### Archivo de metas cumplidas en el contexto compacto — 12 de noviembre de 2026
+
+El contexto que recibe la IA incluye ahora las cinco transiciones recientes del historial de objetivos y hasta ocho metas cumplidas por personaje, conservando para cada una su motivo. El prompt indica expresamente que el modelo consulte ese archivo para no proponer de nuevo objetivos ya completados, salvo que un hecho posterior dé una motivación nueva y concreta. La compactación solo afecta a la copia enviada al modelo: el archivo persistido en la partida no se recorta. La regresión automatizada verifica que se envían las ocho entradas más recientes y que las diez originales siguen intactas en el estado de prueba.
