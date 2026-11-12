@@ -93,7 +93,7 @@ jobs:
                   factsToAdd: ['Hay una marca reciente entre las piedras.'],
                   cluesToAdd: ['Un medallón de cobre estaba junto al pozo.'],
                   relationshipChanges: [],
-                  goalUpdates: [{ character: 'Elia', goal: 'Averiguar por qué la campana suena desde debajo del pozo y qué altera sus mapas.', status: 'progress', reason: 'La marca recién descubierta aporta una pista nueva.' }],
+                  goalUpdates: [{ character: 'Elia', goal: 'Averiguar por qué suenan las campanas.', status: 'progress', reason: 'La marca recién descubierta aporta una pista nueva.' }],
                   itemsToAdd: ['Medallón de cobre'],
                   itemsToRemove: [],
                   charactersToAdd: [{ name: 'Tomás', role: 'Vecino', location: 'Plaza del pozo', attitude: 'Desconfiado', memory: 'Tomás vio a Ariadna encontrar el medallón.', goal: 'Averiguar quién ha alterado los mapas.' }],
@@ -288,7 +288,7 @@ jobs:
               return data.actions && data.actions.length === 2 &&
                 !data.adventure.state.inventory.includes('Medallón de cobre') &&
                 data.adventure.state.characters.Elia.trust === 1 &&
-                data.adventure.state.characters.Elia.personalGoal === 'Averiguar por qué la campana suena desde debajo del pozo y qué altera sus mapas.' &&
+                data.adventure.state.characters.Elia.personalGoal === 'Averiguar por qué suenan las campanas.' &&
                 data.adventure.state.characters.Elia.goalStatus === 'progress' &&
                 data.adventure.state.characters.Elia.goalHistory[0].status === 'progress' &&
                 data.adventure.state.characters.Elia.goalHistory.length === 1 &&
