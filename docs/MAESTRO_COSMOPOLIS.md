@@ -1232,3 +1232,9 @@ Se refuerzan las instrucciones de `Narrator.buildMessages()` para impedir que la
 
 Se amplía la regresión de Chromium para comprobar que el prompt contiene estas reglas. La prueba valida que las instrucciones llegan al modelo, no que Qwen3.5-4B las cumpla siempre en una partida real. Se renueva la caché del narrador para que el navegador cargue el prompt actualizado.
 
+
+
+### Aceptación de la dirección visual — 12 de noviembre de 2026
+
+El usuario ha revisado las capturas de la aplicación y confirma que, aunque la interfaz no reproduce exactamente la fotografía de referencia, la estética actual le parece suficientemente buena y mucho más trabajada que la versión anterior. Se acepta el pergamino actual como base visual para continuar el desarrollo. No se perseguirá una copia literal a costa de la legibilidad o del uso táctil. Se mantiene la decisión de interfaz exclusivamente textual y sin ilustraciones dentro del juego.
+
