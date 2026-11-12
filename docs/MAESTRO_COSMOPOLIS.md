@@ -414,3 +414,15 @@ Tras la primera prueba en el teléfono, el usuario indicó que el resultado no s
 
 ## Próximo paso
 Comprobar `git status --short` en Termux; si está limpio, ejecutar `git pull --ff-only`. Después recargar la página del navegador. El servidor Node.js actual sirve los archivos desde la carpeta del proyecto, por lo que no hace falta reiniciarlo para cambios de CSS/HTML.
+
+
+## Ajuste visual fiel a la maqueta — 12 de noviembre de 2026
+
+El usuario aclaró que la meta no era una web beige con marcos, sino trasladar a CSS la estética completa de la imagen de referencia: papiro intensamente dorado/ocre, textura envejecida, manchas, bordes quemados y desiguales, ornamentos dibujados, tipografía clásica y composición de manuscrito. La ilustración del castillo se omite por la decisión firme de interfaz sin imágenes; no se sustituye por otra ilustración.
+
+- Se añadió una nueva capa de estilos CSS para aproximar el papel cálido y texturizado, el desgaste oscuro de los bordes, la cabecera con emblema ornamental, separadores y zona de escritura enmarcada.
+- Se mantiene la interfaz exclusivamente textual, sin panel de personajes cercanos.
+- El campo de acción y el botón se colocan en horizontal en móvil cuando el ancho lo permite.
+- Commit CSS: 5a66a63.
+- Se actualizó la versión de caché en index.html para forzar la carga del nuevo CSS.
+- Estado: cambios guardados en GitHub; pendientes de sincronizar en Termux y comprobar visualmente en Chrome. No declarar aprobado el diseño hasta la valoración del usuario.
