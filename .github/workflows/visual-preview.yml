@@ -150,6 +150,24 @@ jobs:
             await page.locator('#openExplore').click();
             await page.locator('[data-explore-index="0"]').click();
             await page.locator('#storyContent .current-action').waitFor();
+            const contextProbe = await page.evaluate(() => {
+              const saved = Save.load();
+              const probe = JSON.parse(JSON.stringify(saved.adventure));
+              probe.state.events = Array.from({ length: 30 }, (_, i) => 'Evento de prueba ' + i);
+              probe.state.characters.Elia.memories = Array.from({ length: 12 }, (_, i) => 'Recuerdo de prueba ' + i);
+              const history = Array.from({ length: 10 }, (_, i) => ({ text: 'Acción ' + i, response: 'Respuesta ' + i }));
+              const messages = Narrator.buildMessages('Sigo investigando.', saved.character, probe, history);
+              const context = JSON.parse(messages[1].content);
+              return {
+                eventCount: context.currentAdventure.state.events.length,
+                memoryCount: context.currentAdventure.state.characters.Elia.memories.length,
+                historyCount: context.recentHistory.length,
+                savedMemoryCount: probe.state.characters.Elia.memories.length
+              };
+            });
+            assert.deepEqual(contextProbe, { eventCount: 20, memoryCount: 8, historyCount: 6, savedMemoryCount: 12 },
+              'El contexto enviado al modelo debe limitarse sin borrar recuerdos de la partida');
+
             await page.waitForFunction(() => {
               const raw = localStorage.getItem('cosmopolis_save');
               if (!raw) return false;
