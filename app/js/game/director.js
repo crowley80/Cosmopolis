@@ -106,8 +106,15 @@ const Director = {
             category = 'dialogue';
             const [npcKey, npc] = addressedCharacter;
             const npcGoal = typeof npc.personalGoal === 'string' ? npc.personalGoal.trim() : '';
+            const goalStatus = ['active', 'progress', 'blocked', 'completed'].includes(npc.goalStatus) ? npc.goalStatus : 'active';
+            const goalLead = {
+                active: 'Mi objetivo ahora es este:',
+                progress: 'Estoy avanzando hacia este objetivo:',
+                blocked: 'Mi objetivo sigue siendo este, aunque ahora tengo un obstáculo:',
+                completed: 'He conseguido cumplir este objetivo:'
+            }[goalStatus];
             reply = npcGoal
-                ? `${npcKey} te escucha con cautela.\n\n—Mi objetivo ahora es este: ${npcGoal}. No es algo que pueda resolver de un día para otro.`
+                ? `${npcKey} te escucha con cautela.\n\n—${goalLead} ${npcGoal}.`
                 : `${npcKey} te escucha con cautela, aunque parece medir cuidadosamente lo que está dispuesto a contarte.`;
             event = `${name} ha conversado con ${npcKey}.`;
         } else if (asks) {
