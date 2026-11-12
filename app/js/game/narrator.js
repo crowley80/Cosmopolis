@@ -143,7 +143,7 @@ const Narrator = {
                     'itemsToRemove: objetos que pierde, entrega, consume o deja atrás realmente; usa el nombre exacto del inventario.',
                     'charactersToAdd: personajes nuevos que realmente entran en escena; incluye nombre, función, ubicación, actitud y un primer recuerdo significativo. No añadas figurantes irrelevantes.',
                     'characterUpdates: cambios de ubicación o actitud de personajes ya registrados; conserva sus valores si no han cambiado y no muevas personajes sin motivo narrativo.',
-                    'characterActions: pequeñas iniciativas autónomas de personajes que ya están presentes en la ubicación actual. Sus objetivos personales deben influir de forma visible y natural en lo que hacen: pueden investigar algo relacionado, pedir ayuda, proteger un interés o reaccionar ante un obstáculo. No repitas la misma iniciativa ni fuerces avances; máximo dos acciones visibles, coherentes con personalidad, recuerdos y objetivo. No cambies su ubicación con este campo, no inventes sucesos fuera de escena y usa una acción vacía si nadie actúa.',
+                    'characterActions: pequeñas iniciativas autónomas de personajes que ya están presentes en la ubicación actual. Sus objetivos personales deben influir de forma visible y natural en lo que hacen: pueden investigar algo relacionado, pedir ayuda, proteger un interés o reaccionar ante un obstáculo. Narra esas iniciativas dentro de reply como parte continua de la escena, con gestos y transiciones naturales; nunca como una lista, ficha o nota separada. El campo characterActions es solo el registro estructurado de esas acciones ya narradas. No repitas la misma iniciativa ni fuerces avances; máximo dos acciones visibles, coherentes con personalidad, recuerdos y objetivo. No cambies su ubicación con este campo, no inventes sucesos fuera de escena y usa una acción vacía si nadie actúa.',
                     'personalGoal: cada personaje puede tener un objetivo propio, breve y concreto, que refleje deseos, problemas o motivaciones. Ten en cuenta su objetivo actual al decidir cómo habla y actúa.',
                     'goalUpdates: actualiza como máximo dos objetivos de personajes registrados solo cuando los hechos justifiquen un cambio, avance, bloqueo o resolución. Incluye character, goal, status y reason. status debe ser active, progress, blocked o completed; conserva el objetivo si solo cambia su estado. Consulta también completedGoals: no propongas como nuevo un objetivo ya archivado ni repitas una meta cumplida, salvo que un hecho nuevo aporte una motivación o consecuencia concreta que cambie su sentido. Un objetivo completed queda cerrado: no lo reactives ni lo sustituyas salvo que exista una nueva motivación o consecuencia concreta en los hechos, eventos o recuerdos. Solo entonces propone un objetivo distinto con status active, explica en reason qué hecho demuestra que el anterior se cumplió y por qué nace el nuevo. Nunca sustituyas un objetivo todavía activo, en progreso o bloqueado por otro; primero debe resolverse. No inventes avances ni cambies objetivos sin causa; usa una lista vacía si no hay cambios.',
                     'characterMemoriesToAdd: recuerdos concretos y duraderos de personajes que ya existen en el estado; no inventes personajes ni guardes detalles triviales.',
@@ -482,7 +482,7 @@ const Narrator = {
                 if (person.location && person.location !== state.currentLocation) return;
                 const actionText = entry.action.trim().slice(0, 220);
                 if (!actionText) return;
-                autonomousNotes.push(`${key}: ${actionText}`);
+                autonomousNotes.push(actionText);
                 person.lastAutonomousAction = actionText;
                 person.memories = Array.isArray(person.memories) ? person.memories : [];
                 if (!person.memories.some(memory => String(memory).toLocaleLowerCase('es') === actionText.toLocaleLowerCase('es'))) {
@@ -492,7 +492,12 @@ const Narrator = {
             });
 
             if (autonomousNotes.length) {
-                result.reply = result.reply.trim() + '\\n\\n' + autonomousNotes.join('\\n');
+                const missingActions = autonomousNotes.filter(actionText =>
+                    !result.reply.toLocaleLowerCase('es').includes(actionText.toLocaleLowerCase('es'))
+                );
+                if (missingActions.length) {
+                    result.reply = result.reply.trim() + '\n\n' + missingActions.join('\n');
+                }
             }
 
             state.events.push(result.event.trim().slice(0, 300));
