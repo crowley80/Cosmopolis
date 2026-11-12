@@ -115,4 +115,4 @@ La prueba automatizada amplía deliberadamente los recuerdos/eventos de una copi
 
 El esquema del narrador añade `characterActions`, una lista de hasta dos acciones cortas de NPCs ya registrados. El cliente resuelve el nombre contra el estado persistido y solo acepta acciones si el personaje está en la ubicación actual (o no tiene ubicación asignada). No actualiza ubicación con este campo. La acción se añade al texto narrativo, se guarda en `lastAutonomousAction` y se incorpora a la memoria individual, con límite de 30 recuerdos. De esta forma se admiten iniciativas pequeñas visibles sin permitir que el modelo mueva personajes fuera de escena.
 
-La prueba automatizada simula acciones autónomas de Elia y Tomás y comprueba que la iniciativa de Elia se persiste en su memoria y estado. No equivale a validar la calidad de las decisiones generadas por Qwen3.5-4B en Android.
+La prueba automatizada comprueba que la iniciativa de Elia se persiste en su memoria y estado, y que se rechaza una iniciativa de Tomás después de que su ubicación haya cambiado fuera de la escena. No equivale a validar la calidad de las decisiones generadas por Qwen3.5-4B en Android.
