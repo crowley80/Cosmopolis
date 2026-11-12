@@ -532,3 +532,14 @@ Commits:
 - Caché: `b7a96ac`
 
 Estado: publicado en `main`; pendiente de sincronización y prueba visual en Termux/navegador. La fidelidad visual no se considera aprobada hasta que el usuario la confirme.
+
+
+## Barra inferior de navegación — 12 de noviembre de 2026
+
+Se recupera en la pantalla de aventura la franja de cuatro accesos que aparece en la maqueta original: Historial, Mapa, Inventario y Opciones. Se coloca debajo del panel de escritura, fijada al conjunto de la hoja, con cuatro columnas, separadores verticales, iconos vectoriales lineales y la paleta de pergamino ocre, tinta marrón y oro viejo.
+
+- Archivos modificados: app/js/app.js y app/css/style.css.
+- Historial: muestra las acciones guardadas de la sesión.
+- Mapa, Inventario y Opciones: los botones informan claramente de que sus pantallas aún no están implementadas; no se simula que esas funciones existan.
+- Se mantienen la interfaz textual y la ausencia de ilustraciones.
+- Estado: cambio preparado en GitHub; pendiente de renderizado comparativo y prueba en el navegador móvil. No declarar fidelidad visual completa hasta realizar esa comparación.
