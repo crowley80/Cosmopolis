@@ -1118,3 +1118,14 @@ Commits:
 - `visual-preview.yml`: regresión automatizada del calendario.
 
 Validación pendiente: ejecución del workflow tras estos commits. Esta prueba verifica la lógica del cliente con respuestas simuladas, no la generación real de Qwen3.5-4B en Android.
+
+
+### Relaciones dinámicas para todos los personajes — 12 de noviembre de 2026
+
+Se ha generalizado el cambio de confianza: deja de depender exclusivamente de Elia y pasa a aplicarse a cualquier personaje ya registrado. El contrato del narrador incorpora `relationshipChanges`, con personaje, variación pequeña (-1, 0 o 1) y motivo. El cliente solo modifica NPCs existentes, limita cada respuesta a diez cambios y mantiene la puntuación entre -5 y 10. Para conservar compatibilidad con la ficha narrativa de Elia, su campo histórico `eliaTrust` se sincroniza con su confianza individual.
+
+El motivo de cada cambio se añade también a la memoria del personaje, evitando duplicados y respetando el límite de 30 recuerdos. Así, la relación no es solo un número: queda constancia de qué interacción la modificó y el modelo puede tenerlo en cuenta en escenas posteriores.
+
+La prueba automatizada simula una entrega de objeto que mejora la confianza de Elia y Tomás, y comprueba las puntuaciones y el recuerdo asociado. Es una prueba del cliente con respuestas simuladas; no demuestra todavía que Qwen3.5-4B produzca cambios acertados en el teléfono.
+
+Commit de implementación: pendiente de confirmación de GitHub Actions.
