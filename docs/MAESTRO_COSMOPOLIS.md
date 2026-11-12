@@ -922,3 +922,8 @@ La captura móvil/escritorio del run 30 (43256134825) confirma que la máscara y
 ### Refinamiento final de la paleta y el borde — 12 de noviembre de 2026
 
 El render 31 (43256501459) muestra que el pergamino ya recupera una gama dorada más próxima a la referencia, con textura visible y borde quemado. La medición visual del centro todavía indicaba menos luminosidad amarilla que en la imagen aprobada. Se aplica un último ajuste CSS (commit 4e1b478): reflejos centrales más dorados, base ámbar algo más luminosa y mayor variación de la máscara erosionada. Nueva vista previa automática pendiente de inspección. Se mantiene la decisión de no añadir pliegues decorativos falsos: las esquinas forman parte de una única silueta de papel.
+
+
+### Pliegues orgánicos integrados en las esquinas — 12 de noviembre de 2026
+
+Tras inspeccionar el render 32 (43256742801), se confirma que la silueta erosionada ya es continua, sin los dientes grandes del polígono original, y que el color se ha acercado al ámbar de la referencia. Para recuperar el detalle de las esquinas dobladas sin repetir el error de las pestañas triangulares, se han añadido en CSS dos trazos curvos muy discretos por esquina, como líneas de tensión y luz integradas en la textura del propio papel (commit CSS d47e827). No son piezas superpuestas ni polígonos rellenos. Pendiente la última captura automática para comprobar que las curvas se leen como pliegues naturales y no como adornos.
