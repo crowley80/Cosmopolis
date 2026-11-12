@@ -82,6 +82,7 @@ const Narrator = {
                     'eliaTrustDelta: cambio justificado de confianza de Elia, normalmente -1, 0 o 1.',
                     'itemsToAdd: objetos que el personaje obtiene realmente y puede llevar consigo; no incluyas objetos solo vistos o examinados.',
                     'itemsToRemove: objetos que pierde, entrega, consume o deja atrás realmente; usa el nombre exacto del inventario.',
+                    'charactersToAdd: personajes nuevos que realmente entran en escena; incluye nombre, función, ubicación, actitud y un primer recuerdo significativo. No añadas figurantes irrelevantes.',
                     'characterMemoriesToAdd: recuerdos concretos y duraderos de personajes que ya existen en el estado; no inventes personajes ni guardes detalles triviales.',
                     'time: momento del día dentro del mundo; no uses la hora real del teléfono y no avances el tiempo sin motivo narrativo.',
                     'day: número del día dentro de la aventura; solo aumenta cuando la historia cruza realmente al día siguiente.'
@@ -120,6 +121,21 @@ const Narrator = {
                 itemsToRemove: { type: 'array', items: { type: 'string' } },
                 time: { type: 'string' },
                 day: { type: 'integer', minimum: 1, maximum: 9999 },
+                charactersToAdd: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        properties: {
+                            name: { type: 'string' },
+                            role: { type: 'string' },
+                            location: { type: 'string' },
+                            attitude: { type: 'string' },
+                            memory: { type: 'string' }
+                        },
+                        required: ['name', 'role', 'location', 'attitude', 'memory']
+                    }
+                },
                 characterMemoriesToAdd: {
                     type: 'array',
                     items: {
@@ -133,7 +149,7 @@ const Narrator = {
                     }
                 }
             },
-            required: ['reply', 'event', 'category', 'location', 'factsToAdd', 'cluesToAdd', 'eliaTrustDelta', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd', 'time', 'day']
+            required: ['reply', 'event', 'category', 'location', 'factsToAdd', 'cluesToAdd', 'eliaTrustDelta', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd', 'charactersToAdd', 'time', 'day']
         };
 
         const controller = new AbortController();
@@ -170,6 +186,7 @@ const Narrator = {
                 !Array.isArray(result.factsToAdd) || !Array.isArray(result.cluesToAdd) ||
                 !Array.isArray(result.itemsToAdd) || !Array.isArray(result.itemsToRemove) ||
                 !Array.isArray(result.characterMemoriesToAdd) ||
+                !Array.isArray(result.charactersToAdd) ||
                 typeof result.time !== 'string' || !Number.isInteger(result.day)) {
                 throw new Error('La respuesta no cumple el formato narrativo');
             }
@@ -211,6 +228,24 @@ const Narrator = {
             });
 
             state.characters = state.characters && typeof state.characters === 'object' ? state.characters : {};
+            result.charactersToAdd.slice(0, 5).forEach(entry => {
+                if (!entry || typeof entry.name !== 'string' || !entry.name.trim()) return;
+                const name = entry.name.trim().slice(0, 80);
+                const exists = Object.keys(state.characters).some(key =>
+                    key.toLocaleLowerCase('es') === name.toLocaleLowerCase('es') ||
+                    String(state.characters[key] && state.characters[key].name || '').toLocaleLowerCase('es') === name.toLocaleLowerCase('es')
+                );
+                if (exists || Object.keys(state.characters).length >= 50) return;
+                const memory = typeof entry.memory === 'string' ? entry.memory.trim().slice(0, 300) : '';
+                state.characters[name] = {
+                    name,
+                    role: typeof entry.role === 'string' ? entry.role.trim().slice(0, 100) : 'Personaje',
+                    location: typeof entry.location === 'string' ? entry.location.trim().slice(0, 120) : state.currentLocation,
+                    attitude: typeof entry.attitude === 'string' ? entry.attitude.trim().slice(0, 100) : 'Desconocida',
+                    trust: 0,
+                    memories: memory ? [memory] : []
+                };
+            });
             result.characterMemoriesToAdd.slice(0, 5).forEach(entry => {
                 if (!entry || typeof entry.character !== 'string' || typeof entry.memory !== 'string') return;
                 const requestedName = entry.character.trim().toLocaleLowerCase('es');
