@@ -313,7 +313,7 @@ jobs:
                 data.adventure.state.characters.Elia.memories.includes('Elia se inclina para examinar la marca de cobre junto a Ariadna.') &&
                 data.adventure.state.characters.Elia.lastAutonomousAction === 'Elia se inclina para examinar la marca de cobre junto a Ariadna.' &&
                 data.reply.includes('Elia se inclina para examinar la marca de cobre junto a Ariadna.') &&
-                !data.reply.includes('Elia: Elia se inclina') && !data.reply.includes('\\\\n\\\\n') &&
+                !data.reply.includes('Elia: Elia se inclina') && !data.reply.includes(String.fromCharCode(92) + 'n') &&
                 data.adventure.state.characters.Elia.memories.includes('Ariadna le entregó el medallón de cobre.') &&
                 data.adventure.state.characters.Tomás.memories.includes('Tomás vio a Ariadna entregar el medallón a Elia.') &&
                 data.adventure.state.characters.Elia.attitude === 'Más confiada' &&
