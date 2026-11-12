@@ -1105,3 +1105,16 @@ La ejecución `43261948491`, sobre el commit `42f828f`, terminó correctamente. 
 - Geometría móvil 390 × 844: documento 390 × 844; sin desbordamiento horizontal. Narración, panel de escritura y barra inferior permanecen dentro de la pantalla y sin solaparse.
 
 El estado remoto de `main` contiene el conjunto de cambios y la documentación continua está guardada. La prueba sigue usando una respuesta simulada para verificar la integración del cliente; la inferencia real de Qwen3.5-4B y la apariencia en el navegador del Samsung no se declaran verificadas. Esas son las dos comprobaciones que quedan para la revisión con el usuario.
+
+
+### Protección de continuidad del calendario — 12 de noviembre de 2026
+
+Durante la revisión del narrador se detectó que una respuesta válida de la IA podía devolver un número de día inferior al ya alcanzado. Se ha corregido `app/js/game/narrator.js`: el día guardado ahora nunca retrocede, aunque el modelo proponga un valor anterior. Se mantiene el límite de 9999 y el día mínimo 1. El prompt también indica explícitamente que el narrador no debe reducir el día.
+
+La prueba automatizada de Chromium se ha reforzado con dos respuestas simuladas: la primera avanza al día 2 y la segunda intenta volver al día 1. La comprobación exige que la partida conserve el día 2 después de la segunda acción y tras recargar.
+
+Commits:
+- `narrator.js`: protección contra retrocesos del día.
+- `visual-preview.yml`: regresión automatizada del calendario.
+
+Validación pendiente: ejecución del workflow tras estos commits. Esta prueba verifica la lógica del cliente con respuestas simuladas, no la generación real de Qwen3.5-4B en Android.
