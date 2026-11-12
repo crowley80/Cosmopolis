@@ -132,7 +132,7 @@ const Narrator = {
                     'characterUpdates: cambios de ubicación o actitud de personajes ya registrados; conserva sus valores si no han cambiado y no muevas personajes sin motivo narrativo.',
                     'characterActions: pequeñas iniciativas autónomas de personajes que ya están presentes en la ubicación actual. Sus objetivos personales deben influir de forma visible y natural en lo que hacen: pueden investigar algo relacionado, pedir ayuda, proteger un interés o reaccionar ante un obstáculo. No repitas la misma iniciativa ni fuerces avances; máximo dos acciones visibles, coherentes con personalidad, recuerdos y objetivo. No cambies su ubicación con este campo, no inventes sucesos fuera de escena y usa una acción vacía si nadie actúa.',
                     'personalGoal: cada personaje puede tener un objetivo propio, breve y concreto, que refleje deseos, problemas o motivaciones. Ten en cuenta su objetivo actual al decidir cómo habla y actúa.',
-                    'goalUpdates: actualiza como máximo dos objetivos de personajes registrados solo cuando los hechos justifiquen un cambio, avance, bloqueo o resolución. Incluye character, goal, status y reason. status debe ser active, progress, blocked o completed; conserva el objetivo si solo cambia su estado. No inventes avances ni cambies objetivos sin causa; usa una lista vacía si no hay cambios.',
+                    'goalUpdates: actualiza como máximo dos objetivos de personajes registrados solo cuando los hechos justifiquen un cambio, avance, bloqueo o resolución. Incluye character, goal, status y reason. status debe ser active, progress, blocked o completed; conserva el objetivo si solo cambia su estado. Un objetivo completed queda cerrado: no lo reactives ni lo sustituyas salvo que exista una nueva motivación o consecuencia concreta en los hechos, eventos o recuerdos. Solo entonces propone un objetivo distinto con status active, explica en reason qué hecho demuestra que el anterior se cumplió y por qué nace el nuevo. Nunca sustituyas un objetivo todavía activo, en progreso o bloqueado por otro; primero debe resolverse. No inventes avances ni cambies objetivos sin causa; usa una lista vacía si no hay cambios.',
                     'characterMemoriesToAdd: recuerdos concretos y duraderos de personajes que ya existen en el estado; no inventes personajes ni guardes detalles triviales.',
                     'time: momento del día dentro del mundo; no uses la hora real del teléfono y no avances el tiempo sin motivo narrativo.',
                     'day: número del día dentro de la aventura; solo aumenta cuando la historia cruza realmente al día siguiente. Nunca reduzcas el día ya alcanzado.'
@@ -384,11 +384,49 @@ const Narrator = {
                 const person = state.characters[key];
                 const previousGoal = typeof person.personalGoal === 'string' ? person.personalGoal.trim() : '';
                 const previousStatus = ['active', 'progress', 'blocked', 'completed'].includes(person.goalStatus) ? person.goalStatus : 'active';
-                if (previousGoal.toLocaleLowerCase('es') === goal.toLocaleLowerCase('es') && previousStatus === status) return;
+                const sameGoal = previousGoal.toLocaleLowerCase('es') === goal.toLocaleLowerCase('es');
+                const actionNumber = previousActions.length + 1;
+                person.goalHistory = Array.isArray(person.goalHistory) ? person.goalHistory : [];
+                person.completedGoals = Array.isArray(person.completedGoals) ? person.completedGoals : [];
+
+                // Un objetivo cumplido es inmutable; solo puede abrirse otro distinto como nueva etapa.
+                if (previousStatus === 'completed') {
+                    if (sameGoal || status !== 'active') return;
+                    const alreadyArchived = person.completedGoals.some(item =>
+                        item && typeof item.goal === 'string' &&
+                        item.goal.toLocaleLowerCase('es') === previousGoal.toLocaleLowerCase('es')
+                    );
+                    if (previousGoal && !alreadyArchived) {
+                        const completion = [...person.goalHistory].reverse().find(item =>
+                            item && item.status === 'completed' &&
+                            String(item.goal || '').toLocaleLowerCase('es') === previousGoal.toLocaleLowerCase('es')
+                        );
+                        person.completedGoals.push({
+                            goal: previousGoal,
+                            reason: completion && completion.reason || reason,
+                            completedAtAction: completion && completion.changedAtAction || actionNumber
+                        });
+                    }
+                } else if (previousGoal && !sameGoal) {
+                    // No se abandona una meta pendiente por otra propuesta por el modelo.
+                    return;
+                } else if (previousStatus !== 'active' && status === 'active') {
+                    // Evita retrocesos de estado; un bloqueo se retoma como progreso.
+                    return;
+                }
+
+                if (sameGoal && previousStatus === status) return;
+                if (status === 'completed' && previousGoal && !person.completedGoals.some(item =>
+                    item && typeof item.goal === 'string' &&
+                    item.goal.toLocaleLowerCase('es') === previousGoal.toLocaleLowerCase('es')
+                )) {
+                    person.completedGoals.push({ goal: previousGoal, reason, completedAtAction: actionNumber });
+                }
+                if (person.completedGoals.length > 20) person.completedGoals = person.completedGoals.slice(-20);
+
                 person.personalGoal = goal;
                 person.goalStatus = status;
-                person.goalHistory = Array.isArray(person.goalHistory) ? person.goalHistory : [];
-                person.goalHistory.push({ goal, status, reason, changedAtAction: previousActions.length + 1 });
+                person.goalHistory.push({ goal, status, reason, changedAtAction: actionNumber });
                 if (person.goalHistory.length > 10) person.goalHistory = person.goalHistory.slice(-10);
                 if (reason) {
                     person.memories = Array.isArray(person.memories) ? person.memories : [];
