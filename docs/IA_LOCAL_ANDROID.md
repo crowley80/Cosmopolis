@@ -85,3 +85,8 @@ El modelo no puede crear un personaje solo mediante el campo de recuerdos: prime
 El esquema incorpora `characterUpdates` para que el narrador pueda actualizar la ubicación y actitud de personajes ya registrados. Solo se aplican entradas cuyo nombre coincide con un personaje existente; se ignoran nombres desconocidos y campos vacíos. Se limitan los cambios a diez por respuesta. Esto evita que un NPC permanezca indefinidamente en una ubicación antigua después de desplazarse o que su disposición ignore acontecimientos recientes.
 
 La prueba automatizada cambia la actitud de Elia y mueve a Tomás a la entrada de la posada, y comprueba que ambos cambios permanecen en la partida.
+
+
+## Actualización inmediata de cabecera — 12 de noviembre de 2026
+
+Después de guardar cada acción, la interfaz vuelve a leer la aventura persistida y actualiza inmediatamente la ubicación, el momento del día y la jornada en la cabecera del manuscrito. No hace falta recargar la página para ver los cambios de tiempo o desplazamiento. La prueba de Chromium comprueba el cambio a «Mediodía» en la misma sesión y vuelve a comprobarlo después de recargar.
