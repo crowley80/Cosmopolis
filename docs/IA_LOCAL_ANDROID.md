@@ -43,3 +43,15 @@ El registro se escribe en `$HOME/cosmopolis-llama-server.log`. La disponibilidad
 6. **Pendiente:** medir tiempo de primera respuesta, tokens por segundo, memoria y temperatura; ajustar hilos/contexto solo a partir de datos reales.
 
 La carga del modelo y la salud del servidor están verificadas, pero no se declara la integración narrativa completa hasta completar las pruebas restantes en el Samsung. No borrar ni sustituir ninguno de los modelos existentes.
+
+
+## Inventario y memoria de pertenencias — 12 de noviembre de 2026
+
+El contrato JSON del narrador local incorpora dos listas controladas:
+
+- `itemsToAdd`: objetos que el personaje obtiene realmente y puede transportar.
+- `itemsToRemove`: objetos que entrega, consume, pierde o deja atrás.
+
+El cliente valida que ambas listas existan, evita duplicados, limita cada respuesta a diez cambios y el inventario total a 50 entradas. Los objetos se guardan dentro de `adventure.state.inventory`, por lo que forman parte de la partida local y del contexto narrativo que recibe el modelo en las siguientes acciones. Examinar un objeto no implica añadirlo automáticamente.
+
+La interfaz de Inventario muestra las pertenencias registradas. La prueba automatizada simula una respuesta estructurada del endpoint para comprobar la aplicación y persistencia de un objeto; no sustituye una prueba de generación real con Qwen3.5-4B en el Samsung.
