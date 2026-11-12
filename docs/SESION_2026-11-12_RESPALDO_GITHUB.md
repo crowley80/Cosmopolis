@@ -92,3 +92,26 @@ No repetir auditorías generales ni pasos ya completados.
 3. Abrir Cosmopolis en el navegador del móvil y revisar colores, contraste, legibilidad, espacio de narración y zona de escritura.
 4. Corregir cualquier detalle detectado antes de continuar con las ayudas de exploración y los cambios narrativos.
 
+
+
+## Segunda iteración visual — 12 de noviembre de 2026
+
+El usuario probó la primera versión CSS en el teléfono y comunicó que no se parecía a la maqueta aprobada. Se decidió no pedir más capturas: se continuó usando el código del repositorio y las decisiones visuales ya documentadas.
+
+### Cambios
+- Rediseño amplio de `app/css/style.css`: marco exterior de cuero oscuro, doble borde ornamental, papel con texturas sutiles construidas en CSS, adornos tipográficos, jerarquía de títulos y zona de escritura con líneas de cuaderno antiguo.
+- Conservación de la interfaz exclusivamente textual y de sus dos zonas funcionales.
+- Actualización de `index.html`: tono de la barra del navegador y parámetro de versión nuevo en la hoja CSS para evitar caché antigua.
+- Sin imágenes ni ilustraciones.
+
+### Commits
+- `dcedb4d` — Rediseñar pergamino con marco y detalles de manuscrito.
+- `2ab5ccc` — Actualizar versión visual de la hoja de estilos.
+
+### Pruebas y estado
+- Archivos escritos en GitHub mediante la integración del repositorio.
+- Pendiente sincronizar en Termux y comprobar la segunda iteración en Chrome.
+- No se afirma que la nueva apariencia ya coincida con la maqueta ni que esté aprobada.
+
+### Próximo paso
+En Termux, comprobar `git status --short`. Si está vacío, ejecutar `git pull --ff-only` y recargar `http://127.0.0.1:8080/index.html` en Chrome. El servidor Node.js ya está funcionando y puede seguir activo.
