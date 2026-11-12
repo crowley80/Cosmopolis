@@ -1,6 +1,6 @@
 # COSMOPOLIS — DOCUMENTO MAESTRO
 
-Última actualización: 9 de noviembre de 2026.
+Última actualización: 12 de noviembre de 2026.
 
 ## 1. IDENTIDAD DEL PROYECTO
 
@@ -768,3 +768,28 @@ La ejecución automatizada posterior al cambio de cabecera terminó correctament
 - La estructura medida en la ejecución anterior conserva la distribución vertical: narración desplazable y panel de escritura/barra inferior anclados. La captura móvil actual no muestra desbordamiento horizontal ni solapamientos en cabecera o controles.
 
 La pasada visual queda validada. La interfaz actual reúne textura envejecida, contorno rasgado, filigrana en cabecera, panel de ubicación, escritura y barra inferior, con cuatro controles visibles. Es una aproximación cuidada a la maqueta, no una reproducción exacta. No se ha cambiado la lógica del juego.
+
+
+## 12. IA narrativa local — continuidad al 12 de noviembre de 2026
+
+Objetivo aprobado: incorporar una IA ejecutada en el propio Android para generar narración y diálogos en español, conservar memoria de personajes y reaccionar a los hechos del mundo. Cosmopolis seguirá siendo exclusivamente textual; no se incorporarán imágenes ni ilustraciones.
+
+Entorno comunicado durante la preparación:
+- Dispositivo: Samsung SM-A576B, Android 17, arquitectura ARM64.
+- Memoria disponible aproximada: 11,2 GiB; almacenamiento libre comunicado: 302 GB.
+- Node.js: v26.12.1.
+- llama.cpp ya está clonado en $HOME/llama.cpp y las herramientas de compilación necesarias se instalaron en Termux.
+
+Plan técnico acordado:
+1. Configurar y compilar llama.cpp en CPU, con una configuración conservadora para Termux/Android.
+2. Probar modelos GGUF pequeños y comparar la calidad narrativa en español antes de decidir cuál se adopta.
+3. Qwen3-4B GGUF Q4_K_M (aprox. 2,5 GB) queda como candidato inicial de evaluación, no como elección definitiva.
+4. Integrar el servidor local de inferencia con la aplicación web y diseñar memoria persistente de personajes, relaciones, hechos y estado del mundo.
+
+Siguiente paso operativo pendiente: desde Termux, dentro del clon $HOME/llama.cpp, ejecutar la configuración CMake:
+
+```sh
+cd "$HOME/llama.cpp" && cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DGGML_NATIVE=ON -DGGML_OPENMP=OFF -DGGML_LLAMAFILE=OFF -DLLAMA_BUILD_SERVER=ON -DLLAMA_BUILD_TESTS=OFF
+```
+
+Este paso solo configura la compilación; todavía no descarga ningún modelo ni modifica el juego. Revisar la salida completa antes de compilar. No asumir que la compilación ha terminado hasta comprobar el resultado real en Termux.
