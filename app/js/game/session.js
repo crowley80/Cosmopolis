@@ -45,6 +45,17 @@ const Session = {
         });
 
         saved.adventure = details.adventure || saved.adventure;
+        saved.adventure.state = saved.adventure.state || {};
+        const currentLocation = saved.adventure.state.currentLocation || saved.adventure.location;
+        saved.adventure.state.visitedLocations = Array.isArray(saved.adventure.state.visitedLocations)
+            ? saved.adventure.state.visitedLocations
+            : [];
+        if (currentLocation && !saved.adventure.state.visitedLocations.includes(currentLocation)) {
+            saved.adventure.state.visitedLocations.push(currentLocation);
+        }
+        saved.adventure.state.inventory = Array.isArray(saved.adventure.state.inventory)
+            ? saved.adventure.state.inventory
+            : [];
         saved.world = saved.world || {};
         saved.world.events = Array.isArray(saved.world.events) ? saved.world.events : [];
         saved.world.facts = Array.isArray(saved.world.facts) ? saved.world.facts : [];
