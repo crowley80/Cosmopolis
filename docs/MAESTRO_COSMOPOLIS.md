@@ -1157,3 +1157,10 @@ La ejecución del commit de renovación de caché `bf5317a` (run 67) sigue pendi
 ### Validación tras renovar caché del narrador — run 67 — 12 de noviembre de 2026
 
 La ejecución `43287906891`, sobre el commit `bf5317a`, terminó con conclusión `success`. Chromium cargó la nueva URL versionada de `narrator.js`, generó las vistas móvil y escritorio, completó las interacciones y subió el artefacto de vista previa. La actualización de caché queda validada; se mantienen pendientes únicamente las pruebas de inferencia real con Qwen3.5-4B en el Samsung y la revisión visual directa del usuario en su navegador.
+
+
+### Iniciativa visible de personajes presentes — 12 de noviembre de 2026
+
+Se amplía el contrato del narrador con `characterActions`: hasta dos personajes ya registrados y presentes en la ubicación actual pueden realizar una pequeña iniciativa autónoma durante la escena. Las acciones se validan contra personajes existentes y su ubicación; no se aceptan acciones de personajes fuera de escena ni se cambia su ubicación con este mecanismo. Cada iniciativa se añade a la narración, se registra como `lastAutonomousAction` y se conserva como recuerdo individual (máximo 30). Esto permite que los personajes no se limiten a esperar la orden del jugador, sin simular movimientos fuera de cámara ni alterar el mapa de forma arbitraria.
+
+La prueba de Chromium simula a Elia examinando una marca por iniciativa propia y a Tomás observando desde la entrada; verifica que la acción de Elia aparece en su memoria y queda registrada. La prueba valida el procesamiento del cliente con respuestas simuladas; el comportamiento del modelo local real requiere prueba en el dispositivo.
