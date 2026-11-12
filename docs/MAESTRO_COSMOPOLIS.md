@@ -1015,3 +1015,18 @@ Commits:
 - `57655ce`: probar reloj interno y avance de jornada.
 
 El cambio está en GitHub; la generación real de esos valores por Qwen3.5-4B queda pendiente de prueba en el dispositivo. La automatización usa respuestas simuladas y no se debe confundir con una prueba del modelo.
+
+
+### Registro de nuevos personajes y continuidad individual — 12 de noviembre de 2026
+
+Se amplía el estado del mundo para que el narrador pueda registrar personajes nuevos que entren realmente en escena. El contrato JSON añade `charactersToAdd`, con nombre, función, ubicación, actitud y primer recuerdo. El cliente evita duplicados, limita las altas a cinco por respuesta y 50 personajes por aventura. Los recuerdos posteriores se incorporan mediante `characterMemoriesToAdd`, siempre sobre personajes ya registrados, con un máximo de 30 recuerdos por personaje.
+
+Esto permite que los NPC importantes no dependan únicamente de las seis últimas acciones del historial: su identidad, situación y recuerdos quedan dentro de la partida y vuelven a formar parte del contexto enviado al modelo. No se registran figurantes irrelevantes ni se permite que el campo de recuerdos cree personajes arbitrarios.
+
+La prueba automatizada simula la aparición de Tomás, guarda su recuerdo inicial, registra un segundo recuerdo tras entregar el medallón a Elia y comprueba la persistencia después de recargar.
+
+Commits:
+- `8436828`: registrar personajes nuevos y su memoria persistente.
+- `061c1ca`: probar alta y memoria persistente de nuevos personajes.
+
+Pendiente: confirmar que el modelo local real utiliza con fiabilidad este contrato en el dispositivo; el flujo automatizado valida el cliente con respuestas simuladas.
