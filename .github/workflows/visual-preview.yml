@@ -94,7 +94,9 @@ jobs:
                   eliaTrustDelta: 0,
                   itemsToAdd: ['Medallón de cobre'],
                   itemsToRemove: [],
-                  characterMemoriesToAdd: [{ character: 'Elia', memory: 'Ariadna encontró un medallón de cobre junto al pozo.' }]
+                  characterMemoriesToAdd: [{ character: 'Elia', memory: 'Ariadna encontró un medallón de cobre junto al pozo.' }],
+                  time: 'Media mañana',
+                  day: 1
                 } : {
                   reply: 'Entregas el medallón a Elia. Ella lo guarda con cuidado en su tubo de mapas.',
                   event: 'Ariadna ha entregado el medallón de cobre a Elia.',
@@ -105,7 +107,9 @@ jobs:
                   eliaTrustDelta: 1,
                   itemsToAdd: [],
                   itemsToRemove: ['Medallón de cobre'],
-                  characterMemoriesToAdd: [{ character: 'Elia', memory: 'Ariadna le entregó el medallón de cobre.' }]
+                  characterMemoriesToAdd: [{ character: 'Elia', memory: 'Ariadna le entregó el medallón de cobre.' }],
+                  time: 'Mediodía',
+                  day: 1
                 };
                 await route.fulfill({
                   status: 200,
@@ -158,10 +162,12 @@ jobs:
                 !data.adventure.state.inventory.includes('Medallón de cobre') &&
                 data.adventure.state.characters.Elia.trust === 1 &&
                 data.adventure.state.characters.Elia.memories.includes('Ariadna encontró un medallón de cobre junto al pozo.') &&
-                data.adventure.state.characters.Elia.memories.includes('Ariadna le entregó el medallón de cobre.');
+                data.adventure.state.characters.Elia.memories.includes('Ariadna le entregó el medallón de cobre.') &&
+                data.adventure.state.time === 'Mediodía' && data.adventure.state.day === 1;
             });
             await page.reload({ waitUntil: 'networkidle' });
             await page.locator('#storyContent .current-action').getByText('Entrego el medallón de cobre a Elia.').waitFor();
+            await page.locator('.manuscript-meta').getByText('Momento: Mediodía').waitFor();
             await page.locator('#openInventory').click();
             await page.locator('#toolOverlay').getByText('Tu inventario está vacío por ahora.').waitFor();
             await page.locator('#closeToolPanel').click();
