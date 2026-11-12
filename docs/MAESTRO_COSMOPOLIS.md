@@ -1136,3 +1136,8 @@ Commit de implementación: pendiente de confirmación de GitHub Actions.
 Se ha limitado el tamaño del contexto enviado a llama-server para evitar que una aventura larga desborde la ventana de contexto del modelo local. La petición conserva el estado narrativo completo necesario para resolver la acción, pero selecciona hasta 20 personajes dando prioridad a quienes están en la ubicación actual y a Elia; transmite hasta ocho recuerdos por personaje, los 20 eventos recientes, 25 hechos y pistas, 30 objetos, 25 lugares y seis acciones recientes. También se acotan los campos de la ficha y la longitud de las acciones/respuestas incluidas.
 
 La compactación solo afecta al mensaje enviado al modelo: no elimina recuerdos, eventos ni personajes de la partida guardada. La prueba automatizada genera un estado de prueba más grande y verifica que el contexto se recorta mientras la memoria original permanece intacta.
+
+
+### Actualización de caché del narrador — 12 de noviembre de 2026
+
+Se ha versionado también la carga de `app/js/game/narrator.js` en `index.html`, junto con los identificadores de caché de CSS y del script principal. Esto evita que el navegador móvil reutilice una copia antigua del narrador y no reciba las mejoras de relaciones dinámicas y contexto compacto. Commit: `bf5317a`. La vista previa automática de este commit queda en ejecución.
