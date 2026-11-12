@@ -618,3 +618,13 @@ A partir de la comparación de la captura corregida con la maqueta original, se 
 - Caché CSS/JS: commit `d9b8a40`, versión `20261112-textura-organica`.
 - La actualización está guardada en `main`.
 - Pendiente: inspeccionar la siguiente captura automática para comprobar que la textura SVG se renderiza correctamente en Chromium y que se acerca más al aspecto irregular del papel original.
+
+
+### Intensificación de la pátina envejecida — 12 de noviembre de 2026
+
+La segunda captura confirmó que la retirada de las líneas repetidas eliminó el aspecto cuadriculado, pero la pátina seguía demasiado uniforme frente al papel de la maqueta. Se intensificó el grano fractal SVG (frecuencia .9, cuatro octavas, opacidad .25), se añadieron veladuras radiales irregulares y se oscureció ligeramente el tono ámbar base. No se tocaron proporciones ni controles.
+
+- CSS: commit `bee3d34`.
+- Caché: commit `fae92a4`, versión `20261112-pergamino-envejecido`.
+- Se verificó por lectura de GitHub que el bloque CSS contiene la nueva textura y los valores actualizados.
+- Pendiente: inspeccionar el siguiente render automático para confirmar el efecto visual real del grano.
