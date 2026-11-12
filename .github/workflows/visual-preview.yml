@@ -312,8 +312,6 @@ jobs:
                 data.adventure.state.characters.Elia.memories.includes('Ariadna encontró un medallón de cobre junto al pozo.') &&
                 data.adventure.state.characters.Elia.memories.includes('Elia se inclina para examinar la marca de cobre junto a Ariadna.') &&
                 data.adventure.state.characters.Elia.lastAutonomousAction === 'Elia se inclina para examinar la marca de cobre junto a Ariadna.' &&
-                data.reply.includes('Elia se inclina para examinar la marca de cobre junto a Ariadna.') &&
-                !data.reply.includes('Elia: Elia se inclina') && !data.reply.includes(String.fromCharCode(92) + 'n') &&
                 data.adventure.state.characters.Elia.memories.includes('Ariadna le entregó el medallón de cobre.') &&
                 data.adventure.state.characters.Tomás.memories.includes('Tomás vio a Ariadna entregar el medallón a Elia.') &&
                 data.adventure.state.characters.Elia.attitude === 'Más confiada' &&
@@ -321,6 +319,9 @@ jobs:
                 !data.adventure.state.characters.Tomás.lastAutonomousAction &&
                 data.adventure.state.time === 'Mediodía' && data.adventure.state.day === 2;
             });
+            const liveReply = await page.locator('#storyContent').textContent();
+            assert.ok(liveReply.includes('Elia se inclina para examinar la marca de cobre junto a Ariadna.'), 'La iniciativa autónoma debe aparecer integrada en la narración: ' + liveReply);
+            assert.ok(!liveReply.includes('Elia: Elia se inclina') && !liveReply.includes(String.fromCharCode(92) + 'n'), 'La iniciativa no debe mostrarse como ficha ni con escapes visibles: ' + liveReply);
             const liveMeta = await page.locator('.manuscript-meta').textContent();
             assert.ok(liveMeta.includes('Momento: Mediodía'), 'La cabecera debe actualizarse sin recargar: ' + liveMeta);
             await page.reload({ waitUntil: 'networkidle' });
