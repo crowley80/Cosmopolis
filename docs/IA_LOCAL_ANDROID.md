@@ -130,3 +130,6 @@ La prueba de Chromium simula la evolución del objetivo de Elia, asigna y modifi
 ### Objetivos que influyen en conversaciones e iniciativas — 12 de noviembre de 2026
 
 Se refuerza el uso activo de `personalGoal`: el prompt de la IA local pide que los objetivos orienten iniciativas visibles sin forzar avances ni repetir acciones. El narrador alternativo también incorpora el objetivo de Elia cuando conversa con ella y permite que otros NPCs presentes expresen su motivación al ser preguntados por su nombre. Se añade una regresión automatizada que comprueba que el narrador alternativo menciona el objetivo persistido de Tomás en una conversación dirigida a él. Esta prueba verifica la lógica determinista; la generación contextual del modelo local debe validarse en el dispositivo.
+
+
+Ajuste de legibilidad — 12 de noviembre de 2026: el narrador alternativo expresa el objetivo de un NPC con una frase directa y conserva literalmente el objetivo almacenado. Se renueva la caché de `director.js`.
