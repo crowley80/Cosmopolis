@@ -639,3 +639,12 @@ La segunda ejecución de Playwright confirmó que los saltos de párrafo ya se m
 - Capturas inspeccionadas: móvil y escritorio.
 - La segunda comparación confirmó que la textura seguía siendo demasiado uniforme; de ahí los dos ajustes de pátina registrados a continuación.
 - Nueva prueba de textura intensificada en curso: runs `43211960786` y `43211980887`; el segundo corresponde al último estado con caché `20261112-pergamino-envejecido`.
+
+
+### Grano y manchas de papel en dos escalas — 12 de noviembre de 2026
+
+La captura con pátina intensificada seguía mostrando una superficie más lisa que la referencia. Se ha añadido una segunda capa SVG de ruido fractal: una escala amplia de manchas (frecuencia .12, opacidad .32) y otra fina de grano (frecuencia .82, opacidad .17). La combinación conserva el tono ámbar y evita recuperar el patrón cuadriculado eliminado.
+
+- CSS: commit `310d0f2`.
+- Caché: commit `3f58bd6`, versión `20261112-textura-moteada`.
+- Pendiente: comprobar en Chromium la visibilidad y naturalidad de ambas escalas; si el ruido resulta excesivo o sigue siendo imperceptible, revertir o ajustar solo la intensidad.
