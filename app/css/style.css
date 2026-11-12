@@ -245,7 +245,7 @@ footer {
 
 body {
   background:
-    radial-gradient(ellipse at 50% 20%, #80532c 0%, #422613 70%, #1c1008 100%);
+    radial-gradient(ellipse at 50% 50%, #17110c 0%, #090705 54%, #030201 100%);
 }
 
 .adventure-screen {
@@ -270,55 +270,75 @@ body {
 
 .adventure-screen::before {
   position: absolute;
-  inset: 3px;
+  inset: 8px;
   z-index: -2;
   content: "";
   pointer-events: none;
   clip-path: polygon(
-    1.2% 1.2%, 2.8% .6%, 4.1% 1.1%, 5.7% .5%, 7.9% 1.1%,
-    10.1% .6%, 12.8% 1.2%, 15.2% .5%, 18.1% 1.1%, 21.4% .6%,
-    24.2% 1.2%, 27.7% .5%, 30.6% 1.1%, 34.1% .6%, 37.3% 1.2%,
-    40.8% .5%, 44.2% 1.1%, 47.6% .6%, 51% 1.2%, 54.4% .5%,
-    57.8% 1.1%, 61.2% .6%, 64.8% 1.2%, 68.1% .5%, 71.7% 1.1%,
-    75.1% .6%, 78.4% 1.2%, 81.8% .5%, 85.2% 1.1%, 88.7% .6%,
-    92% 1.2%, 95% .5%, 98.5% 1.4%, 99.2% 4%, 98.5% 7%,
-    99.2% 10%, 98.4% 13%, 99.1% 16%, 98.5% 19%, 99.2% 22%,
-    98.4% 25%, 99.1% 28%, 98.5% 31%, 99.2% 34%, 98.4% 37%,
-    99.1% 40%, 98.5% 43%, 99.2% 46%, 98.4% 49%, 99.1% 52%,
-    98.5% 55%, 99.2% 58%, 98.4% 61%, 99.1% 64%, 98.5% 67%,
-    99.2% 70%, 98.4% 73%, 99.1% 76%, 98.5% 79%, 99.2% 82%,
-    98.4% 85%, 99.1% 88%, 98.5% 91%, 99.2% 94%, 98% 98%,
-    95.8% 98.6%, 93.2% 98%, 90.4% 99%, 87.4% 98.2%,
-    84.2% 99%, 81.1% 98.2%, 78% 99%, 74.8% 98.1%,
-    71.5% 99%, 68.2% 98.2%, 64.9% 99%, 61.5% 98.1%,
-    58.1% 99%, 54.8% 98.2%, 51.4% 99%, 48% 98.1%,
-    44.6% 99%, 41.2% 98.2%, 37.8% 99%, 34.4% 98.1%,
-    31% 99%, 27.6% 98.2%, 24.2% 99%, 20.8% 98.1%,
-    17.4% 99%, 14% 98.2%, 10.7% 99%, 7.5% 98.1%,
-    4.5% 99%, 1.1% 97.5%, .7% 94%, 1.4% 91%,
-    .7% 88%, 1.4% 85%, .7% 82%, 1.4% 79%,
-    .7% 76%, 1.4% 73%, .7% 70%, 1.4% 67%,
-    .7% 64%, 1.4% 61%, .7% 58%, 1.4% 55%,
-    .7% 52%, 1.4% 49%, .7% 46%, 1.4% 43%,
-    .7% 40%, 1.4% 37%, .7% 34%, 1.4% 31%,
-    .7% 28%, 1.4% 25%, .7% 22%, 1.4% 19%,
-    .7% 16%, 1.4% 13%, .7% 10%, 1.4% 7%, .7% 4%
+    1.8% 2.1%, 3.4% .7%, 5.1% 2.2%, 7.2% .5%, 9.4% 2.4%,
+    12% .9%, 14.1% 2.5%, 16.8% .7%, 19.5% 2.1%, 22.1% .8%,
+    25% 2.4%, 28% .6%, 31% 2.2%, 34.5% .7%, 38% 2.5%,
+    41.5% .6%, 45% 2.2%, 48.5% .7%, 52% 2.5%, 55.5% .6%,
+    59% 2.3%, 62.5% .7%, 66% 2.4%, 69.5% .6%, 73% 2.2%,
+    76.5% .8%, 80% 2.5%, 83.5% .6%, 87% 2.2%, 90.5% .7%,
+    94% 2.4%, 97% .8%, 99% 2.8%, 98.1% 6%, 99.2% 9.5%,
+    97.9% 13%, 99.3% 16.5%, 98% 20%, 99.2% 23.5%,
+    97.8% 27%, 99.3% 30.5%, 98% 34%, 99.2% 37.5%,
+    97.8% 41%, 99.3% 44.5%, 98% 48%, 99.2% 51.5%,
+    97.8% 55%, 99.3% 58.5%, 98% 62%, 99.2% 65.5%,
+    97.8% 69%, 99.3% 72.5%, 98% 76%, 99.2% 79.5%,
+    97.8% 83%, 99.3% 86.5%, 98% 90%, 99.1% 94%,
+    97.5% 98%, 94.5% 97%, 91.5% 99%, 88.5% 97.4%,
+    85.5% 99.2%, 82.5% 97.3%, 79.5% 99%, 76.5% 97.4%,
+    73.5% 99.2%, 70.5% 97.3%, 67.5% 99%, 64.5% 97.4%,
+    61.5% 99.2%, 58.5% 97.3%, 55.5% 99%, 52.5% 97.4%,
+    49.5% 99.2%, 46.5% 97.3%, 43.5% 99%, 40.5% 97.4%,
+    37.5% 99.2%, 34.5% 97.3%, 31.5% 99%, 28.5% 97.4%,
+    25.5% 99.2%, 22.5% 97.3%, 19.5% 99%, 16.5% 97.4%,
+    13.5% 99.2%, 10.5% 97.3%, 7.5% 99%, 4.5% 97.4%,
+    1.5% 98%, .7% 94%, 2% 90.5%, .6% 87%, 1.9% 83.5%,
+    .7% 80%, 2% 76.5%, .6% 73%, 1.9% 69.5%, .7% 66%,
+    2% 62.5%, .6% 59%, 1.9% 55.5%, .7% 52%, 2% 48.5%,
+    .6% 45%, 1.9% 41.5%, .7% 38%, 2% 34.5%, .6% 31%,
+    1.9% 27.5%, .7% 24%, 2% 20.5%, .6% 17%, 1.9% 13.5%,
+    .7% 10%, 2% 6%
   );
-  background-color: #d99b50;
+  background-color: #b97835;
   background-image:
-    radial-gradient(ellipse at 48% 42%, rgba(255, 224, 170, .58) 0 35%, transparent 74%),
-    radial-gradient(ellipse at 3% 3%, rgba(65, 25, 5, .95) 0 1.2%, rgba(105, 49, 12, .82) 2.5%, transparent 8%),
-    radial-gradient(ellipse at 97% 3%, rgba(65, 25, 5, .94) 0 1.2%, rgba(105, 49, 12, .8) 2.5%, transparent 8%),
-    radial-gradient(ellipse at 3% 97%, rgba(54, 19, 4, .96) 0 1.5%, rgba(105, 49, 12, .82) 3%, transparent 9%),
-    radial-gradient(ellipse at 97% 97%, rgba(54, 19, 4, .96) 0 1.5%, rgba(105, 49, 12, .82) 3%, transparent 9%),
-    radial-gradient(ellipse at 50% 0, rgba(73, 30, 7, .66), transparent 9%),
-    radial-gradient(ellipse at 50% 100%, rgba(73, 30, 7, .72), transparent 10%),
-    repeating-linear-gradient(7deg, rgba(91, 46, 13, .105) 0 1px, transparent 1px 5px),
-    repeating-linear-gradient(93deg, rgba(255, 230, 180, .14) 0 1px, transparent 1px 8px),
-    linear-gradient(112deg, #e9b86e 0%, #d99a4d 42%, #edbd78 72%, #c98237 100%);
-  box-shadow: inset 0 0 10px 5px rgba(46, 17, 4, .9), inset 0 0 30px 12px rgba(83, 34, 7, .48);
-  filter: drop-shadow(0 0 2px #1e0d04) drop-shadow(0 0 7px rgba(0, 0, 0, .72));
+    radial-gradient(ellipse at 0% 0%, rgba(28, 8, 1, .98) 0 1.2%, rgba(58, 20, 4, .94) 2.2%, rgba(95, 43, 9, .72) 3.8%, transparent 9%),
+    radial-gradient(ellipse at 100% 0%, rgba(25, 7, 1, .98) 0 1.3%, rgba(60, 20, 3, .94) 2.4%, rgba(100, 45, 8, .7) 4%, transparent 9%),
+    radial-gradient(ellipse at 0% 100%, rgba(22, 6, 1, .99) 0 1.6%, rgba(58, 19, 3, .95) 3%, rgba(104, 43, 6, .72) 5%, transparent 11%),
+    radial-gradient(ellipse at 100% 100%, rgba(22, 6, 1, .99) 0 1.6%, rgba(58, 19, 3, .95) 3%, rgba(104, 43, 6, .72) 5%, transparent 11%),
+    radial-gradient(ellipse at 50% 0%, rgba(49, 16, 2, .86) 0%, rgba(101, 45, 8, .46) 2.5%, transparent 8%),
+    radial-gradient(ellipse at 50% 100%, rgba(45, 14, 2, .9) 0%, rgba(100, 43, 7, .48) 3%, transparent 9%),
+    radial-gradient(ellipse at 0% 50%, rgba(43, 13, 2, .88) 0%, rgba(102, 44, 8, .42) 2.5%, transparent 8%),
+    radial-gradient(ellipse at 100% 50%, rgba(43, 13, 2, .88) 0%, rgba(102, 44, 8, .42) 2.5%, transparent 8%),
+    radial-gradient(ellipse at 48% 42%, rgba(255, 218, 158, .4) 0 31%, transparent 72%),
+    repeating-linear-gradient(7deg, rgba(69, 30, 7, .16) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(93deg, rgba(255, 226, 177, .13) 0 1px, transparent 1px 7px),
+    linear-gradient(112deg, #c88742 0%, #d99a4d 42%, #e5ad63 72%, #b97532 100%);
+  box-shadow: inset 0 0 16px 8px rgba(28, 8, 1, .98), inset 0 0 38px 18px rgba(66, 23, 3, .72);
+  filter: drop-shadow(0 0 3px #000) drop-shadow(0 0 11px rgba(0, 0, 0, .96));
 }
+
+.paper-fold {
+  position: absolute;
+  z-index: 20;
+  width: 48px;
+  height: 48px;
+  pointer-events: none;
+  filter: drop-shadow(2px 3px 2px rgba(22, 7, 1, .82));
+}
+.paper-fold::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 226, 174, .92), #c58a45 42%, #6a3510 46%, #321405 58%, #d39b53 66%, #f0c47d);
+}
+.paper-fold--tl { top: 8px; left: 8px; clip-path: polygon(0 0, 100% 0, 0 100%); }
+.paper-fold--tr { top: 8px; right: 8px; clip-path: polygon(0 0, 100% 0, 100% 100%); }
+.paper-fold--br { right: 8px; bottom: 8px; clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+.paper-fold--bl { bottom: 8px; left: 8px; clip-path: polygon(0 0, 0 100%, 100% 100%); }
 
 .adventure-screen::after {
   position: absolute;
