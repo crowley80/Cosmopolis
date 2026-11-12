@@ -707,3 +707,12 @@ Corrección aplicada: se añadió `preserveAspectRatio='none'` a ambos SVG embeb
 - CSS: commit `5afef7e`.
 - Caché: commit `8f70322`, versión `20261112-marcos-ajustados`.
 - Pendiente: volver a inspeccionar escritorio y móvil; el marco debe recorrer ahora todo el ancho de cada panel sin invadir el campo ni los botones.
+
+
+### Compactación de volutas para despejar los controles — 12 de noviembre de 2026
+
+La captura posterior al ajuste de escala confirmó que los marcos ya cubren todo el ancho también en escritorio, pero las volutas del panel de escritura quedaban demasiado grandes y se acercaban a la pluma y al botón «Mi ficha». Se han reducido las cuatro volutas de esquina del SVG del panel de escritura; se conserva la línea ornamental y el marco extendido. La barra inferior no se modifica.
+
+- CSS: commit `cd13bff`.
+- Caché: commit `889fd7a`, versión `20261112-volutas-compactas`.
+- Pendiente: verificar la nueva escala en ambas resoluciones.
