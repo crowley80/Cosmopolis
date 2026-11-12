@@ -66,6 +66,76 @@ jobs:
             await page.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
             await page.locator('.adventure-screen').waitFor();
             await page.screenshot({ path: 'artifacts/cosmopolis-mobile.png', fullPage: true });
+
+            // Prueba de interacción: los cuatro paneles y las ayudas de exploración.
+            const assert = require('node:assert/strict');
+            const pageErrors = [];
+            page.on('pageerror', error => pageErrors.push(error.message));
+            await page.route('http://127.0.0.1:8081/**', async route => {
+              const request = route.request();
+              const headers = {
+                'Access-Control-Allow-Origin': 'http://127.0.0.1:8080',
+                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type'
+              };
+              if (request.method() === 'OPTIONS') {
+                await route.fulfill({ status: 204, headers });
+              } else if (request.url().endsWith('/health')) {
+                await route.fulfill({ status: 200, headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'ok' }) });
+              } else {
+                const result = {
+                  reply: 'La observación revela una pequeña marca de cobre entre las piedras.',
+                  event: 'Ariadna ha encontrado un medallón de cobre junto al pozo.',
+                  category: 'investigation',
+                  location: 'Plaza del pozo',
+                  factsToAdd: ['Hay una marca reciente entre las piedras.'],
+                  cluesToAdd: ['Un medallón de cobre estaba junto al pozo.'],
+                  eliaTrustDelta: 0,
+                  itemsToAdd: ['Medallón de cobre'],
+                  itemsToRemove: []
+                };
+                await route.fulfill({
+                  status: 200,
+                  headers: { ...headers, 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ choices: [{ message: { content: JSON.stringify(result) } }] })
+                });
+              }
+            });
+
+            await page.locator('#openHistory').click();
+            await page.locator('#toolOverlay').getByText('Crónica de tus decisiones').waitFor();
+            await page.locator('#closeToolPanel').click();
+
+            await page.locator('#openMap').click();
+            await page.locator('#toolOverlay').getByText('Plaza del pozo').waitFor();
+            await page.locator('#closeToolPanel').click();
+
+            await page.locator('#openInventory').click();
+            await page.locator('#toolOverlay').getByText('Tu inventario está vacío por ahora.').waitFor();
+            await page.locator('#closeToolPanel').click();
+
+            await page.locator('#openOptions').click();
+            await page.locator('#saveNow').click();
+            await page.locator('#toolFeedback').getByText('La partida se ha guardado correctamente.').waitFor();
+            await page.locator('#closeToolPanel').click();
+
+            await page.locator('#openExplore').click();
+            await page.locator('[data-explore-index="0"]').click();
+            await page.locator('#storyContent .current-action').waitFor();
+            await page.waitForFunction(() => {
+              const raw = localStorage.getItem('cosmopolis_save');
+              if (!raw) return false;
+              const data = JSON.parse(raw);
+              return data.actions && data.actions.length === 1 &&
+                data.adventure.state.inventory.includes('Medallón de cobre') &&
+                data.adventure.state.visitedLocations.includes('Plaza del pozo');
+            });
+            assert.equal(pageErrors.length, 0, 'No deben producirse errores JavaScript: ' + pageErrors.join('; '));
+            await page.locator('#openInventory').click();
+            await page.locator('#toolOverlay').getByText('Medallón de cobre').waitFor();
+            await page.locator('#closeToolPanel').click();
+            console.log('INTERACTION_TESTS_OK: history, map, inventory, options, exploration, AI response and persistence');
+
             const mobile = await page.evaluate(() => ({
               viewport: { width: innerWidth, height: innerHeight },
               document: { width: document.documentElement.scrollWidth, height: document.documentElement.scrollHeight },
