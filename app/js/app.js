@@ -19,6 +19,133 @@ const Cosmopolis = {
         })[char]);
     },
 
+    openPanel(title, content, setup) {
+        const screen = document.querySelector('.adventure-screen');
+        const previous = document.getElementById('toolOverlay');
+        if (previous) previous.remove();
+
+        const overlay = document.createElement('section');
+        overlay.id = 'toolOverlay';
+        overlay.className = 'tool-overlay';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-labelledby', 'toolPanelTitle');
+        overlay.innerHTML = `
+            <div class="tool-panel">
+                <header class="tool-panel-heading">
+                    <h2 id="toolPanelTitle">${this.escape(title)}</h2>
+                    <button type="button" class="tool-close" id="closeToolPanel">Cerrar</button>
+                </header>
+                <div class="tool-panel-content">${content}</div>
+            </div>
+        `;
+        screen.appendChild(overlay);
+        overlay.querySelector('#closeToolPanel').addEventListener('click', () => overlay.remove());
+        overlay.addEventListener('click', event => {
+            if (event.target === overlay) overlay.remove();
+        });
+        if (typeof setup === 'function') setup(overlay);
+        overlay.querySelector('#closeToolPanel').focus();
+    },
+
+    showHistory() {
+        const actions = Session.getActions();
+        const content = actions.length
+            ? actions.map((item, index) => `
+                <article class="tool-entry">
+                    <p class="tool-entry-number">Jornada de la aventura · ${index + 1}</p>
+                    <h3>${this.escape(item.text || 'Acción sin título')}</h3>
+                    <p>${this.escape(item.response || 'No se guardó una respuesta narrativa.').replace(/\n/g, '<br>')}</p>
+                    <small>${this.escape(item.createdAt ? new Date(item.createdAt).toLocaleString('es-ES') : '')}</small>
+                </article>
+            `).join('')
+            : '<p>Aún no has escrito ninguna acción. Tu historia comenzará aquí.</p>';
+        this.openPanel('Crónica de tus decisiones', content);
+    },
+
+    showMap() {
+        const saved = Save.load() || {};
+        const state = saved.adventure && saved.adventure.state ? saved.adventure.state : {};
+        const places = Array.isArray(state.visitedLocations) ? state.visitedLocations.slice() : [];
+        const current = state.currentLocation || (saved.adventure && saved.adventure.location) || '';
+        if (current && !places.includes(current)) places.push(current);
+        const placeList = places.length
+            ? places.map((place, index) => `<li><span>${index + 1}.</span> ${this.escape(place)}${place === current ? ' <strong>· Aquí</strong>' : ''}</li>`).join('')
+            : '<li>El personaje aún no ha registrado lugares.</li>';
+        const clues = Array.isArray(state.clues) && state.clues.length
+            ? state.clues.map(clue => `<li>${this.escape(clue)}</li>`).join('')
+            : '<li>Todavía no has descubierto pistas.</li>';
+        this.openPanel('Mapa de lugares conocidos', `
+            <p class="tool-intro">Este registro solo muestra lugares que tu personaje ha visitado o conoce. Las zonas desconocidas permanecen en blanco.</p>
+            <h3>Lugares registrados</h3><ol class="tool-list">${placeList}</ol>
+            <h3>Pistas reunidas</h3><ul class="tool-list">${clues}</ul>
+        `);
+    },
+
+    showInventory() {
+        const saved = Save.load() || {};
+        const state = saved.adventure && saved.adventure.state ? saved.adventure.state : {};
+        const items = Array.isArray(state.inventory) ? state.inventory : [];
+        const content = items.length
+            ? `<ul class="inventory-list">${items.map(item => `<li><span aria-hidden="true">✦</span> ${this.escape(item)}</li>`).join('')}</ul>`
+            : '<p>Tu inventario está vacío por ahora.</p><p>Los objetos aparecerán aquí cuando los consigas, los recibas o los recojas durante la aventura. Examinar algo no significa que pase automáticamente a tus pertenencias.</p>';
+        this.openPanel('Tus pertenencias', content);
+    },
+
+    showOptions(character) {
+        const saved = Save.load();
+        const adventure = saved && saved.adventure;
+        const location = adventure && adventure.state
+            ? adventure.state.currentLocation || adventure.location
+            : 'Sin aventura iniciada';
+        const count = saved && Array.isArray(saved.actions) ? saved.actions.length : 0;
+        this.openPanel('Opciones de la partida', `
+            <p class="tool-intro">La partida se guarda automáticamente en este navegador.</p>
+            <dl class="tool-facts">
+                <div><dt>Personaje</dt><dd>${this.escape(character.name || 'Sin nombre')}</dd></div>
+                <div><dt>Ubicación</dt><dd>${this.escape(location)}</dd></div>
+                <div><dt>Acciones guardadas</dt><dd>${count}</dd></div>
+            </dl>
+            <button type="button" id="saveNow" class="tool-action">Guardar ahora</button>
+            <button type="button" id="profileFromOptions" class="tool-action secondary">Consultar mi ficha</button>
+            <p id="toolFeedback" role="status" aria-live="polite"></p>
+        `, overlay => {
+            overlay.querySelector('#saveNow').addEventListener('click', () => {
+                const latest = Save.load();
+                const ok = latest ? Save.save(latest) : false;
+                overlay.querySelector('#toolFeedback').textContent = ok
+                    ? 'La partida se ha guardado correctamente.'
+                    : 'No se ha podido guardar la partida.';
+            });
+            overlay.querySelector('#profileFromOptions').addEventListener('click', () => {
+                overlay.remove();
+                this.showProfile(character);
+            });
+        });
+    },
+
+    showExplore(input, form) {
+        const suggestions = [
+            ['Observar alrededor', 'Observo atentamente todo lo que me rodea.'],
+            ['Buscar personajes', 'Busco personajes presentes y trato de averiguar quiénes son.'],
+            ['Examinar el lugar', 'Examino detenidamente este lugar y sus detalles.'],
+            ['Escuchar', 'Me detengo y escucho los sonidos, voces y movimientos cercanos.']
+        ];
+        const content = '<p class="tool-intro">Son sugerencias opcionales. Puedes escribir cualquier otra acción con total libertad.</p>' +
+            suggestions.map((item, index) => `<button type="button" class="explore-choice" data-explore-index="${index}">${this.escape(item[0])}<span>›</span></button>`).join('');
+        this.openPanel('Explorar el entorno', content, overlay => {
+            overlay.querySelectorAll('[data-explore-index]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const choice = suggestions[Number(button.dataset.exploreIndex)];
+                    if (!choice) return;
+                    input.value = choice[1];
+                    overlay.remove();
+                    form.requestSubmit();
+                });
+            });
+        });
+    },
+
     init() {
         const saved = Save.load();
 
@@ -188,7 +315,7 @@ const Cosmopolis = {
                     '</section>' +
                 '</main>' +
                 '<section class="player-panel">' +
-                    '<div class="player-heading"><span>Tu turno · Escribe tu acción</span><button id="backToProfile" type="button">Mi ficha</button></div>' +
+                    '<div class="player-heading"><button id="openExplore" type="button">Explorar</button><span>Tu turno · Escribe tu acción</span><button id="backToProfile" type="button">Mi ficha</button></div>' +
                     '<form id="actionForm">' +
                         '<div class="quill-inkwell" aria-hidden="true">' +
                             '<svg viewBox="0 0 120 140" role="presentation"><defs><linearGradient id="featherTone" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f0d18e"/><stop offset=".38" stop-color="#9b672e"/><stop offset="1" stop-color="#3b1d09"/></linearGradient><linearGradient id="inkGlass" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#170b05"/><stop offset=".28" stop-color="#71431e"/><stop offset=".52" stop-color="#241006"/><stop offset=".8" stop-color="#8b5b2b"/><stop offset="1" stop-color="#1a0b04"/></linearGradient></defs><path d="M48 12 C25 17 10 42 14 72 C17 91 31 101 39 108 C39 83 46 48 48 12Z" fill="url(#featherTone)" stroke="#321705" stroke-width="2"/><path d="M47 14 C53 36 48 68 39 108" fill="none" stroke="#f0d39a" stroke-width="2.4"/><g fill="none" stroke="#4b260d" stroke-width="1.4"><path d="M43 28L23 35 M43 38L18 49 M42 49L17 62 M41 60L20 75 M40 72L26 87 M49 29L61 35 M48 40L59 48 M46 52L56 62 M44 65L51 76 M42 78L47 88"/></g><path d="M39 108L79 24" fill="none" stroke="#2c1508" stroke-width="2.5"/><path d="M76 22L83 10L82 28L78 34Z" fill="#d8b574" stroke="#4a250c" stroke-width="1.5"/><path d="M23 100 Q15 108 19 124 Q40 137 66 125 Q73 112 61 100Z" fill="url(#inkGlass)" stroke="#1c0b03" stroke-width="3"/><path d="M29 100L29 91Q40 86 53 91L54 101" fill="#4b2810" stroke="#1d0b03" stroke-width="2"/><path d="M25 109Q42 117 64 109 M23 120Q42 130 66 120" fill="none" stroke="#c18a48" stroke-width="2"/><path d="M32 105Q27 114 32 122" fill="none" stroke="#e5c17e" stroke-width="2" opacity=".75"/><ellipse cx="41" cy="91" rx="15" ry="4" fill="#a9783d" stroke="#321705" stroke-width="2"/><path d="M31 89L31 83Q41 79 51 83L51 89" fill="#5a3215" stroke="#321705" stroke-width="2"/></svg>' +
@@ -211,22 +338,11 @@ const Cosmopolis = {
             '</div>';
 
 
-        document.getElementById('openHistory').addEventListener('click', () => {
-            const actions = Session.getActions();
-            const summary = actions.length
-                ? actions.map((item, index) => (index + 1) + '. ' + (item.text || '')).join('\n')
-                : 'Todavía no has realizado acciones.';
-            alert('HISTORIAL DE LA AVENTURA\n\n' + summary);
-        });
-        document.getElementById('openMap').addEventListener('click', () => {
-            alert('MAPA\n\nLa pantalla del mapa todavía no está implementada.');
-        });
-        document.getElementById('openInventory').addEventListener('click', () => {
-            alert('INVENTARIO\n\nLa pantalla del inventario todavía no está implementada.');
-        });
-        document.getElementById('openOptions').addEventListener('click', () => {
-            alert('OPCIONES\n\nEste apartado todavía no está implementado.');
-        });
+        document.getElementById('openHistory').addEventListener('click', () => this.showHistory());
+        document.getElementById('openMap').addEventListener('click', () => this.showMap());
+        document.getElementById('openInventory').addEventListener('click', () => this.showInventory());
+        document.getElementById('openOptions').addEventListener('click', () => this.showOptions(character));
+        document.getElementById('openExplore').addEventListener('click', () => this.showExplore(input, form));
 
         document.getElementById('backToProfile').addEventListener('click', () => {
             this.showProfile(character);
