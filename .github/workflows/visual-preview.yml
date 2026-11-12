@@ -1,0 +1,97 @@
+name: Visual preview
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'index.html'
+      - '.github/workflows/visual-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mobile-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start local server
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 > /tmp/cosmopolis-http.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8080/index.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/cosmopolis-http.log
+          exit 1
+      - name: Render adventure on mobile and desktop
+        run: |
+          mkdir -p artifacts
+          node <<'NODE'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const character = {
+              name: 'Ariadna',
+              nature: 'Humana',
+              appearance: 'Viajera de cabello oscuro y ojos atentos.',
+              history: 'Cartógrafa en busca de lugares olvidados.',
+              abilities: 'Observación y orientación.',
+              personality: 'Curiosa y prudente.'
+            };
+            const adventure = {
+              id: 'preview',
+              title: 'La campana bajo la montaña',
+              location: 'Valdebruma',
+              text: 'El camino desciende entre montañas cubiertas de niebla. Al final aparece Valdebruma, un pueblo de tejados oscuros, chimeneas humeantes y calles empedradas.\\n\\nAriadna, llevas poco tiempo en el pueblo cuando escuchas una campanada. Es profunda, lenta y parece subir desde debajo de tus pies.\\n\\nLa gente se detiene. Nadie mira hacia el campanario de la plaza. Todos miran hacia el viejo pozo de piedra, cerrado con una losa y varias cadenas oxidadas.\\n\\nUna mujer se abre paso entre los vecinos. Lleva un tubo de mapas colgado al hombro y tiene barro hasta las rodillas.\\n\\n—Me llamo Elia. Soy cartógrafa —dice, sin apartar los ojos del pozo—. Esa campana lleva treinta años sin existir. Y, sin embargo, acaba de sonar por tercera vez esta semana.\\n\\nSe vuelve hacia ti.\\n\\n—No te conozco, pero pareces alguien capaz de escuchar antes de salir corriendo. Necesito ayuda.\\n\\nElia espera tu respuesta.',
+              state: { currentLocation: 'Plaza del pozo', time: 'Mañana', characters: { Elia: { role: 'Cartógrafa', location: 'Plaza del pozo', attitude: 'Cautelosa', trust: 0 } } },
+              createdAt: new Date().toISOString()
+            };
+            const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+            await context.addInitScript(({ character, adventure }) => {
+              localStorage.setItem('cosmopolis_save', JSON.stringify({ character, adventure, actions: [], world: { events: [], facts: [], relationships: {} } }));
+            }, { character, adventure });
+            const page = await context.newPage();
+            page.on('pageerror', error => console.error('PAGE ERROR:', error.message));
+            await page.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
+            await page.locator('.adventure-screen').waitFor();
+            await page.screenshot({ path: 'artifacts/cosmopolis-mobile.png', fullPage: true });
+            const mobile = await page.evaluate(() => ({
+              viewport: { width: innerWidth, height: innerHeight },
+              document: { width: document.documentElement.scrollWidth, height: document.documentElement.scrollHeight },
+              paper: (() => { const r = document.querySelector('.adventure-screen').getBoundingClientRect(); return { x:r.x,y:r.y,width:r.width,height:r.height }; })(),
+              header: (() => { const r = document.querySelector('.manuscript-header').getBoundingClientRect(); return { x:r.x,y:r.y,width:r.width,height:r.height }; })(),
+              story: (() => { const r = document.querySelector('.story-panel').getBoundingClientRect(); return { x:r.x,y:r.y,width:r.width,height:r.height }; })(),
+              player: (() => { const r = document.querySelector('.player-panel').getBoundingClientRect(); return { x:r.x,y:r.y,width:r.width,height:r.height }; })(),
+              toolbar: (() => { const r = document.querySelector('.manuscript-toolbar').getBoundingClientRect(); return { x:r.x,y:r.y,width:r.width,height:r.height }; })()
+            }));
+            console.log('MOBILE_LAYOUT', JSON.stringify(mobile));
+            await context.close();
+            const desktop = await browser.newContext({ viewport: { width: 1024, height: 900 }, deviceScaleFactor: 1 });
+            await desktop.addInitScript(({ character, adventure }) => {
+              localStorage.setItem('cosmopolis_save', JSON.stringify({ character, adventure, actions: [], world: { events: [], facts: [], relationships: {} } }));
+            }, { character, adventure });
+            const desktopPage = await desktop.newPage();
+            await desktopPage.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
+            await desktopPage.locator('.adventure-screen').waitFor();
+            await desktopPage.screenshot({ path: 'artifacts/cosmopolis-desktop.png', fullPage: true });
+            await browser.close();
+          })().catch(error => { console.error(error); process.exit(1); });
+          NODE
+      - name: Upload rendered previews
+        uses: actions/upload-artifact@v4
+        with:
+          name: cosmopolis-visual-preview
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 7
