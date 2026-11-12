@@ -93,7 +93,8 @@ jobs:
                   cluesToAdd: ['Un medallón de cobre estaba junto al pozo.'],
                   eliaTrustDelta: 0,
                   itemsToAdd: ['Medallón de cobre'],
-                  itemsToRemove: []
+                  itemsToRemove: [],
+                  characterMemoriesToAdd: [{ character: 'Elia', memory: 'Ariadna encontró un medallón de cobre junto al pozo.' }]
                 } : {
                   reply: 'Entregas el medallón a Elia. Ella lo guarda con cuidado en su tubo de mapas.',
                   event: 'Ariadna ha entregado el medallón de cobre a Elia.',
@@ -103,7 +104,8 @@ jobs:
                   cluesToAdd: [],
                   eliaTrustDelta: 1,
                   itemsToAdd: [],
-                  itemsToRemove: ['Medallón de cobre']
+                  itemsToRemove: ['Medallón de cobre'],
+                  characterMemoriesToAdd: [{ character: 'Elia', memory: 'Ariadna le entregó el medallón de cobre.' }]
                 };
                 await route.fulfill({
                   status: 200,
@@ -154,7 +156,9 @@ jobs:
               const data = JSON.parse(raw);
               return data.actions && data.actions.length === 2 &&
                 !data.adventure.state.inventory.includes('Medallón de cobre') &&
-                data.adventure.state.characters.Elia.trust === 1;
+                data.adventure.state.characters.Elia.trust === 1 &&
+                data.adventure.state.characters.Elia.memories.includes('Ariadna encontró un medallón de cobre junto al pozo.') &&
+                data.adventure.state.characters.Elia.memories.includes('Ariadna le entregó el medallón de cobre.');
             });
             await page.reload({ waitUntil: 'networkidle' });
             await page.locator('#storyContent .current-action').getByText('Entrego el medallón de cobre a Elia.').waitFor();
