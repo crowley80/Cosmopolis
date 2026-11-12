@@ -1092,3 +1092,16 @@ Capturas generadas:
 - `cosmopolis-desktop.png`
 
 El run 59 valida el código anterior al último cambio de versión de caché; el siguiente run se encargará de confirmar también el `index.html` actualizado.
+
+
+### Validación final tras renovar caché — run 60 — 12 de noviembre de 2026
+
+La ejecución `43261948491`, sobre el commit `42f828f`, terminó correctamente. Se confirmó que el cambio de versión de CSS y JavaScript en `index.html` no altera la interfaz ni rompe las pruebas. La batería completa de interacción volvió a pasar y se generaron nuevas capturas móvil y escritorio.
+
+- Artefacto: `cosmopolis-visual-preview`.
+- ID: `13964671036`.
+- Capturas: `cosmopolis-mobile.png` y `cosmopolis-desktop.png`.
+- Interacciones: Historial, Mapa, Inventario, Opciones, guardado manual, exploración, alta/retirada de objetos, alta y memoria de personajes, cambios de actitud/ubicación, reloj interno y recuperación tras recarga.
+- Geometría móvil 390 × 844: documento 390 × 844; sin desbordamiento horizontal. Narración, panel de escritura y barra inferior permanecen dentro de la pantalla y sin solaparse.
+
+El estado remoto de `main` contiene el conjunto de cambios y la documentación continua está guardada. La prueba sigue usando una respuesta simulada para verificar la integración del cliente; la inferencia real de Qwen3.5-4B y la apariencia en el navegador del Samsung no se declaran verificadas. Esas son las dos comprobaciones que quedan para la revisión con el usuario.
