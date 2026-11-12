@@ -696,3 +696,14 @@ La comparación de la captura confirmó que el pergamino ya tiene una textura y 
 - CSS: commit `4eec70f`.
 - Caché: commit `c435b2e`, versión `20261112-marcos-ornamentales`.
 - Pendiente: inspeccionar el render automático para comprobar que los trazos se ajustan a los paneles en móvil y escritorio y no interfieren con el texto o los botones.
+
+
+### Ajuste de escala de la filigrana — 12 de noviembre de 2026
+
+La captura de los nuevos marcos reveló un problema de proporción en escritorio: los SVG conservaban la relación de aspecto original y quedaban centrados, por lo que sus adornos no alcanzaban los extremos del panel. En móvil el efecto era menos evidente.
+
+Corrección aplicada: se añadió `preserveAspectRatio='none'` a ambos SVG embebidos para que el marco se adapte al ancho y alto reales de cada panel.
+
+- CSS: commit `5afef7e`.
+- Caché: commit `8f70322`, versión `20261112-marcos-ajustados`.
+- Pendiente: volver a inspeccionar escritorio y móvil; el marco debe recorrer ahora todo el ancho de cada panel sin invadir el campo ni los botones.
