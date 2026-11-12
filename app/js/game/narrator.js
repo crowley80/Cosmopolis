@@ -81,7 +81,8 @@ const Narrator = {
                     'factsToAdd y cluesToAdd: solo datos nuevos realmente descubiertos, sin duplicados.',
                     'eliaTrustDelta: cambio justificado de confianza de Elia, normalmente -1, 0 o 1.',
                     'itemsToAdd: objetos que el personaje obtiene realmente y puede llevar consigo; no incluyas objetos solo vistos o examinados.',
-                    'itemsToRemove: objetos que pierde, entrega, consume o deja atrás realmente; usa el nombre exacto del inventario.'
+                    'itemsToRemove: objetos que pierde, entrega, consume o deja atrás realmente; usa el nombre exacto del inventario.',
+                    'characterMemoriesToAdd: recuerdos concretos y duraderos de personajes que ya existen en el estado; no inventes personajes ni guardes detalles triviales.'
                 ].join(' ')
             },
             {
@@ -114,9 +115,21 @@ const Narrator = {
                 cluesToAdd: { type: 'array', items: { type: 'string' } },
                 eliaTrustDelta: { type: 'integer', minimum: -1, maximum: 1 },
                 itemsToAdd: { type: 'array', items: { type: 'string' } },
-                itemsToRemove: { type: 'array', items: { type: 'string' } }
+                itemsToRemove: { type: 'array', items: { type: 'string' } },
+                characterMemoriesToAdd: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        properties: {
+                            character: { type: 'string' },
+                            memory: { type: 'string' }
+                        },
+                        required: ['character', 'memory']
+                    }
+                }
             },
-            required: ['reply', 'event', 'category', 'location', 'factsToAdd', 'cluesToAdd', 'eliaTrustDelta', 'itemsToAdd', 'itemsToRemove']
+            required: ['reply', 'event', 'category', 'location', 'factsToAdd', 'cluesToAdd', 'eliaTrustDelta', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd']
         };
 
         const controller = new AbortController();
@@ -151,7 +164,8 @@ const Narrator = {
             if (!result || typeof result.reply !== 'string' || !result.reply.trim() ||
                 typeof result.event !== 'string' || typeof result.location !== 'string' ||
                 !Array.isArray(result.factsToAdd) || !Array.isArray(result.cluesToAdd) ||
-                !Array.isArray(result.itemsToAdd) || !Array.isArray(result.itemsToRemove)) {
+                !Array.isArray(result.itemsToAdd) || !Array.isArray(result.itemsToRemove) ||
+                !Array.isArray(result.characterMemoriesToAdd)) {
                 throw new Error('La respuesta no cumple el formato narrativo');
             }
 
@@ -186,6 +200,24 @@ const Narrator = {
                 const clean = item.trim().slice(0, 120);
                 if (!state.inventory.some(existing => String(existing).toLocaleLowerCase('es') === clean.toLocaleLowerCase('es')) && state.inventory.length < 50) {
                     state.inventory.push(clean);
+                }
+            });
+
+            state.characters = state.characters && typeof state.characters === 'object' ? state.characters : {};
+            result.characterMemoriesToAdd.slice(0, 5).forEach(entry => {
+                if (!entry || typeof entry.character !== 'string' || typeof entry.memory !== 'string') return;
+                const requestedName = entry.character.trim().toLocaleLowerCase('es');
+                const key = Object.keys(state.characters).find(name =>
+                    name.toLocaleLowerCase('es') === requestedName ||
+                    String(state.characters[name] && state.characters[name].name || '').toLocaleLowerCase('es') === requestedName
+                );
+                const memory = entry.memory.trim().slice(0, 300);
+                if (!key || !memory) return;
+                const person = state.characters[key];
+                person.memories = Array.isArray(person.memories) ? person.memories : [];
+                if (!person.memories.some(item => String(item).toLocaleLowerCase('es') === memory.toLocaleLowerCase('es'))) {
+                    person.memories.push(memory);
+                    if (person.memories.length > 30) person.memories = person.memories.slice(-30);
                 }
             });
 
