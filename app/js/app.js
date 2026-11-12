@@ -168,32 +168,35 @@ const Cosmopolis = {
     showAdventure(character, adventure) {
         const app = document.getElementById('app');
 
+        const now = new Date();
+        const clock = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+        const dateLabel = now.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+
         app.innerHTML =
             '<div class="adventure-screen">' +
-                '<header class="adventure-header">' +
-                    '<div>' +
-                        '<h1>Cosmópolis</h1>' +
-                        '<p>Un universo. Infinitas posibilidades.</p>' +
-                    '</div>' +
+                '<header class="manuscript-header">' +
+                    '<div class="compass compass-left" aria-hidden="true"><span class="north">N</span><span class="east">E</span><span class="south">S</span><span class="west">O</span><i>✦</i></div>' +
+                    '<div class="wordmark"><h1>Cosmópolis</h1><p>Una aventura sin límites</p></div>' +
+                    '<div class="manuscript-meta"><span>Ubicación: ' + this.escape(adventure.location || 'Tierras desconocidas') + '</span><span>Hora: ' + clock + '</span><span>Día: ' + dateLabel + '</span></div>' +
+                    '<div class="compass compass-right" aria-hidden="true"><span class="north">N</span><span class="east">E</span><span class="south">S</span><span class="west">O</span><i>✦</i></div>' +
                     '<button id="backToProfile" type="button">Mi ficha</button>' +
                 '</header>' +
                 '<main class="story-panel" id="storyPanel">' +
                     '<section class="narrative-panel">' +
-                        '<span class="eyebrow">LA HISTORIA · ' +
-                            this.escape(adventure.location || '') +
-                        '</span>' +
+                        '<div class="story-ornament" aria-hidden="true">— ❧ —</div>' +
+                        '<span class="eyebrow">LA HISTORIA · ' + this.escape(adventure.location || '') + '</span>' +
                         '<h2>' + this.escape(adventure.title || 'Tu aventura') + '</h2>' +
                         '<div id="storyContent" class="story-content"></div>' +
                     '</section>' +
                 '</main>' +
                 '<section class="player-panel">' +
-                    '<div class="player-heading">' +
-                        '<span class="eyebrow">TU TURNO</span>' +
-                        '<h3>¿Qué quieres hacer?</h3>' +
-                    '</div>' +
+                    '<div class="player-heading"><span>Tu turno · Escribe tu acción</span></div>' +
                     '<form id="actionForm">' +
-                        '<textarea id="playerAction" required placeholder="Escribe aquí lo que quieres hacer..."></textarea>' +
-                        '<button type="submit">Enviar acción</button>' +
+                        '<div class="quill-inkwell" aria-hidden="true">' +
+                            '<svg viewBox="0 0 100 120" role="presentation"><path d="M48 8 C20 24 12 54 17 83 C31 59 46 35 48 8Z" fill="#684018" stroke="#321907" stroke-width="2"/><path d="M48 8 L22 76 M43 25 L28 42 M38 40 L17 55 M34 53 L22 67" fill="none" stroke="#e0b66e" stroke-width="2"/><path d="M19 82 L54 20" stroke="#321907" stroke-width="2"/><path d="M26 83 Q18 91 22 103 Q38 114 58 103 Q62 91 51 83Z" fill="#3a2111" stroke="#1f1008" stroke-width="3"/><ellipse cx="40" cy="85" rx="15" ry="5" fill="#9a672f" stroke="#321907" stroke-width="2"/><path d="M26 94 Q40 101 55 94" fill="none" stroke="#c08a48" stroke-width="2"/></svg>' +
+                        '</div>' +
+                        '<textarea id="playerAction" required placeholder="Escribe aquí tu acción..."></textarea>' +
+                        '<button type="submit">Enviar</button>' +
                     '</form>' +
                 '</section>' +
             '</div>';
@@ -234,8 +237,6 @@ const Cosmopolis = {
 
         form.addEventListener('submit', event => {
             event.preventDefault();
-            alert('DIAGNÓSTICO: el formulario ha recibido la pulsación.');
-
             const action = input.value.trim();
             if (!action) return;
 
