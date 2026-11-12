@@ -192,6 +192,10 @@ jobs:
               player: (() => { const r = document.querySelector('.player-panel').getBoundingClientRect(); return { x:r.x,y:r.y,width:r.width,height:r.height }; })(),
               toolbar: (() => { const r = document.querySelector('.manuscript-toolbar').getBoundingClientRect(); return { x:r.x,y:r.y,width:r.width,height:r.height }; })()
             }));
+            assert.ok(mobile.document.width <= mobile.viewport.width, 'La interfaz móvil no debe desbordarse horizontalmente');
+            assert.ok(mobile.story.y + mobile.story.height <= mobile.player.y + 1, 'La narración no debe invadir el panel de escritura');
+            assert.ok(mobile.player.y + mobile.player.height <= mobile.toolbar.y + 1, 'La escritura no debe invadir la barra inferior');
+            assert.ok(mobile.toolbar.y + mobile.toolbar.height <= mobile.viewport.height + 1, 'La barra inferior debe quedar dentro de la pantalla');
             console.log('MOBILE_LAYOUT', JSON.stringify(mobile));
             await context.close();
             const desktop = await browser.newContext({ viewport: { width: 1024, height: 900 }, deviceScaleFactor: 1 });
@@ -199,8 +203,13 @@ jobs:
               localStorage.setItem('cosmopolis_save', JSON.stringify({ character, adventure, actions: [], world: { events: [], facts: [], relationships: {} } }));
             }, { character, adventure });
             const desktopPage = await desktop.newPage();
+            const desktopErrors = [];
+            desktopPage.on('pageerror', error => desktopErrors.push(error.message));
             await desktopPage.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
             await desktopPage.locator('.adventure-screen').waitFor();
+            const desktopWidth = await desktopPage.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth }));
+            assert.ok(desktopWidth.document <= desktopWidth.viewport, 'La interfaz de escritorio no debe desbordarse horizontalmente');
+            assert.equal(desktopErrors.length, 0, 'No deben producirse errores JavaScript en escritorio: ' + desktopErrors.join('; '));
             await desktopPage.screenshot({ path: 'artifacts/cosmopolis-desktop.png', fullPage: true });
             await browser.close();
           })().catch(error => { console.error(error); process.exit(1); });
