@@ -978,3 +978,23 @@ Commits de esta tanda:
 - `fa386c3`: pruebas automatizadas de paneles, exploración y guardado.
 
 Próximo paso: esperar el resultado del flujo de Chromium, corregir cualquier fallo detectado, revisar el resto de las funciones de guardado y navegación y dejar una nueva captura lista. No solicitar al usuario pasos en Termux ni nuevas confirmaciones durante esta continuación.
+
+
+### Memoria individual de personajes — 12 de noviembre de 2026
+
+Se ha ampliado el estado narrativo para que los personajes con presencia registrada conserven recuerdos concretos de acontecimientos compartidos:
+
+- El esquema de respuesta de Narrator incluye `characterMemoriesToAdd`, con nombre y recuerdo.
+- El cliente solo aplica recuerdos a personajes que ya existen en `adventure.state.characters`; una respuesta del modelo no puede crear personajes arbitrarios mediante este campo.
+- Se eliminan duplicados y se limita la memoria a 30 entradas por personaje.
+- Los recuerdos viven dentro del estado de aventura, por lo que se guardan con la partida y se vuelven a enviar al modelo en las acciones posteriores.
+- Elia comienza con el recuerdo de su primer encuentro con el personaje.
+
+La automatización de Chromium se ha ampliado para simular dos acciones consecutivas: encontrar un medallón y entregárselo a Elia. Comprueba la incorporación y retirada del objeto, el cambio de confianza, la conservación de dos recuerdos y la recuperación de la última página narrativa tras recargar.
+
+Commits:
+- `2af285b`: inicializar memoria individual de personajes.
+- `9ba3101`: guardar recuerdos persistentes de personajes.
+- `7bef390`: probar recuerdos individuales y persistencia de relaciones.
+
+La prueba sigue siendo una simulación controlada del endpoint; no afirma que Qwen3.5-4B haya sido probado en el teléfono. Queda pendiente el ensayo de generación real y la inspección visual del usuario.
