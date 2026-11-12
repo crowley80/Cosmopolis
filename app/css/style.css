@@ -273,8 +273,8 @@ body {
   content: "";
   pointer-events: none;
   /* Máscara de borde erosionado: ruido orgánico, sin dientes geométricos. */
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1000' height='1000' viewBox='0 0 1000 1000' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cfilter id='rough'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.018 .035' numOctaves='2' seed='17' result='noise'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='noise' scale='30' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3C/defs%3E%3Crect x='8' y='8' width='984' height='984' fill='white' filter='url(%23rough)'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1000' height='1000' viewBox='0 0 1000 1000' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cfilter id='rough'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.018 .035' numOctaves='2' seed='17' result='noise'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='noise' scale='30' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3C/defs%3E%3Crect x='8' y='8' width='984' height='984' fill='white' filter='url(%23rough)'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1000' height='1000' viewBox='0 0 1000 1000' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cfilter id='rough'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.018 .035' numOctaves='2' seed='17' result='noise'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='noise' scale='40' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3C/defs%3E%3Crect x='8' y='8' width='984' height='984' fill='white' filter='url(%23rough)'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1000' height='1000' viewBox='0 0 1000 1000' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cfilter id='rough'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.018 .035' numOctaves='2' seed='17' result='noise'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='noise' scale='40' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3C/defs%3E%3Crect x='8' y='8' width='984' height='984' fill='white' filter='url(%23rough)'/%3E%3C/svg%3E");
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
   background-color: #a56531;
@@ -287,7 +287,7 @@ body {
     radial-gradient(ellipse at 50% 100%, rgba(80,35,8,.68), transparent 9%),
     radial-gradient(ellipse at 0 50%, rgba(80,35,8,.58), transparent 8%),
     radial-gradient(ellipse at 100% 50%, rgba(80,35,8,.58), transparent 8%),
-    radial-gradient(ellipse at 48% 42%, rgba(255,204,130,.13) 0 27%, transparent 78%),
+    radial-gradient(ellipse at 48% 42%, rgba(255,211,137,.2) 0 29%, transparent 78%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.12' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.34'/%3E%3C/svg%3E"),
     radial-gradient(ellipse at 14% 24%, rgba(99,48,12,.27) 0 1%, transparent 17%),
@@ -297,8 +297,8 @@ body {
     radial-gradient(ellipse at 21% 37%, rgba(94,43,10,.2) 0 1.5%, transparent 22%),
     radial-gradient(ellipse at 78% 57%, rgba(111,53,12,.18) 0 2%, transparent 24%),
     radial-gradient(ellipse at 42% 84%, rgba(255,222,164,.20) 0 6%, transparent 22%),
-    radial-gradient(ellipse at 54% 43%, rgba(255,216,155,.13) 0 10%, transparent 46%),
-    linear-gradient(112deg, #b76a2c 0%, #d99743 28%, #e8b963 52%, #d79540 76%, #a95b24 100%);
+    radial-gradient(ellipse at 54% 43%, rgba(255,222,165,.18) 0 12%, transparent 46%),
+    linear-gradient(112deg, #c47730 0%, #e2a143 28%, #f0bd65 52%, #df9c3d 76%, #ad5d22 100%);
   box-shadow: inset 0 0 28px 14px rgba(37,12,1,.97), inset 0 0 60px 24px rgba(78,31,4,.72);
   filter: drop-shadow(0 0 4px #000) drop-shadow(0 0 12px rgba(0,0,0,.95));
 }
