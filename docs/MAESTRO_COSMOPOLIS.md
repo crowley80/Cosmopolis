@@ -1186,3 +1186,6 @@ Se refuerza el uso activo de `personalGoal`: el prompt de la IA local pide que l
 
 
 Ajuste de legibilidad — 12 de noviembre de 2026: los diálogos del narrador alternativo presentan el objetivo del NPC como una declaración directa («Mi objetivo ahora es este…»), preservando el texto original del objetivo para que la prueba pueda comprobarlo literalmente. Se renueva la caché de `director.js` para evitar cargar una versión anterior.
+
+
+Ajuste de selección de diálogo — 12 de noviembre de 2026: el narrador alternativo prioriza la conversación con un NPC presente cuando el jugador lo nombra, sin exigir que la frase coincida con una lista limitada de verbos interrogativos. Así se evita que una formulación libre omita el objetivo personal del personaje. La prueba automatizada cubre la mención directa de Tomás.
