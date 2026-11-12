@@ -1189,3 +1189,8 @@ Ajuste de legibilidad — 12 de noviembre de 2026: los diálogos del narrador al
 
 
 Ajuste de selección de diálogo — 12 de noviembre de 2026: el narrador alternativo prioriza la conversación con un NPC presente cuando el jugador lo nombra, sin exigir que la frase coincida con una lista limitada de verbos interrogativos. Así se evita que una formulación libre omita el objetivo personal del personaje. La prueba automatizada cubre la mención directa de Tomás.
+
+
+### Estados de progreso de objetivos personales — 12 de noviembre de 2026
+
+Los objetivos incorporan `goalStatus` con cuatro estados controlados: `active`, `progress`, `blocked` y `completed`. La IA puede actualizar el estado sin cambiar el objetivo, o modificar ambos cuando la historia lo justifica. Cada transición se guarda en `goalHistory` junto con el motivo y el número de acción; los cambios de estado también quedan en la memoria del personaje. El narrador alternativo adapta la forma de hablar del NPC según el estado, evitando presentar como pendiente un objetivo ya cumplido o ignorar un bloqueo. Las pruebas verifican el progreso de Elia y el bloqueo temporal de Tomás.
