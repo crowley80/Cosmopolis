@@ -858,3 +858,8 @@ Se ha ejecutado una validación sintáctica con Node.js sobre el cliente `narrat
 ### Primer arranque del servidor en el Samsung — 12 de noviembre de 2026
 
 El usuario sincronizó correctamente `main` en Termux mediante `git pull --ff-only origin main`, avanzando de `91bcace` a `56a9434`. El lanzador `scripts/iniciar_ia_local.sh` se ejecutó y comunicó que inició `llama-server` en segundo plano con PID 2537; registro en `$HOME/cosmopolis-llama-server.log`. Este mensaje confirma el inicio del proceso, pero todavía no confirma que el modelo Qwen3.5-4B haya terminado de cargar ni que el endpoint de salud responda. Siguiente verificación: consultar el registro y `/health` antes de probar el juego.
+
+
+### Modelo Qwen3.5-4B cargado y servidor listo — 12 de noviembre de 2026
+
+El usuario ejecutó en Termux la consulta del registro y del endpoint de salud. El registro confirma que llama.cpp cargó el archivo `$HOME/models/cosmopolis/Qwen3.5-4B-Q4_K_M.gguf`, inicializó un único slot con contexto de 4096 tokens y cuatro hilos, informó `model loaded` y quedó escuchando en `http://127.0.0.1:8081`. La petición a `http://127.0.0.1:8081/health` devolvió `{"status":"ok"}`. Por tanto, el proceso PID 2537 está operativo y el modelo está cargado; no se necesita descargar ni iniciar otra instancia. Próximo paso: abrir Cosmopolis en el navegador del teléfono (`http://127.0.0.1:8080/index.html`) y probar una acción narrativa real. La generación, el formato JSON, la aplicación de cambios y la persistencia todavía no están validados.
