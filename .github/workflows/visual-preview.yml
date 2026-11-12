@@ -157,6 +157,17 @@ jobs:
             await page.locator('#openExplore').click();
             await page.locator('[data-explore-index="0"]').click();
             await page.locator('#storyContent .current-action').waitFor();
+            const goalFallbackProbe = await page.evaluate(() => {
+              const probeAdventure = Adventure.createOpening({ name: 'Ariadna' });
+              probeAdventure.state.characters.Tomás = {
+                role: 'Vecino', location: 'Plaza del pozo', personalGoal: 'Proteger a los vecinos de los peligros del pozo.', trust: 0, memories: []
+              };
+              const result = Director.respond('Pregunto a Tomás qué intenta conseguir.', { name: 'Ariadna' }, probeAdventure, []);
+              return result.reply;
+            });
+            assert(goalFallbackProbe.includes('Proteger a los vecinos de los peligros del pozo.'),
+              'El narrador alternativo debe tener en cuenta el objetivo personal al conversar con un NPC');
+
             const contextProbe = await page.evaluate(() => {
               const saved = Save.load();
               const probe = JSON.parse(JSON.stringify(saved.adventure));
