@@ -184,9 +184,6 @@ const Cosmopolis = {
                 '</header>' +
                 '<main class="story-panel" id="storyPanel">' +
                     '<section class="narrative-panel">' +
-                        '<div class="story-ornament" aria-hidden="true">— ❧ —</div>' +
-                        '<span class="eyebrow">LA HISTORIA · ' + this.escape(adventure.location || '') + '</span>' +
-                        '<h2>' + this.escape(adventure.title || 'Tu aventura') + '</h2>' +
                         '<div id="storyContent" class="story-content"></div>' +
                     '</section>' +
                 '</main>' +
