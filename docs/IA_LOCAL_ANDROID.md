@@ -78,3 +78,10 @@ El prompt indica que el tiempo no debe avanzar sin causa narrativa y que el día
 Se añade `charactersToAdd` al contrato JSON. El narrador puede registrar personajes nuevos cuando entran realmente en escena, con nombre, función, ubicación, actitud y un primer recuerdo. El cliente limita las altas a cinco por respuesta y 50 personajes por aventura, evita duplicados sin distinguir mayúsculas y mantiene sus recuerdos dentro del estado de cada personaje. Las siguientes respuestas pueden ampliar esa memoria mediante `characterMemoriesToAdd`.
 
 El modelo no puede crear un personaje solo mediante el campo de recuerdos: primero debe estar registrado como personaje nuevo o existir previamente. La prueba de navegador simula la entrada de Tomás en escena, añade su memoria inicial y registra un segundo recuerdo después de otra acción; ambos quedan guardados tras recargar.
+
+
+## Actualización de ubicación y actitud de personajes — 12 de noviembre de 2026
+
+El esquema incorpora `characterUpdates` para que el narrador pueda actualizar la ubicación y actitud de personajes ya registrados. Solo se aplican entradas cuyo nombre coincide con un personaje existente; se ignoran nombres desconocidos y campos vacíos. Se limitan los cambios a diez por respuesta. Esto evita que un NPC permanezca indefinidamente en una ubicación antigua después de desplazarse o que su disposición ignore acontecimientos recientes.
+
+La prueba automatizada cambia la actitud de Elia y mueve a Tomás a la entrada de la posada, y comprueba que ambos cambios permanecen en la partida.
