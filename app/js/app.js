@@ -197,7 +197,35 @@ const Cosmopolis = {
                         '<button type="submit">Enviar</button>' +
                     '</form>' +
                 '</section>' +
+
+                '<nav class="manuscript-toolbar" aria-label="Herramientas de aventura">' +
+                    '<button class="toolbar-button" id="openHistory" type="button"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M7 9q9-4 17 3v29q-8-7-17-3zM41 9q-9-4-17 3v29q8-7 17-3z"/><path d="M24 12v29M11 15q5-1 9 2M11 22q5-1 9 2M37 15q-5-1-9 2M37 22q-5-1-9 2"/></svg><span>Historial</span></button>' +
+                    '<span class="toolbar-divider" aria-hidden="true"></span>' +
+                    '<button class="toolbar-button" id="openMap" type="button"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="m5 12 12-6 14 6 12-6v30l-12 6-14-6-12 6zM17 6v30M31 12v30"/><path d="M22 16c0-4 3-7 7-7s7 3 7 7c0 6-7 14-7 14s-7-8-7-14z"/><circle cx="29" cy="16" r="2"/></svg><span>Mapa</span></button>' +
+                    '<span class="toolbar-divider" aria-hidden="true"></span>' +
+                    '<button class="toolbar-button" id="openInventory" type="button"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M16 13q0-8 8-8t8 8M10 15q14-7 28 0l4 27H6z"/><path d="M18 18v5M30 18v5M17 29q7 5 14 0"/></svg><span>Inventario</span></button>' +
+                    '<span class="toolbar-divider" aria-hidden="true"></span>' +
+                    '<button class="toolbar-button" id="openOptions" type="button"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M20 5h8l2 6 5 2 5-3 5 7-4 5v6l4 5-5 7-6-3-5 2-2 6h-8l-2-6-5-2-5 3-5-7 4-5v-6l-4-5 5-7 6 3 5-2z"/><circle cx="24" cy="24" r="7"/></svg><span>Opciones</span></button>' +
+                '</nav>' +
             '</div>';
+
+
+        document.getElementById('openHistory').addEventListener('click', () => {
+            const actions = Session.getActions();
+            const summary = actions.length
+                ? actions.map((item, index) => (index + 1) + '. ' + (item.text || '')).join('\n')
+                : 'Todavía no has realizado acciones.';
+            alert('HISTORIAL DE LA AVENTURA\n\n' + summary);
+        });
+        document.getElementById('openMap').addEventListener('click', () => {
+            alert('MAPA\n\nLa pantalla del mapa todavía no está implementada.');
+        });
+        document.getElementById('openInventory').addEventListener('click', () => {
+            alert('INVENTARIO\n\nLa pantalla del inventario todavía no está implementada.');
+        });
+        document.getElementById('openOptions').addEventListener('click', () => {
+            alert('OPCIONES\n\nEste apartado todavía no está implementado.');
+        });
 
         document.getElementById('backToProfile').addEventListener('click', () => {
             this.showProfile(character);
