@@ -494,3 +494,18 @@ Pruebas pendientes:
 - Recargar `http://127.0.0.1:8080/index.html` en Chrome y comparar la composición con la referencia.
 - No declarar el diseño aprobado hasta que el usuario confirme la apariencia real en su teléfono.
 
+
+
+## Corrección de contraste, bordes y ornamentos — 12 de noviembre de 2026
+
+Tras recuperar y examinar la imagen original de referencia, el usuario señaló diferencias concretas que seguían pendientes: el fondo exterior debía ser negro, el borde del papiro mucho más quemado y oscuro, las esquinas debían parecer dobladas, y la rosa de los vientos y el conjunto de pluma/tintero necesitaban un dibujo ornamental más elaborado.
+
+Se prepara una corrección específica sobre la implementación existente:
+- Fondo exterior casi negro, para separar visualmente el folio del entorno.
+- Borde de papel con recorte irregular más pronunciado, bandas de quemado más oscuras, sombras profundas y textura más envejecida.
+- Cuatro pliegues triangulares superpuestos en las esquinas para simular papel doblado.
+- Rosas de los vientos SVG más complejas, con anillos, marcas radiales y estrella de ocho puntas.
+- Pluma con barbas y nervadura más detalladas, junto a un tintero de vidrio oscuro con cuello, bandas y reflejos.
+- Se conserva la interfaz exclusivamente textual: no se recupera la ilustración de la ciudad ni el panel permanente «Personajes cercanos».
+
+Estado: cambios preparados para guardarse en GitHub y sincronizarse en Termux. Pendiente comprobar sintaxis, carga de recursos y resultado en Chrome. La apariencia no se considerará aprobada hasta que el usuario la valide.
