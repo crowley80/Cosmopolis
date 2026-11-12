@@ -547,3 +547,14 @@ Se recupera en la pantalla de aventura la franja de cuatro accesos que aparece e
 - Commit de `index.html` (invalidación de caché): `b5a7c78`.
 - Commit de esta actualización documental: `17b0642`.
 - Estado: cambios guardados en `main` y releídos desde GitHub. No se ha podido ejecutar todavía una vista previa real de la aplicación completa para compararla píxel a píxel con la maqueta; tampoco se ha probado en el navegador móvil. Por tanto, no se declara fidelidad visual completa ni se solicita al usuario que abra la página.
+
+
+## Ajuste de cabecera y emblemas de navegación — 12 de noviembre de 2026
+
+Segunda pasada de fidelidad basada en inspección directa de la maqueta original.
+
+- Se sustituyen los cuatro pictogramas genéricos por dibujos vectoriales más próximos a los emblemas de la referencia: libro abierto, mapa enrollado, mochila y engranaje.
+- Se refuerza el marco inferior con doble contorno, esquinas redondeadas, líneas interiores y tonos de pergamino/dorado.
+- Se compacta la cabecera de aventura y se reduce el margen superior del conjunto para acercar el título al borde superior y liberar espacio vertical para la narración.
+- No se modifica la lógica de guardado ni el contenido de las pantallas que aún no existen.
+- Esta pasada se basa en comparación de la imagen original y el código fuente; todavía no equivale a una prueba de renderizado del navegador ni permite certificar coincidencia visual total.
