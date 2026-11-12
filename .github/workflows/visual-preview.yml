@@ -96,7 +96,7 @@ jobs:
                   goalUpdates: [{ character: 'Elia', goal: 'Averiguar por qué suenan las campanas.', status: 'progress', reason: 'La marca recién descubierta aporta una pista nueva.' }],
                   itemsToAdd: ['Medallón de cobre'],
                   itemsToRemove: [],
-                  charactersToAdd: [{ name: 'Tomás', role: 'Vecino', location: 'Plaza del pozo', attitude: 'Desconfiado', memory: 'Tomás vio a Ariadna encontrar el medallón.', goal: 'Averiguar quién ha alterado los mapas.' }],
+                  charactersToAdd: [{ name: 'Tomás', role: 'Vecino', location: 'Plaza del pozo', attitude: 'Desconfiado', memory: 'Tomás vio a Ariadna encontrar el medallón.', goal: 'Proteger a los vecinos de los peligros que salgan del pozo.' }],
                   characterUpdates: [{ character: 'Elia', location: 'Plaza del pozo', attitude: 'Más confiada' }],
                   characterActions: [{ character: 'Elia', action: 'Elia se inclina para examinar la marca de cobre junto a Ariadna.' }],
                   characterMemoriesToAdd: [{ character: 'Elia', memory: 'Ariadna encontró un medallón de cobre junto al pozo.' }],
