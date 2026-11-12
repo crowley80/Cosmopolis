@@ -583,3 +583,71 @@ body {
   .player-panel textarea { min-height:58px; }
   .player-panel form > button { min-height:54px; }
 }
+
+
+/* Barra inferior del manuscrito: cuatro accesos de la maqueta original. */
+.manuscript-toolbar {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 1px minmax(0,1fr) 1px minmax(0,1fr) 1px minmax(0,1fr);
+  align-items: stretch;
+  min-height: 68px;
+  margin-top: 7px;
+  padding: 5px 7px;
+  border: 2px solid #704017;
+  outline: 1px solid rgba(255,220,158,.7);
+  outline-offset: -5px;
+  background:
+    radial-gradient(ellipse at 50% 0,rgba(255,228,177,.48),transparent 75%),
+    repeating-linear-gradient(3deg,rgba(104,57,18,.035) 0 1px,transparent 1px 5px),
+    linear-gradient(145deg,#e8b66d,#d49a50);
+  box-shadow: inset 0 0 15px rgba(91,42,10,.25),0 2px 6px rgba(69,31,8,.2);
+}
+.toolbar-button {
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  min-width:0;
+  margin:0;
+  padding:5px 2px;
+  color:#351905;
+  background:transparent;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  font-family:'IM Fell English',Georgia,serif;
+  font-size:clamp(.67rem,3.05vw,.98rem);
+  font-weight:400;
+  letter-spacing:0;
+  white-space:nowrap;
+}
+.toolbar-button svg {
+  flex:0 0 auto;
+  width:clamp(23px,6.4vw,34px);
+  height:clamp(23px,6.4vw,34px);
+  fill:none;
+  stroke:#542b0d;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  filter:drop-shadow(0 1px rgba(255,225,169,.65));
+}
+.toolbar-button:active { transform:translateY(1px); background:rgba(105,57,17,.1); }
+.toolbar-divider {
+  align-self:center;
+  width:1px;
+  height:70%;
+  background:linear-gradient(180deg,transparent,#67390f 15%,#67390f 85%,transparent);
+  box-shadow:1px 0 rgba(255,224,165,.55);
+}
+@media (max-width:390px) {
+  .manuscript-toolbar { min-height:58px; margin-top:5px; padding:4px 3px; }
+  .toolbar-button { gap:3px; font-size:clamp(.59rem,2.8vw,.76rem); }
+  .toolbar-button svg { width:22px; height:22px; }
+}
+@media (max-height:700px) {
+  .manuscript-toolbar { min-height:52px; margin-top:4px; padding:3px; }
+  .toolbar-button svg { width:21px; height:21px; }
+}
