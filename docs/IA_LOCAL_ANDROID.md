@@ -116,3 +116,12 @@ La prueba automatizada amplía deliberadamente los recuerdos/eventos de una copi
 El esquema del narrador añade `characterActions`, una lista de hasta dos acciones cortas de NPCs ya registrados. El cliente resuelve el nombre contra el estado persistido y solo acepta acciones si el personaje está en la ubicación actual (o no tiene ubicación asignada). No actualiza ubicación con este campo. La acción se añade al texto narrativo, se guarda en `lastAutonomousAction` y se incorpora a la memoria individual, con límite de 30 recuerdos. De esta forma se admiten iniciativas pequeñas visibles sin permitir que el modelo mueva personajes fuera de escena.
 
 La prueba automatizada comprueba que la iniciativa de Elia se persiste en su memoria y estado, y que se rechaza una iniciativa de Tomás después de que su ubicación haya cambiado fuera de la escena. No equivale a validar la calidad de las decisiones generadas por Qwen3.5-4B en Android.
+
+
+## Objetivos personales persistentes — 12 de noviembre de 2026
+
+Los personajes registrados pueden conservar un `personalGoal` breve que expresa un deseo, problema o motivación. El arranque de la aventura asigna a Elia el propósito de descubrir el origen de la campana y su relación con los mapas. Los NPC nuevos pueden recibir un objetivo inicial opcional al entrar en escena.
+
+El contrato del narrador incorpora `goalUpdates`: hasta dos cambios por respuesta, cada uno con personaje, nuevo objetivo y motivo. El cliente solo actualiza personajes ya registrados, ignora objetivos vacíos o desconocidos, conserva un historial acotado de diez cambios con el número de acción y añade el motivo a la memoria individual (máximo 30 recuerdos). El objetivo actual viaja dentro del contexto compacto porque forma parte de la ficha persistida del personaje; así puede orientar sus diálogos e iniciativas posteriores sin crear misiones obligatorias para el jugador.
+
+La prueba de Chromium simula la evolución del objetivo de Elia, asigna y modifica el de Tomás, verifica el historial y la memoria, y comprueba que un nombre inexistente no crea ni modifica personajes. La prueba valida el procesamiento del cliente con respuestas simuladas; la calidad de la evolución de objetivos en Qwen3.5-4B debe comprobarse en el Samsung.
