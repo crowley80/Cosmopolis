@@ -1224,3 +1224,11 @@ El contexto que recibe la IA incluye ahora las cinco transiciones recientes del 
 ### Validación del ciclo de objetivos y del contexto archivado — 12 de noviembre de 2026
 
 La ejecución #98 (`43304268836`) terminó correctamente después de corregir el escenario de Tomás. La ejecución #100 (`43304354041`) validó la nueva prueba de compactación del archivo de metas, y la ejecución #101 (`43304384243`) terminó correctamente sobre el commit final `75eb4b4`. La prueba confirma que las interacciones, guardado y recarga siguen funcionando, que el diseño móvil no desborda el viewport de 390 × 844 y que el contexto de IA recibe ocho metas archivadas sin modificar las diez conservadas en el estado original. Los runs #99 y #100 también finalizaron correctamente. Estas pruebas usan respuestas simuladas; siguen pendientes la validación de inferencia real con Qwen3.5-4B en el Samsung y la revisión visual directa en el navegador del teléfono.
+
+
+### Límites de conocimiento del personaje — 12 de noviembre de 2026
+
+Se refuerzan las instrucciones de `Narrator.buildMessages()` para impedir que la narración revele información que el personaje todavía no puede conocer. El modelo debe diferenciar percepciones directas, deducciones e hipótesis; no debe presentar como hechos confirmados las sospechas, ni revelar pensamientos privados, identidades ocultas o sucesos fuera de escena sin una fuente narrativa válida. Al examinar objetos o lugares, debe describir primero señales observables y ajustar las conclusiones a las pistas y capacidades disponibles.
+
+Se amplía la regresión de Chromium para comprobar que el prompt contiene estas reglas. La prueba valida que las instrucciones llegan al modelo, no que Qwen3.5-4B las cumpla siempre en una partida real. Se renueva la caché del narrador para que el navegador cargue el prompt actualizado.
+
