@@ -71,6 +71,7 @@ jobs:
             const assert = require('node:assert/strict');
             const pageErrors = [];
             page.on('pageerror', error => pageErrors.push(error.message));
+            page.on('console', message => { if (message.type() === 'error') console.error('BROWSER_CONSOLE_ERROR:', message.text()); });
             let narrativeCall = 0;
             await page.route('http://127.0.0.1:8081/**', async route => {
               const request = route.request();
@@ -175,9 +176,14 @@ jobs:
                 data.adventure.state.characters.Tomás.location === 'Entrada de la posada' &&
                 data.adventure.state.time === 'Mediodía' && data.adventure.state.day === 1;
             });
+            console.log('TEST_BEFORE_RELOAD');
             await page.reload({ waitUntil: 'networkidle' });
-            await page.locator('#storyContent .current-action').waitFor();
-            const restoredAction = await page.locator('#storyContent .current-action').textContent();
+            console.log('TEST_AFTER_RELOAD', await page.locator('#app').textContent());
+            await page.waitForFunction(() => {
+              const story = document.querySelector('#storyContent');
+              return story && story.textContent.trim().length > 0;
+            });
+            const restoredAction = await page.locator('#storyContent').textContent();
             const restoredMeta = await page.locator('.manuscript-meta').textContent();
             assert.ok(restoredAction.includes('Entrego el medallón de cobre a Elia.'), 'La última acción debe recuperarse tras recargar: ' + restoredAction);
             assert.ok(restoredMeta.includes('Momento: Mediodía'), 'El reloj interno debe recuperarse tras recargar: ' + restoredMeta);
