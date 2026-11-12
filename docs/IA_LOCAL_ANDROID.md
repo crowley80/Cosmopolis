@@ -153,3 +153,7 @@ La regresión automatizada simula tres casos: completar una meta y abrir otra ar
 ### Archivo de metas cumplidas en el contexto de IA — 12 de noviembre de 2026
 
 `Narrator.buildMessages()` incorpora al contexto hasta cinco transiciones recientes de `goalHistory` y ocho entradas de `completedGoals`, con objetivo y motivo. Las instrucciones piden evitar repetir metas archivadas sin una motivación nueva respaldada por hechos. Los límites se aplican exclusivamente a la copia compacta enviada al modelo; los datos completos de la partida permanecen intactos. La prueba de Chromium comprueba el límite de ocho entradas y que las diez metas originales continúan guardadas.
+
+### Validación del archivo de metas en el contexto — 12 de noviembre de 2026
+
+Las ejecuciones #98, #99, #100 y #101 de GitHub Actions finalizaron correctamente. La prueba #101, sobre el commit `75eb4b4`, completó las interacciones de Chromium, el guardado y la recarga, y verificó el encaje del diseño móvil en 390 × 844. La prueba específica del contexto confirma que se transmiten como máximo ocho metas cumplidas y cinco transiciones recientes, sin recortar los datos persistidos. La validación de Chromium emplea respuestas simuladas: no sustituye la prueba real de generación, esquema JSON y persistencia con Qwen3.5-4B en el Samsung.
