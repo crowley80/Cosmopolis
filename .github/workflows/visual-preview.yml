@@ -93,7 +93,7 @@ jobs:
                   factsToAdd: ['Hay una marca reciente entre las piedras.'],
                   cluesToAdd: ['Un medallón de cobre estaba junto al pozo.'],
                   relationshipChanges: [],
-                  goalUpdates: [{ character: 'Elia', goal: 'Descubrir qué conecta la campana con los mapas cambiantes.', reason: 'La marca recién descubierta aporta una pista nueva.' }],
+                  goalUpdates: [{ character: 'Elia', goal: 'Descubrir qué conecta la campana con los mapas cambiantes.', status: 'progress', reason: 'La marca recién descubierta aporta una pista nueva.' }],
                   itemsToAdd: ['Medallón de cobre'],
                   itemsToRemove: [],
                   charactersToAdd: [{ name: 'Tomás', role: 'Vecino', location: 'Plaza del pozo', attitude: 'Desconfiado', memory: 'Tomás vio a Ariadna encontrar el medallón.', goal: 'Averiguar quién ha alterado los mapas.' }],
@@ -110,8 +110,8 @@ jobs:
                   factsToAdd: ['Elia ha recibido el medallón de cobre.'],
                   cluesToAdd: [],
                   goalUpdates: [
-                    { character: 'Tomás', goal: 'Proteger a los vecinos de los peligros que salgan del pozo.', reason: 'La generosidad de Ariadna le anima a implicarse en la seguridad del pueblo.' },
-                    { character: 'Personaje inexistente', goal: 'Objetivo que no debe guardarse.', reason: 'Prueba de validación.' }
+                    { character: 'Tomás', goal: 'Proteger a los vecinos de los peligros que salgan del pozo.', status: 'blocked', reason: 'La generosidad de Ariadna le anima a implicarse en la seguridad del pueblo.' },
+                    { character: 'Personaje inexistente', goal: 'Objetivo que no debe guardarse.', status: 'active', reason: 'Prueba de validación.' }
                   ],
                   relationshipChanges: [
                     { character: 'Elia', delta: 1, reason: 'Elia aprecia que Ariadna le haya entregado el medallón.' },
@@ -210,9 +210,12 @@ jobs:
                 !data.adventure.state.inventory.includes('Medallón de cobre') &&
                 data.adventure.state.characters.Elia.trust === 1 &&
                 data.adventure.state.characters.Elia.personalGoal === 'Descubrir qué conecta la campana con los mapas cambiantes.' &&
+                data.adventure.state.characters.Elia.goalStatus === 'progress' &&
+                data.adventure.state.characters.Elia.goalHistory[0].status === 'progress' &&
                 data.adventure.state.characters.Elia.goalHistory.length === 1 &&
                 data.adventure.state.characters.Elia.memories.some(memory => memory.includes('La marca recién descubierta aporta una pista nueva.')) &&
                 data.adventure.state.characters.Tomás.personalGoal === 'Proteger a los vecinos de los peligros que salgan del pozo.' &&
+                data.adventure.state.characters.Tomás.goalStatus === 'blocked' &&
                 data.adventure.state.characters.Tomás.goalHistory.length === 1 &&
                 !Object.prototype.hasOwnProperty.call(data.adventure.state.characters, 'Personaje inexistente') &&
                 data.adventure.state.characters.Tomás.trust === 1 &&
