@@ -75,3 +75,20 @@ No repetir auditorías generales ni pasos ya completados.
 - El usuario trabaja desde Android mediante pantalla táctil, sin teclado físico ni Ctrl: dar instrucciones sencillas, paso a paso y con comandos pegables.
 - Registrar en futuras sesiones los cambios reales, las pruebas realizadas, las incidencias y el siguiente paso.
 
+## Avance de trabajo — primera actualización visual
+
+- Se modificó `app/css/style.css` para aplicar la paleta y el acabado de pergamino aprobados: papel crema envejecido, tinta marrón, cuero y oro viejo.
+- Se mantuvo la interfaz táctil de dos zonas y el desplazamiento independiente de la narración.
+- Se conservaron los ajustes para móviles y pantallas de poca altura.
+- No se añadieron imágenes ni ilustraciones; los efectos visuales se realizan mediante CSS.
+- Commit: `4ceaddf` — «Aplicar identidad visual de pergamino a Cosmopolis».
+- El archivo se volvió a leer desde GitHub y se verificaron la paleta, las dos zonas, el scroll y la ausencia de recursos de imagen CSS.
+- Todavía no se ha probado en el navegador del teléfono. La prueba móvil queda pendiente y no se considera terminado el ajuste visual.
+
+### Próximo paso inmediato
+
+1. En Termux, comprobar si hay cambios locales pendientes antes de sincronizar.
+2. Si el repositorio local está limpio, traer los commits de GitHub con una actualización segura.
+3. Abrir Cosmopolis en el navegador del móvil y revisar colores, contraste, legibilidad, espacio de narración y zona de escritura.
+4. Corregir cualquier detalle detectado antes de continuar con las ayudas de exploración y los cambios narrativos.
+
