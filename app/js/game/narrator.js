@@ -50,6 +50,8 @@ const Narrator = {
                 state,
                 knownFacts: state.knownFacts || [],
                 clues: state.clues || [],
+                inventory: state.inventory || [],
+                visitedLocations: state.visitedLocations || [],
                 characters: state.characters || {}
             },
             persistentWorld: {
@@ -77,7 +79,9 @@ const Narrator = {
                     'event: una frase factual que registre lo ocurrido.',
                     'location: ubicación actual; conserva la existente si no hay desplazamiento.',
                     'factsToAdd y cluesToAdd: solo datos nuevos realmente descubiertos, sin duplicados.',
-                    'eliaTrustDelta: cambio justificado de confianza de Elia, normalmente -1, 0 o 1.'
+                    'eliaTrustDelta: cambio justificado de confianza de Elia, normalmente -1, 0 o 1.',
+                    'itemsToAdd: objetos que el personaje obtiene realmente y puede llevar consigo; no incluyas objetos solo vistos o examinados.',
+                    'itemsToRemove: objetos que pierde, entrega, consume o deja atrás realmente; usa el nombre exacto del inventario.'
                 ].join(' ')
             },
             {
@@ -108,9 +112,11 @@ const Narrator = {
                 location: { type: 'string' },
                 factsToAdd: { type: 'array', items: { type: 'string' } },
                 cluesToAdd: { type: 'array', items: { type: 'string' } },
-                eliaTrustDelta: { type: 'integer', minimum: -1, maximum: 1 }
+                eliaTrustDelta: { type: 'integer', minimum: -1, maximum: 1 },
+                itemsToAdd: { type: 'array', items: { type: 'string' } },
+                itemsToRemove: { type: 'array', items: { type: 'string' } }
             },
-            required: ['reply', 'event', 'category', 'location', 'factsToAdd', 'cluesToAdd', 'eliaTrustDelta']
+            required: ['reply', 'event', 'category', 'location', 'factsToAdd', 'cluesToAdd', 'eliaTrustDelta', 'itemsToAdd', 'itemsToRemove']
         };
 
         const controller = new AbortController();
@@ -144,7 +150,8 @@ const Narrator = {
             const result = JSON.parse(content);
             if (!result || typeof result.reply !== 'string' || !result.reply.trim() ||
                 typeof result.event !== 'string' || typeof result.location !== 'string' ||
-                !Array.isArray(result.factsToAdd) || !Array.isArray(result.cluesToAdd)) {
+                !Array.isArray(result.factsToAdd) || !Array.isArray(result.cluesToAdd) ||
+                !Array.isArray(result.itemsToAdd) || !Array.isArray(result.itemsToRemove)) {
                 throw new Error('La respuesta no cumple el formato narrativo');
             }
 
@@ -164,6 +171,21 @@ const Narrator = {
             result.cluesToAdd.slice(0, 5).forEach(clue => {
                 if (typeof clue === 'string' && clue.trim() && !state.clues.includes(clue.trim())) {
                     state.clues.push(clue.trim().slice(0, 300));
+                }
+            });
+
+            state.inventory = Array.isArray(state.inventory) ? state.inventory : [];
+            result.itemsToRemove.slice(0, 10).forEach(item => {
+                if (typeof item !== 'string' || !item.trim()) return;
+                const index = state.inventory.findIndex(existing =>
+                    String(existing).toLocaleLowerCase('es') === item.trim().toLocaleLowerCase('es'));
+                if (index !== -1) state.inventory.splice(index, 1);
+            });
+            result.itemsToAdd.slice(0, 10).forEach(item => {
+                if (typeof item !== 'string' || !item.trim()) return;
+                const clean = item.trim().slice(0, 120);
+                if (!state.inventory.some(existing => String(existing).toLocaleLowerCase('es') === clean.toLocaleLowerCase('es')) && state.inventory.length < 50) {
+                    state.inventory.push(clean);
                 }
             });
 
