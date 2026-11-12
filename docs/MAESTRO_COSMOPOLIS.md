@@ -1057,3 +1057,38 @@ Commits:
 Se ha actualizado la versión de consulta de la hoja CSS y del JavaScript principal en `index.html` a `20261112-funciones-memoria`. Así, al sincronizar la rama en Termux y recargar la página, el navegador solicitará las nuevas funciones de paneles, inventario, memoria de personajes y reloj interno en lugar de reutilizar los recursos con la versión anterior de caché.
 
 Commit: `42f828f`.
+
+
+### Validación integrada de Chromium — run 59 — 12 de noviembre de 2026
+
+La ejecución `43261787915` terminó con conclusión `success`. Se generaron las capturas móvil y escritorio y se completó la batería de interacciones. Artefacto: `cosmopolis-visual-preview`, ID `13962729257`.
+
+Pruebas completadas:
+- Apertura y cierre de Historial, Mapa, Inventario y Opciones.
+- Guardado manual desde Opciones.
+- Envío de una ayuda de exploración como acción normal.
+- Respuesta JSON simulada del narrador local.
+- Alta de un objeto en el inventario y retirada posterior al entregarlo.
+- Registro de un personaje nuevo (Tomás), sus recuerdos y cambios posteriores.
+- Actualización de actitud y ubicación de personajes existentes.
+- Persistencia de confianza, recuerdos, inventario, lugar y reloj interno.
+- Recuperación de la última acción y de la narración tras recargar.
+- Actualización inmediata de ubicación y reloj en la cabecera sin recargar.
+
+Medición de la vista móvil de 390 × 844:
+- Documento: 390 × 844; sin desbordamiento horizontal.
+- Cabecera: 378 × 80.
+- Narración: 378 × 547, con desplazamiento propio.
+- Panel de escritura: 378 × 145.
+- Barra inferior: 378 × 60, dentro del alto visible.
+- No se solapan la narración, el panel de escritura ni la barra inferior.
+
+La vista de escritorio de 1024 × 900 también se generó sin desbordamiento horizontal ni errores JavaScript. Se inspeccionaron las dos capturas: se conserva el pergamino dorado, el borde erosionado, la cabecera, el área narrativa y los controles inferiores. La fidelidad con la fotografía de referencia sigue siendo aproximada y requiere la valoración del usuario en su teléfono.
+
+Incidencia de pruebas resuelta: varias ejecuciones intermedias fallaban porque el propio `addInitScript` de Chromium volvía a escribir la partida de demostración en cada recarga, borrando los cambios que se intentaban verificar. Se cambió para inicializar solo cuando no existe una partida guardada. También se ajustó la aserción del Historial para comprobar la respuesta narrativa que realmente muestra, no el evento interno. El run 59 confirma que la recuperación funciona.
+
+Capturas generadas:
+- `cosmopolis-mobile.png`
+- `cosmopolis-desktop.png`
+
+El run 59 valida el código anterior al último cambio de versión de caché; el siguiente run se encargará de confirmar también el `index.html` actualizado.
