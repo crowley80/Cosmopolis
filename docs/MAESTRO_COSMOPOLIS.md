@@ -745,3 +745,13 @@ La ejecución `43213175518` completó correctamente y se inspeccionaron las capt
 - No se detectan desbordamientos en la medición móvil anterior (390 px de documento para 390 px de viewport).
 
 La corrección de escala y la reducción de volutas quedan verificadas por captura automatizada. La fidelidad global sigue siendo aproximada, no una reproducción exacta; no se solicita todavía la validación final en el teléfono.
+
+
+### Filigrana de cabecera y panel de ubicación — 12 de noviembre de 2026
+
+Tras revisar las capturas de móvil y escritorio, la cabecera y el panel de ubicación eran los dos elementos que aún se veían demasiado planos frente a la maqueta. Se añadieron marcos SVG ornamentales embebidos en CSS: líneas finas, volutas discretas en las esquinas y rombos centrales. El panel de ubicación recibe su propio marco interior, manteniendo el texto legible.
+
+- CSS: commit `507db11`.
+- Caché: commit `6e7cd35`, versión `20261112-filigrana-cabecera`.
+- No se alteran las brújulas, el logotipo, la cuadrícula ni las dimensiones del encabezado.
+- Pendiente: render automatizado móvil/escritorio para comprobar que la filigrana no se superpone al título ni a los datos de ubicación.
