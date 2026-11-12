@@ -90,3 +90,8 @@ La prueba automatizada cambia la actitud de Elia y mueve a Tomás a la entrada d
 ## Actualización inmediata de cabecera — 12 de noviembre de 2026
 
 Después de guardar cada acción, la interfaz vuelve a leer la aventura persistida y actualiza inmediatamente la ubicación, el momento del día y la jornada en la cabecera del manuscrito. No hace falta recargar la página para ver los cambios de tiempo o desplazamiento. La prueba de Chromium comprueba el cambio a «Mediodía» en la misma sesión y vuelve a comprobarlo después de recargar.
+
+
+## Protección contra retrocesos del calendario — 12 de noviembre de 2026
+
+El cliente aplica una regla adicional de continuidad: `state.day` nunca puede ser inferior al día que ya estaba guardado. Si el modelo devuelve por error un día anterior, se conserva el día alcanzado. El valor sigue limitado al intervalo 1–9999. La prueba automatizada de Chromium incluye una regresión deliberada del modelo (día 2 seguido de día 1) y exige conservar el día 2.
