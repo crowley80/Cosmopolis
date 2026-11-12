@@ -1141,3 +1141,14 @@ La compactación solo afecta al mensaje enviado al modelo: no elimina recuerdos,
 ### Actualización de caché del narrador — 12 de noviembre de 2026
 
 Se ha versionado también la carga de `app/js/game/narrator.js` en `index.html`, junto con los identificadores de caché de CSS y del script principal. Esto evita que el navegador móvil reutilice una copia antigua del narrador y no reciba las mejoras de relaciones dinámicas y contexto compacto. Commit: `bf5317a`. La vista previa automática de este commit queda en ejecución.
+
+
+### Validación integrada de relaciones y contexto compacto — run 66 — 12 de noviembre de 2026
+
+La ejecución `43287834445` terminó con conclusión `success` sobre el commit `0e30715`. La prueba integrada confirma que Elia y Tomás reciben cambios de confianza justificados, que el motivo se conserva como recuerdo individual y que los cambios anteriores (inventario, memoria, ubicación/actitud, reloj y recarga) siguen funcionando.
+
+También se probó la compactación del contexto: se simularon 30 eventos y 12 recuerdos de Elia; el mensaje enviado al modelo incluyó 20 eventos y ocho recuerdos, mientras la copia de la partida mantuvo intactos los 12. Se conservaron las seis acciones recientes. Esto confirma que se limita la petición sin borrar datos persistentes.
+
+La vista móvil de 390 × 844 se generó sin desbordamiento horizontal ni solapamientos: narración 378 × 547, panel de escritura 378 × 145 y barra inferior 378 × 60. La prueba completa de interacciones, guardado y recarga terminó correctamente. Artefacto `cosmopolis-visual-preview`, ID `13975217633`.
+
+La ejecución del commit de renovación de caché `bf5317a` (run 67) sigue pendiente de completar. Las pruebas de Chromium usan respuestas simuladas y no sustituyen la validación de Qwen3.5-4B real en el Samsung.
