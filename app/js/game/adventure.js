@@ -42,6 +42,8 @@ const Adventure = {
                         role: 'Cartógrafa',
                         location: 'Plaza del pozo',
                         attitude: 'Cautelosa',
+                        personalGoal: 'Averiguar por qué la campana suena desde debajo del pozo y qué altera sus mapas.',
+                        goalHistory: [],
                         trust: 0,
                         memories: ['Ha conocido al personaje en la plaza del pozo.']
                     }
