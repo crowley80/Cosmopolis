@@ -628,3 +628,14 @@ La segunda captura confirmó que la retirada de las líneas repetidas eliminó e
 - Caché: commit `fae92a4`, versión `20261112-pergamino-envejecido`.
 - Se verificó por lectura de GitHub que el bloque CSS contiene la nueva textura y los valores actualizados.
 - Pendiente: inspeccionar el siguiente render automático para confirmar el efecto visual real del grano.
+
+
+### Verificación del render con párrafos corregidos — 12 de noviembre de 2026
+
+La segunda ejecución de Playwright confirmó que los saltos de párrafo ya se muestran como espacios reales entre bloques narrativos; desapareció el texto literal `\\n` observado en la primera captura. La composición móvil mantiene la cabecera y los dos paneles inferiores dentro del ancho de 390 px, sin desbordamiento horizontal visible.
+
+- Workflow run: `43211556070`, resultado satisfactorio.
+- Artefacto: `cosmopolis-visual-preview`, ID `13941721086`.
+- Capturas inspeccionadas: móvil y escritorio.
+- La segunda comparación confirmó que la textura seguía siendo demasiado uniforme; de ahí los dos ajustes de pátina registrados a continuación.
+- Nueva prueba de textura intensificada en curso: runs `43211960786` y `43211980887`; el segundo corresponde al último estado con caché `20261112-pergamino-envejecido`.
