@@ -132,7 +132,7 @@ const Narrator = {
                     'characterUpdates: cambios de ubicación o actitud de personajes ya registrados; conserva sus valores si no han cambiado y no muevas personajes sin motivo narrativo.',
                     'characterActions: pequeñas iniciativas autónomas de personajes que ya están presentes en la ubicación actual. Sus objetivos personales deben influir de forma visible y natural en lo que hacen: pueden investigar algo relacionado, pedir ayuda, proteger un interés o reaccionar ante un obstáculo. No repitas la misma iniciativa ni fuerces avances; máximo dos acciones visibles, coherentes con personalidad, recuerdos y objetivo. No cambies su ubicación con este campo, no inventes sucesos fuera de escena y usa una acción vacía si nadie actúa.',
                     'personalGoal: cada personaje puede tener un objetivo propio, breve y concreto, que refleje deseos, problemas o motivaciones. Ten en cuenta su objetivo actual al decidir cómo habla y actúa.',
-                    'goalUpdates: actualiza como máximo dos objetivos de personajes registrados solo cuando los hechos de esta acción justifiquen un cambio, avance, bloqueo o resolución. Incluye character, goal nuevo y reason breve. No inventes objetivos por rellenar ni cambies objetivos sin causa; usa una lista vacía si no hay cambios.',
+                    'goalUpdates: actualiza como máximo dos objetivos de personajes registrados solo cuando los hechos justifiquen un cambio, avance, bloqueo o resolución. Incluye character, goal, status y reason. status debe ser active, progress, blocked o completed; conserva el objetivo si solo cambia su estado. No inventes avances ni cambies objetivos sin causa; usa una lista vacía si no hay cambios.',
                     'characterMemoriesToAdd: recuerdos concretos y duraderos de personajes que ya existen en el estado; no inventes personajes ni guardes detalles triviales.',
                     'time: momento del día dentro del mundo; no uses la hora real del teléfono y no avances el tiempo sin motivo narrativo.',
                     'day: número del día dentro de la aventura; solo aumenta cuando la historia cruza realmente al día siguiente. Nunca reduzcas el día ya alcanzado.'
@@ -220,9 +220,10 @@ const Narrator = {
                         properties: {
                             character: { type: 'string' },
                             goal: { type: 'string' },
+                            status: { type: 'string', enum: ['active', 'progress', 'blocked', 'completed'] },
                             reason: { type: 'string' }
                         },
-                        required: ['character', 'goal', 'reason']
+                        required: ['character', 'goal', 'status', 'reason']
                     }
                 },
                 characterActions: {
@@ -349,6 +350,7 @@ const Narrator = {
                     location: typeof entry.location === 'string' ? entry.location.trim().slice(0, 120) : state.currentLocation,
                     attitude: typeof entry.attitude === 'string' ? entry.attitude.trim().slice(0, 100) : 'Desconocida',
                     personalGoal: typeof entry.goal === 'string' ? entry.goal.trim().slice(0, 240) : '',
+                    goalStatus: 'active',
                     goalHistory: [],
                     trust: 0,
                     memories: memory ? [memory] : []
@@ -376,18 +378,21 @@ const Narrator = {
                     String(state.characters[name] && state.characters[name].name || '').toLocaleLowerCase('es') === requestedName
                 );
                 const goal = entry.goal.trim().slice(0, 240);
+                const status = ['active', 'progress', 'blocked', 'completed'].includes(entry.status) ? entry.status : 'active';
                 const reason = entry.reason.trim().slice(0, 200);
                 if (!key || !goal) return;
                 const person = state.characters[key];
                 const previousGoal = typeof person.personalGoal === 'string' ? person.personalGoal.trim() : '';
-                if (previousGoal.toLocaleLowerCase('es') === goal.toLocaleLowerCase('es')) return;
+                const previousStatus = ['active', 'progress', 'blocked', 'completed'].includes(person.goalStatus) ? person.goalStatus : 'active';
+                if (previousGoal.toLocaleLowerCase('es') === goal.toLocaleLowerCase('es') && previousStatus === status) return;
                 person.personalGoal = goal;
+                person.goalStatus = status;
                 person.goalHistory = Array.isArray(person.goalHistory) ? person.goalHistory : [];
-                person.goalHistory.push({ goal, reason, changedAtAction: previousActions.length + 1 });
+                person.goalHistory.push({ goal, status, reason, changedAtAction: previousActions.length + 1 });
                 if (person.goalHistory.length > 10) person.goalHistory = person.goalHistory.slice(-10);
                 if (reason) {
                     person.memories = Array.isArray(person.memories) ? person.memories : [];
-                    const note = `Su objetivo cambia: ${goal}. Motivo: ${reason}`;
+                    const note = `Su objetivo (${status}) es: ${goal}. Motivo: ${reason}`;
                     if (!person.memories.some(memory => String(memory).toLocaleLowerCase('es') === note.toLocaleLowerCase('es'))) {
                         person.memories.push(note);
                         if (person.memories.length > 30) person.memories = person.memories.slice(-30);
