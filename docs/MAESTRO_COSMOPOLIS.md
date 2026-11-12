@@ -1202,3 +1202,8 @@ Se refuerza el ciclo de vida de las metas para que un NPC no abandone un propós
 Cada personaje mantiene `completedGoals`, un archivo independiente de hasta 20 metas cumplidas con su motivo y número de acción. `goalHistory` conserva las diez transiciones más recientes y `completedGoals` evita que el archivo de metas cerradas dependa de ese historial limitado. Las partidas antiguas se adaptan al vuelo cuando se procesa el siguiente cambio de objetivo, sin exigir migración ni borrar datos.
 
 La regresión automatizada simula tres casos: completar una meta y abrir otra archivando la anterior; rechazar la sustitución de una meta aún en progreso; y evitar que una meta completada vuelva a estado activo. La prueba utiliza respuestas simuladas y no valida por sí sola la calidad narrativa de Qwen3.5-4B en el dispositivo.
+
+
+### Corrección de regresión del archivo de objetivos — 12 de noviembre de 2026
+
+La primera ejecución de la nueva prueba de ciclo de vida detectó una expectativa desactualizada en la comprobación del contexto compacto: el escenario de prueba crea deliberadamente a Elia con el objetivo breve `Averiguar por qué suenan las campanas.`, mientras que la expectativa se había cambiado al objetivo inicial de la aventura. Se corrigió únicamente esa expectativa para que refleje el dato real del escenario; la prueba de interacción principal sigue verificando por separado que el objetivo de Elia progresa hacia el texto completo definido por la respuesta simulada. No era un fallo del código de objetivos ni de la partida.
