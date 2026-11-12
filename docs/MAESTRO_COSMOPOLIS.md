@@ -508,4 +508,4 @@ Se prepara una corrección específica sobre la implementación existente:
 - Pluma con barbas y nervadura más detalladas, junto a un tintero de vidrio oscuro con cuello, bandas y reflejos.
 - Se conserva la interfaz exclusivamente textual: no se recupera la ilustración de la ciudad ni el panel permanente «Personajes cercanos».
 
-Estado: cambios preparados para guardarse en GitHub y sincronizarse en Termux. Pendiente comprobar sintaxis, carga de recursos y resultado en Chrome. La apariencia no se considerará aprobada hasta que el usuario la valide.
+Estado: cambios guardados en GitHub en cuatro commits consecutivos: `5571043` (fondo negro, borde quemado y pliegues), `c6c84bb` (SVG ornamentales), `8eee259` (caché) y `76973af` (documentación). Se ha fijado expresamente la capa de los pliegues por encima del contenido para que sean visibles. Pendiente sincronizar en Termux, ejecutar `node --check app/js/app.js` y comprobar en Chrome. La apariencia no se considerará aprobada hasta que el usuario la valide.
