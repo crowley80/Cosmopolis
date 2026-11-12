@@ -657,3 +657,20 @@ La inspección de la última captura mostró que la textura ya presenta manchas 
 - CSS: commit `f0a65a6`.
 - Caché: commit `68d91cd`, versión `20261112-bordes-irregulares`.
 - La modificación solo afecta al recorte del papel. Pendiente comprobar el render móvil/escritorio antes de conservarla como definitiva.
+
+
+### Métricas reales de distribución móvil y textura en capas — 12 de noviembre de 2026
+
+La ejecución `43211980887` completó correctamente el renderizado y subió el artefacto `13942450830`. La inspección visual confirma que las dos escalas de ruido generan manchas orgánicas visibles, sin volver al entramado cuadriculado. El papel queda más cálido y envejecido; se mantiene pendiente juzgar si la intensidad final es la adecuada frente a la maqueta.
+
+Métricas recogidas directamente por Playwright en 390 × 844:
+- Documento: 390 × 844; ancho del documento igual al viewport, sin desbordamiento horizontal.
+- Folio: 390 × 844.
+- Cabecera: x=6, y=3, ancho=378, alto=80.
+- Narración: x=6, y=83, ancho=378, alto=563.83.
+- Panel de escritura: x=6, y=646.83, ancho=378, alto=128.17.
+- Barra inferior: x=6, y=779, ancho=378, alto=60.
+
+La automatización ha demostrado que la estructura ocupa el ancho móvil completo y mantiene fijos el panel de escritura y la barra inferior, dejando el área narrativa como zona flexible y desplazable.
+
+La revisión del contorno de borde irregular y la textura en dos escalas está en ejecución con los runs `43212385941` y `43212397333`; el segundo incluye el último cambio de caché. No considerar aprobada la fidelidad hasta inspeccionar su captura.
