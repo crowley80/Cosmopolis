@@ -109,3 +109,10 @@ La prueba de Chromium simula cambios de relación de Elia y Tomás y verifica la
 Para reducir el riesgo de superar el contexto disponible en Qwen3.5-4B, `Narrator.buildMessages()` construye una vista compacta sin modificar la partida persistida. Prioriza personajes de la ubicación actual y Elia, incluye hasta 20 NPCs, ocho recuerdos por personaje, 20 eventos, 25 hechos y pistas, 30 objetos, 25 ubicaciones y seis acciones recientes. También limita la longitud de campos de ficha y texto histórico.
 
 La prueba automatizada amplía deliberadamente los recuerdos/eventos de una copia temporal y comprueba los límites del mensaje enviado al modelo, además de verificar que la copia original conserva todos sus recuerdos. La compactación no borra datos de la partida.
+
+
+## Iniciativa autónoma en escena — 12 de noviembre de 2026
+
+El esquema del narrador añade `characterActions`, una lista de hasta dos acciones cortas de NPCs ya registrados. El cliente resuelve el nombre contra el estado persistido y solo acepta acciones si el personaje está en la ubicación actual (o no tiene ubicación asignada). No actualiza ubicación con este campo. La acción se añade al texto narrativo, se guarda en `lastAutonomousAction` y se incorpora a la memoria individual, con límite de 30 recuerdos. De esta forma se admiten iniciativas pequeñas visibles sin permitir que el modelo mueva personajes fuera de escena.
+
+La prueba automatizada simula acciones autónomas de Elia y Tomás y comprueba que la iniciativa de Elia se persiste en su memoria y estado. No equivale a validar la calidad de las decisiones generadas por Qwen3.5-4B en Android.
