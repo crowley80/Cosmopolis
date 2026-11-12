@@ -176,6 +176,8 @@ jobs:
                 data.adventure.state.characters.Tomás.location === 'Entrada de la posada' &&
                 data.adventure.state.time === 'Mediodía' && data.adventure.state.day === 1;
             });
+            const liveMeta = await page.locator('.manuscript-meta').textContent();
+            assert.ok(liveMeta.includes('Momento: Mediodía'), 'La cabecera debe actualizarse sin recargar: ' + liveMeta);
             await page.reload({ waitUntil: 'networkidle' });
             await page.waitForFunction(() => {
               const story = document.querySelector('#storyContent');
