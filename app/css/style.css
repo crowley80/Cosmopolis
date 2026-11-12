@@ -556,8 +556,8 @@ body {
   .manuscript-header {
     grid-template-columns:39px minmax(0,1fr) minmax(96px,1fr) 39px;
     gap:4px;
-    min-height:88px;
-    padding:6px;
+    min-height:80px;
+    padding:4px 6px;
   }
   .compass { width:39px; height:39px; }
   .compass span { font-size:.48rem; }
