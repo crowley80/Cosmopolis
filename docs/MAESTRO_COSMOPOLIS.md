@@ -1212,3 +1212,7 @@ La primera ejecución de la nueva prueba de ciclo de vida detectó una expectati
 ### Ajuste del escenario de interacción de objetivos — 12 de noviembre de 2026
 
 La ejecución #96 encontró una segunda inconsistencia en el escenario simulado: el personaje de prueba nacía con el objetivo `Averiguar por qué suenan las campanas.`, pero la respuesta mock intentaba reemplazarlo por el objetivo inicial largo de la aventura mientras solo cambiaba el estado a progreso. La nueva protección impide correctamente sustituir una meta pendiente. Se ajustaron el mock y su aserción para conservar el objetivo breve del escenario y probar únicamente la transición `active` → `progress`. El objetivo largo de la aventura real permanece intacto.
+
+### Corrección de regresión en el objetivo de Tomás — 12 de noviembre de 2026
+
+La ejecución #97 superó la instalación, el arranque y la primera interacción, pero agotó el tiempo de espera tras la segunda acción. El escenario simulado intentaba sustituir el objetivo activo con el que se había creado Tomás por otro distinto y marcarlo como bloqueado. La protección del ciclo de vida rechaza correctamente esa sustitución; por tanto, la prueba no estaba modelando un cambio de estado válido. Se ajustó el objetivo inicial de Tomás en el fixture para que coincida con el que después pasa a estado `blocked`. La regresión sigue comprobando el bloqueo, el historial, las relaciones, los recuerdos y que Tomás no actúe fuera de escena. No se ha relajado la protección del motor.
