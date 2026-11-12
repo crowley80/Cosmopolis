@@ -1243,3 +1243,8 @@ El usuario ha revisado las capturas de la aplicación y confirma que, aunque la 
 ### Corrección de sintaxis en el prompt — 12 de noviembre de 2026
 
 La primera ejecución de Chromium tras añadir los límites de conocimiento detectó que faltaba una coma entre dos instrucciones del array del prompt. Se corrigió el separador y se renovó de nuevo la caché de narrator.js. La ejecución fallida no llegó a completar la interacción, por lo que no se considera validación funcional; se espera una nueva ejecución con el arreglo.
+
+
+### Iniciativas de NPCs integradas en la escena — 12 de noviembre de 2026
+
+Se ajusta `Narrator.buildMessages()` para que las iniciativas autónomas registradas en `characterActions` formen parte de la propia respuesta narrativa, con transiciones naturales, en lugar de aparecer como una lista o ficha añadida al final. El campo estructurado queda como registro para persistir la acción en la memoria del personaje. Como protección de compatibilidad, el cliente incorpora la acción a la narración solo si el modelo no la ha incluido ya, evitando duplicarla. También se corrige el separador para que cualquier añadido use saltos de línea reales y no la secuencia literal `\\n`. Se renueva la caché y se amplía la prueba de Chromium para comprobar que la iniciativa aparece en la respuesta sin etiqueta mecánica ni escape visible. La validación pendiente corresponde al nuevo run de GitHub Actions; la calidad narrativa del modelo local debe comprobarse además en el Samsung.
