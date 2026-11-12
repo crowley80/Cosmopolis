@@ -648,3 +648,12 @@ La captura con pátina intensificada seguía mostrando una superficie más lisa 
 - CSS: commit `310d0f2`.
 - Caché: commit `3f58bd6`, versión `20261112-textura-moteada`.
 - Pendiente: comprobar en Chromium la visibilidad y naturalidad de ambas escalas; si el ruido resulta excesivo o sigue siendo imperceptible, revertir o ajustar solo la intensidad.
+
+
+### Contorno rasgado menos geométrico — 12 de noviembre de 2026
+
+La inspección de la última captura mostró que la textura ya presenta manchas y grano, pero el recorte del folio seguía repitiendo dientes de tamaño casi idéntico. Se sustituyó el polígono uniforme por un contorno con longitudes y profundidades variables en los cuatro lados, buscando acercarlo al borde irregular de la maqueta.
+
+- CSS: commit `f0a65a6`.
+- Caché: commit `68d91cd`, versión `20261112-bordes-irregulares`.
+- La modificación solo afecta al recorte del papel. Pendiente comprobar el render móvil/escritorio antes de conservarla como definitiva.
