@@ -279,6 +279,7 @@ body {
   mask-size: 100% 100%;
   background-color: #a56531;
   background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1000' height='1000' viewBox='0 0 1000 1000' preserveAspectRatio='none'%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 38 C14 22 27 10 48 11 C36 15 26 24 22 39 M988 38 C986 22 973 10 952 11 C964 15 974 24 978 39 M12 962 C14 978 27 990 48 989 C36 985 26 976 22 961 M988 962 C986 978 973 990 952 989 C964 985 974 976 978 961' stroke='%234b210b' stroke-width='5' opacity='.68'/%3E%3Cpath d='M14 34 C20 23 30 17 42 15 M986 34 C980 23 970 17 958 15 M14 966 C20 977 30 983 42 985 M986 966 C980 977 970 983 958 985' stroke='%23f3c57e' stroke-width='3' opacity='.82'/%3E%3C/g%3E%3C/svg%3E"),
     radial-gradient(ellipse at 0 0, #160802 0, rgba(39,14,3,.98) 2%, rgba(91,39,7,.88) 5%, rgba(119,55,10,.42) 9%, transparent 14%),
     radial-gradient(ellipse at 100% 0, #160802 0, rgba(39,14,3,.98) 2%, rgba(91,39,7,.88) 5%, rgba(119,55,10,.42) 9%, transparent 14%),
     radial-gradient(ellipse at 0 100%, #160802 0, rgba(39,14,3,.98) 2%, rgba(91,39,7,.88) 5%, rgba(119,55,10,.42) 9%, transparent 14%),
