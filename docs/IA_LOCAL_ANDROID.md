@@ -141,3 +141,11 @@ Ajuste de selección de diálogo — 12 de noviembre de 2026: la ruta alternativ
 ### Estados de progreso de objetivos personales — 12 de noviembre de 2026
 
 Los objetivos incorporan `goalStatus` con cuatro estados controlados: `active`, `progress`, `blocked` y `completed`. La IA puede actualizar el estado sin cambiar el objetivo, o modificar ambos cuando la historia lo justifica. Cada transición se guarda en `goalHistory` junto con el motivo y el número de acción; los cambios de estado también quedan en la memoria del personaje. El narrador alternativo adapta la forma de hablar del NPC según el estado, evitando presentar como pendiente un objetivo ya cumplido o ignorar un bloqueo. Las pruebas verifican el progreso de Elia y el bloqueo temporal de Tomás.
+
+### Archivo y renovación de objetivos personales — 12 de noviembre de 2026
+
+Se refuerza el ciclo de vida de las metas para que un NPC no abandone un propósito pendiente por una propuesta arbitraria del modelo. Los objetivos en estado activo, progreso o bloqueo conservan su texto; un bloqueo puede avanzar a progreso, pero no retroceder a activo. Un objetivo completado queda cerrado y no puede reabrirse. Solo después de completarlo se admite una meta distinta en estado activo, con un motivo que explique la conexión narrativa y el nuevo propósito.
+
+Cada personaje mantiene `completedGoals`, un archivo independiente de hasta 20 metas cumplidas con su motivo y número de acción. `goalHistory` conserva las diez transiciones más recientes y `completedGoals` evita que el archivo de metas cerradas dependa de ese historial limitado. Las partidas antiguas se adaptan al vuelo cuando se procesa el siguiente cambio de objetivo, sin exigir migración ni borrar datos.
+
+La regresión automatizada simula tres casos: completar una meta y abrir otra archivando la anterior; rechazar la sustitución de una meta aún en progreso; y evitar que una meta completada vuelva a estado activo. La prueba utiliza respuestas simuladas y no valida por sí sola la calidad narrativa de Qwen3.5-4B en el dispositivo.
