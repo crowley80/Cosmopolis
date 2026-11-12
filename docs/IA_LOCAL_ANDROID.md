@@ -55,3 +55,12 @@ El contrato JSON del narrador local incorpora dos listas controladas:
 El cliente valida que ambas listas existan, evita duplicados, limita cada respuesta a diez cambios y el inventario total a 50 entradas. Los objetos se guardan dentro de `adventure.state.inventory`, por lo que forman parte de la partida local y del contexto narrativo que recibe el modelo en las siguientes acciones. Examinar un objeto no implica añadirlo automáticamente.
 
 La interfaz de Inventario muestra las pertenencias registradas. La prueba automatizada simula una respuesta estructurada del endpoint para comprobar la aplicación y persistencia de un objeto; no sustituye una prueba de generación real con Qwen3.5-4B en el Samsung.
+
+
+## Recuerdos individuales de personajes — 12 de noviembre de 2026
+
+El esquema del narrador incorpora `characterMemoriesToAdd`, una lista de recuerdos con nombre de personaje y texto. El cliente solo acepta recuerdos para personajes ya presentes en `adventure.state.characters`; no crea NPCs a partir de una salida del modelo. Los recuerdos se normalizan, se evitan duplicados y se conservan los 30 más recientes por personaje.
+
+Como los recuerdos forman parte de `state.characters`, se incluyen automáticamente en el contexto de las siguientes peticiones y sobreviven al guardado/recarga. La prueba de Chromium simula dos acciones: encontrar un medallón y entregárselo a Elia; comprueba que el objeto entra y sale del inventario, que cambia su confianza y que ambos recuerdos siguen guardados después de recargar.
+
+La prueba usa respuestas JSON simuladas y valida el contrato de integración; no reemplaza la prueba con el modelo real en Android.
