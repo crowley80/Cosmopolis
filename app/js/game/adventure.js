@@ -28,6 +28,8 @@ const Adventure = {
                 eliaTrust: 0,
                 eliaMet: true,
                 clues: [],
+                inventory: [],
+                visitedLocations: ['Plaza del pozo'],
                 knownFacts: [
                     'El personaje ha llegado a Valdebruma.',
                     'Elia es una cartógrafa del pueblo.',
