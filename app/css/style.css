@@ -370,9 +370,12 @@ body {
   border: 2px solid rgba(95,48,14,.82);
   outline: 1px solid rgba(255,224,168,.66);
   outline-offset: -5px;
-  background:
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 100' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%236d3c17' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 26V10H28 M972 10H988V26 M12 74V90H28 M972 90H988V74 M28 10H455 M545 10H972 M28 90H455 M545 90H972'/%3E%3Cpath d='M12 26C2 16 14 2 24 11C30 17 24 25 18 20 M12 74C2 84 14 98 24 89C30 83 24 75 18 80 M988 26C998 16 986 2 976 11C970 17 976 25 982 20 M988 74C998 84 986 98 976 89C970 83 976 75 982 80'/%3E%3C/g%3E%3Cpath d='M500 3L508 10L500 17L492 10Z M500 83L508 90L500 97L492 90Z' fill='none' stroke='%23a87537' stroke-width='1.5'/%3E%3C/svg%3E"),
     radial-gradient(ellipse at 50% 0,rgba(255,226,170,.62),transparent 74%),
     linear-gradient(180deg,rgba(178,111,42,.16),rgba(255,222,164,.24));
+  background-size:100% 100%;
+  background-repeat:no-repeat;
   box-shadow: inset 0 0 15px rgba(89,42,10,.2),0 2px 5px rgba(69,31,8,.16);
 }
 .compass {
@@ -421,8 +424,10 @@ body {
   gap:3px;
   padding:8px 9px;
   color:#321907;
-  background:rgba(255,221,164,.23);
-  border:2px double #704016;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%2370441d' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 30V10H32 M368 10H388V30 M12 90V110H32 M368 110H388V90 M32 10H368 M32 110H368 M12 30V90 M388 30V90'/%3E%3Cpath d='M12 30Q2 16 16 12Q28 10 25 22Q23 28 17 24 M12 90Q2 104 16 108Q28 110 25 98Q23 92 17 96 M388 30Q398 16 384 12Q372 10 375 22Q377 28 383 24 M388 90Q398 104 384 108Q372 110 375 98Q377 92 383 96'/%3E%3C/g%3E%3C/svg%3E"),linear-gradient(135deg,rgba(255,226,177,.35),rgba(190,126,55,.12));
+  background-size:100% 100%;
+  background-repeat:no-repeat;
+  border:1px solid rgba(112,64,22,.78);
   font-family:'IM Fell English',Georgia,serif;
   font-size:clamp(.62rem,2.7vw,.91rem);
   line-height:1.25;
