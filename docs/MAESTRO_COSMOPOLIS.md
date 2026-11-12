@@ -932,3 +932,8 @@ Tras inspeccionar el render 32 (43256742801), se confirma que la silueta erosion
 ### Revisión de los pliegues y captura del run 33 — 12 de noviembre de 2026
 
 Se descargaron e inspeccionaron las capturas móvil y escritorio del run 33 (43257072180). El render confirma que el papel cubre toda la zona narrativa, conserva el tono ámbar, presenta un borde erosionado continuo y no muestra los antiguos dientes triangulares. Los primeros trazos de pliegue se perdían demasiado cerca de la sombra del borde; se han desplazado hacia dentro y reforzado ligeramente para que las esquinas dobladas se lean como pequeñas curvas de tensión y luz, no como triángulos ni piezas añadidas (commit CSS 354f5a0). Pendiente la captura automática final de este ajuste.
+
+
+### Captura final inspeccionada del ajuste de pliegues — 12 de noviembre de 2026
+
+La vista previa del run 34 (43257402434) se descargó y se inspeccionó en móvil. La ejecución de Chromium completó los pasos de renderizado y subida del artefacto correctamente. El resultado conserva la hoja completa, la textura dorada y el borde irregular sin pestañas triangulares. Los trazos curvos de las esquinas se integran en la textura y son deliberadamente discretos; al quedar parcialmente bajo las piezas de cabecera y controles, no se leen como dobleces prominentes. Por tanto, se considera corregido el defecto de los triángulos y la máscara dentada, pero no se afirma que las dobleces de esquina reproduzcan exactamente la fotografía. El commit de código más reciente es 354f5a0; el historial maestro queda actualizado en este commit.
