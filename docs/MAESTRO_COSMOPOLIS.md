@@ -542,4 +542,8 @@ Se recupera en la pantalla de aventura la franja de cuatro accesos que aparece e
 - Historial: muestra las acciones guardadas de la sesión.
 - Mapa, Inventario y Opciones: los botones informan claramente de que sus pantallas aún no están implementadas; no se simula que esas funciones existan.
 - Se mantienen la interfaz textual y la ausencia de ilustraciones.
-- Estado: cambio preparado en GitHub; pendiente de renderizado comparativo y prueba en el navegador móvil. No declarar fidelidad visual completa hasta realizar esa comparación.
+- Commit de `app.js`: `975f86e`.
+- Commit de `style.css`: `ef7ca75`.
+- Commit de `index.html` (invalidación de caché): `b5a7c78`.
+- Commit de esta actualización documental: `17b0642`.
+- Estado: cambios guardados en `main` y releídos desde GitHub. No se ha podido ejecutar todavía una vista previa real de la aplicación completa para compararla píxel a píxel con la maqueta; tampoco se ha probado en el navegador móvil. Por tanto, no se declara fidelidad visual completa ni se solicita al usuario que abra la página.
