@@ -555,6 +555,22 @@ body {
 }
 .player-panel textarea::placeholder { color:#79532f; opacity:1; }
 .player-panel textarea:focus { outline:2px solid rgba(129,71,25,.45); outline-offset:1px; }
+
+.player-panel #actionStatus {
+  min-height:1.1em;
+  margin:3px 90px 0 75px;
+  color:#684019;
+  font-family:'IM Fell English',Georgia,serif;
+  font-size:.78rem;
+  font-style:italic;
+  line-height:1.2;
+  text-align:center;
+}
+.player-panel form button:disabled {
+  opacity:.65;
+  cursor:wait;
+}
+
 .player-panel form > button {
   min-height:66px;
   margin:0;
