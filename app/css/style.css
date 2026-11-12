@@ -345,7 +345,7 @@ body {
   pointer-events: none;
 }
 .adventure-screen > * { position: relative; z-index: 1; }
-.adventure-screen > .paper-fold { z-index: 20; }
+.adventure-screen > .paper-fold { position: absolute; z-index: 20; }
 
 .manuscript-header {
   flex: 0 0 auto;
