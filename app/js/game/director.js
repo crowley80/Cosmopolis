@@ -46,6 +46,11 @@ const Director = {
         const offers = this.has(text, ['ofrezco', 'regalo', 'entrego', 'comparto', 'ayudo', 'protejo']);
         const opens = this.has(text, ['abro', 'rompo', 'levanto', 'quito', 'desato', 'fuerzo']);
         const rests = this.has(text, ['descanso', 'duermo', 'espero', 'me siento']);
+        const addressedCharacter = Object.entries(state.characters).find(([key, person]) => {
+            const personName = this.normalize(person && person.name || key);
+            return person && personName && text.includes(personName) &&
+                person.location === state.currentLocation && personName !== 'elia';
+        });
 
         if (combat) {
             category = 'combat';
@@ -64,7 +69,9 @@ const Director = {
             }
         } else if (aboutElia && asks) {
             category = 'dialogue';
-            reply = 'Elia aprieta el tubo de mapas contra el pecho.\n\n—He medido este pueblo durante años. El pozo no tiene profundidad suficiente para producir un sonido así. Y hay algo más: cada vez que suena la campana, aparece una marca nueva en mis mapas. Una calle que no existe, un edificio que nadie recuerda...\n\nTe mira con atención.\n\n—Si quieres ayudarme, podemos examinar el pozo o revisar mis mapas.';
+            const eliaGoal = typeof state.characters.Elia.personalGoal === 'string' ? state.characters.Elia.personalGoal.trim() : '';
+            const goalDisclosure = eliaGoal ? `\n\n—Y no pienso dejarlo hasta conseguirlo: ${eliaGoal}` : '';
+            reply = 'Elia aprieta el tubo de mapas contra el pecho.\n\n—He medido este pueblo durante años. El pozo no tiene profundidad suficiente para producir un sonido así. Y hay algo más: cada vez que suena la campana, aparece una marca nueva en mis mapas. Una calle que no existe, un edificio que nadie recuerda...\n\nTe mira con atención.\n\n—Si quieres ayudarme, podemos examinar el pozo o revisar mis mapas.' + goalDisclosure;
             state.eliaTrust += 1;
             state.characters.Elia.trust = state.eliaTrust;
             event = `${name} ha hablado con Elia sobre la campana y los mapas.`;
@@ -95,6 +102,14 @@ const Director = {
             category = 'investigation';
             reply = 'El viejo pozo ocupa el centro de la plaza. La losa está sellada con cadenas y la piedra del brocal está húmeda, aunque no ha llovido. Desde el fondo llega un silencio extraño, como si el pozo estuviera esperando.';
             event = `${name} ha prestado atención al pozo.`;
+        } else if (asks && addressedCharacter) {
+            category = 'dialogue';
+            const [npcKey, npc] = addressedCharacter;
+            const npcGoal = typeof npc.personalGoal === 'string' ? npc.personalGoal.trim() : '';
+            reply = npcGoal
+                ? `${npcKey} te escucha con cautela.\n\n—Ahora mismo intento ${npcGoal.charAt(0).toLocaleLowerCase('es') + npcGoal.slice(1)}. No es algo que pueda resolver de un día para otro.`
+                : `${npcKey} te escucha con cautela, aunque parece medir cuidadosamente lo que está dispuesto a contarte.`;
+            event = `${name} ha conversado con ${npcKey}.`;
         } else if (asks) {
             category = 'dialogue';
             reply = 'Elia te escucha, pero no puede responder por todo el pueblo. Un vecino que barre la entrada de una tienda murmura que la campana empezó a sonar después de una tormenta, hace tres semanas. Cuando intentas preguntarle más, finge no haberte oído.';
