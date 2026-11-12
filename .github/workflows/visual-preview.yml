@@ -94,6 +94,7 @@ jobs:
                   eliaTrustDelta: 0,
                   itemsToAdd: ['Medallón de cobre'],
                   itemsToRemove: [],
+                  charactersToAdd: [{ name: 'Tomás', role: 'Vecino', location: 'Plaza del pozo', attitude: 'Desconfiado', memory: 'Tomás vio a Ariadna encontrar el medallón.' }],
                   characterMemoriesToAdd: [{ character: 'Elia', memory: 'Ariadna encontró un medallón de cobre junto al pozo.' }],
                   time: 'Media mañana',
                   day: 1
@@ -107,7 +108,11 @@ jobs:
                   eliaTrustDelta: 1,
                   itemsToAdd: [],
                   itemsToRemove: ['Medallón de cobre'],
-                  characterMemoriesToAdd: [{ character: 'Elia', memory: 'Ariadna le entregó el medallón de cobre.' }],
+                  charactersToAdd: [],
+                  characterMemoriesToAdd: [
+                    { character: 'Elia', memory: 'Ariadna le entregó el medallón de cobre.' },
+                    { character: 'Tomás', memory: 'Tomás vio a Ariadna entregar el medallón a Elia.' }
+                  ],
                   time: 'Mediodía',
                   day: 1
                 };
@@ -163,6 +168,7 @@ jobs:
                 data.adventure.state.characters.Elia.trust === 1 &&
                 data.adventure.state.characters.Elia.memories.includes('Ariadna encontró un medallón de cobre junto al pozo.') &&
                 data.adventure.state.characters.Elia.memories.includes('Ariadna le entregó el medallón de cobre.') &&
+                data.adventure.state.characters.Tomás.memories.includes('Tomás vio a Ariadna entregar el medallón a Elia.') &&
                 data.adventure.state.time === 'Mediodía' && data.adventure.state.day === 1;
             });
             await page.reload({ waitUntil: 'networkidle' });
