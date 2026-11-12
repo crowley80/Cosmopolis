@@ -256,7 +256,13 @@ jobs:
               const history = Array.from({ length: 10 }, (_, i) => ({ text: 'Acción ' + i, response: 'Respuesta ' + i }));
               const messages = Narrator.buildMessages('Sigo investigando.', saved.character, probe, history);
               const context = JSON.parse(messages[1].content);
+              const systemPrompt = messages[0].content;
               return {
+                knowledgeBoundaryRules: [
+                  'Respeta los límites de conocimiento del personaje jugador',
+                  'no presentes como conocido lo que aún ignora',
+                  'nunca conviertas una conjetura en un hecho confirmado'
+                ].every(rule => systemPrompt.includes(rule)),
                 eventCount: context.currentAdventure.state.events.length,
                 memoryCount: context.currentAdventure.state.characters.Elia.memories.length,
                 eliaGoal: context.currentAdventure.state.characters.Elia.personalGoal,
@@ -267,8 +273,8 @@ jobs:
                 savedCompletedGoalCount: probe.state.characters.Elia.completedGoals.length
               };
             });
-            assert.deepEqual(contextProbe, { eventCount: 20, memoryCount: 8, eliaGoal: 'Averiguar por qué suenan las campanas.', completedGoalCount: 8, lastCompletedGoal: 'Meta cumplida 9', historyCount: 6, savedMemoryCount: 12, savedCompletedGoalCount: 10 },
-              'El contexto enviado al modelo debe limitarse sin borrar recuerdos de la partida');
+            assert.deepEqual(contextProbe, { knowledgeBoundaryRules: true, eventCount: 20, memoryCount: 8, eliaGoal: 'Averiguar por qué suenan las campanas.', completedGoalCount: 8, lastCompletedGoal: 'Meta cumplida 9', historyCount: 6, savedMemoryCount: 12, savedCompletedGoalCount: 10 },
+              'El contexto debe limitarse sin borrar recuerdos e incluir límites de conocimiento');
 
             await page.waitForFunction(() => {
               const raw = localStorage.getItem('cosmopolis_save');
