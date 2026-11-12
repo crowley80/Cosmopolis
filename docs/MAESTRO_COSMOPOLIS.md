@@ -1129,3 +1129,10 @@ El motivo de cada cambio se añade también a la memoria del personaje, evitando
 La prueba automatizada simula una entrega de objeto que mejora la confianza de Elia y Tomás, y comprueba las puntuaciones y el recuerdo asociado. Es una prueba del cliente con respuestas simuladas; no demuestra todavía que Qwen3.5-4B produzca cambios acertados en el teléfono.
 
 Commit de implementación: pendiente de confirmación de GitHub Actions.
+
+
+### Contexto compacto para modelos locales — 12 de noviembre de 2026
+
+Se ha limitado el tamaño del contexto enviado a llama-server para evitar que una aventura larga desborde la ventana de contexto del modelo local. La petición conserva el estado narrativo completo necesario para resolver la acción, pero selecciona hasta 20 personajes dando prioridad a quienes están en la ubicación actual y a Elia; transmite hasta ocho recuerdos por personaje, los 20 eventos recientes, 25 hechos y pistas, 30 objetos, 25 lugares y seis acciones recientes. También se acotan los campos de la ficha y la longitud de las acciones/respuestas incluidas.
+
+La compactación solo afecta al mensaje enviado al modelo: no elimina recuerdos, eventos ni personajes de la partida guardada. La prueba automatizada genera un estado de prueba más grande y verifica que el contexto se recorta mientras la memoria original permanece intacta.
