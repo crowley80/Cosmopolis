@@ -1050,3 +1050,10 @@ La cabecera del manuscrito se actualiza después de cada acción guardada. Se vu
 Commits:
 - `88d6198`: actualizar ubicación y reloj del manuscrito tras cada acción.
 - `a6a4e90`: probar actualización inmediata del reloj y ubicación.
+
+
+### Renovación de caché de la interfaz — 12 de noviembre de 2026
+
+Se ha actualizado la versión de consulta de la hoja CSS y del JavaScript principal en `index.html` a `20261112-funciones-memoria`. Así, al sincronizar la rama en Termux y recargar la página, el navegador solicitará las nuevas funciones de paneles, inventario, memoria de personajes y reloj interno en lugar de reutilizar los recursos con la versión anterior de caché.
+
+Commit: `42f828f`.
