@@ -83,6 +83,7 @@ const Narrator = {
                     'itemsToAdd: objetos que el personaje obtiene realmente y puede llevar consigo; no incluyas objetos solo vistos o examinados.',
                     'itemsToRemove: objetos que pierde, entrega, consume o deja atrás realmente; usa el nombre exacto del inventario.',
                     'charactersToAdd: personajes nuevos que realmente entran en escena; incluye nombre, función, ubicación, actitud y un primer recuerdo significativo. No añadas figurantes irrelevantes.',
+                    'characterUpdates: cambios de ubicación o actitud de personajes ya registrados; conserva sus valores si no han cambiado y no muevas personajes sin motivo narrativo.',
                     'characterMemoriesToAdd: recuerdos concretos y duraderos de personajes que ya existen en el estado; no inventes personajes ni guardes detalles triviales.',
                     'time: momento del día dentro del mundo; no uses la hora real del teléfono y no avances el tiempo sin motivo narrativo.',
                     'day: número del día dentro de la aventura; solo aumenta cuando la historia cruza realmente al día siguiente.'
@@ -136,6 +137,19 @@ const Narrator = {
                         required: ['name', 'role', 'location', 'attitude', 'memory']
                     }
                 },
+                characterUpdates: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        properties: {
+                            character: { type: 'string' },
+                            location: { type: 'string' },
+                            attitude: { type: 'string' }
+                        },
+                        required: ['character', 'location', 'attitude']
+                    }
+                },
                 characterMemoriesToAdd: {
                     type: 'array',
                     items: {
@@ -149,7 +163,7 @@ const Narrator = {
                     }
                 }
             },
-            required: ['reply', 'event', 'category', 'location', 'factsToAdd', 'cluesToAdd', 'eliaTrustDelta', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd', 'charactersToAdd', 'time', 'day']
+            required: ['reply', 'event', 'category', 'location', 'factsToAdd', 'cluesToAdd', 'eliaTrustDelta', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd', 'charactersToAdd', 'characterUpdates', 'time', 'day']
         };
 
         const controller = new AbortController();
@@ -187,6 +201,7 @@ const Narrator = {
                 !Array.isArray(result.itemsToAdd) || !Array.isArray(result.itemsToRemove) ||
                 !Array.isArray(result.characterMemoriesToAdd) ||
                 !Array.isArray(result.charactersToAdd) ||
+                !Array.isArray(result.characterUpdates) ||
                 typeof result.time !== 'string' || !Number.isInteger(result.day)) {
                 throw new Error('La respuesta no cumple el formato narrativo');
             }
@@ -246,6 +261,19 @@ const Narrator = {
                     memories: memory ? [memory] : []
                 };
             });
+            result.characterUpdates.slice(0, 10).forEach(entry => {
+                if (!entry || typeof entry.character !== 'string') return;
+                const requestedName = entry.character.trim().toLocaleLowerCase('es');
+                const key = Object.keys(state.characters).find(name =>
+                    name.toLocaleLowerCase('es') === requestedName ||
+                    String(state.characters[name] && state.characters[name].name || '').toLocaleLowerCase('es') === requestedName
+                );
+                if (!key) return;
+                const person = state.characters[key];
+                if (typeof entry.location === 'string' && entry.location.trim()) person.location = entry.location.trim().slice(0, 120);
+                if (typeof entry.attitude === 'string' && entry.attitude.trim()) person.attitude = entry.attitude.trim().slice(0, 100);
+            });
+
             result.characterMemoriesToAdd.slice(0, 5).forEach(entry => {
                 if (!entry || typeof entry.character !== 'string' || typeof entry.memory !== 'string') return;
                 const requestedName = entry.character.trim().toLocaleLowerCase('es');
