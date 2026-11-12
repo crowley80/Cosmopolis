@@ -1163,4 +1163,9 @@ La ejecución `43287906891`, sobre el commit `bf5317a`, terminó con conclusión
 
 Se amplía el contrato del narrador con `characterActions`: hasta dos personajes ya registrados y presentes en la ubicación actual pueden realizar una pequeña iniciativa autónoma durante la escena. Las acciones se validan contra personajes existentes y su ubicación; no se aceptan acciones de personajes fuera de escena ni se cambia su ubicación con este mecanismo. Cada iniciativa se añade a la narración, se registra como `lastAutonomousAction` y se conserva como recuerdo individual (máximo 30). Esto permite que los personajes no se limiten a esperar la orden del jugador, sin simular movimientos fuera de cámara ni alterar el mapa de forma arbitraria.
 
-La prueba de Chromium simula a Elia examinando una marca por iniciativa propia y a Tomás observando desde la entrada; verifica que la acción de Elia aparece en su memoria y queda registrada. La prueba valida el procesamiento del cliente con respuestas simuladas; el comportamiento del modelo local real requiere prueba en el dispositivo.
+La prueba de Chromium simula a Elia examinando una marca por iniciativa propia y comprueba que queda en su memoria. En la segunda acción, Tomás cambia a otra ubicación: aunque la respuesta simulada intenta asignarle una iniciativa en la plaza, el cliente la rechaza por estar fuera de escena. La prueba valida el procesamiento del cliente con respuestas simuladas; el comportamiento del modelo local real requiere prueba en el dispositivo.
+
+
+### Protección de iniciativas fuera de escena — 12 de noviembre de 2026
+
+Se amplió la regresión automatizada para confirmar que un personaje que se ha desplazado a otra ubicación no puede ejecutar una iniciativa atribuida a la escena actual. En la simulación, Tomás pasa a la entrada de la posada y el cliente descarta su supuesta acción en la plaza. Esto evita recuerdos y acontecimientos incoherentes causados por personajes que actúan desde lugares donde no están presentes.
