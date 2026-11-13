@@ -514,3 +514,16 @@ La primera ejecución real de GitHub Actions ha permitido detectar una prueba an
 ## Primera ejecución completa de CI — 13/11/2026
 
 GitHub Actions ejecutó las once suites con Node.js 22 sobre el commit 90cd4cf1c630534c44609b193e4adc94a89f0a26. Resultado verificado: **94 pruebas, 94 pasaron, 0 fallaron**. La ejecución detectó antes una expectativa contradictoria en una prueba del scheduler; se corrigió la expectativa obsoleta (de e5 a e0) sin alterar el algoritmo y la nueva ejecución quedó verde. Esto valida los módulos aislados en Ubuntu/Node 22, no la integración en Termux ni el runtime de la aplicación.
+
+
+## 29. Efectos de dominio tipados y acotados
+
+Se añade el módulo experimental `app/js/game/world-effects.js`. A diferencia de un parche genérico, solo acepta tres operaciones explícitas: `fact.add`, `relationship.adjust` y `character.move`. Cada efecto necesita ID propio y un evento causal que siga `pending`; un evento cancelado, fallido o ya aplicado no puede originar efectos nuevos.
+
+- `fact.add` crea un hecho con ID único, texto limitado, tick actual, visibilidad declarada y referencia al evento causal.
+- `relationship.adjust` solo permite ejes `trust`, `respect`, `affection`, `fear` y `hostility`, cambios enteros de hasta diez puntos por operación y valores finales acotados entre -100 y 100. El historial conserva efecto, causa, tick y variación.
+- `character.move` exige personaje y localización de destino existentes; admite una localización de origen esperada para evitar mover a un personaje desde un lugar incorrecto.
+
+El módulo registra cada ID aplicado tanto en `processedEffects` como en `appliedEffectIds` del evento causal, no muta el objeto recibido y no acepta rutas, propiedades o código arbitrarios. Las referencias `appliedEffectIds` son las que el motor debe entregar después a `world-event-resolution.js` al cerrar el evento como aplicado.
+
+Se añaden doce pruebas unitarias. El módulo sigue aislado y usa la forma canónica propuesta `world.characters`/`world.locations`; antes de conectarlo a la partida hay que reconciliar y migrar el esquema real de Termux. No se ha conectado al runtime.
