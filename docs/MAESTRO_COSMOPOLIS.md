@@ -1554,3 +1554,8 @@ Se amplía docs/PLAN_INTEGRACION_MUNDO_VIVO.md con dos requisitos de integració
 ## CI verde con 118 pruebas y causalidad privada NPC — 13/11/2026
 
 GitHub Actions completó las doce suites en el commit `db91b8bcccfd56c18d61acc5b5c0c3753dbc30a5`: **118 pruebas, 118 pasaron, 0 fallaron** con Node.js 22. Incluye validación profunda de payloads NPC y la nueva condición de que cada iniciativa cite una causa conocida por el actor que la propone. La validación cubre módulos aislados; no acredita todavía integración en la aplicación ni en Termux.
+
+
+## Límite aritmético del cooldown NPC — 13/11/2026
+
+Se endurece markInitiative para rechazar la suma tick + cooldownTicks cuando deja de ser un entero seguro de JavaScript. Así no se guardan ticks de próxima iniciativa imprecisos por desbordamiento numérico. Se añade una prueba de borde; la batería pasa a **119 pruebas escritas**.
