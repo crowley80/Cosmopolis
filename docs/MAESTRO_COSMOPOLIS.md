@@ -1615,3 +1615,8 @@ La auditoría detectó que npc-proposal.js permitía un ID de propuesta de hasta
 ## Integridad de IDs y duplicados en memoria NPC — 13/11/2026
 
 Se endurece knowledge.js: las entradas con IDs de conocimiento o actor superiores a 120 caracteres se rechazan en lugar de truncarse; al normalizar duplicados se conserva la primera entrada canónica y no se permite que una copia posterior sobrescriba su contenido o tipo. La comunicación calcula el ID compuesto antes de guardar y rechaza el caso si supera 120 caracteres, evitando colisiones por truncamiento. Se añaden dos pruebas. La primera ejecución detectó que el ID de prueba aún cabía en el límite; se corrigió el fixture (110 caracteres) y la ejecución final 43485914684 sobre `250f6af2e9c4e27cb1b9722810265652e544599a` terminó verde: **132 pruebas, 132 pasaron, 0 fallaron**, Node.js 22. Módulos aislados, no runtime integrado.
+
+
+## Aislamiento estricto de identidad y localización en conocimiento NPC — 13/11/2026
+
+Se completa el endurecimiento de knowledge.js: las funciones de consulta y transferencia rechazan IDs de actor/conocimiento excesivos en lugar de truncarlos; los emisores y las localizaciones opcionales inválidas hacen que la entrada completa se descarte. Esto evita que un ID de localización largo se convierta en `null` y, por tanto, en un recuerdo visible en cualquier escena. Las referencias de evidencia excesivas se descartan sin recortarlas. La primera CI ejecutó el código nuevo con una expectativa antigua y falló únicamente ese test; se actualizó la prueba al nuevo contrato. Ejecución final 43486091187 sobre `c01d3307f02625f4404b4412d838ba412dc0abe1`: **134 pruebas, 134 pasaron, 0 fallaron**, Node.js 22. Módulos aislados, no integración en Termux.
