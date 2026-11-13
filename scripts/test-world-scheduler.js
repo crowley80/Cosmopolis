@@ -48,14 +48,18 @@ test("rechaza ticks de consulta inválidos sin alterar agenda", () => {
   assert.deepEqual(result.events, scheduled.events);
 });
 
-test("normaliza estados y conserva campos de extensiones", () => {
+test("conserva campos de extensiones y neutraliza estados desconocidos", () => {
   const result = Scheduler.normalizeScheduledEvents([
     { id: "x", dueTick: 2, status: "unknown", custom: "keep" },
+    { id: "legacy", dueTick: 3, custom: "no explicit status" },
     { id: "bad", dueTick: "tomorrow" }
   ]);
-  assert.equal(result.length, 1);
-  assert.equal(result[0].status, "pending");
+  assert.equal(result.length, 2);
+  assert.equal(result[0].status, "cancelled");
   assert.equal(result[0].custom, "keep");
+  assert.equal(result[1].status, "pending");
+  assert.equal(Scheduler.collectDueEvents(result, 10).due.length, 1);
+  assert.equal(Scheduler.collectDueEvents(result, 10).due[0].id, "legacy");
 });
 
 test("limita la agenda y no usa el reloj de pared", () => {
