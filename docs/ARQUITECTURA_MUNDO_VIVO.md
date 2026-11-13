@@ -539,3 +539,8 @@ Se actualizan las pruebas de resolución y el flujo causal integrado para aplica
 ## Ajuste de expectativa en el ciclo causal integrado — 13/11/2026
 
 La primera ejecución tras exigir referencias de efectos reales pasó 106 de 107 pruebas. El único fallo era una expectativa antigua del test integrado: comparaba el ID del hecho (`clue-map-fragment`) con el ID del efecto (`effect-clue-map`). La implementación conserva correctamente el ID del efecto en `resolution.effectIds`; se corrige la expectativa de la prueba sin cambiar el código de dominio.
+
+
+## Límite de efectos por evento causal
+
+Se fija un máximo explícito de 50 efectos registrados por evento causal, alineado con el máximo de referencias que acepta world-event-resolution.js. world-effects.js rechaza el efecto número 51 con event-effect-capacity antes de mutar hechos, relaciones o personajes. Así se evita aplicar efectos que después no podrían incluirse en el registro de resolución. Se añade una prueba de capacidad; la batería pasa a 108 pruebas escritas.
