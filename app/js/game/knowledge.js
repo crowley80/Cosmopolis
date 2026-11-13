@@ -19,12 +19,14 @@
 
   function normalizeEntry(entry) {
     if (!entry || typeof entry !== "object") return null;
-    const id = cleanText(entry.id, 120);
+    const rawId = typeof entry.id === "string" ? entry.id.trim() : "";
+    const rawActorId = typeof entry.actorId === "string" ? entry.actorId.trim() : "";
+    const id = cleanText(rawId, 120);
     const content = cleanText(entry.content, 2000);
     const source = SOURCES.has(entry.source) ? entry.source : "";
     const type = TYPES.has(entry.type) ? entry.type : "";
-    const actorId = cleanText(entry.actorId, 120);
-    if (!id || !content || !source || !type || !actorId) return null;
+    const actorId = cleanText(rawActorId, 120);
+    if (!id || rawId.length > 120 || !content || !source || !type || !actorId || rawActorId.length > 120) return null;
     const confidence = Number.isFinite(entry.confidence)
       ? Math.max(0, Math.min(1, entry.confidence))
       : (source === "perceived" ? 1 : 0.5);
@@ -45,7 +47,7 @@
     const byId = new Map();
     for (const raw of entries) {
       const entry = normalizeEntry(raw);
-      if (entry) byId.set(entry.id, entry);
+      if (entry && !byId.has(entry.id)) byId.set(entry.id, entry);
     }
     return Array.from(byId.values()).slice(-MAX_ENTRIES);
   }
@@ -97,6 +99,7 @@
     for (const item of selected) {
       const newId = "comm:" + item.id + ":" + to + ":" +
         (Number.isInteger(tick) && tick >= 0 ? tick : 0);
+      if (newId.length > 120) continue;
       const result = recordKnowledge(nextEntries, {
         ...item,
         id: newId,
@@ -111,7 +114,9 @@
     }
     return {
       applied: transferredIds.length > 0,
-      reason: transferredIds.length ? null : "already-transferred",
+      reason: transferredIds.length ? null : (selected.some(item =>
+        ("comm:" + item.id + ":" + to + ":" + (Number.isInteger(tick) && tick >= 0 ? tick : 0)).length > 120
+      ) ? "generated-id-too-long" : "already-transferred"),
       entries: nextEntries,
       transferredIds
     };
