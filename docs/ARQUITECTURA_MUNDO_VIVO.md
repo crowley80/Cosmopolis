@@ -603,3 +603,8 @@ Se endurece markInitiative para rechazar la suma tick + cooldownTicks cuando dej
 ## CI verde con 119 pruebas — 13/11/2026
 
 GitHub Actions completó las doce suites en el commit `e39e93fd8c12dfc646dd2da9ca0d827cefb82d3c`: **119 pruebas, 119 pasaron, 0 fallaron** con Node.js 22. La ejecución incluye el control de desbordamiento aritmético del cooldown de iniciativas NPC. Sigue siendo una validación de módulos aislados, no de la integración en Termux.
+
+
+## Límites de identificadores en el núcleo del mundo — 13/11/2026
+
+Se establece un máximo de 160 caracteres para operationId, event.id y los IDs heredados de processedOperations. El núcleo rechaza IDs nuevos excesivos sin avanzar el tick y descarta entradas heredadas que exceden el límite. Se añaden dos pruebas; la batería pasa a **121 pruebas escritas**. Pendiente CI.
