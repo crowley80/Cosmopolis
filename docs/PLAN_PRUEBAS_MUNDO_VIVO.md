@@ -188,3 +188,25 @@ node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-pe
 ```
 
 Este comando ejecuta las suites del núcleo del mundo, conocimiento y percepción. La existencia del comando documentado no significa que se haya ejecutado en Termux: la validación debe registrarse por separado y realizarse primero en un checkout real, después en el dispositivo.
+
+## 13. Pruebas de reglas explícitas de percepción
+
+Se añade `scripts/test-perception-rules.js` para verificar el contrato del motor de elegibilidad:
+- coincidencia de localización;
+- habilitación del sentido;
+- listas explícitas de visibilidad y audibilidad;
+- ocultación y bloqueo por actor;
+- atención requerida y atención por defecto;
+- ausencia de percepción entre localizaciones;
+- rechazo de canales desconocidos;
+- determinismo y deduplicación de actores;
+- conservación del estímulo al añadir `observerIds`.
+
+Comando actualizado para las cuatro suites aisladas:
+
+```sh
+node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js scripts/test-perception-rules.js
+```
+
+Las pruebas están escritas en la rama, pero todavía no se han ejecutado en un checkout real ni en Termux. Las reglas no simulan geometría ni demuestran visibilidad física: las restricciones espaciales avanzadas deben llegar explícitamente desde una futura capa de escena.
+
