@@ -98,3 +98,10 @@ test("el cursor avanza desde el actor exacto aunque el orden por cooldown no sea
   });
   assert.equal(result.selected[0].actorId, "alfa");
 });
+
+test("rechaza cooldown que desborda el rango entero seguro", () => {
+  const result = Initiative.markInitiative(actors[0], Number.MAX_SAFE_INTEGER, 1);
+  assert.equal(result.applied, false);
+  assert.equal(result.reason, "invalid-input");
+  assert.equal(result.actor, actors[0]);
+});
