@@ -483,3 +483,10 @@ La revisión del selector encontró que el cursor buscaba el primer ID lexicogr�
 ## 28. Unicidad de IDs de evento en el núcleo
 
 `world-core.applyStep` ya impedía repetir un `operationId`, pero permitía que una operación distinta añadiera un evento con un ID ya existente. Ahora comprueba la unicidad del ID de evento antes de incrementar el tick o registrar la operación. Si está duplicado, devuelve `applied: false`, `reason: "duplicate-event-id"` y el estado normalizado sin mutaciones. Se añade una prueba de regresión que comprueba que no avanza el tick ni consume el nuevo operationId.
+
+
+## Normalización canónica de IDs de evento — 13/11/2026
+
+La revisión de idempotencia detectó que un evento podía comprobarse con el ID recortado pero almacenarse con espacios exteriores. Esto permitía que dos representaciones textuales equivalentes eludieran la comprobación de unicidad. `world-core.applyStep()` ahora compara IDs existentes tras normalizarlos con `trim()` y almacena siempre el ID canónico recortado; un ID vacío o compuesto por espacios adopta el `operationId` ya normalizado. La validación de duplicados ocurre antes de consumir tick o registrar la operación.
+
+Se añaden dos pruebas de regresión. La suite del núcleo pasa a nueve pruebas escritas y la batería total del proyecto a 92. La corrección permanece aislada y pendiente de ejecución en checkout real/CI; no modifica Termux ni el runtime.
