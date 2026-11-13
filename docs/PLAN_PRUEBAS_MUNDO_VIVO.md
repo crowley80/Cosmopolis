@@ -393,3 +393,8 @@ GitHub Actions completó las doce suites en el commit f3ed516a008c47b0d0c0715144
 ## 28. Unicidad durable de efectos entre eventos
 
 Se amplía scripts/test-world-effects.js con un escenario de recuperación donde processedEffects ya no contiene el ID antiguo, pero el evento original conserva appliedEffectIds. El motor debe seguir rechazando ese ID si se intenta reutilizar en otro evento. La batería documentada queda en **110 pruebas escritas**.
+
+
+## CI verde con unicidad durable de efectos — 13/11/2026
+
+GitHub Actions completó las doce suites en el commit 5397518ca02c0ad1989369f0105eb5ddc9d853eb: **110 pruebas, 110 pasaron, 0 fallaron**. La ejecución incluye el caso que demuestra que los IDs de efecto siguen siendo únicos aunque se compacte el registro global, gracias a las referencias guardadas en cada evento causal. Validación en Node.js 22; integración en Termux pendiente.
