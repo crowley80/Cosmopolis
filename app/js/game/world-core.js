@@ -64,6 +64,10 @@
         if (next.processedOperations.includes(id)) {
             return { world: next, applied: false, reason: 'duplicate-operation', tick: next.clock.tick };
         }
+        // No permitir que el contador lógico salga del rango entero seguro de JS.
+        if (next.clock.tick >= Number.MAX_SAFE_INTEGER) {
+            return { world: next, applied: false, reason: 'tick-overflow', tick: next.clock.tick };
+        }
 
         const suppliedEventId = isObject(event) && typeof event.id === 'string' ? event.id.trim() : '';
         if (suppliedEventId.length > MAX_ID_LENGTH) {
