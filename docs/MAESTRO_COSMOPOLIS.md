@@ -1470,3 +1470,8 @@ Se corrigió world-event-resolution.js para localizar eventos comparando IDs tra
 ## Corrección de prueba detectada por CI — 13/11/2026
 
 Se consultó la primera ejecución real de GitHub Actions. De 92 pruebas, 91 pasaron y falló una expectativa contradictoria del scheduler: una prueba esperaba e5 al truncar 505 eventos, mientras la especificación y otra prueba establecen conservar los 500 vencimientos más próximos, e0–e499. Se corrigió únicamente la expectativa de la prueba a e0; no se modificó el scheduler. La nueva ejecución debe confirmar la corrección y también abarcar los casos de IDs heredados añadidos posteriormente.
+
+
+## Primera ejecución completa de CI — 13/11/2026
+
+GitHub Actions ejecutó las once suites con Node.js 22 sobre el commit 90cd4cf1c630534c44609b193e4adc94a89f0a26. Resultado verificado: **94 pruebas, 94 pasaron, 0 fallaron**. La ejecución detectó antes una expectativa contradictoria en una prueba del scheduler; se corrigió la expectativa obsoleta (de e5 a e0) sin alterar el algoritmo y la nueva ejecución quedó verde. Esto valida los módulos aislados en Ubuntu/Node 22, no la integración en Termux ni el runtime de la aplicación.
