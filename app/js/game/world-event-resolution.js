@@ -59,6 +59,7 @@
     if (outcome === "applied") {
       const registered = new Set(ids(current.appliedEffectIds));
       if (effectIds.some(id => !registered.has(id))) return rejected("unregistered-effect-reference");
+      if (effectIds.length !== registered.size) return rejected("incomplete-effect-references");
     }
 
     const updated = {
