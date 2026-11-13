@@ -103,3 +103,8 @@ npc-proposal.js limita ahora el ID original a 147 caracteres porque añade el pr
 ## Integridad de identificadores en conocimiento individual — 13/11/2026
 
 knowledge.js rechaza IDs de entrada/actor que excedan 120 caracteres, conserva la primera copia al normalizar IDs duplicados y no trunca IDs compuestos generados al comunicar conocimiento. Si el ID compuesto no cabe, la comunicación se rechaza explícitamente. CI verde: **132/132 pruebas** en ejecución 43485914684. La integración sigue bloqueada hasta reconciliar Termux y probar el runtime real.
+
+
+## Aislamiento de IDs y localizaciones en memoria NPC — 13/11/2026
+
+Las consultas de memoria, transferencias e inferencias ya no truncan IDs de actor o conocimiento. Las entradas con emisor/localización excesivos se descartan por completo: no se convierten en recuerdos globales por perder su localización. Las referencias de evidencia fuera del límite se descartan sin alterar sus prefijos. CI verde: **134/134 pruebas** en ejecución 43486091187. La integración sigue pendiente de reconciliación con Termux y validación real del runtime.
