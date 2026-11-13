@@ -5,7 +5,7 @@ const Resolution = require("../app/js/game/world-event-resolution.js");
 const base = {
   clock: { tick: 9 },
   facts: ["untouched"],
-  events: [{ id: "ev-1", tick: 8, status: "pending", causeId: "cause-1", actorId: "npc-1" }]
+  events: [{ id: "ev-1", tick: 8, status: "pending", causeId: "cause-1", actorId: "npc-1", appliedEffectIds: ["fact-2", "f1", "f2"] }]
 };
 
 test("resuelve un evento pendiente y conserva su causalidad", () => {
@@ -101,4 +101,14 @@ test("resuelve IDs heredados con espacios y los normaliza al actualizar", () => 
   assert.equal(result.applied, true);
   assert.equal(result.event.id, "ev-1");
   assert.equal(result.world.events[0].id, "ev-1");
+});
+
+
+test("rechaza referencias de efectos que no constan en el evento causal", () => {
+  const result = Resolution.resolveEvent(base, "ev-1", "resolve-unregistered", {
+    outcome: "applied", summary: "No se ha aplicado", effectIds: ["invented-effect"]
+  });
+  assert.equal(result.applied, false);
+  assert.equal(result.reason, "unregistered-effect-reference");
+  assert.equal(base.events[0].status, "pending");
 });
