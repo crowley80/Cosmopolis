@@ -32,7 +32,11 @@
     const source = SOURCES.has(entry.source) ? entry.source : "";
     const type = TYPES.has(entry.type) ? entry.type : "";
     const actorId = cleanText(rawActorId, 120);
-    if (!id || rawId.length > 120 || !content || !source || !type || !actorId || rawActorId.length > 120) return null;
+    const optionalIdTooLong = [entry.fromActorId, entry.locationId].some(value =>
+      value != null && (typeof value !== "string" || value.trim().length > 120)
+    );
+    if (!id || rawId.length > 120 || !content || !source || !type || !actorId ||
+        rawActorId.length > 120 || optionalIdTooLong) return null;
     const confidence = Number.isFinite(entry.confidence)
       ? Math.max(0, Math.min(1, entry.confidence))
       : (source === "perceived" ? 1 : 0.5);
