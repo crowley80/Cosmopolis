@@ -202,3 +202,18 @@ test("una inferencia rechaza evidencia inválida en vez de ignorarla", () => {
   assert.equal(result.reason, "missing-owned-evidence");
   assert.equal(result.entries.length, 1);
 });
+
+
+test("no convierte localizaciones o emisores vacíos en conocimiento global", () => {
+  const normalized = Knowledge.normalizeKnowledge([
+    {
+      id: "empty-location", actorId: "npc", content: "Dato local", type: "fact", source: "perceived",
+      locationId: ""
+    },
+    {
+      id: "empty-source", actorId: "npc", content: "Dato comunicado", type: "fact", source: "communicated",
+      fromActorId: ""
+    }
+  ]);
+  assert.deepEqual(normalized, []);
+});
