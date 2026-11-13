@@ -35,7 +35,7 @@
           : {}
       });
     }
-    return Array.from(byId.values()).slice(-MAX_SCHEDULED);
+    return Array.from(byId.values()).sort((a, b) =>\n      a.dueTick !== b.dueTick ? a.dueTick - b.dueTick : (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)\n    ).slice(0, MAX_SCHEDULED);
   }
 
   function scheduleEvent(events, event) {
@@ -62,7 +62,7 @@
     const next = [...current, entry].sort((a, b) =>
       a.dueTick !== b.dueTick ? a.dueTick - b.dueTick : (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
     );
-    return { applied: true, reason: null, events: next.slice(-MAX_SCHEDULED) };
+    return { applied: true, reason: null, events: next };
   }
 
   function cancelEvent(events, eventId) {
