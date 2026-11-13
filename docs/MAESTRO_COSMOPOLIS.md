@@ -1549,3 +1549,8 @@ Se endurece registerNpcProposal: ya no basta con que el modelo proponga un cause
 ## Contratos de integración NPC actualizados — 13/11/2026
 
 Se amplía docs/PLAN_INTEGRACION_MUNDO_VIVO.md con dos requisitos de integración: cada propuesta NPC debe demostrar que su causa pertenece al conocimiento individual del actor mediante knownCauseIdsByActor; y los payloads se deben copiar/validar con límites estrictos antes de incorporarlos al estado. La allowlist causal debe derivarse de la memoria privada de cada NPC, no del mundo global.
+
+
+## CI verde con 118 pruebas y causalidad privada NPC — 13/11/2026
+
+GitHub Actions completó las doce suites en el commit `db91b8bcccfd56c18d61acc5b5c0c3753dbc30a5`: **118 pruebas, 118 pasaron, 0 fallaron** con Node.js 22. Incluye validación profunda de payloads NPC y la nueva condición de que cada iniciativa cite una causa conocida por el actor que la propone. La validación cubre módulos aislados; no acredita todavía integración en la aplicación ni en Termux.
