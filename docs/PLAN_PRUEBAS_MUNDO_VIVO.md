@@ -292,3 +292,16 @@ node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-pe
 ```
 
 No se afirma ejecución en checkout real ni en Termux. El módulo registra estados y referencias, pero no aplica efectos de mundo; permanece experimental y sin integración en la aplicación.
+
+
+## 20. Pruebas integradas del ciclo causal NPC
+
+Se añade `scripts/test-npc-event-lifecycle.js` con cuatro pruebas de integración entre `npc-proposal.js` y `world-event-resolution.js`: conservación de actor/causa/localización de principio a fin, reintentos idempotentes sin duplicados, imposibilidad de reabrir un evento cancelado y ausencia de mutaciones implícitas en hechos del mundo.
+
+La batería documentada asciende a **88 pruebas escritas** (84 anteriores + 4 nuevas). Comando completo:
+
+```sh
+node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js scripts/test-perception-rules.js scripts/test-perception-pipeline.js scripts/test-world-scheduler.js scripts/test-npc-initiative.js scripts/test-npc-context.js scripts/test-npc-proposal.js scripts/test-world-event-resolution.js scripts/test-npc-event-lifecycle.js
+```
+
+No se afirma ejecución en checkout real ni en Termux. Esta suite comprueba la integración entre dos módulos puros, no la integración del runtime ni la aplicación de efectos de dominio.
