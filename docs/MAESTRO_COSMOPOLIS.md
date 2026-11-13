@@ -1376,3 +1376,13 @@ La batería total documentada pasa de 37 a 47 pruebas escritas. El comando de la
 
 Se han actualizado `docs/ARQUITECTURA_MUNDO_VIVO.md` y `docs/PLAN_PRUEBAS_MUNDO_VIVO.md`. No se ha modificado la aplicación activa ni se ha integrado la rama en `main`.
 
+## Continuidad técnica — selección acotada de iniciativas NPC (13/11/2026)
+
+Se ha añadido `app/js/game/npc-initiative.js`, un módulo puro que selecciona qué NPC pueden proponer una iniciativa en cada tick lógico. Exige una lista explícita de actores elegibles, excluye al jugador, actores no autónomos o fallecidos y personajes sin objetivo activo, y respeta `nextInitiativeTick`. La selección es determinista y usa un cursor rotatorio para repartir oportunidades; por defecto selecciona un NPC por tick y el máximo configurable es cinco.
+
+También incorpora `markInitiative`, que registra el tick de la última iniciativa y el siguiente tick permitido sin mutar el objeto original, y rechaza duplicar una marca en el mismo tick. No genera acciones ni invoca IA; esa responsabilidad sigue en el motor superior.
+
+Se han escrito diez pruebas en `scripts/test-npc-initiative.js`. La batería total documentada pasa de 47 a 57 pruebas. El comando actualizado de las siete suites está en `docs/PLAN_PRUEBAS_MUNDO_VIVO.md`.
+
+Documentación ampliada en `docs/ARQUITECTURA_MUNDO_VIVO.md` y `docs/PLAN_PRUEBAS_MUNDO_VIVO.md`. No se ha conectado el módulo al runtime ni se han modificado archivos activos de Termux. La ejecución real de las pruebas y la reconciliación de la rama con la copia móvil siguen pendientes.
+
