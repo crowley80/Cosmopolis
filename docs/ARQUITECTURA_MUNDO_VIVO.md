@@ -376,3 +376,17 @@ La comunicación es una operación explícita del motor: la capa superior debe d
 Se añade `app/js/game/perception.js` como adaptador experimental entre observaciones espaciales y memoria individual. Solo registra un estímulo cuando el actor aparece en `observerIds`, lista que debe producir previamente el motor tras resolver línea de visión, alcance, audición, atención y condiciones de escena. Cada observación genera una entrada individual con fuente `perceived`.
 
 El módulo **no calcula** quién puede ver u oír: no dispone de geometría ni de estado espacial y no debe inventarlos. La lista de observadores es una frontera de confianza que corresponde al motor espacial. No se debe construirla copiando todos los personajes presentes sin comprobar los sentidos, obstáculos, distancia y circunstancias.
+
+
+## 16. Orden de carga previsto (todavía no integrado)
+
+Cuando se reconcilie la rama con la copia móvil, el orden de dependencias de estos módulos será:
+
+1. `world-core.js`: normalización y pasos idempotentes del mundo.
+2. `knowledge.js`: registros y vistas de conocimiento por actor.
+3. `perception.js`: adaptador que registra estímulos usando `CosmopolisKnowledge`; requiere que el módulo anterior esté cargado.
+4. Motor espacial: resuelve quién puede percibir cada estímulo y entrega la lista explícita de observadores.
+5. Motor de turno: aplica comunicación, inferencias, consecuencias y persistencia mediante operaciones idempotentes.
+6. Narrador: recibe únicamente la vista de escena del protagonista, nunca el estado canónico ni memorias privadas de otros actores.
+
+Este orden es una especificación de dependencias, no una modificación de `index.html`. No añadir aún etiquetas `script` ni activar los módulos en la aplicación.
