@@ -50,3 +50,24 @@ test("el módulo no inventa percepción espacial", () => {
   assert.equal(result.entries[0].locationId, "distant-room");
   assert.equal(result.entries[0].source, "perceived");
 });
+
+
+test("rechaza IDs de estímulo y localización excesivos sin truncarlos", () => {
+  const long = "x".repeat(121);
+  const result = Perception.registerPerceptions([], "player", [
+    { id: "seal" + long, content: "No debe memorizarse", observerIds: ["player"] },
+    { id: "seal-2", content: "Tampoco", observerIds: ["player"], locationId: "hall" + long }
+  ]);
+  assert.equal(result.recordedIds.length, 0);
+  assert.equal(result.rejected, 2);
+  assert.equal(result.entries.length, 0);
+});
+
+test("rechaza IDs compuestos de percepción que superan el límite de memoria", () => {
+  const result = Perception.registerPerceptions([], "player", [
+    { id: "s".repeat(110), content: "No debe truncarse", observerIds: ["player"] }
+  ]);
+  assert.equal(result.recordedIds.length, 0);
+  assert.equal(result.rejected, 1);
+  assert.equal(result.entries.length, 0);
+});
