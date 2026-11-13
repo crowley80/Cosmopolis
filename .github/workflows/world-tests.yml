@@ -35,4 +35,5 @@ jobs:
             scripts/test-npc-context.js \
             scripts/test-npc-proposal.js \
             scripts/test-world-event-resolution.js \
-            scripts/test-npc-event-lifecycle.js
+            scripts/test-npc-event-lifecycle.js \
+            scripts/test-world-effects.js
