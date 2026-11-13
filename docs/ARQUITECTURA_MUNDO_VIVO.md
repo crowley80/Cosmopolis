@@ -608,3 +608,8 @@ GitHub Actions completó las doce suites en el commit `e39e93fd8c12dfc646dd2da9c
 ## Límites de identificadores en el núcleo del mundo — 13/11/2026
 
 Se establece un máximo de 160 caracteres para operationId, event.id y los IDs heredados de processedOperations. El núcleo rechaza IDs nuevos excesivos sin avanzar el tick y descarta entradas heredadas que exceden el límite. Se añaden dos pruebas; la batería pasa a **121 pruebas escritas**. Pendiente CI.
+
+
+## CI verde con 121 pruebas — 13/11/2026
+
+GitHub Actions completó las doce suites en el commit `d216f14d62d700a03daefa477f1246d99bb128d6`: **121 pruebas, 121 pasaron, 0 fallaron** con Node.js 22. Incluye límites de 160 caracteres para operationId/event.id y limpieza de identificadores heredados excesivos. Sigue siendo una validación de módulos aislados, no de la integración en Termux.
