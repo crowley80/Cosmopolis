@@ -490,3 +490,10 @@ La revisión del selector encontró que el cursor buscaba el primer ID lexicogr�
 La revisión de idempotencia detectó que un evento podía comprobarse con el ID recortado pero almacenarse con espacios exteriores. Esto permitía que dos representaciones textuales equivalentes eludieran la comprobación de unicidad. `world-core.applyStep()` ahora compara IDs existentes tras normalizarlos con `trim()` y almacena siempre el ID canónico recortado; un ID vacío o compuesto por espacios adopta el `operationId` ya normalizado. La validación de duplicados ocurre antes de consumir tick o registrar la operación.
 
 Se añaden dos pruebas de regresión. La suite del núcleo pasa a nueve pruebas escritas y la batería total del proyecto a 92. La corrección permanece aislada y pendiente de ejecución en checkout real/CI; no modifica Termux ni el runtime.
+
+
+## Compatibilidad de IDs heredados en propuestas NPC — 13/11/2026
+
+Se refuerza npc-proposal.js para que reconozca también IDs de eventos heredados con espacios exteriores. La propuesta genera un identificador canónico; antes de aceptarla, el módulo compara contra los IDs existentes tras trim(). Esto evita reintroducir una propuesta que ya exista bajo una representación equivalente.
+
+Se añade una prueba de regresión con un evento heredado. La batería total pasa a 93 pruebas escritas. Pendiente de ejecución en checkout real/CI; no se integra en el runtime ni modifica Termux.
