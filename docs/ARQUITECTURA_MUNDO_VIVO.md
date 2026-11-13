@@ -549,3 +549,8 @@ Se fija un máximo explícito de 50 efectos registrados por evento causal, aline
 ## CI verde con efectos tipados — 13/11/2026
 
 La ejecución GitHub Actions del commit 3b0495614d0df6a0462f1c06f25f9d6102a0fbb8 completó las doce suites con Node.js 22: **108 pruebas, 108 pasaron, 0 fallaron**. Incluye el módulo nuevo de efectos tipados, la verificación de referencias reales al resolver eventos y el límite de 50 efectos por evento causal. Validación confirmada en Ubuntu/Node 22; la integración en Termux y en la aplicación sigue pendiente de reconciliación.
+
+
+## Claves de entidad seguras en efectos tipados
+
+La revisión de world-effects.js detecta el riesgo de usar asignaciones ordinarias sobre objetos cuando IDs externos pueden coincidir con nombres heredados como `__proto__` o `constructor`. Las escrituras de relaciones y personajes ahora crean propiedades de datos propias de forma explícita y las lecturas verifican propiedad propia. Se añade una prueba de regresión con esos IDs para evitar alteraciones accidentales del prototipo. La batería pasa a 109 pruebas escritas.
