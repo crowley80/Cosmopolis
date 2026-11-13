@@ -23,6 +23,10 @@
   function clean(value, max = 160) {
     return typeof value === "string" ? value.trim().slice(0, max) : "";
   }
+  function setOwn(target, key, value) {
+    Object.defineProperty(target, key, { value, enumerable: true, configurable: true, writable: true });
+  }
+
   function unique(values) {
     return Array.isArray(values)
       ? Array.from(new Set(values.map(value => clean(value)).filter(Boolean))).slice(-MAX_PROCESSED)
@@ -91,8 +95,8 @@
         return rejected("invalid-relationship-effect");
       }
       const relationships = object(source.relationships) ? { ...source.relationships } : {};
-      const outgoing = object(relationships[fromId]) ? { ...relationships[fromId] } : {};
-      const relation = object(outgoing[toId]) ? { ...outgoing[toId] } : {};
+      const outgoing = Object.prototype.hasOwnProperty.call(relationships, fromId) && object(relationships[fromId]) ? { ...relationships[fromId] } : {};
+      const relation = Object.prototype.hasOwnProperty.call(outgoing, toId) && object(outgoing[toId]) ? { ...outgoing[toId] } : {};
       const current = relation[axis] === undefined ? 0 : relation[axis];
       if (!Number.isFinite(current)) return rejected("invalid-relationship-state");
       const value = Math.max(-100, Math.min(100, current + delta));
@@ -100,8 +104,8 @@
       history.push({ effectId: id, causeEventId, tick, axis, delta, value });
       relation[axis] = value;
       relation.history = history.slice(-MAX_RELATION_HISTORY);
-      outgoing[toId] = relation;
-      relationships[fromId] = outgoing;
+      setOwn(outgoing, toId, relation);
+      setOwn(relationships, fromId, outgoing);
       next.relationships = relationships;
     } else if (type === "character.move") {
       const characterId = clean(effect.characterId);
@@ -109,12 +113,12 @@
       const fromLocationId = clean(effect.fromLocationId);
       const characters = object(source.characters) ? { ...source.characters } : null;
       const locations = object(source.locations) ? source.locations : {};
-      if (!characterId || !toLocationId || !characters || !object(characters[characterId]) ||
+      if (!characterId || !toLocationId || !characters || !Object.prototype.hasOwnProperty.call(characters, characterId) || !object(characters[characterId]) ||
           !Object.prototype.hasOwnProperty.call(locations, toLocationId)) return rejected("invalid-character-move");
       const character = { ...characters[characterId] };
       if (fromLocationId && clean(character.locationId) !== fromLocationId) return rejected("character-location-mismatch");
       character.locationId = toLocationId;
-      characters[characterId] = character;
+      setOwn(characters, characterId, character);
       next.characters = characters;
     }
 
