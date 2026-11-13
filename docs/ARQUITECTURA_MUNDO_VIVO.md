@@ -559,3 +559,8 @@ La revisión de world-effects.js detecta el riesgo de usar asignaciones ordinari
 ## CI verde tras endurecimiento de efectos — 13/11/2026
 
 GitHub Actions completó las doce suites en el commit f3ed516a008c47b0d0c0715144d6c03d2fb2a6e7: **109 pruebas, 109 pasaron, 0 fallaron**. Esta ejecución incluye la validación de referencias de efectos, el límite de 50 efectos por evento y la protección de IDs especiales (`__proto__`, `constructor`). La validación corresponde a módulos aislados en Node.js 22; no certifica integración en Termux.
+
+
+## Unicidad global durable de IDs de efecto
+
+Se añade una prueba que elimina deliberadamente el registro global `processedEffects` y comprueba que un ID ya aplicado no puede reutilizarse en otro evento: la referencia persistida en el evento original sigue impidiendo la duplicación. La batería asciende a 110 pruebas escritas.
