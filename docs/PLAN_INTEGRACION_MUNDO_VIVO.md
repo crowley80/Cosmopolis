@@ -88,3 +88,8 @@ La ejecución 43481478082 de GitHub Actions terminó con éxito sobre `d3306c1ed
 ## Protección del reloj lógico — 13/11/2026
 
 world-core.js rechaza ahora applyStep cuando el tick ya alcanzó `Number.MAX_SAFE_INTEGER`, evitando un incremento impreciso. La operación devuelve `tick-overflow` sin avanzar el reloj ni registrar la operación. Prueba incluida y CI verde: **126/126** en la ejecución 43485470144 (Node.js 22). La integración sigue bloqueada hasta reconciliar la copia Termux y validar el runtime.
+
+
+## Límites de IDs en efectos y resolución causal — 13/11/2026
+
+world-effects.js y world-event-resolution.js ya no truncan identificadores causales para hacerlos encajar en 160 caracteres. Se rechazan IDs principales excesivos y se descartan referencias/operaciones heredadas fuera de límite para evitar colisiones por prefijo. Se añaden tres pruebas de regresión. CI verde: **129/129 pruebas** en la ejecución 43485613054 (Node.js 22). Sigue sin estar autorizada la integración directa en Termux hasta reconciliar la copia local.
