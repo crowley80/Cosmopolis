@@ -11,6 +11,7 @@
 
   const STATUSES = new Set(["pending", "fired", "cancelled"]);
   const MAX_SCHEDULED = 500;
+  const MAX_ID_LENGTH = 120;
 
   function clean(value, max = 120) {
     return typeof value === "string" ? value.trim().slice(0, max) : "";
@@ -21,9 +22,9 @@
     const byId = new Map();
     for (const raw of events) {
       if (!raw || typeof raw !== "object") continue;
-      const id = clean(raw.id);
+      const id = typeof raw.id === "string" ? raw.id.trim() : "";
       const dueTick = raw.dueTick;
-      if (!id || !Number.isSafeInteger(dueTick) || dueTick < 0) continue;
+      if (!id || id.length > MAX_ID_LENGTH || !Number.isSafeInteger(dueTick) || dueTick < 0) continue;
       const status = STATUSES.has(raw.status) ? raw.status : "pending";
       const normalized = {
         ...raw,
@@ -55,8 +56,8 @@
     if (!event || typeof event !== "object") {
       return { applied: false, reason: "invalid-event", events: current };
     }
-    const id = clean(event.id);
-    if (!id || !Number.isSafeInteger(event.dueTick) || event.dueTick < 0) {
+    const id = typeof event.id === "string" ? event.id.trim() : "";
+    if (!id || id.length > MAX_ID_LENGTH || !Number.isSafeInteger(event.dueTick) || event.dueTick < 0) {
       return { applied: false, reason: "invalid-event", events: current };
     }
     if (current.some(item => item.id === id)) {
@@ -82,7 +83,10 @@
 
   function cancelEvent(events, eventId) {
     const current = normalizeScheduledEvents(events);
-    const id = clean(eventId);
+    const id = typeof eventId === "string" ? eventId.trim() : "";
+    if (!id || id.length > MAX_ID_LENGTH) {
+      return { applied: false, reason: "invalid-id", events: current };
+    }
     const index = current.findIndex(item => item.id === id);
     if (index < 0) return { applied: false, reason: "not-found", events: current };
     if (current[index].status !== "pending") {
@@ -122,6 +126,6 @@
     scheduleEvent,
     cancelEvent,
     collectDueEvents,
-    limits: Object.freeze({ maxScheduled: MAX_SCHEDULED })
+    limits: Object.freeze({ maxScheduled: MAX_SCHEDULED, maxIdLength: MAX_ID_LENGTH })
   });
 });
