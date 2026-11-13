@@ -72,7 +72,11 @@
     });
 
     if (!Number.isSafeInteger(tick) || tick < 0 || !isObject(proposal)) return rejected("invalid-world-or-proposal");
-    const id = clean(proposal.id, 160);
+    const rawProposalId = typeof proposal.id === "string" ? proposal.id.trim() : "";
+    // El prefijo npc-proposal: ocupa 13 caracteres; mantener el evento resultante
+    // dentro del límite global de 160 sin truncar ni colisionar identificadores.
+    if (!rawProposalId || rawProposalId.length > 147) return rejected("invalid-proposal");
+    const id = rawProposalId;
     const actorId = clean(proposal.actorId, 120);
     const causeId = clean(proposal.causeId, 160);
     const type = clean(proposal.type, 80);
