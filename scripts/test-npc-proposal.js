@@ -147,13 +147,14 @@ test("rechaza IDs de propuesta que harían superar el límite del ID de evento",
 
 test("rechaza IDs largos de actor, causa y localización sin confundir prefijos", () => {
   const long = "x".repeat(121);
+  const longCause = "x".repeat(161);
   const actorCollision = Proposal.registerNpcProposal(world, {
     ...proposal, actorId: "elia" + long
   }, { ...options, actors: [{ ...actor, id: "elia" }], eligibleActorIds: ["elia"] });
   assert.equal(actorCollision.applied, false);
   assert.equal(actorCollision.reason, "invalid-proposal");
   const causeCollision = Proposal.registerNpcProposal(world, {
-    ...proposal, causeId: "rumour-7" + long
+    ...proposal, causeId: "rumour-7" + longCause
   }, options);
   assert.equal(causeCollision.applied, false);
   assert.equal(causeCollision.reason, "invalid-proposal");
