@@ -1386,3 +1386,13 @@ Se han escrito diez pruebas en `scripts/test-npc-initiative.js`. La batería tot
 
 Documentación ampliada en `docs/ARQUITECTURA_MUNDO_VIVO.md` y `docs/PLAN_PRUEBAS_MUNDO_VIVO.md`. No se ha conectado el módulo al runtime ni se han modificado archivos activos de Termux. La ejecución real de las pruebas y la reconciliación de la rama con la copia móvil siguen pendientes.
 
+## Continuidad técnica — contexto narrativo individual de NPC (13/11/2026)
+
+Se ha añadido `app/js/game/npc-context.js`, constructor experimental de contexto para un único NPC mediante allowlist. No recibe ni serializa el estado global del mundo ni el objeto completo del personaje. Incluye únicamente identidad y campos autorizados del propio NPC, descripción de escena ya filtrada por el motor y los recuerdos de ese actor obtenidos mediante `CosmopolisKnowledge.buildSceneKnowledge`.
+
+Rechaza identidad incompleta, escena de otra localización o ausencia del módulo de conocimiento. No copia automáticamente secretos internos arbitrarios, pensamientos privados, personajes cercanos ni campos extra del mundo. Los datos de escena deben llegar ya filtrados: el constructor no puede verificar una descripción que el motor le entregue sin garantías.
+
+Se han escrito diez pruebas en `scripts/test-npc-context.js` para allowlist, aislamiento de memoria, límites de localización, ausencia de campos arbitrarios, validación y no mutación de datos. La batería documentada pasa de 57 a 67 pruebas escritas. El comando de las ocho suites figura en `docs/PLAN_PRUEBAS_MUNDO_VIVO.md`.
+
+Se han actualizado arquitectura y plan de pruebas. El módulo sigue aislado: no se ha conectado al narrador ni a la aplicación, y no se han ejecutado las pruebas en checkout real o Termux. La reconciliación con la copia móvil sigue siendo obligatoria antes de integrar.
+
