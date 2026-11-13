@@ -1574,3 +1574,8 @@ Se establece un máximo de 160 caracteres para operationId, event.id y los IDs h
 ## CI verde con 121 pruebas — 13/11/2026
 
 GitHub Actions completó las doce suites en el commit `d216f14d62d700a03daefa477f1246d99bb128d6`: **121 pruebas, 121 pasaron, 0 fallaron** con Node.js 22. Incluye límites de 160 caracteres para operationId/event.id y limpieza de identificadores heredados excesivos. Sigue siendo una validación de módulos aislados, no de la integración en Termux.
+
+
+## Prevención de resurrección de eventos duplicados en la agenda — 13/11/2026
+
+La auditoría del scheduler detectó que normalizeScheduledEvents sobrescribía cada ID repetido con la última copia. Un duplicado heredado pendiente podía sustituir un evento ya disparado o cancelado y hacerlo elegible otra vez. Se corrigió la normalización para conservar el primer registro canónico y permitir únicamente la transición de pendiente a un estado terminal cuando aparece una copia terminal. Los estados terminales nunca retroceden a pendiente. Se añadieron dos pruebas de regresión que cubren ambos órdenes de duplicación y verifican que el evento no vuelve a entregarse. La batería pasa de 121 a **123 pruebas escritas**; CI pendiente. El cambio permanece aislado en work/arquitectura-mundo-vivo y no toca Termux ni main.
