@@ -13,17 +13,26 @@
     return typeof value === "string" ? value.trim().slice(0, max) : "";
   }
 
+  function cleanId(value) {
+    if (typeof value !== "string") return "";
+    const id = value.trim();
+    return id && id.length <= 120 ? id : "";
+  }
+
   function cleanList(values, maxItems = 12) {
     if (!Array.isArray(values)) return [];
     return Array.from(new Set(values.map(value => clean(value, 160)).filter(Boolean))).slice(0, maxItems);
   }
 
   function buildNpcContext(actor, sceneView, knowledgeEntries) {
-    if (!actor || typeof actor !== "object" || !clean(actor.id)) {
+    const actorId = actor && typeof actor === "object" ? cleanId(actor.id) : "";
+    const actorLocationId = actor && typeof actor === "object" ? cleanId(actor.locationId) : "";
+    const sceneLocationId = sceneView && typeof sceneView === "object" ? cleanId(sceneView.locationId) : "";
+    if (!actorId || !actorLocationId) {
       return { valid: false, reason: "invalid-actor", context: null };
     }
-    if (!sceneView || typeof sceneView !== "object" ||
-        clean(sceneView.locationId) !== clean(actor.locationId)) {
+    if (!sceneView || typeof sceneView !== "object" || !sceneLocationId ||
+        sceneLocationId !== actorLocationId) {
       return { valid: false, reason: "scene-mismatch", context: null };
     }
     const knowledgeApi = typeof globalThis !== "undefined" ? globalThis.CosmopolisKnowledge : null;
@@ -31,8 +40,7 @@
       return { valid: false, reason: "knowledge-module-unavailable", context: null };
     }
 
-    const actorId = clean(actor.id);
-    const knowledge = knowledgeApi.buildSceneKnowledge(knowledgeEntries, actorId, sceneView.locationId);
+    const knowledge = knowledgeApi.buildSceneKnowledge(knowledgeEntries, actorId, sceneLocationId);
     return {
       valid: true,
       reason: null,
@@ -46,10 +54,10 @@
           personalGoal: clean(actor.personalGoal, 1000),
           goalStatus: clean(actor.goalStatus, 40),
           currentTask: clean(actor.currentTask, 500),
-          locationId: clean(actor.locationId, 120)
+          locationId: actorLocationId
         },
         scene: {
-          locationId: clean(sceneView.locationId, 120),
+          locationId: sceneLocationId,
           description: clean(sceneView.description, 1600)
         },
         knowledge: knowledge.knowledge
