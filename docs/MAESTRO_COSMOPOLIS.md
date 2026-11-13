@@ -1460,3 +1460,8 @@ Se añadieron dos pruebas de regresión a `scripts/test-world-core.js`. La bater
 ## Deduplicación compatible con eventos heredados de NPC — 13/11/2026
 
 Se corrigió npc-proposal.js para detectar IDs equivalentes aunque un evento heredado contenga espacios exteriores. La deduplicación compara el identificador existente tras trim(), manteniendo el ID canónico npc-proposal:<id> de las nuevas propuestas. Se añade una prueba de regresión en scripts/test-npc-proposal.js. La batería pasa de 92 a 93 pruebas escritas. Sigue pendiente ejecutar las suites en checkout real o CI; no se ha tocado Termux ni el runtime.
+
+
+## Compatibilidad de resolución con IDs heredados — 13/11/2026
+
+Se corrigió world-event-resolution.js para localizar eventos comparando IDs tras trim() y normalizar el ID al guardar la transición. Se añadió una prueba que resuelve un evento legado con espacios exteriores. La batería pasa de 93 a 94 pruebas escritas. Los módulos siguen aislados; no se afirma ejecución ni se modifica Termux/runtime.
