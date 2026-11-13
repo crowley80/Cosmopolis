@@ -1520,3 +1520,8 @@ Se añade una prueba de recuperación para comprobar que un ID de efecto no pued
 ## CI verde con unicidad durable de efectos — 13/11/2026
 
 GitHub Actions completó las doce suites en el commit 5397518ca02c0ad1989369f0105eb5ddc9d853eb: **110 pruebas, 110 pasaron, 0 fallaron**. La ejecución incluye el caso que demuestra que los IDs de efecto siguen siendo únicos aunque se compacte el registro global, gracias a las referencias guardadas en cada evento causal. Validación en Node.js 22; integración en Termux pendiente.
+
+
+## Actualización del plan de integración — 13/11/2026
+
+Se sincroniza docs/PLAN_INTEGRACION_MUNDO_VIVO.md con el estado actual: world-effects.js ya existe con tres efectos tipados; world-event-resolution.js exige referencias realmente registradas; el catálogo limita a 50 efectos por evento y tiene pruebas de idempotencia. El inventario se actualiza a diez módulos experimentales, doce suites y 110 pruebas, con CI verde. Se mantiene el bloqueo de integración hasta reconciliar la copia más reciente de Termux.
