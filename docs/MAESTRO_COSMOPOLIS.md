@@ -1530,3 +1530,7 @@ Se sincroniza docs/PLAN_INTEGRACION_MUNDO_VIVO.md con el estado actual: world-ef
 ## Integridad de referencias de efectos y localizaciones — 13/11/2026
 
 Se endurecen dos contratos: fact.add rechaza locationId si no existe en world.locations; y world-event-resolution.js exige que la resolución applied enumere todos los efectos registrados en el evento causal, no solo un subconjunto válido. Se añaden dos pruebas de regresión y se ajusta el test de resolución completa para incluir las tres referencias registradas. La batería asciende a **112 pruebas escritas**. La validación CI queda pendiente.
+
+## Corrección de prueba de referencias completas — 13/11/2026
+
+La ejecución CI de 112 pruebas detectó un único test de normalización que aún enviaba solo dos de los tres efectos registrados en el evento. Se corrige el conjunto de entrada para incluir también fact-2 y seguir verificando la deduplicación/limpieza. No cambia el contrato de producción: la resolución aplicada debe enumerar exactamente todos los efectos existentes. Reejecutar CI.
