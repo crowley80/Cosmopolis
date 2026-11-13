@@ -432,3 +432,11 @@ Condiciones: el actor debe figurar en `eligibleActorIds` entregado explícitamen
 
 La elegibilidad de escena y el avance del tick pertenecen al motor de turnos. Este módulo no decide si un NPC puede actuar fuera de escena, no crea objetivos, no resuelve consecuencias y no accede a información privada de otros personajes. No está integrado en runtime.
 
+## 21. Contexto individual de NPC con allowlist
+
+Se añade `app/js/game/npc-context.js` para construir el contexto que una futura llamada narrativa podrá recibir para un NPC. No acepta el objeto mundo ni serializa el personaje completo. Copia únicamente campos permitidos del propio actor (identidad, descripción, rasgos, objetivo propio, estado de objetivo, tarea y localización), una descripción de escena ya filtrada que debe entregar el motor, y el conocimiento de ese actor producido por `CosmopolisKnowledge.buildSceneKnowledge`.
+
+Rechaza actores sin ID, escenas de otra localización o ausencia del módulo de conocimiento. No incorpora automáticamente personajes cercanos, pensamientos privados, secretos internos arbitrarios ni datos globales. Los secretos que el propio NPC conoce solo pueden entrar a través de sus registros de conocimiento individuales.
+
+El límite de confianza sigue siendo importante: `sceneView.description` debe ser una descripción previamente autorizada por el motor; este módulo no puede certificar la veracidad ni el filtrado de una cadena que recibe. No está conectado al narrador ni al runtime.
+
