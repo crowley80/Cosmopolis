@@ -1296,3 +1296,11 @@ Importante: este módulo todavía no se carga desde `index.html` ni está conect
 La integración queda bloqueada hasta reconciliar la copia local de Termux, incluido el cambio `aiUsed` del 13/11. No copiar estos archivos sobre la instalación móvil ni activar el módulo todavía.
 
 Estado: primer núcleo y batería inicial de pruebas añadidos en rama aislada; integración y validación en dispositivo pendientes.
+
+
+## Auditoría del contexto privado del narrador — 13 de noviembre de 2026
+
+La revisión de `Narrator.buildMessages()` añade el hallazgo P-06 a `docs/AUDITORIA_PERSISTENCIA_REMOTA.md`: en la instantánea remota, los spreads `...person` y `...state` pueden enviar al modelo campos internos no previstos para el conocimiento del protagonista. Las instrucciones del prompt no son una barrera de seguridad de datos. La solución prevista es construir vistas explícitas y filtradas para protagonista y NPC, separando verdad del mundo, percepción, recuerdos, rumores y secretos.
+
+Este punto es prioritario para el futuro motor: la IA no debe recibir indiscriminadamente toda la verdad del mundo para después intentar no contarla. No se ha modificado el narrador actual ni se afirma que exista una filtración observada; es un riesgo estático de la versión remota.
+
