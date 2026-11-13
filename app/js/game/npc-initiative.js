@@ -57,8 +57,8 @@
     const cursor = clean(options.cursorActorId);
     let start = 0;
     if (cursor && candidates.length) {
-      const index = candidates.findIndex(actor => clean(actor.id) > cursor);
-      start = index < 0 ? 0 : index;
+      const index = candidates.findIndex(actor => clean(actor.id) === cursor);
+      start = index < 0 ? 0 : (index + 1) % candidates.length;
     }
     const rotated = candidates.slice(start).concat(candidates.slice(0, start));
     const selected = rotated.slice(0, limit).map(actor => ({
