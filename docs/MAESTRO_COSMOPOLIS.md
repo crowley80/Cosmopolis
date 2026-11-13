@@ -1510,3 +1510,8 @@ Se endurece world-effects.js frente a IDs como __proto__ y constructor: las lect
 ## CI verde tras endurecimiento de efectos — 13/11/2026
 
 GitHub Actions completó las doce suites en el commit f3ed516a008c47b0d0c0715144d6c03d2fb2a6e7: **109 pruebas, 109 pasaron, 0 fallaron**. Esta ejecución incluye la validación de referencias de efectos, el límite de 50 efectos por evento y la protección de IDs especiales (`__proto__`, `constructor`). La validación corresponde a módulos aislados en Node.js 22; no certifica integración en Termux.
+
+
+## Unicidad durable de IDs de efecto — 13/11/2026
+
+Se añade una prueba de recuperación para comprobar que un ID de efecto no puede reutilizarse en otro evento incluso si el registro global processedEffects se ha compactado o perdido: el evento causal conserva appliedEffectIds y actúa como referencia durable. La batería pasa de 109 a 110 pruebas escritas. Pendiente CI.
