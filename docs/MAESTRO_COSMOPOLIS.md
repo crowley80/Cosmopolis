@@ -1455,3 +1455,8 @@ Se corrige una brecha de idempotencia en `world-core.applyStep`: además de dedu
 En la revisión de `world-core.js` se detectó una discrepancia entre el ID usado para comprobar duplicados y el que podía terminar almacenado: los espacios exteriores se recortaban para comparar, pero el evento podía conservarlos. Se corrigió para comparar IDs existentes tras `trim()` y guardar siempre el identificador canónico. Si el ID del evento está vacío o solo contiene espacios, se usa el `operationId` normalizado.
 
 Se añadieron dos pruebas de regresión a `scripts/test-world-core.js`. La batería documentada pasa de 90 a 92 pruebas escritas. No se afirma ejecución ni CI verde. Los cambios siguen en `work/arquitectura-mundo-vivo`; Termux y el runtime activo no se han modificado.
+
+
+## Deduplicación compatible con eventos heredados de NPC — 13/11/2026
+
+Se corrigió npc-proposal.js para detectar IDs equivalentes aunque un evento heredado contenga espacios exteriores. La deduplicación compara el identificador existente tras trim(), manteniendo el ID canónico npc-proposal:<id> de las nuevas propuestas. Se añade una prueba de regresión en scripts/test-npc-proposal.js. La batería pasa de 92 a 93 pruebas escritas. Sigue pendiente ejecutar las suites en checkout real o CI; no se ha tocado Termux ni el runtime.
