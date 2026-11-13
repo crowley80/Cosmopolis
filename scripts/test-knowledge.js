@@ -169,13 +169,22 @@ test("IDs de consulta excesivos no pueden acceder a conocimiento por prefijo", (
   assert.equal(inference.reason, "missing-owned-evidence");
 });
 
-test("IDs de origen y localización excesivos se descartan sin truncarlos", () => {
+test("rechaza ubicaciones y emisores excesivos para no convertir conocimiento local en global", () => {
   const oversized = "x".repeat(121);
-  const [entry] = Knowledge.normalizeKnowledge([{
-    id: "valid", actorId: "npc", content: "Dato", type: "fact", source: "perceived",
-    fromActorId: oversized, locationId: oversized, evidenceIds: [oversized, "valid-evidence"]
-  }]);
-  assert.equal(entry.fromActorId, null);
-  assert.equal(entry.locationId, null);
-  assert.deepEqual(entry.evidenceIds, ["valid-evidence"]);
+  const normalized = Knowledge.normalizeKnowledge([
+    {
+      id: "bad-location", actorId: "npc", content: "Dato local", type: "fact", source: "perceived",
+      locationId: oversized
+    },
+    {
+      id: "bad-source", actorId: "npc", content: "Dato comunicado", type: "fact", source: "communicated",
+      fromActorId: oversized
+    },
+    {
+      id: "valid", actorId: "npc", content: "Dato válido", type: "fact", source: "perceived",
+      evidenceIds: [oversized, "valid-evidence"]
+    }
+  ]);
+  assert.deepEqual(normalized.map(item => item.id), ["valid"]);
+  assert.deepEqual(normalized[0].evidenceIds, ["valid-evidence"]);
 });
