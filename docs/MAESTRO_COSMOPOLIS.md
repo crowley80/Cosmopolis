@@ -1465,3 +1465,8 @@ Se corrigió npc-proposal.js para detectar IDs equivalentes aunque un evento her
 ## Compatibilidad de resolución con IDs heredados — 13/11/2026
 
 Se corrigió world-event-resolution.js para localizar eventos comparando IDs tras trim() y normalizar el ID al guardar la transición. Se añadió una prueba que resuelve un evento legado con espacios exteriores. La batería pasa de 93 a 94 pruebas escritas. Los módulos siguen aislados; no se afirma ejecución ni se modifica Termux/runtime.
+
+
+## Corrección de prueba detectada por CI — 13/11/2026
+
+Se consultó la primera ejecución real de GitHub Actions. De 92 pruebas, 91 pasaron y falló una expectativa contradictoria del scheduler: una prueba esperaba e5 al truncar 505 eventos, mientras la especificación y otra prueba establecen conservar los 500 vencimientos más próximos, e0–e499. Se corrigió únicamente la expectativa de la prueba a e0; no se modificó el scheduler. La nueva ejecución debe confirmar la corrección y también abarcar los casos de IDs heredados añadidos posteriormente.
