@@ -363,3 +363,8 @@ La batería asciende a **107 pruebas escritas**. Los efectos siguen siendo exper
 ## 25. Referencias de efectos verificadas en la resolución
 
 Se añade una prueba que rechaza IDs de efectos inventados y se actualiza el flujo integrado scripts/test-npc-event-lifecycle.js: ahora aplica un efecto real con world-effects.js y pasa su ID a world-event-resolution.js. El módulo de resolución exige que todos los IDs citados estén registrados en el evento causal. La batería documentada queda en **107 pruebas escritas**. El workflow incluye las suites implicadas.
+
+
+## Ajuste de expectativa en el ciclo causal integrado — 13/11/2026
+
+La primera ejecución tras exigir referencias de efectos reales pasó 106 de 107 pruebas. El único fallo era una expectativa antigua del test integrado: comparaba el ID del hecho (`clue-map-fragment`) con el ID del efecto (`effect-clue-map`). La implementación conserva correctamente el ID del efecto en `resolution.effectIds`; se corrige la expectativa de la prueba sin cambiar el código de dominio.
