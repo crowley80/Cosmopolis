@@ -527,3 +527,10 @@ Se añade el módulo experimental `app/js/game/world-effects.js`. A diferencia d
 El módulo registra cada ID aplicado tanto en `processedEffects` como en `appliedEffectIds` del evento causal, no muta el objeto recibido y no acepta rutas, propiedades o código arbitrarios. Las referencias `appliedEffectIds` son las que el motor debe entregar después a `world-event-resolution.js` al cerrar el evento como aplicado.
 
 Se añaden doce pruebas unitarias. El módulo sigue aislado y usa la forma canónica propuesta `world.characters`/`world.locations`; antes de conectarlo a la partida hay que reconciliar y migrar el esquema real de Termux. No se ha conectado al runtime.
+
+
+## 30. Validación cruzada entre efectos y resolución
+
+Se endurece world-event-resolution.js: para cerrar un evento con resultado applied, ya no basta con proporcionar IDs de texto no vacíos. Cada ID debe existir en event.appliedEffectIds, registro que escribe world-effects.js al aplicar realmente el efecto. Una referencia inventada o perteneciente a otro evento se rechaza con unregistered-effect-reference. Las resoluciones cancelled y failed siguen sin exigir efectos.
+
+Se actualizan las pruebas de resolución y el flujo causal integrado para aplicar primero un efecto tipado y después cerrar el evento con sus referencias reales. Así se comprueba el orden correcto: propuesta pendiente → efecto de dominio → resolución terminal. La batería asciende a 107 pruebas escritas.
