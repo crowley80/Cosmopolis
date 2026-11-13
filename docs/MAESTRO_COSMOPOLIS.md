@@ -1396,3 +1396,10 @@ Se han escrito diez pruebas en `scripts/test-npc-context.js` para allowlist, ais
 
 Se han actualizado arquitectura y plan de pruebas. El módulo sigue aislado: no se ha conectado al narrador ni a la aplicación, y no se han ejecutado las pruebas en checkout real o Termux. La reconciliación con la copia móvil sigue siendo obligatoria antes de integrar.
 
+
+
+## Corrección de integridad del scheduler — 13/11/2026
+
+Durante la revisión autónoma del núcleo se detectaron y corrigieron dos fallos en `app/js/game/world-scheduler.js`: un escape literal de salto de línea que podía romper la sintaxis del comparador y la falta del control de capacidad de 500 entradas que ya exigía su suite de pruebas. Ahora `scheduleEvent` rechaza nuevas altas con `reason: "capacity"` sin descartar ni alterar eventos existentes. La prueba correspondiente ya estaba escrita en `scripts/test-world-scheduler.js`.
+
+La corrección se ha guardado en `work/arquitectura-mundo-vivo`. No se afirma ejecución de la suite: sigue pendiente validarla en un checkout real. No se ha modificado Termux ni se ha integrado la rama en `main`.
