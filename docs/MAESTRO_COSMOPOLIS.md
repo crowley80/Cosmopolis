@@ -1321,3 +1321,10 @@ Se añadieron ocho pruebas automatizadas para validación de fuentes, separació
 Se amplía el módulo experimental `app/js/game/knowledge.js` con `communicateKnowledge()` y `recordInference()`. La primera transmite únicamente IDs seleccionados de la memoria del emisor al receptor, registra quién comunicó la información y mantiene el carácter de rumor/creencia y su confianza. La segunda exige evidencias que el actor ya conozca y registra la conclusión como creencia inferida con referencias a dichas evidencias.
 
 Se añaden cuatro pruebas para verificar transmisión selectiva, conservación de rumores, rechazo de información no poseída y deducciones con evidencia propia. La batería total queda en doce pruebas escritas. No se conecta aún al motor narrativo ni al guardado; la capa superior deberá decidir qué contenido se comunicó realmente y no transferir automáticamente memorias completas.
+
+
+## Registro de percepción individual — 13 de noviembre de 2026
+
+Se ha añadido `app/js/game/perception.js` y `scripts/test-perception.js`. El adaptador transforma observaciones explícitamente autorizadas para un actor en recuerdos de fuente `perceived`, con IDs estables por estímulo y observador. No calcula visión ni audición: exige que el motor espacial proporcione `observerIds` después de comprobar alcance, obstáculos, sentidos y circunstancias. Así se evita asumir que todos los personajes conocen todo lo que ocurre en su localización.
+
+Se han escrito cinco pruebas para autorización, rechazo de observaciones no autorizadas, deduplicación y separación de memorias entre actores. El módulo depende de `CosmopolisKnowledge` y permanece aislado, sin carga en la aplicación. Pendiente ejecutar la batería en checkout real y validar el futuro motor espacial.
