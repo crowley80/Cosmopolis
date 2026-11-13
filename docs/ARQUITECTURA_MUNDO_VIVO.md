@@ -588,3 +588,8 @@ Se endurece npc-proposal.js para que el payload estructurado no pueda introducir
 ## Causalidad limitada al conocimiento del NPC — 13/11/2026
 
 Se endurece registerNpcProposal: ya no basta con que el modelo proponga un causeId no vacío. El motor debe proporcionar explícitamente knownCauseIdsByActor y la causa debe estar en la lista de conocimiento del actor que inicia la acción. Esto impide que una iniciativa se apoye en rumores, hechos o acciones que ese NPC no conoce. Se añaden dos pruebas y se actualizan las fixtures. La batería asciende a **118 pruebas escritas**. El runtime deberá construir esta allowlist desde la memoria individual del NPC, nunca desde el inventario global de causas.
+
+
+## CI verde con 118 pruebas y causalidad privada NPC — 13/11/2026
+
+GitHub Actions completó las doce suites en el commit `db91b8bcccfd56c18d61acc5b5c0c3753dbc30a5`: **118 pruebas, 118 pasaron, 0 fallaron** con Node.js 22. Incluye validación profunda de payloads NPC y la nueva condición de que cada iniciativa cite una causa conocida por el actor que la propone. La validación cubre módulos aislados; no acredita todavía integración en la aplicación ni en Termux.
