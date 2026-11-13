@@ -133,3 +133,14 @@ test("la causa conocida debe pertenecer al NPC que propone", () => {
   });
   assert.equal(result.reason, "cause-not-known-by-actor");
 });
+
+test("rechaza IDs de propuesta que harían superar el límite del ID de evento", () => {
+  const tooLong = "p".repeat(148);
+  const result = Proposal.registerNpcProposal(world, { ...proposal, id: tooLong }, options);
+  assert.equal(result.applied, false);
+  assert.equal(result.reason, "invalid-proposal");
+  assert.equal(result.world.events.length, 0);
+  const boundary = Proposal.registerNpcProposal(world, { ...proposal, id: "p".repeat(147) }, options);
+  assert.equal(boundary.applied, true);
+  assert.equal(boundary.event.id.length, 160);
+});
