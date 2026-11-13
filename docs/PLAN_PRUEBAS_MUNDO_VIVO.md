@@ -205,7 +205,7 @@ Se añade `scripts/test-perception-rules.js` para verificar el contrato del moto
 Comando actualizado para las cuatro suites aisladas:
 
 ```sh
-node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js scripts/test-perception-rules.js scripts/test-perception-pipeline.js scripts/test-world-scheduler.js
+node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js scripts/test-perception-rules.js scripts/test-perception-pipeline.js scripts/test-world-scheduler.js scripts/test-npc-initiative.js
 ```
 
 Las pruebas están escritas en la rama, pero todavía no se han ejecutado en un checkout real ni en Termux. Las reglas no simulan geometría ni demuestran visibilidad física: las restricciones espaciales avanzadas deben llegar explícitamente desde una futura capa de escena.
@@ -241,4 +241,16 @@ node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-pe
 ```
 
 La batería documentada suma 47 pruebas escritas. No se afirma que se hayan ejecutado en un checkout real ni en Termux.
+
+## 16. Pruebas de selección de iniciativas NPC
+
+Se añade `scripts/test-npc-initiative.js` con diez pruebas de contrato: lista explícita de elegibles, exclusión de jugador/no autónomos/fallecidos, objetivos activos, cooldown por tick, rotación determinista, límite de iniciativas, deduplicación, marcado de cooldown, idempotencia por tick y rechazo de entradas inválidas.
+
+La batería suma 57 pruebas escritas. El comando completo de las siete suites:
+
+```sh
+node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js scripts/test-perception-rules.js scripts/test-perception-pipeline.js scripts/test-world-scheduler.js scripts/test-npc-initiative.js
+```
+
+No se afirma ejecución en checkout real ni en Termux. La selección no genera acciones narrativas y debe integrarse en el motor de turnos después de reconciliar la rama con la copia móvil.
 
