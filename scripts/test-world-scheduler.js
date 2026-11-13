@@ -112,3 +112,23 @@ test("una copia terminal posterior prevalece sobre una copia pendiente anterior"
   assert.equal(normalized[0].status, "cancelled");
   assert.equal(Scheduler.collectDueEvents(normalized, 20).due.length, 0);
 });
+
+test("rechaza IDs de agenda excesivos en lugar de truncarlos", () => {
+  const oversized = "x".repeat(Scheduler.limits.maxIdLength + 1);
+  const scheduled = Scheduler.scheduleEvent([], { id: oversized, dueTick: 1 });
+  assert.equal(scheduled.applied, false);
+  assert.equal(scheduled.reason, "invalid-event");
+  assert.deepEqual(Scheduler.normalizeScheduledEvents([
+    { id: oversized, dueTick: 1, status: "pending" },
+    { id: "valid", dueTick: 2, status: "pending" }
+  ]).map(item => item.id), ["valid"]);
+});
+
+test("un ID excesivo no puede cancelar otro evento por truncamiento", () => {
+  const id = "x".repeat(Scheduler.limits.maxIdLength);
+  const events = Scheduler.scheduleEvent([], { id, dueTick: 4 }).events;
+  const result = Scheduler.cancelEvent(events, id + "extra");
+  assert.equal(result.applied, false);
+  assert.equal(result.reason, "invalid-id");
+  assert.equal(result.events[0].status, "pending");
+});
