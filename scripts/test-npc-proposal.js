@@ -83,3 +83,34 @@ test("rechaza duplicado aunque el ID del evento heredado tenga espacios exterior
   assert.equal(result.reason, "duplicate-proposal");
   assert.equal(result.world.events.length, 1);
 });
+
+test("rechaza payload con más de 20 propiedades", () => {
+  const payload = Object.fromEntries(Array.from({ length: 21 }, (_, i) => ["k" + i, i]));
+  const result = Proposal.registerNpcProposal(world, { ...proposal, payload }, options);
+  assert.equal(result.applied, false);
+  assert.equal(result.reason, "invalid-payload");
+  assert.equal(result.world.events.length, 0);
+});
+
+test("rechaza payload demasiado profundo y ciclos", () => {
+  const deep = { a: { b: { c: { d: "x" } } } };
+  assert.equal(Proposal.registerNpcProposal(world, { ...proposal, payload: deep }, options).reason, "invalid-payload");
+  const cyclic = {}; cyclic.self = cyclic;
+  assert.equal(Proposal.registerNpcProposal(world, { ...proposal, payload: cyclic }, options).reason, "invalid-payload");
+});
+
+test("rechaza claves peligrosas y valores no serializables", () => {
+  const dangerous = {};
+  Object.defineProperty(dangerous, "__proto__", { value: { polluted: true }, enumerable: true });
+  assert.equal(Proposal.registerNpcProposal(world, { ...proposal, payload: dangerous }, options).reason, "invalid-payload");
+  assert.equal(Proposal.registerNpcProposal(world, { ...proposal, payload: { fn() {} } }, options).reason, "invalid-payload");
+});
+
+test("copia payload seguro sin compartir referencias anidadas", () => {
+  const payload = { target: "old-docks", evidence: ["rumour-7", { confidence: 0.8 }] };
+  const result = Proposal.registerNpcProposal(world, { ...proposal, payload }, options);
+  assert.equal(result.applied, true);
+  assert.deepEqual(result.event.payload, payload);
+  assert.notEqual(result.event.payload.evidence, payload.evidence);
+  assert.notEqual(result.event.payload.evidence[1], payload.evidence[1]);
+});
