@@ -66,7 +66,9 @@
         const requestedEventId = isObject(event) && typeof event.id === 'string' && event.id.trim()
             ? event.id.trim()
             : id;
-        if (next.events.some(existing => existing && existing.id === requestedEventId)) {
+        if (next.events.some(existing =>
+            existing && typeof existing.id === 'string' && existing.id.trim() === requestedEventId
+        )) {
             return { world: next, applied: false, reason: 'duplicate-event-id', tick: next.clock.tick };
         }
 
@@ -78,7 +80,7 @@
 
         if (event !== undefined && event !== null) {
             const entry = isObject(event)
-                ? { ...event, id: typeof event.id === 'string' && event.id ? event.id : id, tick: next.clock.tick }
+                ? { ...event, id: requestedEventId, tick: next.clock.tick }
                 : { id, tick: next.clock.tick, description: String(event) };
             next.events.push(entry);
             next.events.sort((a, b) => {
