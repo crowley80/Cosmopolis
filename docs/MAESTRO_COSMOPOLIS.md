@@ -1443,3 +1443,8 @@ Se crea `.github/workflows/world-tests.yml` en la rama de trabajo. GitHub Action
 ## Corrección de rotación de iniciativas NPC — 13/11/2026
 
 La revisión del selector encontró un caso de inequidad: el cursor comparaba IDs alfabéticamente aunque los candidatos se ordenan primero por cooldown. Se corrigió para avanzar desde la posición exacta del último actor en la lista determinista y se añadió una prueba de regresión. La batería documentada pasa de 88 a 89 pruebas escritas. El resultado de ejecución sigue pendiente de GitHub Actions.
+
+
+## Unicidad de eventos en world-core — 13/11/2026
+
+Se corrige una brecha de idempotencia en `world-core.applyStep`: además de deduplicar `operationId`, ahora rechaza IDs de evento ya existentes antes de avanzar el tick. Se añade una prueba de regresión para verificar que la operación rechazada no consume tick ni se registra como procesada. La batería documentada pasa de 89 a 90 pruebas escritas. El workflow CI todavía debe confirmar su ejecución.
