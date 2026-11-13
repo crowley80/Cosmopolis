@@ -10,7 +10,7 @@ const base = {
 
 test("resuelve un evento pendiente y conserva su causalidad", () => {
   const result = Resolution.resolveEvent(base, "ev-1", "resolve-1", {
-    outcome: "applied", summary: "La investigación llega al archivo", effectIds: ["fact-2"]
+    outcome: "applied", summary: "La investigación llega al archivo", effectIds: ["fact-2", "f1", "f2"]
   });
   assert.equal(result.applied, true);
   assert.equal(result.event.status, "applied");
@@ -110,5 +110,15 @@ test("rechaza referencias de efectos que no constan en el evento causal", () => 
   });
   assert.equal(result.applied, false);
   assert.equal(result.reason, "unregistered-effect-reference");
+  assert.equal(base.events[0].status, "pending");
+});
+
+
+test("exige incluir todos los efectos aplicados al cerrar el evento", () => {
+  const result = Resolution.resolveEvent(base, "ev-1", "resolve-partial", {
+    outcome: "applied", summary: "No se omiten efectos", effectIds: ["fact-2", "f1"]
+  });
+  assert.equal(result.applied, false);
+  assert.equal(result.reason, "incomplete-effect-references");
   assert.equal(base.events[0].status, "pending");
 });
