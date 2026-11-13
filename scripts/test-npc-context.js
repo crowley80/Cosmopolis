@@ -105,3 +105,21 @@ test("recorta campos de texto largos", () => {
   assert.equal(result.context.actor.personalGoal.length, 1000);
   assert.equal(result.context.scene.description.length, 1600);
 });
+
+test("rechaza IDs de actor y localización largos que podrían colisionar por prefijo", () => {
+  const suffix = "x".repeat(121);
+  const result = NpcContext.buildNpcContext(
+    { ...actor, id: "npc-1" + suffix, locationId: "archive" + suffix },
+    { locationId: "archive", description: "Escena ajena" },
+    []
+  );
+  assert.equal(result.valid, false);
+  assert.equal(result.reason, "invalid-actor");
+  const sceneCollision = NpcContext.buildNpcContext(
+    actor,
+    { locationId: "archive" + suffix, description: "Escena ajena" },
+    []
+  );
+  assert.equal(sceneCollision.valid, false);
+  assert.equal(sceneCollision.reason, "scene-mismatch");
+});
