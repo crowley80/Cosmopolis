@@ -152,3 +152,30 @@ test("no trunca IDs compuestos al comunicar conocimiento", () => {
   assert.equal(result.reason, "generated-id-too-long");
   assert.equal(result.entries.length, 1);
 });
+
+test("IDs de consulta excesivos no pueden acceder a conocimiento por prefijo", () => {
+  const entries = [{
+    id: "secret-id", actorId: "npc", content: "Secreto del NPC", type: "secret", source: "perceived"
+  }];
+  const oversizedActor = "npc" + "x".repeat(121);
+  assert.deepEqual(Knowledge.buildKnowledgeView(entries, oversizedActor).knowledge, []);
+  const transfer = Knowledge.communicateKnowledge(entries, "npc", "listener", ["secret-id" + "x".repeat(121)], 3);
+  assert.equal(transfer.applied, false);
+  assert.equal(transfer.reason, "invalid-transfer");
+  const inference = Knowledge.recordInference(entries, "npc" + "x".repeat(121), {
+    id: "guess", content: "No", evidenceIds: ["secret-id"]
+  });
+  assert.equal(inference.applied, false);
+  assert.equal(inference.reason, "missing-owned-evidence");
+});
+
+test("IDs de origen y localización excesivos se descartan sin truncarlos", () => {
+  const oversized = "x".repeat(121);
+  const [entry] = Knowledge.normalizeKnowledge([{
+    id: "valid", actorId: "npc", content: "Dato", type: "fact", source: "perceived",
+    fromActorId: oversized, locationId: oversized, evidenceIds: [oversized, "valid-evidence"]
+  }]);
+  assert.equal(entry.fromActorId, null);
+  assert.equal(entry.locationId, null);
+  assert.deepEqual(entry.evidenceIds, ["valid-evidence"]);
+});
