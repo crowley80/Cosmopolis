@@ -349,3 +349,12 @@ No saltar de fase si las pruebas de compatibilidad y persistencia anteriores no 
 Se ha preparado la arquitectura, el esquema inicial, las reglas de simulación, el plan de migración y la batería de pruebas. No se han modificado archivos de ejecución ni se ha afirmado que el motor esté implementado o probado en el dispositivo.
 
 La rama de trabajo se ha separado de `main` porque el repositorio remoto consultado no contiene el último cambio local de `aiUsed` documentado el 13/11/2026. Antes de integrar esta propuesta, hay que reconciliar la rama con el estado local actualizado para no sobrescribir avances recientes.
+
+
+## 13. Vistas de conocimiento aisladas
+
+El módulo experimental `app/js/game/knowledge.js` separa los registros de conocimiento por `actorId`. Cada entrada exige `id`, `content`, `type` (`fact|rumor|belief|secret`) y `source` (`perceived|communicated|inferred`); conserva confianza acotada entre 0 y 1, tick, emisor y localización opcionales. La vista de escena filtra por actor y localización. Un ID ya registrado no se vuelve a insertar.
+
+**Límite de seguridad:** el módulo no conoce la verdad canónica ni la consulta. Esto es deliberado: el motor que lo invoque debe decidir, con reglas comprobables, qué observó, recibió o pudo inferir cada actor. No se debe copiar el estado completo del mundo a una entrada de conocimiento ni confiar en instrucciones del prompt para ocultarlo. Un rumor permanece como rumor y una inferencia conserva su fuente.
+
+El módulo es experimental, no se carga desde `index.html` y no está conectado al narrador ni al guardado. Sus ocho pruebas están escritas, pero aún requieren ejecución en un checkout real y posterior validación en Termux.
