@@ -266,3 +266,16 @@ node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-pe
 
 No se afirma ejecución en checkout real ni en Termux. El contexto de escena debe ser filtrado por el motor antes de entregarse a este constructor.
 
+
+
+## 18. Pruebas de propuestas causales NPC
+
+Se añade `scripts/test-npc-proposal.js` con ocho pruebas: registro de una propuesta causal válida, rechazo de duplicados, elegibilidad explícita, exclusión del jugador/no autónomos/fallecidos, objetivos inactivos, tick y causa obligatorios, coherencia de localización y protección de capacidad sin pérdida de eventos.
+
+La batería documentada asciende a 75 pruebas escritas (67 anteriores + 8 nuevas). Comando completo:
+
+```sh
+node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js scripts/test-perception-rules.js scripts/test-perception-pipeline.js scripts/test-world-scheduler.js scripts/test-npc-initiative.js scripts/test-npc-context.js scripts/test-npc-proposal.js
+```
+
+Las pruebas siguen pendientes de ejecución en un checkout real de la rama y en Termux. El nuevo módulo es experimental y no está integrado en la aplicación.
