@@ -42,7 +42,7 @@
         id: knowledgeId,
         actorId,
         content,
-        type: observation.type === "rumor" ? "rumor" : "fact",
+        type: ["fact", "rumor", "belief", "secret"].includes(observation.type) ? observation.type : "fact",
         source: "perceived",
         confidence: 1,
         tick: Number.isInteger(observation.tick) && observation.tick >= 0 ? observation.tick : 0,
