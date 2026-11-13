@@ -83,3 +83,18 @@ test("rechaza ticks inválidos y entradas incompletas", () => {
   assert.equal(Initiative.selectInitiatives(actors, -1).rejected, true);
   assert.equal(Initiative.markInitiative({}, 2).applied, false);
 });
+
+
+test("el cursor avanza desde el actor exacto aunque el orden por cooldown no sea alfabético", () => {
+  const actors = [
+    { id: "zeta", personalGoal: "A", goalStatus: "active", nextInitiativeTick: 1 },
+    { id: "alfa", personalGoal: "B", goalStatus: "active", nextInitiativeTick: 2 },
+    { id: "beta", personalGoal: "C", goalStatus: "active", nextInitiativeTick: 2 }
+  ];
+  const result = Initiative.selectInitiatives(actors, 3, {
+    eligibleActorIds: ["zeta", "alfa", "beta"],
+    cursorActorId: "zeta",
+    maxPerTick: 1
+  });
+  assert.equal(result.selected[0].actorId, "alfa");
+});
