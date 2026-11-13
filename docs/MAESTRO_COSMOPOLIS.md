@@ -1280,3 +1280,19 @@ Se añade `docs/AUDITORIA_PERSISTENCIA_REMOTA.md` tras revisar estáticamente `c
 Los hallazgos son preliminares porque la rama remota no incluye los últimos cambios de Termux. No se modifica runtime ni se afirma que estos hallazgos estén verificados en la copia local actual. La prioridad técnica pasa a ser reconciliar el código vigente y después cubrir edición de personaje, reintentos, relaciones y guardado con pruebas antes de implementar el reloj del mundo.
 
 Estado: auditoría estática remota documentada; verificación local y correcciones pendientes.
+
+
+## Primer núcleo aislado del mundo vivo — 13 de noviembre de 2026
+
+Se incorporan dos archivos nuevos en la rama de trabajo:
+
+- `app/js/game/world-core.js`: módulo puro y aislado para normalizar el estado del mundo y aplicar un paso lógico identificado por `operationId`. Conserva campos desconocidos, mantiene el reloj lógico independiente del reloj real, evita repetir una operación mientras su ID permanezca en el registro y ordena eventos de forma determinista por tick e ID.
+- `scripts/test-world-core.js`: siete pruebas con el ejecutor nativo `node:test`, que cubren migración mínima no destructiva, normalización repetible, avance de un tick, duplicados, IDs vacíos, preservación de relaciones/campos desconocidos y límite del registro.
+
+Se ha revisado el comparador de IDs para que no dependa de la configuración regional del dispositivo. El registro de idempotencia conserva las últimas 500 operaciones; por tanto, antes de integrar en producción habrá que coordinarlo con el historial durable de acciones para que los reintentos antiguos no puedan reaplicarse después de salir de esa ventana.
+
+Importante: este módulo todavía no se carga desde `index.html` ni está conectado a `Session.addAction()`. Es una primera pieza aislada, no cambia el comportamiento de la partida actual. Las pruebas están escritas en el repositorio; la validación realizada en este entorno fue un ensayo Node independiente de la lógica, no una ejecución sobre un checkout completo de la rama ni sobre Termux.
+
+La integración queda bloqueada hasta reconciliar la copia local de Termux, incluido el cambio `aiUsed` del 13/11. No copiar estos archivos sobre la instalación móvil ni activar el módulo todavía.
+
+Estado: primer núcleo y batería inicial de pruebas añadidos en rama aislada; integración y validación en dispositivo pendientes.
