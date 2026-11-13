@@ -422,3 +422,13 @@ La agenda se ordena por tick e ID para que el resultado sea determinista. La cap
 
 El scheduler no avanza el reloj ni se ejecuta en segundo plano: el motor de turnos debe llamarlo después de un paso lógico válido y persistir el resultado junto con el estado del mundo. Por tanto, al cerrar la partida no se consumen eventos ni se simula tiempo offline. El scheduler entrega eventos como datos; la capa superior aún debe validar sus consecuencias, permisos, causalidad y conocimiento de los personajes. No está integrado en runtime.
 
+## 20. Selección acotada de iniciativas autónomas de NPC
+
+Se añade `app/js/game/npc-initiative.js`, un módulo puro que selecciona qué personajes no jugadores pueden proponer una iniciativa en un tick. No genera la acción ni ejecuta IA: aplica condiciones verificables y devuelve una lista mínima para el motor superior.
+
+Condiciones: el actor debe figurar en `eligibleActorIds` entregado explícitamente por el motor; no ser el jugador; no estar marcado como no autónomo o fallecido; tener objetivo personal no vacío y no completado, abandonado, fallido o pausado; y haber alcanzado `nextInitiativeTick`. La selección es determinista, con cursor rotatorio para repartir oportunidades. Por defecto selecciona un actor por tick y nunca permite superar cinco.
+
+`markInitiative` registra `lastInitiativeTick` y `nextInitiativeTick` con un periodo de espera lógico, rechazando una segunda marca en el mismo tick. No altera el actor original.
+
+La elegibilidad de escena y el avance del tick pertenecen al motor de turnos. Este módulo no decide si un NPC puede actuar fuera de escena, no crea objetivos, no resuelve consecuencias y no accede a información privada de otros personajes. No está integrado en runtime.
+
