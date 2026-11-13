@@ -60,3 +60,23 @@ test("resolveAll conserva el estímulo y añade observadores", () => {
   assert.equal(resolved.id, "bell");
   assert.deepEqual(resolved.observerIds, ["player"]);
 });
+
+
+test("rechaza IDs de actor y localización excesivos sin compararlos por prefijo", () => {
+  const long = "x".repeat(121);
+  assert.equal(Rules.canPerceive(
+    { id: "player" + long, locationId: "hall", senses: { sight: true } },
+    { locationId: "hall", channel: "sight" }
+  ), false);
+  assert.equal(Rules.canPerceive(
+    { id: "player", locationId: "hall", senses: { sight: true } },
+    { locationId: "hall" + long, channel: "sight" }
+  ), false);
+});
+
+test("las allowlists perceptivas no aceptan prefijos de IDs excesivos", () => {
+  const long = "x".repeat(121);
+  assert.deepEqual(Rules.resolveObservers(actors, {
+    locationId: "hall", channel: "sight", visibleTo: ["player" + long]
+  }), []);
+});
