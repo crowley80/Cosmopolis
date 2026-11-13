@@ -440,3 +440,10 @@ Rechaza actores sin ID, escenas de otra localización o ausencia del módulo de 
 
 El límite de confianza sigue siendo importante: `sceneView.description` debe ser una descripción previamente autorizada por el motor; este módulo no puede certificar la veracidad ni el filtrado de una cadena que recibe. No está conectado al narrador ni al runtime.
 
+
+
+## 22. Corrección de integridad del scheduler — 13 de noviembre de 2026
+
+La revisión directa del archivo detectó dos discrepancias entre el contrato documentado y la implementación: un escape literal de salto de línea en el comparador de ordenación, que podía invalidar la sintaxis JavaScript, y la ausencia del rechazo por capacidad que ya esperaba la prueba correspondiente. Se corrigen ambos puntos en `app/js/game/world-scheduler.js`: el comparador vuelve a tener saltos de línea reales y `scheduleEvent` devuelve `reason: "capacity"` sin modificar la agenda cuando ya contiene 500 entradas. La corrección mantiene los eventos existentes y no introduce reloj real ni ejecución en segundo plano.
+
+La prueba de capacidad ya estaba presente en `scripts/test-world-scheduler.js`; queda pendiente ejecutarla en un checkout real de la rama. Esta corrección está en la rama aislada y no se ha copiado a Termux ni integrado en `main`.
