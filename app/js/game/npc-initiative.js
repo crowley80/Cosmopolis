@@ -16,9 +16,16 @@
     return typeof value === "string" ? value.trim().slice(0, max) : "";
   }
 
+  function cleanId(value) {
+    if (typeof value !== "string") return "";
+    const id = value.trim();
+    return id && id.length <= 120 ? id : "";
+  }
+
   function isEligible(actor, tick, allowedIds) {
-    const id = clean(actor && actor.id);
+    const id = cleanId(actor && actor.id);
     if (!id || !allowedIds.has(id)) return false;
+    if (actor.locationId != null && actor.locationId !== "" && !cleanId(actor.locationId)) return false;
     if (actor.isPlayer === true || actor.autonomous === false || actor.alive === false) return false;
     if (!clean(actor.personalGoal, 1000)) return false;
     const goalStatus = clean(actor.goalStatus, 40).toLowerCase();
@@ -34,12 +41,12 @@
     }
     const eligibleIds = new Set(
       Array.isArray(options.eligibleActorIds)
-        ? options.eligibleActorIds.map(id => clean(id)).filter(Boolean)
+        ? options.eligibleActorIds.map(cleanId).filter(Boolean)
         : []
     );
     const unique = new Map();
     for (const actor of actors.slice(0, MAX_ACTORS)) {
-      const id = clean(actor && actor.id);
+      const id = cleanId(actor && actor.id);
       if (id && !unique.has(id)) unique.set(id, actor);
     }
     const candidates = Array.from(unique.values())
@@ -48,24 +55,24 @@
         const aTick = Number.isSafeInteger(a.nextInitiativeTick) ? a.nextInitiativeTick : 0;
         const bTick = Number.isSafeInteger(b.nextInitiativeTick) ? b.nextInitiativeTick : 0;
         if (aTick !== bTick) return aTick - bTick;
-        const aId = clean(a.id), bId = clean(b.id);
+        const aId = cleanId(a.id), bId = cleanId(b.id);
         return aId < bId ? -1 : aId > bId ? 1 : 0;
       });
 
     const requested = Number.isInteger(options.maxPerTick) ? options.maxPerTick : 1;
     const limit = Math.max(1, Math.min(MAX_PER_TICK, requested));
-    const cursor = clean(options.cursorActorId);
+    const cursor = cleanId(options.cursorActorId);
     let start = 0;
     if (cursor && candidates.length) {
-      const index = candidates.findIndex(actor => clean(actor.id) === cursor);
+      const index = candidates.findIndex(actor => cleanId(actor.id) === cursor);
       start = index < 0 ? 0 : (index + 1) % candidates.length;
     }
     const rotated = candidates.slice(start).concat(candidates.slice(0, start));
     const selected = rotated.slice(0, limit).map(actor => ({
-      actorId: clean(actor.id),
+      actorId: cleanId(actor.id),
       goal: clean(actor.personalGoal, 1000),
       goalStatus: clean(actor.goalStatus, 40) || "active",
-      locationId: clean(actor.locationId) || null,
+      locationId: cleanId(actor.locationId) || null,
       lastInitiativeTick: Number.isSafeInteger(actor.lastInitiativeTick) ? actor.lastInitiativeTick : null
     }));
     return {
@@ -76,7 +83,8 @@
   }
 
   function markInitiative(actor, tick, cooldownTicks = 1) {
-    if (!actor || typeof actor !== "object" || !clean(actor.id) ||
+    if (!actor || typeof actor !== "object" || !cleanId(actor.id) ||
+        (actor.locationId != null && actor.locationId !== "" && !cleanId(actor.locationId)) ||
         !Number.isSafeInteger(tick) || tick < 0 ||
         !Number.isSafeInteger(cooldownTicks) || cooldownTicks < 1 ||
         !Number.isSafeInteger(tick + cooldownTicks)) {
