@@ -1313,3 +1313,11 @@ Se ha añadido en la rama aislada `work/arquitectura-mundo-vivo` el módulo puro
 La API no recibe el estado canónico del mundo: por diseño, el llamador debe proporcionar exclusivamente entradas autorizadas para el actor. Por tanto, este módulo es una barrera estructural útil, pero no sustituye la obligación de filtrar correctamente en el motor que registre y entregue los datos. Tampoco se ha conectado a `Narrator`, `app.js` ni al guardado actual.
 
 Se añadieron ocho pruebas automatizadas para validación de fuentes, separación entre actores, secretos, rumores, inferencias, idempotencia y filtro de localización. Estado de ejecución: código y pruebas guardados en GitHub; pendiente ejecutarlas en un checkout real de la rama y validar compatibilidad con Node/Termux. No está integrado en la instalación móvil.
+
+
+
+## Comunicación selectiva y deducción trazable — 13 de noviembre de 2026
+
+Se amplía el módulo experimental `app/js/game/knowledge.js` con `communicateKnowledge()` y `recordInference()`. La primera transmite únicamente IDs seleccionados de la memoria del emisor al receptor, registra quién comunicó la información y mantiene el carácter de rumor/creencia y su confianza. La segunda exige evidencias que el actor ya conozca y registra la conclusión como creencia inferida con referencias a dichas evidencias.
+
+Se añaden cuatro pruebas para verificar transmisión selectiva, conservación de rumores, rechazo de información no poseída y deducciones con evidencia propia. La batería total queda en doce pruebas escritas. No se conecta aún al motor narrativo ni al guardado; la capa superior deberá decidir qué contenido se comunicó realmente y no transferir automáticamente memorias completas.
