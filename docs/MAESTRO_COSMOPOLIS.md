@@ -1667,3 +1667,8 @@ Se elimina el truncamiento de IDs en `perception-rules.js`: actores, localizacio
 En la rama experimental `work/arquitectura-mundo-vivo` se añade `app/js/game/spatial-perception.js`, capa pura sobre las reglas perceptivas existentes. Cuando un estímulo declara `range`, compara posiciones explícitas `{x, y}` mediante distancia euclídea; conserva las reglas de sentido, localización, atención y exclusiones. Si falta una posición con rango declarado o el rango/coordenada es inválido, no concede percepción. Sin rango mantiene compatibilidad con el comportamiento anterior. No calcula todavía paredes, rutas ni línea de visión y no se integra en el runtime.
 
 Se añaden nueve pruebas en `scripts/test-spatial-perception.js` y se incorpora al workflow de CI. Commits: `2fd3157` (módulo) y `ccd2c49` (pruebas). Pendiente actualizar/verificar el workflow y ejecutar CI; no se modifica `main` ni Termux.
+
+
+## CI verde de percepción espacial — 13/11/2026
+
+GitHub Actions, ejecución `43498226091` sobre `c250fff84276e73f0cea9f6251c1aea31c4ef6fe`: **154/154 pruebas aprobadas**, 0 fallos, doce suites con Node.js 22. Incluye nueve pruebas nuevas de distancia y alcance perceptivo. Validación de módulos aislados; todavía no integración en el runtime ni prueba en Termux. La rama principal `main` y la copia local no se han modificado.
