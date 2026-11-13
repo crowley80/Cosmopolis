@@ -1525,3 +1525,8 @@ GitHub Actions completó las doce suites en el commit 5397518ca02c0ad1989369f010
 ## Actualización del plan de integración — 13/11/2026
 
 Se sincroniza docs/PLAN_INTEGRACION_MUNDO_VIVO.md con el estado actual: world-effects.js ya existe con tres efectos tipados; world-event-resolution.js exige referencias realmente registradas; el catálogo limita a 50 efectos por evento y tiene pruebas de idempotencia. El inventario se actualiza a diez módulos experimentales, doce suites y 110 pruebas, con CI verde. Se mantiene el bloqueo de integración hasta reconciliar la copia más reciente de Termux.
+
+
+## Integridad de referencias de efectos y localizaciones — 13/11/2026
+
+Se endurecen dos contratos: fact.add rechaza locationId si no existe en world.locations; y world-event-resolution.js exige que la resolución applied enumere todos los efectos registrados en el evento causal, no solo un subconjunto válido. Se añaden dos pruebas de regresión y se ajusta el test de resolución completa para incluir las tres referencias registradas. La batería asciende a **112 pruebas escritas**. La validación CI queda pendiente.
