@@ -456,3 +456,10 @@ Se añade `app/js/game/npc-proposal.js`, un módulo puro que registra propuestas
 La operación es idempotente por ID de propuesta mientras permanezca en el registro de las últimas 500 propuestas, y también comprueba el ID del evento resultante. Conserva campos desconocidos del mundo y no muta el objeto recibido. Rechaza la operación si el historial de eventos ya alcanza 200 entradas, sin descartar eventos existentes. Cada evento queda marcado como pendiente, con actor, causa, localización y payload estructurado.
 
 El módulo no decide si la acción propuesta es físicamente posible ni si su consecuencia es verdadera; eso corresponde al futuro validador de acciones y al motor de mundo. Tampoco se conecta todavía al runtime.
+
+
+## 24. Ciclo de resolución de eventos
+
+Se añade `app/js/game/world-event-resolution.js` para controlar las transiciones terminales de eventos pendientes. La operación exige un evento existente en estado `pending`, un `operationId` único, tick lógico válido, resultado terminal (`applied`, `cancelled` o `failed`) y resumen estructurado. Si se marca como aplicado, exige referencias explícitas a los efectos registrados. La transición conserva la causa y los datos originales del evento, añade el registro de resolución y no muta el mundo recibido.
+
+Este módulo solo registra el resultado y sus referencias: **no ejecuta ni aplica los efectos** sobre hechos, relaciones, personajes o localizaciones. Esa separación es intencionada; la aplicación real de efectos requiere un catálogo de operaciones tipadas y validadores de dominio para no permitir mutaciones arbitrarias. Los reintentos con el mismo operationId se rechazan y no se permite reabrir un evento terminal. El módulo permanece aislado del runtime.
