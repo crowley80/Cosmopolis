@@ -369,3 +369,10 @@ El módulo incorpora dos operaciones explícitas adicionales:
 - `recordInference`: exige que todas las evidencias citadas ya pertenezcan al actor. La conclusión se registra como `belief` con fuente `inferred` y referencias a sus evidencias. El módulo no valida la lógica de la deducción ni la convierte en verdad canónica.
 
 La comunicación es una operación explícita del motor: la capa superior debe decidir qué se dijo realmente y qué información incluyó el mensaje. No se debe invocar con todos los IDs del emisor ni inferir que una conversación transfiere automáticamente toda su memoria.
+
+
+## 15. Registro de percepción explícita
+
+Se añade `app/js/game/perception.js` como adaptador experimental entre observaciones espaciales y memoria individual. Solo registra un estímulo cuando el actor aparece en `observerIds`, lista que debe producir previamente el motor tras resolver línea de visión, alcance, audición, atención y condiciones de escena. Cada observación genera una entrada individual con fuente `perceived`.
+
+El módulo **no calcula** quién puede ver u oír: no dispone de geometría ni de estado espacial y no debe inventarlos. La lista de observadores es una frontera de confianza que corresponde al motor espacial. No se debe construirla copiando todos los personajes presentes sin comprobar los sentidos, obstáculos, distancia y circunstancias.
