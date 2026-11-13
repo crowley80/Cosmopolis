@@ -105,3 +105,17 @@ test("rechaza cooldown que desborda el rango entero seguro", () => {
   assert.equal(result.reason, "invalid-input");
   assert.equal(result.actor, actors[0]);
 });
+
+test("rechaza IDs largos sin colisionarlos con el prefijo de otro NPC", () => {
+  const prefix = "n".repeat(120);
+  const longActor = { id: prefix + "extra", personalGoal: "Objetivo falso", goalStatus: "active" };
+  const validActor = { id: prefix, personalGoal: "Objetivo real", goalStatus: "active" };
+  const result = Initiative.selectInitiatives([longActor, validActor], 1, {
+    eligibleActorIds: [prefix], maxPerTick: 2
+  });
+  assert.deepEqual(result.selected.map(item => item.actorId), [prefix]);
+  const longAllowlist = Initiative.selectInitiatives([validActor], 1, {
+    eligibleActorIds: [prefix + "extra"]
+  });
+  assert.equal(longAllowlist.selected.length, 0);
+});
