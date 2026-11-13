@@ -32,7 +32,7 @@ test("flujo causal completo conserva actor, causa y localización", () => {
   assert.equal(resolved.event.actorId, "mara");
   assert.equal(resolved.event.causeId, "heard-rumour-3");
   assert.equal(resolved.event.locationId, "port");
-  assert.deepEqual(resolved.event.resolution.effectIds, ["clue-map-fragment"]);
+  assert.deepEqual(resolved.event.resolution.effectIds, ["effect-clue-map"]);
 });
 
 test("reintentar la propuesta y la resolución no duplica eventos", () => {
