@@ -33,6 +33,7 @@
       tick: Number.isInteger(entry.tick) && entry.tick >= 0 ? entry.tick : 0,
       fromActorId: cleanText(entry.fromActorId, 120) || null,
       locationId: cleanText(entry.locationId, 120) || null,
+      channel: ["sight", "hearing", "smell", "touch", "other"].includes(entry.channel) ? entry.channel : null,
       evidenceIds: Array.isArray(entry.evidenceIds)
         ? Array.from(new Set(entry.evidenceIds.map(id => cleanText(id, 120)).filter(Boolean))).slice(0, 20)
         : []
@@ -69,7 +70,7 @@
         id: entry.id, content: entry.content, status: entry.type,
         source: entry.source, confidence: entry.confidence, tick: entry.tick,
         fromActorId: entry.fromActorId, locationId: entry.locationId,
-        evidenceIds: entry.evidenceIds.slice()
+        evidenceIds: entry.evidenceIds.slice(), channel: entry.channel
       }));
     return { actorId: id, knowledge };
   }
