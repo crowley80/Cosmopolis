@@ -30,6 +30,7 @@ jobs:
             scripts/test-perception.js \
             scripts/test-perception-rules.js \
             scripts/test-perception-pipeline.js \
+            scripts/test-spatial-perception.js \
             scripts/test-world-scheduler.js \
             scripts/test-npc-initiative.js \
             scripts/test-npc-context.js \
