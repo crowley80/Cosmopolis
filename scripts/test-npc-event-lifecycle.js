@@ -14,7 +14,7 @@ const proposal = {
   causeId: "heard-rumour-3", type: "search-started",
   description: "Mara comienza a buscar el mapa", locationId: "port"
 };
-const options = { actors: [actor], eligibleActorIds: ["mara"] };
+const options = { actors: [actor], eligibleActorIds: ["mara"], knownCauseIdsByActor: { mara: ["heard-rumour-3"] } };
 
 test("flujo causal completo conserva actor, causa y localización", () => {
   const created = Proposal.registerNpcProposal(initial, proposal, options);
