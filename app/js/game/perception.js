@@ -13,12 +13,17 @@
   const CHANNELS = new Set(["sight", "hearing", "smell", "touch", "other"]);
   const MAX_OBSERVATIONS = 100;
 
-  function clean(value, max) {
+  function cleanText(value, max) {
     return typeof value === "string" ? value.trim().slice(0, max) : "";
+  }
+  function cleanId(value) {
+    if (typeof value !== "string") return "";
+    const id = value.trim();
+    return id && id.length <= 120 ? id : "";
   }
 
   function registerPerceptions(entries, observerId, observations) {
-    const actorId = clean(observerId, 120);
+    const actorId = cleanId(observerId);
     const current = Array.isArray(entries) ? entries : [];
     if (!actorId || !Array.isArray(observations)) {
       return { entries: current, recordedIds: [], rejected: observations?.length || 0 };
@@ -28,16 +33,20 @@
     let next = current;
     let rejected = 0;
     for (const observation of observations.slice(0, MAX_OBSERVATIONS)) {
-      const id = clean(observation && observation.id, 120);
-      const content = clean(observation && observation.content, 2000);
+      const id = cleanId(observation && observation.id);
+      const content = cleanText(observation && observation.content, 2000);
       const authorized = observation && Array.isArray(observation.observerIds)
         && observation.observerIds.includes(actorId);
-      if (!id || !content || !authorized) {
+      const locationId = observation && observation.locationId == null
+        ? "" : cleanId(observation && observation.locationId);
+      const knowledgeId = "perception:" + id + ":" + actorId;
+      if (!id || !content || !authorized ||
+          (observation && observation.locationId != null && !locationId) ||
+          knowledgeId.length > 120) {
         rejected++;
         continue;
       }
       const channel = CHANNELS.has(observation.channel) ? observation.channel : "other";
-      const knowledgeId = "perception:" + id + ":" + actorId;
       const result = globalThis.CosmopolisKnowledge.recordKnowledge(next, {
         id: knowledgeId,
         actorId,
@@ -46,7 +55,7 @@
         source: "perceived",
         confidence: 1,
         tick: Number.isInteger(observation.tick) && observation.tick >= 0 ? observation.tick : 0,
-        locationId: clean(observation.locationId, 120) || null,
+        locationId: locationId || null,
         fromActorId: null,
         evidenceIds: [],
         channel
