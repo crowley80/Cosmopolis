@@ -1544,3 +1544,8 @@ Se endurece npc-proposal.js para que el payload estructurado no pueda introducir
 ## Causalidad limitada al conocimiento del NPC — 13/11/2026
 
 Se endurece registerNpcProposal: ya no basta con que el modelo proponga un causeId no vacío. El motor debe proporcionar explícitamente knownCauseIdsByActor y la causa debe estar en la lista de conocimiento del actor que inicia la acción. Esto impide que una iniciativa se apoye en rumores, hechos o acciones que ese NPC no conoce. Se añaden dos pruebas y se actualizan las fixtures. La batería asciende a **118 pruebas escritas**. El runtime deberá construir esta allowlist desde la memoria individual del NPC, nunca desde el inventario global de causas.
+
+
+## Contratos de integración NPC actualizados — 13/11/2026
+
+Se amplía docs/PLAN_INTEGRACION_MUNDO_VIVO.md con dos requisitos de integración: cada propuesta NPC debe demostrar que su causa pertenece al conocimiento individual del actor mediante knownCauseIdsByActor; y los payloads se deben copiar/validar con límites estrictos antes de incorporarlos al estado. La allowlist causal debe derivarse de la memoria privada de cada NPC, no del mundo global.
