@@ -83,3 +83,22 @@ En `Save.save()`, `world.relationships` se fusiona con spread del objeto superio
 - No se ha modificado ningún archivo de runtime.
 
 Esta auditoría es una guía de revisión para la integración segura, no una autorización para copiar los archivos remotos encima de la instalación local.
+
+
+### P-06 — El contexto del modelo recibe campos internos completos
+
+En `Narrator.buildMessages()`, cada personaje se construye con `...person` y después se sustituyen algunos campos por versiones compactas. Del mismo modo, `compactState` parte de `...state`. Por tanto, cualquier propiedad interna adicional que exista en esos objetos puede acabar en el JSON enviado al modelo, aunque no esté destinada a ser conocimiento del protagonista. El contexto también incluye objetivos personales, memorias y datos persistentes de mundo.
+
+**Qué significa:** las instrucciones del mensaje de sistema piden al modelo que no revele secretos, pero no constituyen una barrera de acceso a datos. El modelo recibe información que quizá debería permanecer privada para el protagonista. Además, mezclar estado interno con conocimiento del jugador hace difícil auditar por qué un personaje sabe algo.
+
+**Riesgo:** filtración narrativa de secretos o información fuera de escena por generación, resumen o inferencia accidental. No se ha demostrado una filtración concreta; el riesgo deriva de la amplitud del objeto serializado.
+
+**Solución futura:** sustituir los spreads de objetos completos por listas explícitas de campos permitidos. Separar al menos:
+- estado verdadero del mundo;
+- conocimiento del protagonista;
+- conocimiento individual de cada NPC;
+- rumores y creencias con su fuente y grado de confianza;
+- secretos que solo el motor puede usar para resolver causas, nunca para narrar como conocimiento disponible.
+
+El contexto del narrador debe construirse desde una vista de escena filtrada por percepción y fuentes conocidas, no serializando el estado canónico completo. Las iniciativas de NPC pueden resolverse con su propio contexto privado y solo sus manifestaciones observables pasan a la escena del jugador.
+
