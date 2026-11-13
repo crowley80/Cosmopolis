@@ -68,3 +68,8 @@ Los módulos `world-core`, `knowledge`, `perception`, `perception-rules`, `world
 ## 6. Actualización de módulos y pruebas — 13/11/2026
 
 Se incorporan al inventario `world-effects.js` y sus validaciones cruzadas con `world-event-resolution.js`. La secuencia de una iniciativa causal ya puede probarse de extremo a extremo en memoria: propuesta NPC pendiente → efecto tipado real → resolución terminal con referencias verificadas. La suite incluye 110 pruebas distribuidas en doce archivos, todas aprobadas por CI Node 22. No se ha hecho integración con la aplicación activa; sigue bloqueada hasta reconciliar Termux y fijar el contrato de persistencia.
+
+
+## 7. Contratos añadidos para iniciativas NPC — 13/11/2026
+
+La integración de `npc-proposal.js` debe pasar dos datos derivados del contexto privado de cada actor: `eligibleActorIds` y `knownCauseIdsByActor`. El segundo debe contener exclusivamente causas presentes en la memoria del NPC concreto; nunca debe construirse desde el inventario global de hechos/eventos. El payload estructurado de la propuesta se valida y copia en profundidad antes de entrar en `world.events`: solo valores JSON-like, profundidad 3, máximo 20 elementos por contenedor, 100 nodos y 500 caracteres por cadena; se rechazan ciclos y claves peligrosas. La capa runtime debe mantener estos mismos límites al construir el prompt y validar la respuesta del modelo.
