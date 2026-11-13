@@ -373,3 +373,8 @@ La primera ejecución tras exigir referencias de efectos reales pasó 106 de 107
 ## 26. Capacidad máxima de efectos por evento
 
 Se añade una prueba en scripts/test-world-effects.js que llena las 50 referencias permitidas y verifica que el siguiente efecto se rechaza sin alterar hechos ni descartar referencias previas. La batería documentada queda en **108 pruebas escritas**.
+
+
+## CI verde con efectos tipados — 13/11/2026
+
+La ejecución GitHub Actions del commit 3b0495614d0df6a0462f1c06f25f9d6102a0fbb8 completó las doce suites con Node.js 22: **108 pruebas, 108 pasaron, 0 fallaron**. Incluye el módulo nuevo de efectos tipados, la verificación de referencias reales al resolver eventos y el límite de 50 efectos por evento causal. Validación confirmada en Ubuntu/Node 22; la integración en Termux y en la aplicación sigue pendiente de reconciliación.
