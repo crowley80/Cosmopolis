@@ -1584,3 +1584,9 @@ La auditoría del scheduler detectó que normalizeScheduledEvents sobrescribía 
 ## CI verde tras protección de estados terminales del scheduler — 13/11/2026
 
 GitHub Actions completó las doce suites en el commit `8d8588858b3bb05b3ea92af3470b04e4033cd19d`: **123 pruebas, 123 pasaron, 0 fallaron** con Node.js 22. La corrección evita que copias duplicadas pendientes hagan resucitar eventos ya disparados o cancelados. La ejecución valida los módulos aislados en Ubuntu/Node 22; no certifica integración en Termux ni en el runtime principal.
+
+
+## Límites estrictos de identificadores en el scheduler — 13/11/2026
+
+Se detectó que el scheduler recortaba IDs de agenda a 120 caracteres. Dos IDs distintos con el mismo prefijo podían colisionar y una cancelación con ID excesivo podía dirigirse a otro evento tras el recorte. Ahora se rechazan IDs nuevos excesivos, se descartan IDs heredados fuera del límite y cancelEvent devuelve "invalid-id" sin modificar la agenda. Se exponen los límites en la API y se añaden dos pruebas de regresión. La batería pasa de 123 a **125 pruebas escritas**; CI pendiente. Cambio aislado en la rama experimental, sin tocar Termux ni main.
+
