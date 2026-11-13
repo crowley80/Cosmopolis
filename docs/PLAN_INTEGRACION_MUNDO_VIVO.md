@@ -93,3 +93,8 @@ world-core.js rechaza ahora applyStep cuando el tick ya alcanzó `Number.MAX_SAF
 ## Límites de IDs en efectos y resolución causal — 13/11/2026
 
 world-effects.js y world-event-resolution.js ya no truncan identificadores causales para hacerlos encajar en 160 caracteres. Se rechazan IDs principales excesivos y se descartan referencias/operaciones heredadas fuera de límite para evitar colisiones por prefijo. Se añaden tres pruebas de regresión. CI verde: **129/129 pruebas** en la ejecución 43485613054 (Node.js 22). Sigue sin estar autorizada la integración directa en Termux hasta reconciliar la copia local.
+
+
+## Coherencia de IDs compuestos en propuestas NPC — 13/11/2026
+
+npc-proposal.js limita ahora el ID original a 147 caracteres porque añade el prefijo `npc-proposal:` al crear el ID de evento. Así se respeta el límite global de 160 sin truncar ni generar identificadores que el núcleo rechazaría. Prueba de frontera añadida. CI verde: **130/130 pruebas** en ejecución 43485723310. No cambia el bloqueo de integración: primero reconciliar Termux y validar el runtime.
