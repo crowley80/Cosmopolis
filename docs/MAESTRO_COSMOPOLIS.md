@@ -1475,3 +1475,8 @@ Se consultó la primera ejecución real de GitHub Actions. De 92 pruebas, 91 pas
 ## Primera ejecución completa de CI — 13/11/2026
 
 GitHub Actions ejecutó las once suites con Node.js 22 sobre el commit 90cd4cf1c630534c44609b193e4adc94a89f0a26. Resultado verificado: **94 pruebas, 94 pasaron, 0 fallaron**. La ejecución detectó antes una expectativa contradictoria en una prueba del scheduler; se corrigió la expectativa obsoleta (de e5 a e0) sin alterar el algoritmo y la nueva ejecución quedó verde. Esto valida los módulos aislados en Ubuntu/Node 22, no la integración en Termux ni el runtime de la aplicación.
+
+
+## Efectos de dominio tipados — 13/11/2026
+
+Se añaden `app/js/game/world-effects.js` y `scripts/test-world-effects.js`. El módulo aplica solo efectos tipados `fact.add`, `relationship.adjust` y `character.move`, exige un evento causal pendiente, IDs idempotentes, valida ejes y límites de relación, comprueba personajes/localizaciones y conserva referencias de efectos en el evento causal. No acepta rutas arbitrarias ni muta el estado original. Se escriben doce pruebas nuevas; la batería pasa de 94 a 106. Se incorpora la suite al workflow CI. Todo sigue aislado, sin integración en Termux/runtime; el esquema de entidades debe reconciliarse antes de activar el módulo.
