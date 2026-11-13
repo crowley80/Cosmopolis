@@ -25,7 +25,7 @@
       const dueTick = raw.dueTick;
       if (!id || !Number.isSafeInteger(dueTick) || dueTick < 0) continue;
       const status = STATUSES.has(raw.status) ? raw.status : "pending";
-      byId.set(id, {
+      const normalized = {
         ...raw,
         id,
         dueTick,
@@ -33,7 +33,17 @@
         payload: raw.payload && typeof raw.payload === "object" && !Array.isArray(raw.payload)
           ? { ...raw.payload }
           : {}
-      });
+      };
+      const existing = byId.get(id);
+      if (!existing) {
+        byId.set(id, normalized);
+      } else if (existing.status === "pending" && status !== "pending") {
+        // Una copia terminal heredada prevalece sobre cualquier duplicado pendiente.
+        // Nunca permitir que una agenda duplicada resucite un evento ya cerrado.
+        byId.set(id, { ...existing, status, ...(status === "fired" && Number.isSafeInteger(raw.firedAtTick)
+          ? { firedAtTick: raw.firedAtTick }
+          : {}) });
+      }
     }
     return Array.from(byId.values()).sort((a, b) =>
       a.dueTick !== b.dueTick ? a.dueTick - b.dueTick : (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
