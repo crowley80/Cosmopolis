@@ -66,3 +66,14 @@ test('limita el registro de operaciones procesadas', () => {
     assert.equal(world.processedOperations.length, World.MAX_PROCESSED_OPERATIONS);
     assert.equal(world.processedOperations[0], 'op-10');
 });
+
+
+test("rechaza un ID de evento ya utilizado por otra operación sin avanzar el tick", () => {
+  const first = WorldCore.applyStep({}, "operation-1", { id: "shared-event", description: "Primero" });
+  const second = WorldCore.applyStep(first.world, "operation-2", { id: "shared-event", description: "Duplicado" });
+  assert.equal(second.applied, false);
+  assert.equal(second.reason, "duplicate-event-id");
+  assert.equal(second.tick, 1);
+  assert.equal(second.world.events.length, 1);
+  assert.equal(second.world.processedOperations.includes("operation-2"), false);
+});
