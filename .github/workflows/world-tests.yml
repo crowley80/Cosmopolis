@@ -1,0 +1,35 @@
+name: Cosmopolis world modules
+
+on:
+  push:
+    branches:
+      - work/arquitectura-mundo-vivo
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  world-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run isolated world module tests
+        run: |
+          node --test \
+            scripts/test-world-core.js \
+            scripts/test-knowledge.js \
+            scripts/test-perception.js \
+            scripts/test-perception-rules.js \
+            scripts/test-perception-pipeline.js \
+            scripts/test-world-scheduler.js \
+            scripts/test-npc-initiative.js \
+            scripts/test-npc-context.js \
+            scripts/test-npc-proposal.js \
+            scripts/test-world-event-resolution.js \
+            scripts/test-npc-event-lifecycle.js
