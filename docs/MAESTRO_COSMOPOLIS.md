@@ -1600,3 +1600,8 @@ GitHub Actions completó la ejecución 43481478082 sobre el commit `d3306c1ed999
 ## Protección contra desbordamiento del tick lógico — 13/11/2026
 
 La auditoría de world-core.js detectó que incrementar el contador cuando ya valía Number.MAX_SAFE_INTEGER producía un tick no representable con precisión. applyStep ahora rechaza la operación con reason `tick-overflow` antes de modificar el tick, registrar operationId o añadir eventos. Se añade prueba de regresión que comprueba la ausencia de mutaciones. GitHub Actions, ejecución 43485470144 sobre `cb4708409fc4c6da2e1d2a07df944e83551bb84f`, terminó correctamente: doce suites, **126/126 pruebas aprobadas**, Node.js 22. Continúa siendo validación aislada, no integración en Termux/runtime.
+
+
+## Protección de identificadores en efectos y resolución causal — 13/11/2026
+
+Se detectó otro riesgo de colisión por truncamiento: world-effects.js recortaba IDs de efecto/causa a 160 caracteres; world-event-resolution.js hacía lo mismo con IDs de evento, operación, referencias de efectos y registros heredados. Ahora los IDs principales excesivos se rechazan y las referencias/registros heredados fuera del límite se descartan, en lugar de convertirlos en prefijos potencialmente coincidentes. Se añaden tres pruebas de regresión entre ambos módulos. CI GitHub Actions, ejecución 43485613054 sobre `4b32e6b834b22f0b535640022d629a95fcd9e141`: **129 pruebas, 129 pasaron, 0 fallaron**, doce suites con Node.js 22. Validación aislada; no integración en Termux/runtime.
