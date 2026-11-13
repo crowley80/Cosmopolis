@@ -151,3 +151,16 @@ El módulo experimental `app/js/game/knowledge.js` incorpora ocho pruebas en `sc
 - La deducción debe registrar la evidencia que la sustenta en una capa superior; este módulo etiqueta la inferencia, pero no valida su razonamiento.
 
 La batería escrita cubre validación, aislamiento por actor, secretos, rumores, inferencias, deduplicación, localización y límites de confianza. La ejecución real en el repositorio y la validación en dispositivo siguen pendientes.
+
+
+
+## 10. Pruebas de transmisión y deducción
+
+La batería se amplía con cuatro contratos:
+
+- Comunicación selectiva: solo se transfiere la información elegida y el emisor conserva su propia memoria.
+- Persistencia epistemológica: un rumor comunicado sigue siendo rumor y conserva su confianza.
+- Autorización: no se puede transmitir un registro que el emisor no posee.
+- Inferencia trazable: una deducción solo se registra si sus evidencias pertenecen al actor y queda etiquetada como creencia inferida.
+
+La capa narrativa deberá expresar incertidumbre según tipo, fuente y confianza; estas funciones no deben presentar inferencias como hechos confirmados.
