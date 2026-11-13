@@ -298,7 +298,7 @@ No se afirma ejecución en checkout real ni en Termux. El módulo registra estad
 
 Se añade `scripts/test-npc-event-lifecycle.js` con cuatro pruebas de integración entre `npc-proposal.js` y `world-event-resolution.js`: conservación de actor/causa/localización de principio a fin, reintentos idempotentes sin duplicados, imposibilidad de reabrir un evento cancelado y ausencia de mutaciones implícitas en hechos del mundo.
 
-La batería documentada asciende a **93 pruebas escritas** (84 anteriores + 4 de ciclo causal + 1 de equidad del cursor). Comando completo:
+La batería documentada asciende a **94 pruebas escritas** (84 anteriores + 4 de ciclo causal + 1 de equidad del cursor). Comando completo:
 
 ```sh
 node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js scripts/test-perception-rules.js scripts/test-perception-pipeline.js scripts/test-world-scheduler.js scripts/test-npc-initiative.js scripts/test-npc-context.js scripts/test-npc-proposal.js scripts/test-world-event-resolution.js scripts/test-npc-event-lifecycle.js
@@ -321,18 +321,23 @@ Se añade una prueba a `scripts/test-npc-initiative.js` que cubre el caso en que
 
 ## 23. Regresión de unicidad de eventos del núcleo
 
-Se añade una prueba a `scripts/test-world-core.js` para impedir que dos operaciones diferentes registren el mismo ID de evento. La comprobación debe rechazar la segunda operación antes de incrementar el tick y sin añadir su operationId al registro de procesadas. La batería documentada asciende a **93 pruebas escritas**. Ejecución pendiente del workflow.
+Se añade una prueba a `scripts/test-world-core.js` para impedir que dos operaciones diferentes registren el mismo ID de evento. La comprobación debe rechazar la segunda operación antes de incrementar el tick y sin añadir su operationId al registro de procesadas. La batería documentada asciende a **94 pruebas escritas**. Ejecución pendiente del workflow.
 
 
 ## Normalización de identificadores de eventos
 
 Se amplía `scripts/test-world-core.js` con dos casos de regresión: IDs de evento con espacios exteriores que deben colisionar tras normalización y IDs vacíos que deben adoptar el `operationId` normalizado. `world-core.applyStep()` recorta los IDs al comprobar y al guardar, y compara contra IDs existentes también normalizados.
 
-La batería queda en **93 pruebas escritas** (9 en world-core). Añadir estos casos no implica que estén ejecutados: se mantienen pendientes de un checkout completo o de un run de CI verificable.
+La batería queda en **94 pruebas escritas** (9 en world-core). Añadir estos casos no implica que estén ejecutados: se mantienen pendientes de un checkout completo o de un run de CI verificable.
 
 
 ## Compatibilidad de IDs heredados en propuestas NPC
 
 Se añade un caso a scripts/test-npc-proposal.js para impedir duplicar una propuesta cuando el evento previo contiene espacios exteriores en su ID. La comparación del módulo ahora normaliza el ID existente con trim() antes de decidir si la propuesta ya fue registrada.
 
-La batería documentada queda en **93 pruebas escritas**. La prueba está añadida, pero no se declara ejecutada.
+La batería documentada queda en **94 pruebas escritas**. La prueba está añadida, pero no se declara ejecutada.
+
+
+## Resolución de eventos heredados con IDs no normalizados
+
+Se añade una prueba en scripts/test-world-event-resolution.js para comprobar que un evento con espacios exteriores en su ID puede resolverse usando el ID normalizado, y que la transición persiste el identificador canónico. La batería documentada queda en **94 pruebas escritas**; no se afirma que se hayan ejecutado.
