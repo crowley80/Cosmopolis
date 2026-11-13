@@ -1635,3 +1635,8 @@ Se endurece npc-initiative.js: los IDs de actor, allowlist, cursor y localizaci�
 ## Validación de IDs en propuestas de iniciativa NPC — 13/11/2026
 
 Se endurece npc-proposal.js para no truncar actorId, causeId, eligibleActorIds, IDs de causas conocidas ni locationId. Los IDs de actor/localización se limitan a 120 caracteres y las causas a 160; si el dato es excesivo se rechaza la propuesta antes de registrar evento. La primera prueba usó un ID de causa de 129 caracteres, que era válido dentro del límite de 160; se corrigió el fixture para probar 161 caracteres. CI final 43486527033 sobre `70358d1b99a32487d23a5205ebd9dec0b3e217c2`: **137 pruebas, 137 pasaron, 0 fallaron**, Node.js 22.
+
+
+## IDs completos en efectos de mundo — 13/11/2026
+
+La auditoría detectó truncamientos silenciosos en los identificadores de hechos, actores, personajes y localizaciones de `world-effects.js`, además de las listas heredadas de efectos procesados. Se introduce validación estricta de IDs (máximo 160 caracteres) sin truncamiento; las localizaciones opcionales excesivas invalidan el efecto, y las comparaciones de hechos/localizaciones usan identificadores completos. Se añaden dos pruebas de regresión para evitar colisiones por prefijo en hechos, actores, personajes y localizaciones. GitHub Actions, ejecución 43495405489 sobre `0751680ea717757562f98c69de50f5796258f065`, terminó correctamente: **139 pruebas aprobadas**, doce suites, Node.js 22. Sigue siendo validación aislada; no integra el módulo en el runtime ni en Termux.
