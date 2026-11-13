@@ -57,7 +57,7 @@
     const seen = new Set();
     const result = [];
     for (const actor of actors.slice(0, MAX_ACTORS)) {
-      const id = clean(actor && actor.id);
+      const id = cleanId(actor && actor.id);
       if (!id || seen.has(id)) continue;
       seen.add(id);
       if (canPerceive(actor, stimulus)) result.push(id);
