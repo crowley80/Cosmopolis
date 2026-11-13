@@ -188,3 +188,17 @@ test("rechaza ubicaciones y emisores excesivos para no convertir conocimiento lo
   assert.deepEqual(normalized.map(item => item.id), ["valid"]);
   assert.deepEqual(normalized[0].evidenceIds, ["valid-evidence"]);
 });
+
+
+test("una inferencia rechaza evidencia inválida en vez de ignorarla", () => {
+  const base = [{
+    id: "e1", actorId: "player", content: "Huellas", type: "fact", source: "perceived"
+  }];
+  const result = Knowledge.recordInference(base, "player", {
+    id: "i-invalid-evidence", content: "Deducción",
+    evidenceIds: ["e1", "invalid-" + "x".repeat(121)]
+  });
+  assert.equal(result.applied, false);
+  assert.equal(result.reason, "missing-owned-evidence");
+  assert.equal(result.entries.length, 1);
+});
