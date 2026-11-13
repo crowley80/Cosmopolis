@@ -554,3 +554,8 @@ La ejecución GitHub Actions del commit 3b0495614d0df6a0462f1c06f25f9d6102a0fbb8
 ## Claves de entidad seguras en efectos tipados
 
 La revisión de world-effects.js detecta el riesgo de usar asignaciones ordinarias sobre objetos cuando IDs externos pueden coincidir con nombres heredados como `__proto__` o `constructor`. Las escrituras de relaciones y personajes ahora crean propiedades de datos propias de forma explícita y las lecturas verifican propiedad propia. Se añade una prueba de regresión con esos IDs para evitar alteraciones accidentales del prototipo. La batería pasa a 109 pruebas escritas.
+
+
+## CI verde tras endurecimiento de efectos — 13/11/2026
+
+GitHub Actions completó las doce suites en el commit f3ed516a008c47b0d0c0715144d6c03d2fb2a6e7: **109 pruebas, 109 pasaron, 0 fallaron**. Esta ejecución incluye la validación de referencias de efectos, el límite de 50 efectos por evento y la protección de IDs especiales (`__proto__`, `constructor`). La validación corresponde a módulos aislados en Node.js 22; no certifica integración en Termux.
