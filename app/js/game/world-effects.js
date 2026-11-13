@@ -23,13 +23,18 @@
   function clean(value, max = 160) {
     return typeof value === "string" ? value.trim().slice(0, max) : "";
   }
+  function cleanId(value) {
+    if (typeof value !== "string") return "";
+    const id = value.trim();
+    return id && id.length <= 160 ? id : "";
+  }
   function setOwn(target, key, value) {
     Object.defineProperty(target, key, { value, enumerable: true, configurable: true, writable: true });
   }
 
   function unique(values) {
     return Array.isArray(values)
-      ? Array.from(new Set(values.map(value => clean(value)).filter(Boolean))).slice(-MAX_PROCESSED)
+      ? Array.from(new Set(values.map(cleanId).filter(Boolean))).slice(-MAX_PROCESSED)
       : [];
   }
 
@@ -48,15 +53,15 @@
 
     const rawId = typeof effect.id === "string" ? effect.id.trim() : "";
     const rawCauseEventId = typeof effect.causeEventId === "string" ? effect.causeEventId.trim() : "";
-    const id = clean(rawId);
+    const id = cleanId(rawId);
     const type = clean(effect.type, 80);
-    const causeEventId = clean(rawCauseEventId);
+    const causeEventId = cleanId(rawCauseEventId);
     // IDs são rejeitados, nunca truncados: truncar poderia colidir com outra operação.
     if (!id || rawId.length > 160 || !TYPES.has(type) || !causeEventId || rawCauseEventId.length > 160) {
       return rejected("invalid-effect");
     }
     if (processed.includes(id) || events.some(event =>
-      event && Array.isArray(event.appliedEffectIds) && event.appliedEffectIds.some(value => clean(value) === id)
+      event && Array.isArray(event.appliedEffectIds) && event.appliedEffectIds.some(value => cleanId(value) === id)
     )) return rejected("duplicate-effect");
 
     const eventIndex = events.findIndex(event =>
@@ -73,10 +78,11 @@
     const tick = next.clock.tick;
 
     if (type === "fact.add") {
-      const factId = clean(effect.factId);
+      const factId = cleanId(effect.factId);
       const content = clean(effect.content, 2000);
       const visibility = clean(effect.visibility, 20) || "local";
-      const locationId = clean(effect.locationId);
+      const locationId = effect.locationId == null ? "" : cleanId(effect.locationId);
+      if (effect.locationId != null && !locationId) return rejected("invalid-fact");
       const locations = object(source.locations) ? source.locations : {};
       if (!factId || !content || !["public", "local", "private", "secret"].includes(visibility)) {
         return rejected("invalid-fact");
@@ -85,7 +91,7 @@
         return rejected("fact-location-not-found");
       }
       const facts = Array.isArray(source.facts) ? source.facts.slice() : [];
-      if (facts.some(fact => fact && clean(fact.id) === factId)) return rejected("duplicate-fact");
+      if (facts.some(fact => fact && typeof fact.id === "string" && fact.id.trim() === factId)) return rejected("duplicate-fact");
       facts.push({
         id: factId,
         content,
@@ -96,8 +102,8 @@
       });
       next.facts = facts;
     } else if (type === "relationship.adjust") {
-      const fromId = clean(effect.fromActorId);
-      const toId = clean(effect.toActorId);
+      const fromId = cleanId(effect.fromActorId);
+      const toId = cleanId(effect.toActorId);
       const axis = clean(effect.axis, 40);
       const delta = effect.delta;
       if (!fromId || !toId || fromId === toId || !AXES.has(axis) ||
@@ -118,15 +124,16 @@
       setOwn(relationships, fromId, outgoing);
       next.relationships = relationships;
     } else if (type === "character.move") {
-      const characterId = clean(effect.characterId);
-      const toLocationId = clean(effect.toLocationId);
-      const fromLocationId = clean(effect.fromLocationId);
+      const characterId = cleanId(effect.characterId);
+      const toLocationId = cleanId(effect.toLocationId);
+      const fromLocationId = effect.fromLocationId == null ? "" : cleanId(effect.fromLocationId);
+      if (effect.fromLocationId != null && !fromLocationId) return rejected("invalid-character-move");
       const characters = object(source.characters) ? { ...source.characters } : null;
       const locations = object(source.locations) ? source.locations : {};
       if (!characterId || !toLocationId || !characters || !Object.prototype.hasOwnProperty.call(characters, characterId) || !object(characters[characterId]) ||
           !Object.prototype.hasOwnProperty.call(locations, toLocationId)) return rejected("invalid-character-move");
       const character = { ...characters[characterId] };
-      if (fromLocationId && clean(character.locationId) !== fromLocationId) return rejected("character-location-mismatch");
+      if (fromLocationId && cleanId(character.locationId) !== fromLocationId) return rejected("character-location-mismatch");
       character.locationId = toLocationId;
       setOwn(characters, characterId, character);
       next.characters = characters;
