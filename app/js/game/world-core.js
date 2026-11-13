@@ -60,7 +60,14 @@
         const id = operationId.trim();
 
         if (next.processedOperations.includes(id)) {
-            return { world: next, applied: false, tick: next.clock.tick };
+            return { world: next, applied: false, reason: 'duplicate-operation', tick: next.clock.tick };
+        }
+
+        const requestedEventId = isObject(event) && typeof event.id === 'string' && event.id.trim()
+            ? event.id.trim()
+            : id;
+        if (next.events.some(existing => existing && existing.id === requestedEventId)) {
+            return { world: next, applied: false, reason: 'duplicate-event-id', tick: next.clock.tick };
         }
 
         next.clock.tick += 1;
@@ -85,7 +92,7 @@
             if (next.events.length > MAX_EVENTS) next.events = next.events.slice(-MAX_EVENTS);
         }
 
-        return { world: next, applied: true, tick: next.clock.tick };
+        return { world: next, applied: true, reason: null, tick: next.clock.tick };
     }
 
     const api = Object.freeze({
