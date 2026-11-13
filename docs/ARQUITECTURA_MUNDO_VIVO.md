@@ -578,3 +578,8 @@ Se endurecen dos contratos: fact.add rechaza locationId si no existe en world.lo
 ## Corrección de prueba de referencias completas — 13/11/2026
 
 La ejecución CI de 112 pruebas detectó un único test de normalización que aún enviaba solo dos de los tres efectos registrados en el evento. Se corrige el conjunto de entrada para incluir también fact-2 y seguir verificando la deduplicación/limpieza. No cambia el contrato de producción: la resolución aplicada debe enumerar exactamente todos los efectos existentes. Reejecutar CI.
+
+
+## Validación profunda de payloads de propuestas NPC — 13/11/2026
+
+Se endurece npc-proposal.js para que el payload estructurado no pueda introducir objetos arbitrarios, ciclos, prototipos especiales ni estructuras desmesuradas en el estado del mundo. La copia admite solo valores JSON-like, arrays y objetos planos, con profundidad máxima 3, 20 elementos/propiedades por contenedor, 100 nodos, cadenas de 500 caracteres y rechazo de claves peligrosas. La copia es profunda y no comparte referencias con la propuesta. Se añaden cuatro pruebas; la batería pasa de 112 a **116 pruebas escritas**. Pendiente CI.
