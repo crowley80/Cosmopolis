@@ -1271,3 +1271,12 @@ Se añade `docs/PLAN_PRUEBAS_MUNDO_VIVO.md` como complemento ejecutable de la ar
 No se afirma que estas pruebas estén implementadas ni ejecutadas. Se mantiene la precaución de no integrar código de runtime hasta reconciliar esta rama con la copia vigente de Termux, que contiene avances posteriores al último commit remoto consultado.
 
 Estado: arquitectura y criterios de aceptación documentados; implementación pendiente de sincronización segura.
+
+
+## Auditoría preliminar de persistencia — 13 de noviembre de 2026
+
+Se añade `docs/AUDITORIA_PERSISTENCIA_REMOTA.md` tras revisar estáticamente `character.js`, `save.js`, `session.js` y `app.js` en la instantánea remota. Se aclara que `Character.create()` no borra toda la partida: `Save.save()` conserva las propiedades superiores, aunque la edición sí reemplaza el objeto completo del personaje. También se identifican la ausencia de idempotencia en `Session.addAction()`, el orden generación→persistencia, la fusión superficial de relaciones y el carácter destructivo de `Save.replace()`.
+
+Los hallazgos son preliminares porque la rama remota no incluye los últimos cambios de Termux. No se modifica runtime ni se afirma que estos hallazgos estén verificados en la copia local actual. La prioridad técnica pasa a ser reconciliar el código vigente y después cubrir edición de personaje, reintentos, relaciones y guardado con pruebas antes de implementar el reloj del mundo.
+
+Estado: auditoría estática remota documentada; verificación local y correcciones pendientes.
