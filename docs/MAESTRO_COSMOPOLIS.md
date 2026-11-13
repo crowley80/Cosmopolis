@@ -1426,3 +1426,10 @@ Se añaden nueve pruebas escritas. La batería documentada pasa de 75 a 84 prueb
 Se crea `docs/PLAN_INTEGRACION_MUNDO_VIVO.md` con los puntos de entrada verificados de la instantánea remota y un orden de integración por etapas. Incluye reconciliación obligatoria con Termux, persistencia idempotente, protección de conocimiento, percepción, scheduler, iniciativas, resolución y efectos tipados, además de criterios para la primera partida. Se documentan los riesgos de `Session.addAction` sin operationId, duplicidad de historiales y spreads en `Narrator.buildMessages`.
 
 Es documentación basada en la instantánea de la rama remota, no una modificación del runtime. Se mantiene la precaución de no sobrescribir la copia Termux, que contiene cambios más recientes.
+
+
+## Integración de propuestas y resolución NPC — 13/11/2026
+
+Se añade `scripts/test-npc-event-lifecycle.js` con cuatro pruebas integradas entre los módulos de propuesta y resolución. Verifica conservación de causalidad, idempotencia de reintentos, irreversibilidad de estados terminales y ausencia de mutaciones implícitas del mundo. La batería documentada pasa de 84 a 88 pruebas escritas; el comando completo queda actualizado en `docs/PLAN_PRUEBAS_MUNDO_VIVO.md`.
+
+Estas pruebas no se han ejecutado en checkout real. Cubren solo el encadenamiento de módulos puros, no el runtime ni la aplicación de efectos de dominio.
