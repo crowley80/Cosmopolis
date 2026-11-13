@@ -106,3 +106,17 @@ test('normaliza IDs procesados heredados descartando los que superan el límite'
     const result = World.normalize({ processedOperations: ['valid', oversized] });
     assert.deepEqual(result.processedOperations, ['valid']);
 });
+
+test('rechaza avanzar más allá del máximo entero seguro sin mutar el mundo', () => {
+    const original = {
+        clock: { tick: Number.MAX_SAFE_INTEGER },
+        events: [{ id: 'last', tick: Number.MAX_SAFE_INTEGER }]
+    };
+    const result = World.applyStep(original, 'next-operation', 'no debe avanzar');
+    assert.equal(result.applied, false);
+    assert.equal(result.reason, 'tick-overflow');
+    assert.equal(result.tick, Number.MAX_SAFE_INTEGER);
+    assert.equal(result.world.clock.tick, Number.MAX_SAFE_INTEGER);
+    assert.equal(result.world.events.length, 1);
+    assert.equal(result.world.processedOperations.includes('next-operation'), false);
+});
