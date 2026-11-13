@@ -143,7 +143,7 @@ test("rechaza IDs de conocimiento excesivos y conserva la primera copia duplicad
 });
 
 test("no trunca IDs compuestos al comunicar conocimiento", () => {
-  const sourceId = "k".repeat(100);
+  const sourceId = "k".repeat(110);
   const entries = [{
     id: sourceId, actorId: "speaker", content: "Información", type: "fact", source: "perceived"
   }];
