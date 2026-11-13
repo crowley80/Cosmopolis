@@ -17,6 +17,12 @@
     return typeof value === "string" ? value.trim().slice(0, max) : "";
   }
 
+  function cleanId(value) {
+    if (typeof value !== "string") return "";
+    const id = value.trim();
+    return id && id.length <= 120 ? id : "";
+  }
+
   function normalizeEntry(entry) {
     if (!entry || typeof entry !== "object") return null;
     const rawId = typeof entry.id === "string" ? entry.id.trim() : "";
@@ -33,11 +39,11 @@
     return {
       id, actorId, content, type, source, confidence,
       tick: Number.isInteger(entry.tick) && entry.tick >= 0 ? entry.tick : 0,
-      fromActorId: cleanText(entry.fromActorId, 120) || null,
-      locationId: cleanText(entry.locationId, 120) || null,
+      fromActorId: entry.fromActorId == null ? null : (cleanId(entry.fromActorId) || null),
+      locationId: entry.locationId == null ? null : (cleanId(entry.locationId) || null),
       channel: ["sight", "hearing", "smell", "touch", "other"].includes(entry.channel) ? entry.channel : null,
       evidenceIds: Array.isArray(entry.evidenceIds)
-        ? Array.from(new Set(entry.evidenceIds.map(id => cleanText(id, 120)).filter(Boolean))).slice(0, 20)
+        ? Array.from(new Set(entry.evidenceIds.map(cleanId).filter(Boolean))).slice(0, 20)
         : []
     };
   }
@@ -64,7 +70,7 @@
 
   // Construye una vista mínima para UN actor. No acepta ni serializa el estado del mundo.
   function buildKnowledgeView(entries, actorId) {
-    const id = cleanText(actorId, 120);
+    const id = cleanId(actorId);
     if (!id) return { actorId: "", knowledge: [] };
     const knowledge = normalizeKnowledge(entries)
       .filter(entry => entry.actorId === id)
@@ -80,13 +86,14 @@
   // Comunicación explícita: solo transmite IDs elegidos que el emisor conoce.
   // No copia el resto de su memoria ni convierte rumores en hechos.
   function communicateKnowledge(entries, fromActorId, toActorId, knowledgeIds, tick) {
-    const from = cleanText(fromActorId, 120);
-    const to = cleanText(toActorId, 120);
+    const from = cleanId(fromActorId);
+    const to = cleanId(toActorId);
     const ids = Array.isArray(knowledgeIds)
-      ? Array.from(new Set(knowledgeIds.map(id => cleanText(id, 120)).filter(Boolean)))
+      ? Array.from(new Set(knowledgeIds.map(cleanId).filter(Boolean)))
       : [];
+    const invalidRequestedId = Array.isArray(knowledgeIds) && knowledgeIds.some(id => !cleanId(id));
     const current = normalizeKnowledge(entries);
-    if (!from || !to || from === to || !ids.length) {
+    if (!from || !to || from === to || !ids.length || invalidRequestedId) {
       return { applied: false, reason: "invalid-transfer", entries: current, transferredIds: [] };
     }
     const owned = new Map(current.filter(item => item.actorId === from).map(item => [item.id, item]));
@@ -125,10 +132,10 @@
   // Una inferencia requiere evidencia que ya pertenezca al actor.
   // La función etiqueta la deducción, pero no pretende demostrar que sea cierta.
   function recordInference(entries, actorId, inference) {
-    const actor = cleanText(actorId, 120);
+    const actor = cleanId(actorId);
     const current = normalizeKnowledge(entries);
     const evidenceIds = inference && Array.isArray(inference.evidenceIds)
-      ? Array.from(new Set(inference.evidenceIds.map(id => cleanText(id, 120)).filter(Boolean)))
+      ? Array.from(new Set(inference.evidenceIds.map(cleanId).filter(Boolean)))
       : [];
     const ownedIds = new Set(current.filter(item => item.actorId === actor).map(item => item.id));
     if (!actor || !evidenceIds.length || evidenceIds.some(id => !ownedIds.has(id))) {
@@ -147,7 +154,7 @@
   // nunca se pasan a esta función ni se incorporan implícitamente.
   function buildSceneKnowledge(entries, actorId, locationId) {
     const view = buildKnowledgeView(entries, actorId);
-    const location = cleanText(locationId, 120);
+    const location = cleanId(locationId);
     return {
       actorId: view.actorId,
       locationId: location || null,
