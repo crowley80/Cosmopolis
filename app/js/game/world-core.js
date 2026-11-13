@@ -78,7 +78,9 @@
                 const tickA = Number.isSafeInteger(a && a.tick) ? a.tick : 0;
                 const tickB = Number.isSafeInteger(b && b.tick) ? b.tick : 0;
                 if (tickA !== tickB) return tickA - tickB;
-                return String(a && a.id || '').localeCompare(String(b && b.id || ''));
+                const idA = String(a && a.id || '');
+                const idB = String(b && b.id || '');
+                return idA < idB ? -1 : (idA > idB ? 1 : 0);
             });
             if (next.events.length > MAX_EVENTS) next.events = next.events.slice(-MAX_EVENTS);
         }
