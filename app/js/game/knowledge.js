@@ -32,7 +32,10 @@
       id, actorId, content, type, source, confidence,
       tick: Number.isInteger(entry.tick) && entry.tick >= 0 ? entry.tick : 0,
       fromActorId: cleanText(entry.fromActorId, 120) || null,
-      locationId: cleanText(entry.locationId, 120) || null
+      locationId: cleanText(entry.locationId, 120) || null,
+      evidenceIds: Array.isArray(entry.evidenceIds)
+        ? Array.from(new Set(entry.evidenceIds.map(id => cleanText(id, 120)).filter(Boolean))).slice(0, 20)
+        : []
     };
   }
 
@@ -70,6 +73,69 @@
     return { actorId: id, knowledge };
   }
 
+  // Comunicación explícita: solo transmite IDs elegidos que el emisor conoce.
+  // No copia el resto de su memoria ni convierte rumores en hechos.
+  function communicateKnowledge(entries, fromActorId, toActorId, knowledgeIds, tick) {
+    const from = cleanText(fromActorId, 120);
+    const to = cleanText(toActorId, 120);
+    const ids = Array.isArray(knowledgeIds)
+      ? Array.from(new Set(knowledgeIds.map(id => cleanText(id, 120)).filter(Boolean)))
+      : [];
+    const current = normalizeKnowledge(entries);
+    if (!from || !to || from === to || !ids.length) {
+      return { applied: false, reason: "invalid-transfer", entries: current, transferredIds: [] };
+    }
+    const owned = new Map(current.filter(item => item.actorId === from).map(item => [item.id, item]));
+    const selected = ids.map(id => owned.get(id)).filter(Boolean);
+    if (!selected.length) {
+      return { applied: false, reason: "no-authorized-knowledge", entries: current, transferredIds: [] };
+    }
+    let nextEntries = current;
+    const transferredIds = [];
+    for (const item of selected) {
+      const newId = "comm:" + item.id + ":" + to + ":" +
+        (Number.isInteger(tick) && tick >= 0 ? tick : 0);
+      const result = recordKnowledge(nextEntries, {
+        ...item,
+        id: newId,
+        actorId: to,
+        source: "communicated",
+        fromActorId: from,
+        tick: Number.isInteger(tick) && tick >= 0 ? tick : 0,
+        evidenceIds: item.evidenceIds
+      });
+      nextEntries = result.entries;
+      if (result.applied) transferredIds.push(newId);
+    }
+    return {
+      applied: transferredIds.length > 0,
+      reason: transferredIds.length ? null : "already-transferred",
+      entries: nextEntries,
+      transferredIds
+    };
+  }
+
+  // Una inferencia requiere evidencia que ya pertenezca al actor.
+  // La función etiqueta la deducción, pero no pretende demostrar que sea cierta.
+  function recordInference(entries, actorId, inference) {
+    const actor = cleanText(actorId, 120);
+    const current = normalizeKnowledge(entries);
+    const evidenceIds = inference && Array.isArray(inference.evidenceIds)
+      ? Array.from(new Set(inference.evidenceIds.map(id => cleanText(id, 120)).filter(Boolean)))
+      : [];
+    const ownedIds = new Set(current.filter(item => item.actorId === actor).map(item => item.id));
+    if (!actor || !evidenceIds.length || evidenceIds.some(id => !ownedIds.has(id))) {
+      return { applied: false, reason: "missing-owned-evidence", entries: current };
+    }
+    return recordKnowledge(current, {
+      ...inference,
+      actorId: actor,
+      type: "belief",
+      source: "inferred",
+      evidenceIds
+    });
+  }
+
   // Solo conocimiento del actor y de la localización actual; los datos canónicos
   // nunca se pasan a esta función ni se incorporan implícitamente.
   function buildSceneKnowledge(entries, actorId, locationId) {
@@ -85,7 +151,7 @@
   }
 
   return Object.freeze({
-    normalizeKnowledge, recordKnowledge, buildKnowledgeView, buildSceneKnowledge,
+    normalizeKnowledge, recordKnowledge, communicateKnowledge, recordInference, buildKnowledgeView, buildSceneKnowledge,
     limits: Object.freeze({ maxEntries: MAX_ENTRIES })
   });
 });
