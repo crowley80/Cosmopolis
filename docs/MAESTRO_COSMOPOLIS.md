@@ -1595,3 +1595,8 @@ Se detectó que el scheduler recortaba IDs de agenda a 120 caracteres. Dos IDs d
 ## CI verde con límites estrictos de IDs del scheduler — 13/11/2026
 
 GitHub Actions completó la ejecución 43481478082 sobre el commit `d3306c1ed999fc2cfd1007ee3adc4e9c7c0d891e`: **125 pruebas, 125 pasaron, 0 fallaron**, en Node.js 22. La suite valida que el scheduler rechace IDs nuevos superiores a 120 caracteres, descarte IDs heredados fuera de límite y no permita que una cancelación excesiva afecte a otro evento por truncamiento. También incluye las dos regresiones que impiden resucitar eventos duplicados ya terminales. La validación es de módulos aislados en CI; no acredita integración en Termux ni en el runtime principal. La rama sigue siendo `work/arquitectura-mundo-vivo`.
+
+
+## Protección contra desbordamiento del tick lógico — 13/11/2026
+
+La auditoría de world-core.js detectó que incrementar el contador cuando ya valía Number.MAX_SAFE_INTEGER producía un tick no representable con precisión. applyStep ahora rechaza la operación con reason `tick-overflow` antes de modificar el tick, registrar operationId o añadir eventos. Se añade prueba de regresión que comprueba la ausencia de mutaciones. GitHub Actions, ejecución 43485470144 sobre `cb4708409fc4c6da2e1d2a07df944e83551bb84f`, terminó correctamente: doce suites, **126/126 pruebas aprobadas**, Node.js 22. Continúa siendo validación aislada, no integración en Termux/runtime.
