@@ -68,7 +68,8 @@
       .map(entry => ({
         id: entry.id, content: entry.content, status: entry.type,
         source: entry.source, confidence: entry.confidence, tick: entry.tick,
-        fromActorId: entry.fromActorId, locationId: entry.locationId
+        fromActorId: entry.fromActorId, locationId: entry.locationId,
+        evidenceIds: entry.evidenceIds.slice()
       }));
     return { actorId: id, knowledge };
   }
