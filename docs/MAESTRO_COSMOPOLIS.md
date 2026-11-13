@@ -1433,3 +1433,8 @@ Es documentación basada en la instantánea de la rama remota, no una modificaci
 Se añade `scripts/test-npc-event-lifecycle.js` con cuatro pruebas integradas entre los módulos de propuesta y resolución. Verifica conservación de causalidad, idempotencia de reintentos, irreversibilidad de estados terminales y ausencia de mutaciones implícitas del mundo. La batería documentada pasa de 84 a 88 pruebas escritas; el comando completo queda actualizado en `docs/PLAN_PRUEBAS_MUNDO_VIVO.md`.
 
 Estas pruebas no se han ejecutado en checkout real. Cubren solo el encadenamiento de módulos puros, no el runtime ni la aplicación de efectos de dominio.
+
+
+## CI para las pruebas del mundo vivo — 13/11/2026
+
+Se crea `.github/workflows/world-tests.yml` en la rama de trabajo. GitHub Actions ejecutará las once suites aisladas con Node.js 22 en pushes a la rama, pull requests a `main` o ejecución manual. El workflow está guardado, pero todavía no se ha verificado un run completado; no se declara que las pruebas hayan pasado.
