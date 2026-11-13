@@ -437,3 +437,8 @@ GitHub Actions completó las doce suites en el commit `e39e93fd8c12dfc646dd2da9c
 ## 33. Límites de identificadores en world-core
 
 Se añaden dos pruebas para rechazar IDs excesivos en operaciones/eventos y limpiar IDs heredados que superen 160 caracteres. La batería documentada queda en **121 pruebas escritas**.
+
+
+## CI verde con 121 pruebas — 13/11/2026
+
+GitHub Actions completó las doce suites en el commit `d216f14d62d700a03daefa477f1246d99bb128d6`: **121 pruebas, 121 pasaron, 0 fallaron** con Node.js 22. Incluye límites de 160 caracteres para operationId/event.id y limpieza de identificadores heredados excesivos. Sigue siendo una validación de módulos aislados, no de la integración en Termux.
