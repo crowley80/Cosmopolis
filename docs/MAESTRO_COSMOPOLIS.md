@@ -1356,3 +1356,11 @@ node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-pe
 
 Las pruebas están escritas, pero no se afirma que se hayan ejecutado en un checkout real ni en el teléfono. La rama remota sigue pendiente de reconciliación con la copia más reciente de Termux antes de cualquier integración.
 
+## Continuidad técnica — flujo perceptivo integrado en pruebas (13/11/2026)
+
+Se ha añadido `scripts/test-perception-pipeline.js`, con tres pruebas que conectan en memoria los módulos `perception-rules.js`, `perception.js` y `knowledge.js`. Comprueban que solo los actores elegibles reciben recuerdos, que una lista de visibilidad puede excluir a alguien presente y que cada canal sensorial produce recuerdos separados por actor.
+
+La batería documentada queda en 37 pruebas escritas: 7 del núcleo del mundo, 12 de conocimiento, 5 del adaptador de percepción, 10 de reglas perceptivas y 3 del flujo conjunto. El comando completo figura en `docs/PLAN_PRUEBAS_MUNDO_VIVO.md`.
+
+No se ha conectado nada a `app.js`, `narrator.js`, `session.js` ni `index.html`. Tampoco se han ejecutado las pruebas en un checkout real o en Termux. Los módulos siguen siendo experimentales y aislados; la reconciliación con la copia móvil continúa siendo requisito previo a la integración.
+
