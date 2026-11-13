@@ -164,3 +164,16 @@ La batería se amplía con cuatro contratos:
 - Inferencia trazable: una deducción solo se registra si sus evidencias pertenecen al actor y queda etiquetada como creencia inferida.
 
 La capa narrativa deberá expresar incertidumbre según tipo, fuente y confianza; estas funciones no deben presentar inferencias como hechos confirmados.
+
+
+## 11. Contratos de percepción
+
+El adaptador `app/js/game/perception.js` añade pruebas para:
+
+- registrar solo observaciones con autorización explícita del actor;
+- rechazar estímulos sin observadores declarados;
+- deduplicar el mismo estímulo para el mismo actor;
+- crear memorias separadas para dos observadores autorizados;
+- conservar localización sin calcular ni inventar alcance o línea de visión.
+
+La futura capa espacial deberá generar `observerIds` mediante reglas verificables de sentidos, distancia, obstáculos, atención y condiciones ambientales. La presencia física por sí sola no equivale a percepción.
