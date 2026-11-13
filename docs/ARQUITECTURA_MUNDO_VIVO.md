@@ -357,7 +357,7 @@ El módulo experimental `app/js/game/knowledge.js` separa los registros de conoc
 
 **Límite de seguridad:** el módulo no conoce la verdad canónica ni la consulta. Esto es deliberado: el motor que lo invoque debe decidir, con reglas comprobables, qué observó, recibió o pudo inferir cada actor. No se debe copiar el estado completo del mundo a una entrada de conocimiento ni confiar en instrucciones del prompt para ocultarlo. Un rumor permanece como rumor y una inferencia conserva su fuente.
 
-El módulo es experimental, no se carga desde `index.html` y no está conectado al narrador ni al guardado. Sus ocho pruebas están escritas, pero aún requieren ejecución en un checkout real y posterior validación en Termux.
+El módulo es experimental, no se carga desde `index.html` y no está conectado al narrador ni al guardado. Sus doce pruebas están escritas, pero aún requieren ejecución en un checkout real y posterior validación en Termux.
 
 
 
