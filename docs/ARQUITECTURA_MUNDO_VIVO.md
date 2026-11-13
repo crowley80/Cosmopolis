@@ -569,3 +569,8 @@ Se añade una prueba que elimina deliberadamente el registro global `processedEf
 ## CI verde con unicidad durable de efectos — 13/11/2026
 
 GitHub Actions completó las doce suites en el commit 5397518ca02c0ad1989369f0105eb5ddc9d853eb: **110 pruebas, 110 pasaron, 0 fallaron**. La ejecución incluye el caso que demuestra que los IDs de efecto siguen siendo únicos aunque se compacte el registro global, gracias a las referencias guardadas en cada evento causal. Validación en Node.js 22; integración en Termux pendiente.
+
+
+## Integridad de referencias de efectos y localizaciones — 13/11/2026
+
+Se endurecen dos contratos: fact.add rechaza locationId si no existe en world.locations; y world-event-resolution.js exige que la resolución applied enumere todos los efectos registrados en el evento causal, no solo un subconjunto válido. Se añaden dos pruebas de regresión y se ajusta el test de resolución completa para incluir las tres referencias registradas. La batería asciende a **112 pruebas escritas**. La validación CI queda pendiente.
