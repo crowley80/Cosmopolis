@@ -341,3 +341,8 @@ La batería documentada queda en **94 pruebas escritas**. La prueba está añadi
 ## Resolución de eventos heredados con IDs no normalizados
 
 Se añade una prueba en scripts/test-world-event-resolution.js para comprobar que un evento con espacios exteriores en su ID puede resolverse usando el ID normalizado, y que la transición persiste el identificador canónico. La batería documentada queda en **94 pruebas escritas**; no se afirma que se hayan ejecutado.
+
+
+## Incidencia CI: expectativa obsoleta del scheduler
+
+La ejecución de GitHub Actions sobre el commit c065a7c detectó 91/92 pruebas correctas y un fallo en scripts/test-world-scheduler.js: la prueba "limita la agenda y no usa el reloj de pared" esperaba e5, aunque la regla documentada y otra prueba exigen conservar los eventos más próximos e0–e499. Se corrige la expectativa a e0; el algoritmo de producción no se altera. El nuevo commit disparará otra ejecución. La batería en ese momento era de 92 pruebas; las nuevas pruebas añadidas después se incluyen en la siguiente ejecución.
