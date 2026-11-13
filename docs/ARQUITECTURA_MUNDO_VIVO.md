@@ -497,3 +497,10 @@ Se añaden dos pruebas de regresión. La suite del núcleo pasa a nueve pruebas 
 Se refuerza npc-proposal.js para que reconozca también IDs de eventos heredados con espacios exteriores. La propuesta genera un identificador canónico; antes de aceptarla, el módulo compara contra los IDs existentes tras trim(). Esto evita reintroducir una propuesta que ya exista bajo una representación equivalente.
 
 Se añade una prueba de regresión con un evento heredado. La batería total pasa a 93 pruebas escritas. Pendiente de ejecución en checkout real/CI; no se integra en el runtime ni modifica Termux.
+
+
+## Resolución de eventos con IDs heredados — 13/11/2026
+
+Se hace compatible world-event-resolution.js con eventos antiguos cuyo ID tenga espacios exteriores. La búsqueda compara el ID existente tras trim(), y al completar una transición guarda el identificador canónico. Así, una resolución válida no queda bloqueada por diferencias de formato heredadas y el evento queda normalizado para operaciones posteriores.
+
+Se añade una prueba de regresión. La batería total alcanza 94 pruebas escritas; ejecución real pendiente. No se aplican efectos de dominio ni se conecta el módulo al runtime.
