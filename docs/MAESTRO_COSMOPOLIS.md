@@ -1480,3 +1480,8 @@ GitHub Actions ejecutó las once suites con Node.js 22 sobre el commit 90cd4cf1c
 ## Efectos de dominio tipados — 13/11/2026
 
 Se añaden `app/js/game/world-effects.js` y `scripts/test-world-effects.js`. El módulo aplica solo efectos tipados `fact.add`, `relationship.adjust` y `character.move`, exige un evento causal pendiente, IDs idempotentes, valida ejes y límites de relación, comprueba personajes/localizaciones y conserva referencias de efectos en el evento causal. No acepta rutas arbitrarias ni muta el estado original. Se escriben doce pruebas nuevas; la batería pasa de 94 a 106. Se incorpora la suite al workflow CI. Todo sigue aislado, sin integración en Termux/runtime; el esquema de entidades debe reconciliarse antes de activar el módulo.
+
+
+## Verificación de efectos antes de cerrar eventos — 13/11/2026
+
+Se endureció world-event-resolution.js: un evento solo puede pasar a applied si cada ID incluido en effectIds aparece previamente en event.appliedEffectIds, registro que crea world-effects.js al aplicar efectos tipados. Se añade una prueba contra referencias inventadas y se amplía la prueba integrada NPC para ejecutar primero fact.add y después resolver el evento. La batería pasa de 106 a 107 pruebas escritas. Pendiente CI para confirmar la nueva cadena; aún no está integrada en Termux/runtime.
