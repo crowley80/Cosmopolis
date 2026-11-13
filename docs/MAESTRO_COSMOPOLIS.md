@@ -1610,3 +1610,8 @@ Se detectó otro riesgo de colisión por truncamiento: world-effects.js recortab
 ## Coherencia del ID compuesto de propuesta NPC — 13/11/2026
 
 La auditoría detectó que npc-proposal.js permitía un ID de propuesta de hasta 160 caracteres y luego le añadía el prefijo `npc-proposal:` (13 caracteres), generando un ID de evento de hasta 173, incompatible con el límite global de 160 del núcleo. Ahora se rechazan propuestas cuyo ID supere 147 caracteres; el máximo permitido produce exactamente un ID de evento de 160. Se añade prueba de límite y frontera. CI GitHub Actions, ejecución 43485723310 sobre `c27f529f8e2a0216a63d50e5d2e441f737b4f448`: **130 pruebas, 130 pasaron, 0 fallaron**, Node.js 22. Sigue siendo validación de módulos aislados.
+
+
+## Integridad de IDs y duplicados en memoria NPC — 13/11/2026
+
+Se endurece knowledge.js: las entradas con IDs de conocimiento o actor superiores a 120 caracteres se rechazan en lugar de truncarse; al normalizar duplicados se conserva la primera entrada canónica y no se permite que una copia posterior sobrescriba su contenido o tipo. La comunicación calcula el ID compuesto antes de guardar y rechaza el caso si supera 120 caracteres, evitando colisiones por truncamiento. Se añaden dos pruebas. La primera ejecución detectó que el ID de prueba aún cabía en el límite; se corrigió el fixture (110 caracteres) y la ejecución final 43485914684 sobre `250f6af2e9c4e27cb1b9722810265652e544599a` terminó verde: **132 pruebas, 132 pasaron, 0 fallaron**, Node.js 22. Módulos aislados, no runtime integrado.
