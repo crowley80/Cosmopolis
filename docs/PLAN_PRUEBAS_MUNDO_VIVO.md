@@ -298,7 +298,7 @@ No se afirma ejecución en checkout real ni en Termux. El módulo registra estad
 
 Se añade `scripts/test-npc-event-lifecycle.js` con cuatro pruebas de integración entre `npc-proposal.js` y `world-event-resolution.js`: conservación de actor/causa/localización de principio a fin, reintentos idempotentes sin duplicados, imposibilidad de reabrir un evento cancelado y ausencia de mutaciones implícitas en hechos del mundo.
 
-La batería documentada asciende a **88 pruebas escritas** (84 anteriores + 4 nuevas). Comando completo:
+La batería documentada asciende a **89 pruebas escritas** (84 anteriores + 4 de ciclo causal + 1 de equidad del cursor). Comando completo:
 
 ```sh
 node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js scripts/test-perception-rules.js scripts/test-perception-pipeline.js scripts/test-world-scheduler.js scripts/test-npc-initiative.js scripts/test-npc-context.js scripts/test-npc-proposal.js scripts/test-world-event-resolution.js scripts/test-npc-event-lifecycle.js
@@ -312,3 +312,8 @@ No se afirma ejecución en checkout real ni en Termux. Esta suite comprueba la i
 Se añade `.github/workflows/world-tests.yml`. En cada push a `work/arquitectura-mundo-vivo`, en pull requests hacia `main` o mediante ejecución manual, GitHub Actions prepara Node.js 22 y ejecuta las once suites aisladas con `node --test`. Esto permite que el repositorio ejecute la batería en un checkout real sin depender del entorno Android.
 
 El workflow acaba de incorporarse; todavía no se dispone aquí de un resultado de ejecución. No debe considerarse la batería aprobada hasta consultar un run completado y revisar su salida.
+
+
+## 22. Regresión de equidad del cursor NPC
+
+Se añade una prueba a `scripts/test-npc-initiative.js` que cubre el caso en que el orden por cooldown difiere del orden alfabético de IDs. La implementación ahora avanza desde el actor exacto seleccionado en la lista ordenada, en lugar de buscar un ID lexicográficamente mayor. La batería documentada suma **89 pruebas escritas**. La ejecución queda pendiente del run de GitHub Actions.
