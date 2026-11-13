@@ -1328,3 +1328,10 @@ Se añaden cuatro pruebas para verificar transmisión selectiva, conservación d
 Se ha añadido `app/js/game/perception.js` y `scripts/test-perception.js`. El adaptador transforma observaciones explícitamente autorizadas para un actor en recuerdos de fuente `perceived`, con IDs estables por estímulo y observador. No calcula visión ni audición: exige que el motor espacial proporcione `observerIds` después de comprobar alcance, obstáculos, sentidos y circunstancias. Así se evita asumir que todos los personajes conocen todo lo que ocurre en su localización.
 
 Se han escrito cinco pruebas para autorización, rechazo de observaciones no autorizadas, deduplicación y separación de memorias entre actores. El módulo depende de `CosmopolisKnowledge` y permanece aislado, sin carga en la aplicación. Pendiente ejecutar la batería en checkout real y validar el futuro motor espacial.
+
+
+## Orden de integración y ejecución de pruebas — 13 de noviembre de 2026
+
+Se ha documentado el orden de dependencias previsto: núcleo del mundo, conocimiento, percepción, motor espacial, motor de turno y finalmente narrador filtrado. `perception.js` depende de `CosmopolisKnowledge`, por lo que el módulo de conocimiento debe cargarse antes. No se han añadido etiquetas de carga ni cambios en la aplicación.
+
+Comando preparado para ejecutar las suites desde la raíz del repositorio: `node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js`. Es una instrucción documentada; no se declara ejecutada en el checkout ni en Termux.
