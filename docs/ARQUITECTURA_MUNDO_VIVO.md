@@ -447,3 +447,12 @@ El límite de confianza sigue siendo importante: `sceneView.description` debe se
 La revisión directa del archivo detectó dos discrepancias entre el contrato documentado y la implementación: un escape literal de salto de línea en el comparador de ordenación, que podía invalidar la sintaxis JavaScript, y la ausencia del rechazo por capacidad que ya esperaba la prueba correspondiente. Se corrigen ambos puntos en `app/js/game/world-scheduler.js`: el comparador vuelve a tener saltos de línea reales y `scheduleEvent` devuelve `reason: "capacity"` sin modificar la agenda cuando ya contiene 500 entradas. La corrección mantiene los eventos existentes y no introduce reloj real ni ejecución en segundo plano.
 
 La prueba de capacidad ya estaba presente en `scripts/test-world-scheduler.js`; queda pendiente ejecutarla en un checkout real de la rama. Esta corrección está en la rama aislada y no se ha copiado a Termux ni integrado en `main`.
+
+
+## 23. Validación causal de propuestas NPC
+
+Se añade `app/js/game/npc-proposal.js`, un módulo puro que registra propuestas estructuradas de iniciativa como eventos pendientes sin invocar IA ni redactar narración. Exige ID de propuesta, actor, tick idéntico al tick lógico actual, causa explícita, tipo y descripción. También exige que el actor figure en la lista explícita de elegibles y que siga vivo, sea autónomo, no sea el jugador y conserve un objetivo activo. Si se proporciona localización, debe coincidir con la del actor.
+
+La operación es idempotente por ID de propuesta mientras permanezca en el registro de las últimas 500 propuestas, y también comprueba el ID del evento resultante. Conserva campos desconocidos del mundo y no muta el objeto recibido. Rechaza la operación si el historial de eventos ya alcanza 200 entradas, sin descartar eventos existentes. Cada evento queda marcado como pendiente, con actor, causa, localización y payload estructurado.
+
+El módulo no decide si la acción propuesta es físicamente posible ni si su consecuencia es verdadera; eso corresponde al futuro validador de acciones y al motor de mundo. Tampoco se conecta todavía al runtime.
