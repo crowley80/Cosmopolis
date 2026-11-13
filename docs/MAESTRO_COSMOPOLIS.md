@@ -1515,3 +1515,8 @@ GitHub Actions completó las doce suites en el commit f3ed516a008c47b0d0c0715144
 ## Unicidad durable de IDs de efecto — 13/11/2026
 
 Se añade una prueba de recuperación para comprobar que un ID de efecto no puede reutilizarse en otro evento incluso si el registro global processedEffects se ha compactado o perdido: el evento causal conserva appliedEffectIds y actúa como referencia durable. La batería pasa de 109 a 110 pruebas escritas. Pendiente CI.
+
+
+## CI verde con unicidad durable de efectos — 13/11/2026
+
+GitHub Actions completó las doce suites en el commit 5397518ca02c0ad1989369f0105eb5ddc9d853eb: **110 pruebas, 110 pasaron, 0 fallaron**. La ejecución incluye el caso que demuestra que los IDs de efecto siguen siendo únicos aunque se compacte el registro global, gracias a las referencias guardadas en cada evento causal. Validación en Node.js 22; integración en Termux pendiente.
