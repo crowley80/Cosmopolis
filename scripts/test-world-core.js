@@ -94,3 +94,15 @@ test('un ID de evento compuesto solo por espacios usa operationId normalizado', 
   assert.equal(result.applied, true);
   assert.equal(result.world.events[0].id, 'op-space');
 });
+
+test('rechaza operationId y event.id mayores de 160 caracteres', () => {
+    const oversized = 'x'.repeat(World.MAX_ID_LENGTH + 1);
+    assert.throws(() => World.applyStep({}, oversized), /operationId/);
+    assert.throws(() => World.applyStep({}, 'valid-op', { id: oversized }), /event.id/);
+});
+
+test('normaliza IDs procesados heredados descartando los que superan el límite', () => {
+    const oversized = 'x'.repeat(World.MAX_ID_LENGTH + 1);
+    const result = World.normalize({ processedOperations: ['valid', oversized] });
+    assert.deepEqual(result.processedOperations, ['valid']);
+});
