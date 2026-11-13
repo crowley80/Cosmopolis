@@ -1650,3 +1650,8 @@ Se elimina el truncamiento de IDs en `perception-rules.js`: actores, localizacio
 ## Referencias causales inválidas al cerrar eventos — 13/11/2026
 
 `world-event-resolution.js` ya no descarta silenciosamente referencias de efecto excesivas o mal formadas que lleguen en una resolución nueva. Si el campo `effectIds` está presente, debe ser una lista y no puede contener IDs no textuales ni superiores a 160 caracteres; de lo contrario, la transición se rechaza con `invalid-effect-reference` y el evento permanece pendiente. Se conserva la normalización de entradas vacías y duplicadas, para mantener compatibilidad con el contrato existente. La primera ejecución detectó una expectativa antigua que permitía filtrar una referencia inválida; se actualizó esa prueba al contrato estricto. CI final 43495782946 sobre `99a653563df77c782a62c9254df5106ee33703f0`: **144/144 pruebas aprobadas**, doce suites, Node.js 22. Validación aislada; no integración en Termux.
+
+
+## Evitar convertir localizaciones vacías en recuerdos globales — 13/11/2026
+
+`knowledge.js` rechazaba localizaciones/emisores demasiado largos, pero permitía cadenas vacías explícitas y las normalizaba a `null`. En el caso de `locationId`, eso podía convertir accidentalmente un recuerdo local en uno global. Ahora cualquier identificador opcional proporcionado debe ser válido y no vacío; `null`/ausencia siguen representando explícitamente un dato global o sin emisor. Se añade una prueba que cubre ambos campos. CI GitHub Actions, ejecución 43495893450 sobre `b290329c99af0d7061c129406c3dcc94a099cb01`, terminó correctamente: **145/145 pruebas aprobadas**, doce suites, Node.js 22. Validación de módulos aislados; no integra todavía el sistema en la partida ni en Termux.
