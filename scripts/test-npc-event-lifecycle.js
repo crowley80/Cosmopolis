@@ -2,6 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const Proposal = require("../app/js/game/npc-proposal.js");
 const Resolution = require("../app/js/game/world-event-resolution.js");
+const Effects = require("../app/js/game/world-effects.js");
 
 const actor = {
   id: "mara", personalGoal: "Recuperar el mapa", goalStatus: "active",
@@ -18,9 +19,14 @@ const options = { actors: [actor], eligibleActorIds: ["mara"] };
 test("flujo causal completo conserva actor, causa y localización", () => {
   const created = Proposal.registerNpcProposal(initial, proposal, options);
   assert.equal(created.applied, true);
-  const resolved = Resolution.resolveEvent(created.world, created.event.id, "effect-op-1", {
+  const effect = Effects.applyEffect(created.world, {
+    id: "effect-clue-map", type: "fact.add", causeEventId: created.event.id,
+    factId: "clue-map-fragment", content: "Un fragmento del mapa aparece en el puerto"
+  });
+  assert.equal(effect.applied, true);
+  const resolved = Resolution.resolveEvent(effect.world, created.event.id, "effect-op-1", {
     outcome: "applied", summary: "La búsqueda produce una pista verificable",
-    effectIds: ["clue-map-fragment"]
+    effectIds: ["effect-clue-map"]
   });
   assert.equal(resolved.applied, true);
   assert.equal(resolved.event.actorId, "mara");
@@ -56,10 +62,14 @@ test("un evento cancelado no puede presentarse después como aplicado", () => {
 
 test("no altera el estado inicial ni aplica efectos implícitamente", () => {
   const created = Proposal.registerNpcProposal(initial, proposal, options);
-  const resolved = Resolution.resolveEvent(created.world, created.event.id, "apply-2", {
+  const effected = Effects.applyEffect(created.world, {
+    id: "fact-9", type: "fact.add", causeEventId: created.event.id,
+    factId: "fact-9", content: "La pista queda registrada"
+  });
+  const resolved = Resolution.resolveEvent(effected.world, created.event.id, "apply-2", {
     outcome: "applied", summary: "Referencia a efecto validado", effectIds: ["fact-9"]
   });
   assert.deepEqual(initial.events, []);
-  assert.deepEqual(resolved.world.facts, []);
+  assert.equal(resolved.world.facts.length, 1);
   assert.deepEqual(resolved.event.resolution.effectIds, ["fact-9"]);
 });
