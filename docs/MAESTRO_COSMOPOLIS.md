@@ -1485,3 +1485,8 @@ Se añaden `app/js/game/world-effects.js` y `scripts/test-world-effects.js`. El 
 ## Verificación de efectos antes de cerrar eventos — 13/11/2026
 
 Se endureció world-event-resolution.js: un evento solo puede pasar a applied si cada ID incluido en effectIds aparece previamente en event.appliedEffectIds, registro que crea world-effects.js al aplicar efectos tipados. Se añade una prueba contra referencias inventadas y se amplía la prueba integrada NPC para ejecutar primero fact.add y después resolver el evento. La batería pasa de 106 a 107 pruebas escritas. Pendiente CI para confirmar la nueva cadena; aún no está integrada en Termux/runtime.
+
+
+## Ajuste de expectativa en el ciclo causal integrado — 13/11/2026
+
+La primera ejecución tras exigir referencias de efectos reales pasó 106 de 107 pruebas. El único fallo era una expectativa antigua del test integrado: comparaba el ID del hecho (`clue-map-fragment`) con el ID del efecto (`effect-clue-map`). La implementación conserva correctamente el ID del efecto en `resolution.effectIds`; se corrige la expectativa de la prueba sin cambiar el código de dominio.
