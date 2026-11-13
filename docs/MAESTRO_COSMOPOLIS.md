@@ -1364,3 +1364,15 @@ La batería documentada queda en 37 pruebas escritas: 7 del núcleo del mundo, 1
 
 No se ha conectado nada a `app.js`, `narrator.js`, `session.js` ni `index.html`. Tampoco se han ejecutado las pruebas en un checkout real o en Termux. Los módulos siguen siendo experimentales y aislados; la reconciliación con la copia móvil continúa siendo requisito previo a la integración.
 
+## Continuidad técnica — agenda de eventos del mundo (13/11/2026)
+
+Se ha añadido `app/js/game/world-scheduler.js`, un scheduler puro y experimental basado exclusivamente en ticks lógicos. Permite programar eventos futuros, cancelar los que sigan pendientes y recoger los vencidos una sola vez. El orden se determina por tick e ID, no por reloj real.
+
+La agenda tiene un máximo de 500 entradas. Al alcanzar el límite, rechaza nuevas altas sin eliminar eventos existentes; al normalizar agendas heredadas que superen la capacidad, conserva los vencimientos más próximos. El scheduler no avanza el mundo ni trabaja en segundo plano: el motor de turnos deberá invocarlo después de un paso válido y persistir el estado resultante. No simula tiempo offline y no está conectado al runtime.
+
+Se añade `scripts/test-world-scheduler.js` con diez pruebas escritas, incluyendo vencimiento, idempotencia de entrega, cancelación, validación y protección frente a pérdida de eventos al alcanzar el límite.
+
+La batería total documentada pasa de 37 a 47 pruebas escritas. El comando de las seis suites está en `docs/PLAN_PRUEBAS_MUNDO_VIVO.md`. Estas pruebas siguen pendientes de ejecución en checkout real y Termux; no se afirma que hayan pasado.
+
+Se han actualizado `docs/ARQUITECTURA_MUNDO_VIVO.md` y `docs/PLAN_PRUEBAS_MUNDO_VIVO.md`. No se ha modificado la aplicación activa ni se ha integrado la rama en `main`.
+
