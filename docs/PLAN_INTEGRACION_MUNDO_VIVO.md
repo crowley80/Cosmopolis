@@ -83,3 +83,8 @@ La rama experimental contiene doce suites automatizadas y **123 pruebas**. La ú
 ## Estado de validación actualizado — 13/11/2026 (125 pruebas)
 
 La ejecución 43481478082 de GitHub Actions terminó con éxito sobre `d3306c1ed999fc2cfd1007ee3adc4e9c7c0d891e`: doce suites, **125/125 pruebas correctas** con Node.js 22. Además de la protección de estados terminales, el scheduler fija un máximo de 120 caracteres por ID: los nuevos se rechazan si exceden el límite, los heredados inválidos se descartan y cancelEvent no trunca identificadores. El bloqueo de integración permanece intacto: reconciliar primero Termux, validar persistencia y privacidad del contexto y probar el runtime antes de conectar los módulos.
+
+
+## Protección del reloj lógico — 13/11/2026
+
+world-core.js rechaza ahora applyStep cuando el tick ya alcanzó `Number.MAX_SAFE_INTEGER`, evitando un incremento impreciso. La operación devuelve `tick-overflow` sin avanzar el reloj ni registrar la operación. Prueba incluida y CI verde: **126/126** en la ejecución 43485470144 (Node.js 22). La integración sigue bloqueada hasta reconciliar la copia Termux y validar el runtime.
