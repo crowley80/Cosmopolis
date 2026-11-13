@@ -143,3 +143,8 @@ Se elimina el truncamiento de IDs en `perception-rules.js`: actores, localizacio
 ## Evitar convertir localizaciones vacías en recuerdos globales — 13/11/2026
 
 `knowledge.js` rechazaba localizaciones/emisores demasiado largos, pero permitía cadenas vacías explícitas y las normalizaba a `null`. En el caso de `locationId`, eso podía convertir accidentalmente un recuerdo local en uno global. Ahora cualquier identificador opcional proporcionado debe ser válido y no vacío; `null`/ausencia siguen representando explícitamente un dato global o sin emisor. Se añade una prueba que cubre ambos campos. CI GitHub Actions, ejecución 43495893450 sobre `b290329c99af0d7061c129406c3dcc94a099cb01`, terminó correctamente: **145/145 pruebas aprobadas**, doce suites, Node.js 22. Validación de módulos aislados; no integra todavía el sistema en la partida ni en Termux.
+
+
+## Estados desconocidos en la agenda de eventos — 13/11/2026
+
+`world-scheduler.js` trataba cualquier estado desconocido como `pending`. Esto podía reactivar una entrada heredada cuyo estado terminal tuviera otro nombre o proviniera de una versión futura. Ahora solo la ausencia de estado (o cadena vacía) se interpreta como pendiente; los estados explícitos desconocidos se neutralizan como `cancelled`, y no vuelven a dispararse. Se actualiza la prueba para cubrir ambos casos y comprobar que solo se entrega el evento sin estado heredado. CI GitHub Actions, ejecución 43496052541 sobre `cfb39c2743df80ff930bdcea98f515860ae61ac3`, terminó correctamente: **145/145 pruebas aprobadas**, doce suites, Node.js 22. Validación aislada; sin integración en runtime/Termux.
