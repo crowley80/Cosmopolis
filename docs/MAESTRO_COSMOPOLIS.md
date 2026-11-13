@@ -1490,3 +1490,8 @@ Se endureció world-event-resolution.js: un evento solo puede pasar a applied si
 ## Ajuste de expectativa en el ciclo causal integrado — 13/11/2026
 
 La primera ejecución tras exigir referencias de efectos reales pasó 106 de 107 pruebas. El único fallo era una expectativa antigua del test integrado: comparaba el ID del hecho (`clue-map-fragment`) con el ID del efecto (`effect-clue-map`). La implementación conserva correctamente el ID del efecto en `resolution.effectIds`; se corrige la expectativa de la prueba sin cambiar el código de dominio.
+
+
+## Límite coherente de efectos por evento — 13/11/2026
+
+Se establece un máximo de 50 efectos por evento causal en world-effects.js, coherente con el límite de referencias de world-event-resolution.js. Al alcanzar la capacidad, una nueva mutación se rechaza antes de modificar el estado. Se añade prueba de regresión; la batería pasa de 107 a 108 pruebas escritas. Pendiente de CI.
