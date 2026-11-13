@@ -13,6 +13,7 @@
 
   const MAX_PROCESSED = 500;
   const MAX_RELATION_HISTORY = 100;
+  const MAX_EFFECTS_PER_EVENT = 50;
   const AXES = new Set(["trust", "respect", "affection", "fear", "hostility"]);
   const TYPES = new Set(["fact.add", "relationship.adjust", "character.move"]);
 
@@ -55,6 +56,8 @@
     if (eventIndex < 0) return rejected("cause-event-not-found");
     const cause = events[eventIndex];
     if (cause.status !== "pending") return rejected("cause-event-not-pending");
+    const causeEffects = Array.isArray(cause.appliedEffectIds) ? cause.appliedEffectIds : [];
+    if (causeEffects.length >= MAX_EFFECTS_PER_EVENT) return rejected("event-effect-capacity");
 
     const next = { ...source, clock: { ...source.clock }, events: events.map(item => object(item) ? { ...item } : item) };
     const nextEvents = next.events;
@@ -118,7 +121,7 @@
     const updatedCause = { ...nextEvents[eventIndex] };
     const appliedIds = Array.isArray(updatedCause.appliedEffectIds) ? updatedCause.appliedEffectIds.slice() : [];
     appliedIds.push(id);
-    updatedCause.appliedEffectIds = appliedIds.slice(-MAX_PROCESSED);
+    updatedCause.appliedEffectIds = appliedIds.slice(-MAX_EFFECTS_PER_EVENT);
     nextEvents[eventIndex] = updatedCause;
     next.processedEffects = [...processed, id].slice(-MAX_PROCESSED);
 
@@ -127,7 +130,7 @@
 
   return Object.freeze({
     applyEffect,
-    limits: Object.freeze({ maxProcessed: MAX_PROCESSED, maxRelationshipHistory: MAX_RELATION_HISTORY }),
+    limits: Object.freeze({ maxProcessed: MAX_PROCESSED, maxRelationshipHistory: MAX_RELATION_HISTORY, maxEffectsPerEvent: MAX_EFFECTS_PER_EVENT }),
     types: Object.freeze(Array.from(TYPES))
   });
 });
