@@ -478,3 +478,8 @@ Se añade `scripts/test-npc-event-lifecycle.js`, que ejercita en secuencia la pr
 ## 27. Corrección de equidad del cursor de iniciativas
 
 La revisión del selector encontró que el cursor buscaba el primer ID lexicográficamente mayor, aunque los candidatos se ordenan primero por cooldown. Si el último actor seleccionado era `zeta` y el siguiente ordenado era `alfa`, el selector podía volver a elegir `zeta` y romper la rotación. Ahora el cursor localiza el actor exacto en la lista ordenada y continúa desde el siguiente índice, con vuelta circular. Se añade una prueba para IDs cuyo orden alfabético no coincide con el orden de cooldown. La selección sigue siendo determinista.
+
+
+## 28. Unicidad de IDs de evento en el núcleo
+
+`world-core.applyStep` ya impedía repetir un `operationId`, pero permitía que una operación distinta añadiera un evento con un ID ya existente. Ahora comprueba la unicidad del ID de evento antes de incrementar el tick o registrar la operación. Si está duplicado, devuelve `applied: false`, `reason: "duplicate-event-id"` y el estado normalizado sin mutaciones. Se añade una prueba de regresión que comprueba que no avanza el tick ni consume el nuevo operationId.
