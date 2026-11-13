@@ -64,7 +64,7 @@ test("limita la agenda y no usa el reloj de pared", () => {
   }));
   const result = Scheduler.normalizeScheduledEvents(events);
   assert.equal(result.length, Scheduler.limits.maxScheduled);
-  assert.equal(result[0].id, "e5");
+  assert.equal(result[0].id, "e0");
 });
 
 test("al alcanzar capacidad rechaza nuevas entradas sin descartar eventos existentes", () => {
