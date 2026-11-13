@@ -1438,3 +1438,8 @@ Estas pruebas no se han ejecutado en checkout real. Cubren solo el encadenamient
 ## CI para las pruebas del mundo vivo — 13/11/2026
 
 Se crea `.github/workflows/world-tests.yml` en la rama de trabajo. GitHub Actions ejecutará las once suites aisladas con Node.js 22 en pushes a la rama, pull requests a `main` o ejecución manual. El workflow está guardado, pero todavía no se ha verificado un run completado; no se declara que las pruebas hayan pasado.
+
+
+## Corrección de rotación de iniciativas NPC — 13/11/2026
+
+La revisión del selector encontró un caso de inequidad: el cursor comparaba IDs alfabéticamente aunque los candidatos se ordenan primero por cooldown. Se corrigió para avanzar desde la posición exacta del último actor en la lista determinista y se añadió una prueba de regresión. La batería documentada pasa de 88 a 89 pruebas escritas. El resultado de ejecución sigue pendiente de GitHub Actions.
