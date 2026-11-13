@@ -1625,3 +1625,8 @@ Se completa el endurecimiento de knowledge.js: las funciones de consulta y trans
 ## Validación estricta del contexto espacial del NPC — 13/11/2026
 
 Se endurece npc-context.js para que actorId y los IDs de localización de actor/escena deban ser válidos y no exceder 120 caracteres. La comparación de localización ahora es exacta, sin truncar prefijos; así una escena con un ID largo no puede hacerse pasar por la localización actual del NPC. Se añade una prueba de colisión de prefijos para actor y escena. CI GitHub Actions, ejecución 43486206002 sobre `79e83086ea5eeae03b63bcaac7fe08f42456ab20`: **135 pruebas, 135 pasaron, 0 fallaron**, Node.js 22. Validación de módulos aislados.
+
+
+## Identificadores seguros en selección de iniciativas NPC — 13/11/2026
+
+Se endurece npc-initiative.js: los IDs de actor, allowlist, cursor y localización ya no se truncan para comparar; se descartan entradas que superen 120 caracteres. Esto evita que un NPC con ID largo se confunda con otro cuyo ID sea su prefijo y que una localización inválida se incorpore a una iniciativa. markInitiative también rechaza actores con IDs/localización inválidos. Se añade prueba de colisión de prefijos. CI GitHub Actions, ejecución 43486310338 sobre `8a6a6f175cb7ac728ae19b52212f7b26d7534f3c`: **136 pruebas, 136 pasaron, 0 fallaron**, Node.js 22.
