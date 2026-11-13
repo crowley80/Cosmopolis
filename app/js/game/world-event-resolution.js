@@ -19,7 +19,9 @@
   }
   function ids(value) {
     return Array.isArray(value)
-      ? Array.from(new Set(value.map(item => clean(item, 160)).filter(Boolean))).slice(0, 50)
+      ? Array.from(new Set(value.filter(item =>
+          typeof item === "string" && item.trim() && item.trim().length <= 160
+        ).map(item => item.trim()))).slice(0, 50)
       : [];
   }
 
@@ -29,16 +31,21 @@
     const tick = clock.tick;
     const events = Array.isArray(source.events) ? source.events.slice() : [];
     const operations = Array.isArray(source.processedEventResolutions)
-      ? Array.from(new Set(source.processedEventResolutions.map(id => clean(id, 160)).filter(Boolean))).slice(-MAX_OPERATIONS)
+      ? Array.from(new Set(source.processedEventResolutions.filter(id =>
+          typeof id === "string" && id.trim() && id.trim().length <= 160
+        ).map(id => id.trim()))).slice(-MAX_OPERATIONS)
       : [];
     const rejected = reason => ({
       applied: false, reason,
       world: { ...source, clock: { ...clock }, events, processedEventResolutions: operations }
     });
 
-    const targetId = clean(eventId, 160);
-    const opId = clean(operationId, 160);
-    if (!Number.isSafeInteger(tick) || tick < 0 || !targetId || !opId || !object(resolution)) {
+    const rawTargetId = typeof eventId === "string" ? eventId.trim() : "";
+    const rawOpId = typeof operationId === "string" ? operationId.trim() : "";
+    const targetId = clean(rawTargetId, 160);
+    const opId = clean(rawOpId, 160);
+    if (!Number.isSafeInteger(tick) || tick < 0 || !targetId || rawTargetId.length > 160 ||
+        !opId || rawOpId.length > 160 || !object(resolution)) {
       return rejected("invalid-input");
     }
     if (operations.includes(opId)) return rejected("duplicate-operation");
