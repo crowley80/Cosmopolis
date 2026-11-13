@@ -78,3 +78,54 @@ test("normalización limita confianza y conserva el tick válido", () => {
   assert.equal(item.confidence, 1);
   assert.equal(item.tick, 7);
 });
+
+test("comunicar transmite solo los conocimientos seleccionados", () => {
+  const initial = [
+    { id: "public", actorId: "speaker", content: "La puerta está abierta", type: "fact", source: "perceived" },
+    { id: "private", actorId: "speaker", content: "Tiene una llave", type: "secret", source: "perceived" }
+  ];
+  const result = Knowledge.communicateKnowledge(initial, "speaker", "listener", ["public"], 9);
+  const received = Knowledge.buildKnowledgeView(result.entries, "listener").knowledge;
+  assert.equal(received.length, 1);
+  assert.equal(received[0].content, "La puerta está abierta");
+  assert.equal(received[0].source, "communicated");
+  assert.equal(received[0].fromActorId, "speaker");
+  assert.equal(Knowledge.buildKnowledgeView(result.entries, "speaker").knowledge.length, 2);
+});
+
+test("un rumor comunicado sigue siendo rumor", () => {
+  const initial = [{
+    id: "rum", actorId: "speaker", content: "El duque ha huido",
+    type: "rumor", source: "communicated", confidence: 0.2
+  }];
+  const result = Knowledge.communicateKnowledge(initial, "speaker", "listener", ["rum"], 4);
+  const received = Knowledge.buildKnowledgeView(result.entries, "listener").knowledge[0];
+  assert.equal(received.status, "rumor");
+  assert.equal(received.confidence, 0.2);
+});
+
+test("no se puede comunicar información que el emisor no conoce", () => {
+  const result = Knowledge.communicateKnowledge([], "speaker", "listener", ["unknown"], 1);
+  assert.equal(result.applied, false);
+  assert.equal(result.reason, "no-authorized-knowledge");
+});
+
+test("una inferencia exige evidencia que el actor ya conoce", () => {
+  const base = [{
+    id: "e1", actorId: "player", content: "Huellas en el barro",
+    type: "fact", source: "perceived"
+  }];
+  const rejected = Knowledge.recordInference(base, "player", {
+    id: "i1", content: "Alguien salió por el patio", evidenceIds: ["missing"]
+  });
+  assert.equal(rejected.applied, false);
+  const accepted = Knowledge.recordInference(base, "player", {
+    id: "i2", content: "Quizá alguien salió por el patio",
+    evidenceIds: ["e1"], confidence: 0.45, tick: 3
+  });
+  assert.equal(accepted.applied, true);
+  const inference = Knowledge.buildKnowledgeView(accepted.entries, "player").knowledge
+    .find(item => item.id === "i2");
+  assert.equal(inference.source, "inferred");
+  assert.deepEqual(inference.evidenceIds, ["e1"]);
+});
