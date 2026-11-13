@@ -298,7 +298,7 @@ No se afirma ejecución en checkout real ni en Termux. El módulo registra estad
 
 Se añade `scripts/test-npc-event-lifecycle.js` con cuatro pruebas de integración entre `npc-proposal.js` y `world-event-resolution.js`: conservación de actor/causa/localización de principio a fin, reintentos idempotentes sin duplicados, imposibilidad de reabrir un evento cancelado y ausencia de mutaciones implícitas en hechos del mundo.
 
-La batería documentada asciende a **108 pruebas escritas** (84 anteriores + 4 de ciclo causal + 1 de equidad del cursor). Comando completo:
+La batería documentada asciende a **109 pruebas escritas** (84 anteriores + 4 de ciclo causal + 1 de equidad del cursor). Comando completo:
 
 ```sh
 node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js scripts/test-perception-rules.js scripts/test-perception-pipeline.js scripts/test-world-scheduler.js scripts/test-npc-initiative.js scripts/test-npc-context.js scripts/test-npc-proposal.js scripts/test-world-event-resolution.js scripts/test-npc-event-lifecycle.js
@@ -321,26 +321,26 @@ Se añade una prueba a `scripts/test-npc-initiative.js` que cubre el caso en que
 
 ## 23. Regresión de unicidad de eventos del núcleo
 
-Se añade una prueba a `scripts/test-world-core.js` para impedir que dos operaciones diferentes registren el mismo ID de evento. La comprobación debe rechazar la segunda operación antes de incrementar el tick y sin añadir su operationId al registro de procesadas. La batería documentada asciende a **108 pruebas escritas**. Ejecución pendiente del workflow.
+Se añade una prueba a `scripts/test-world-core.js` para impedir que dos operaciones diferentes registren el mismo ID de evento. La comprobación debe rechazar la segunda operación antes de incrementar el tick y sin añadir su operationId al registro de procesadas. La batería documentada asciende a **109 pruebas escritas**. Ejecución pendiente del workflow.
 
 
 ## Normalización de identificadores de eventos
 
 Se amplía `scripts/test-world-core.js` con dos casos de regresión: IDs de evento con espacios exteriores que deben colisionar tras normalización y IDs vacíos que deben adoptar el `operationId` normalizado. `world-core.applyStep()` recorta los IDs al comprobar y al guardar, y compara contra IDs existentes también normalizados.
 
-La batería queda en **108 pruebas escritas** (9 en world-core). Añadir estos casos no implica que estén ejecutados: se mantienen pendientes de un checkout completo o de un run de CI verificable.
+La batería queda en **109 pruebas escritas** (9 en world-core). Añadir estos casos no implica que estén ejecutados: se mantienen pendientes de un checkout completo o de un run de CI verificable.
 
 
 ## Compatibilidad de IDs heredados en propuestas NPC
 
 Se añade un caso a scripts/test-npc-proposal.js para impedir duplicar una propuesta cuando el evento previo contiene espacios exteriores en su ID. La comparación del módulo ahora normaliza el ID existente con trim() antes de decidir si la propuesta ya fue registrada.
 
-La batería documentada queda en **108 pruebas escritas**. La prueba está añadida, pero no se declara ejecutada.
+La batería documentada queda en **109 pruebas escritas**. La prueba está añadida, pero no se declara ejecutada.
 
 
 ## Resolución de eventos heredados con IDs no normalizados
 
-Se añade una prueba en scripts/test-world-event-resolution.js para comprobar que un evento con espacios exteriores en su ID puede resolverse usando el ID normalizado, y que la transición persiste el identificador canónico. La batería documentada queda en **108 pruebas escritas**; no se afirma que se hayan ejecutado.
+Se añade una prueba en scripts/test-world-event-resolution.js para comprobar que un evento con espacios exteriores en su ID puede resolverse usando el ID normalizado, y que la transición persiste el identificador canónico. La batería documentada queda en **109 pruebas escritas**; no se afirma que se hayan ejecutado.
 
 
 ## Incidencia CI: expectativa obsoleta del scheduler
@@ -357,12 +357,12 @@ GitHub Actions ejecutó las once suites con Node.js 22 sobre el commit 90cd4cf1c
 
 Se añade `scripts/test-world-effects.js` con doce pruebas para `world-effects.js`: creación de hechos con causa, idempotencia, unicidad de hechos, relaciones direccionales con historial y límites, validación de ejes/deltas, movimientos entre localizaciones existentes, comprobación de origen, rechazo de causas terminales y no mutación de entrada. El workflow incluye esta duodécima suite.
 
-La batería asciende a **108 pruebas escritas**. Los efectos siguen siendo experimentales y no están conectados al runtime. La resolución de un evento como `applied` debe referenciar los IDs realmente registrados en `event.appliedEffectIds`; la validación cruzada de esa transición queda como siguiente endurecimiento antes de integrar.
+La batería asciende a **109 pruebas escritas**. Los efectos siguen siendo experimentales y no están conectados al runtime. La resolución de un evento como `applied` debe referenciar los IDs realmente registrados en `event.appliedEffectIds`; la validación cruzada de esa transición queda como siguiente endurecimiento antes de integrar.
 
 
 ## 25. Referencias de efectos verificadas en la resolución
 
-Se añade una prueba que rechaza IDs de efectos inventados y se actualiza el flujo integrado scripts/test-npc-event-lifecycle.js: ahora aplica un efecto real con world-effects.js y pasa su ID a world-event-resolution.js. El módulo de resolución exige que todos los IDs citados estén registrados en el evento causal. La batería documentada queda en **108 pruebas escritas**. El workflow incluye las suites implicadas.
+Se añade una prueba que rechaza IDs de efectos inventados y se actualiza el flujo integrado scripts/test-npc-event-lifecycle.js: ahora aplica un efecto real con world-effects.js y pasa su ID a world-event-resolution.js. El módulo de resolución exige que todos los IDs citados estén registrados en el evento causal. La batería documentada queda en **109 pruebas escritas**. El workflow incluye las suites implicadas.
 
 
 ## Ajuste de expectativa en el ciclo causal integrado — 13/11/2026
@@ -372,9 +372,14 @@ La primera ejecución tras exigir referencias de efectos reales pasó 106 de 107
 
 ## 26. Capacidad máxima de efectos por evento
 
-Se añade una prueba en scripts/test-world-effects.js que llena las 50 referencias permitidas y verifica que el siguiente efecto se rechaza sin alterar hechos ni descartar referencias previas. La batería documentada queda en **108 pruebas escritas**.
+Se añade una prueba en scripts/test-world-effects.js que llena las 50 referencias permitidas y verifica que el siguiente efecto se rechaza sin alterar hechos ni descartar referencias previas. La batería documentada queda en **109 pruebas escritas**.
 
 
 ## CI verde con efectos tipados — 13/11/2026
 
 La ejecución GitHub Actions del commit 3b0495614d0df6a0462f1c06f25f9d6102a0fbb8 completó las doce suites con Node.js 22: **108 pruebas, 108 pasaron, 0 fallaron**. Incluye el módulo nuevo de efectos tipados, la verificación de referencias reales al resolver eventos y el límite de 50 efectos por evento causal. Validación confirmada en Ubuntu/Node 22; la integración en Termux y en la aplicación sigue pendiente de reconciliación.
+
+
+## 27. IDs especiales y seguridad de propiedades
+
+Se añade una prueba en scripts/test-world-effects.js con IDs `__proto__` y `constructor`. Comprueba que los personajes y relaciones se guardan como propiedades propias y que no se modifica el prototipo de los objetos. La batería documentada queda en **109 pruebas escritas**.
