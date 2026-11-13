@@ -468,3 +468,8 @@ Este módulo solo registra el resultado y sus referencias: **no ejecuta ni aplic
 ## 25. Plan de integración del runtime
 
 Se crea `docs/PLAN_INTEGRACION_MUNDO_VIVO.md`, que identifica los puntos de entrada observados en `index.html`, `Session.addAction` y `Narrator.buildMessages`, y ordena la integración en etapas: reconciliación de Termux, contrato de persistencia/idempotencia, allowlists de conocimiento, percepción, scheduler, iniciativas, resolución y efectos tipados, y pruebas de partida completa. Se documentan riesgos concretos de la instantánea remota: ausencia de operationId en `Session.addAction`, dos historiales de eventos, spreads de objetos completos en el contexto del narrador y diferencia entre la versión remota y el último cambio local `aiUsed`. El plan es una guía de integración, no una modificación de runtime; la copia móvil sigue siendo la fuente más reciente y debe reconciliarse antes de tocarla.
+
+
+## 26. Prueba integrada de causalidad NPC
+
+Se añade `scripts/test-npc-event-lifecycle.js`, que ejercita en secuencia la propuesta de iniciativa y la resolución terminal. Comprueba que actor, causa y localización sobreviven al ciclo; que los reintentos no duplican; que un evento cancelado no se reabre; y que registrar referencias de efectos no muta hechos del mundo por sí solo. Es integración entre módulos aislados, no integración con la aplicación.
