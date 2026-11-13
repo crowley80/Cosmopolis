@@ -56,6 +56,10 @@
     if (!summary) return rejected("missing-summary");
     const effectIds = ids(resolution.effectIds);
     if (outcome === "applied" && !effectIds.length) return rejected("missing-effect-reference");
+    if (outcome === "applied") {
+      const registered = new Set(ids(current.appliedEffectIds));
+      if (effectIds.some(id => !registered.has(id))) return rejected("unregistered-effect-reference");
+    }
 
     const updated = {
       ...current,
