@@ -1251,3 +1251,14 @@ Se ajusta `Narrator.buildMessages()` para que las iniciativas autónomas registr
 
 
 Corrección de validación — 12 de noviembre de 2026: la prueba de iniciativa autónoma estaba comprobando la acción de Elia después de una segunda acción del jugador, cuando la interfaz muestra únicamente la narración de esa segunda acción. El comportamiento probado era correcto; el momento de la aserción era incorrecto. Se ha trasladado la comprobación inmediatamente después de la primera acción, que es la que genera la iniciativa, y se mantiene la comprobación de que no aparezca como ficha ni con escapes visibles. Nuevo commit de prueba: `a595a391d346aded934167d937841ebb237f6abf`. Validación pendiente de la nueva ejecución.
+
+
+## Preparación del motor de mundo vivo — 13 de noviembre de 2026
+
+Se ha preparado una especificación técnica independiente en `docs/ARQUITECTURA_MUNDO_VIVO.md`. Define el modelo de datos del mundo, memoria episódica de NPCs, relaciones direccionales, eventos con causas y consecuencias, reloj lógico, iniciativas autónomas, límites de conocimiento, migración compatible y pruebas de regresión.
+
+La propuesta respeta las decisiones ya aprobadas: mundo congelado al cerrar la partida, avance solo durante la sesión activa, libertad de acciones en texto libre, IA local como narrador/intérprete y estado persistente como fuente de verdad. Se ha planteado una implementación por fases para no rehacer los sistemas existentes.
+
+**Importante sobre la base de trabajo:** el repositorio remoto consultado no contiene todavía el último avance local de `aiUsed` documentado el 13/11. Para evitar sobrescribir cambios del teléfono, esta preparación se ha realizado en la rama aislada `work/arquitectura-mundo-vivo`, partiendo del último estado remoto disponible. No se han modificado archivos de ejecución ni se ha integrado nada en `main`. Antes de integrar, reconciliar la rama con la copia local actualizada de Termux.
+
+Estado: diseño documentado; implementación y pruebas de ejecución pendientes.
