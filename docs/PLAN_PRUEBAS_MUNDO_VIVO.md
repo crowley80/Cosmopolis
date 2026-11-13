@@ -205,7 +205,7 @@ Se añade `scripts/test-perception-rules.js` para verificar el contrato del moto
 Comando actualizado para las cuatro suites aisladas:
 
 ```sh
-node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js scripts/test-perception-rules.js scripts/test-perception-pipeline.js scripts/test-world-scheduler.js scripts/test-npc-initiative.js
+node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js scripts/test-perception-rules.js scripts/test-perception-pipeline.js scripts/test-world-scheduler.js scripts/test-npc-initiative.js scripts/test-npc-context.js
 ```
 
 Las pruebas están escritas en la rama, pero todavía no se han ejecutado en un checkout real ni en Termux. Las reglas no simulan geometría ni demuestran visibilidad física: las restricciones espaciales avanzadas deben llegar explícitamente desde una futura capa de escena.
@@ -253,4 +253,16 @@ node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-pe
 ```
 
 No se afirma ejecución en checkout real ni en Termux. La selección no genera acciones narrativas y debe integrarse en el motor de turnos después de reconciliar la rama con la copia móvil.
+
+## 17. Pruebas del contexto individual de NPC
+
+Se añade `scripts/test-npc-context.js` con diez pruebas: allowlist de campos propios, rechazo de localización incorrecta, aislamiento de memoria por actor y localización, ausencia de datos arbitrarios de escena, normalización de rasgos, validación de identidad, no mutación del actor, dependencia explícita del módulo de conocimiento y límites de longitud.
+
+La batería suma 67 pruebas escritas. El comando completo de las ocho suites:
+
+```sh
+node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js scripts/test-perception-rules.js scripts/test-perception-pipeline.js scripts/test-world-scheduler.js scripts/test-npc-initiative.js scripts/test-npc-context.js
+```
+
+No se afirma ejecución en checkout real ni en Termux. El contexto de escena debe ser filtrado por el motor antes de entregarse a este constructor.
 
