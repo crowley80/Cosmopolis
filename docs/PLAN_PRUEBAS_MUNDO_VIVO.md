@@ -205,7 +205,7 @@ Se añade `scripts/test-perception-rules.js` para verificar el contrato del moto
 Comando actualizado para las cuatro suites aisladas:
 
 ```sh
-node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js scripts/test-perception-rules.js scripts/test-perception-pipeline.js
+node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js scripts/test-perception-rules.js scripts/test-perception-pipeline.js scripts/test-world-scheduler.js
 ```
 
 Las pruebas están escritas en la rama, pero todavía no se han ejecutado en un checkout real ni en Termux. Las reglas no simulan geometría ni demuestran visibilidad física: las restricciones espaciales avanzadas deben llegar explícitamente desde una futura capa de escena.
@@ -220,4 +220,25 @@ node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-pe
 ```
 
 El conjunto suma 37 pruebas escritas (7 + 12 + 5 + 10 + 3). No se afirma que se hayan ejecutado en un checkout real ni en Termux.
+
+## 15. Pruebas de agenda de eventos lógicos
+
+Se añade `scripts/test-world-scheduler.js` con diez contratos:
+- orden determinista por tick e ID;
+- validación de eventos e IDs duplicados;
+- entrega solo al alcanzar el tick;
+- entrega exactamente una vez;
+- cancelación limitada a eventos pendientes;
+- rechazo de ticks inválidos;
+- normalización con conservación de extensiones;
+- límite de capacidad sin descartar eventos existentes;
+- conservación prioritaria de los vencimientos más próximos.
+
+El scheduler no usa reloj real ni ejecuta eventos autónomamente. El motor de turnos controla el avance y la persistencia. El comando completo de las seis suites queda:
+
+```sh
+node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js scripts/test-perception-rules.js scripts/test-perception-pipeline.js scripts/test-world-scheduler.js
+```
+
+La batería documentada suma 47 pruebas escritas. No se afirma que se hayan ejecutado en un checkout real ni en Termux.
 
