@@ -504,3 +504,8 @@ Se añade una prueba de regresión con un evento heredado. La batería total pas
 Se hace compatible world-event-resolution.js con eventos antiguos cuyo ID tenga espacios exteriores. La búsqueda compara el ID existente tras trim(), y al completar una transición guarda el identificador canónico. Así, una resolución válida no queda bloqueada por diferencias de formato heredadas y el evento queda normalizado para operaciones posteriores.
 
 Se añade una prueba de regresión. La batería total alcanza 94 pruebas escritas; ejecución real pendiente. No se aplican efectos de dominio ni se conecta el módulo al runtime.
+
+
+## Corrección de expectativa contradictoria del scheduler — 13/11/2026
+
+La primera ejecución real de GitHub Actions ha permitido detectar una prueba antigua contradictoria: un caso esperaba conservar desde e5 mientras otro caso ya comprobaba correctamente que la normalización conserva los 500 eventos con vencimiento más próximo (e0–e499). El comportamiento implementado ordena por dueTick ascendente y conserva la primera ventana de 500, por lo que se corrige la expectativa obsoleta a e0. No se cambia la lógica del scheduler.
