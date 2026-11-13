@@ -613,3 +613,16 @@ Se establece un máximo de 160 caracteres para operationId, event.id y los IDs h
 ## CI verde con 121 pruebas — 13/11/2026
 
 GitHub Actions completó las doce suites en el commit `d216f14d62d700a03daefa477f1246d99bb128d6`: **121 pruebas, 121 pasaron, 0 fallaron** con Node.js 22. Incluye límites de 160 caracteres para operationId/event.id y limpieza de identificadores heredados excesivos. Sigue siendo una validación de módulos aislados, no de la integración en Termux.
+
+
+## 31. Geometría local para percepción — 13 de noviembre de 2026
+
+Se añade `app/js/game/spatial-perception.js` como capa pura sobre `perception-rules.js`. Conserva las reglas existentes de localización, sentido, atención y listas de autorización, y añade una comprobación de distancia euclídea cuando el estímulo declara un `range` y ambos actores aportan posiciones explícitas `{x, y}`.
+
+- El alcance es inclusivo: una distancia igual al rango permite percibir.
+- Si se declara rango, una posición ausente o inválida hace que el actor no perciba; un rango negativo, no finito o superior al límite se rechaza.
+- Sin rango explícito se conserva el comportamiento anterior, para facilitar compatibilidad gradual.
+- Las coordenadas y rangos se limitan a un millón de unidades para mantener entradas acotadas.
+- No se inventan posiciones, rutas, paredes ni línea de visión. Las exclusiones existentes (`blockedFor`, `concealedFrom`, allowlists) siguen siendo responsabilidad explícita del motor de escena.
+
+Se añaden nueve pruebas en `scripts/test-spatial-perception.js` y la suite se incorpora al workflow `.github/workflows/world-tests.yml`. La geometría queda aislada y no se conecta a la aplicación ni al narrador. Pendiente CI y posterior validación en checkout real/Termux.
