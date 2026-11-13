@@ -128,3 +128,24 @@ test("limita los efectos por evento sin descartar los ya aplicados", () => {
   assert.equal(result.world.events[0].appliedEffectIds.length, Effects.limits.maxEffectsPerEvent);
   assert.equal(result.world.facts.length, 0);
 });
+
+
+test("trata IDs especiales como claves propias sin tocar prototipos", () => {
+  const characters = Object.create(null);
+  characters["__proto__"] = { id: "__proto__", locationId: "market" };
+  const world = { ...base, characters };
+  const moved = Effects.applyEffect(world, {
+    id: "fx-special-char", type: "character.move", causeEventId: "event-1",
+    characterId: "__proto__", toLocationId: "archive"
+  });
+  assert.equal(moved.applied, true);
+  assert.equal(Object.prototype.hasOwnProperty.call(moved.world.characters, "__proto__"), true);
+  assert.equal(moved.world.characters["__proto__"].locationId, "archive");
+  const relation = Effects.applyEffect(base, {
+    id: "fx-special-rel", type: "relationship.adjust", causeEventId: "event-1",
+    fromActorId: "__proto__", toActorId: "constructor", axis: "trust", delta: 1
+  });
+  assert.equal(relation.applied, true);
+  assert.equal(Object.prototype.hasOwnProperty.call(relation.world.relationships, "__proto__"), true);
+  assert.equal(Object.prototype.hasOwnProperty.call(relation.world.relationships["__proto__"], "constructor"), true);
+});
