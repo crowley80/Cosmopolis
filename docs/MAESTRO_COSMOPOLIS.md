@@ -1630,3 +1630,8 @@ Se endurece npc-context.js para que actorId y los IDs de localización de actor/
 ## Identificadores seguros en selección de iniciativas NPC — 13/11/2026
 
 Se endurece npc-initiative.js: los IDs de actor, allowlist, cursor y localización ya no se truncan para comparar; se descartan entradas que superen 120 caracteres. Esto evita que un NPC con ID largo se confunda con otro cuyo ID sea su prefijo y que una localización inválida se incorpore a una iniciativa. markInitiative también rechaza actores con IDs/localización inválidos. Se añade prueba de colisión de prefijos. CI GitHub Actions, ejecución 43486310338 sobre `8a6a6f175cb7ac728ae19b52212f7b26d7534f3c`: **136 pruebas, 136 pasaron, 0 fallaron**, Node.js 22.
+
+
+## Validación de IDs en propuestas de iniciativa NPC — 13/11/2026
+
+Se endurece npc-proposal.js para no truncar actorId, causeId, eligibleActorIds, IDs de causas conocidas ni locationId. Los IDs de actor/localización se limitan a 120 caracteres y las causas a 160; si el dato es excesivo se rechaza la propuesta antes de registrar evento. La primera prueba usó un ID de causa de 129 caracteres, que era válido dentro del límite de 160; se corrigió el fixture para probar 161 caracteres. CI final 43486527033 sobre `70358d1b99a32487d23a5205ebd9dec0b3e217c2`: **137 pruebas, 137 pasaron, 0 fallaron**, Node.js 22.
