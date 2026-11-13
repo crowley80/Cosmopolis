@@ -91,3 +91,14 @@ test("rechaza operación sin resumen o sin outcome terminal", () => {
     outcome: "cancelled", summary: "x"
   }).reason, "invalid-input");
 });
+
+
+test("resuelve IDs heredados con espacios y los normaliza al actualizar", () => {
+  const legacy = { ...base, events: [{ ...base.events[0], id: "  ev-1  " }] };
+  const result = Resolution.resolveEvent(legacy, " ev-1 ", "resolve-legacy", {
+    outcome: "failed", summary: "La pista no conduce a nada"
+  });
+  assert.equal(result.applied, true);
+  assert.equal(result.event.id, "ev-1");
+  assert.equal(result.world.events[0].id, "ev-1");
+});
