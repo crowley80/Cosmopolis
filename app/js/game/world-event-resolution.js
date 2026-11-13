@@ -61,6 +61,10 @@
     if (!TERMINAL.has(outcome)) return rejected("invalid-outcome");
     const summary = clean(resolution.summary, 1200);
     if (!summary) return rejected("missing-summary");
+    if (resolution.effectIds !== undefined &&
+        (!Array.isArray(resolution.effectIds) || resolution.effectIds.some(id =>
+          typeof id !== "string" || !id.trim() || id.trim().length > 160
+        ))) return rejected("invalid-effect-reference");
     const effectIds = ids(resolution.effectIds);
     if (outcome === "applied" && !effectIds.length) return rejected("missing-effect-reference");
     if (outcome === "applied") {
