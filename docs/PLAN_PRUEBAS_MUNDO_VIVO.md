@@ -177,3 +177,14 @@ El adaptador `app/js/game/perception.js` añade pruebas para:
 - conservar localización sin calcular ni inventar alcance o línea de visión.
 
 La futura capa espacial deberá generar `observerIds` mediante reglas verificables de sentidos, distancia, obstáculos, atención y condiciones ambientales. La presencia física por sí sola no equivale a percepción.
+
+
+## 12. Ejecución local de las pruebas aisladas
+
+Desde la raíz del repositorio, cuando se disponga de un checkout actualizado de esta rama:
+
+```sh
+node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js
+```
+
+Este comando ejecuta las suites del núcleo del mundo, conocimiento y percepción. La existencia del comando documentado no significa que se haya ejecutado en Termux: la validación debe registrarse por separado y realizarse primero en un checkout real, después en el dispositivo.
