@@ -138,7 +138,7 @@ test("rechaza IDs de evento y operación excesivos sin truncarlos", () => {
   assert.equal(base.events[0].status, "pending");
 });
 
-test("descarta referencias y operaciones heredadas con IDs excesivos", () => {
+test("descarta IDs excesivos heredados y rechaza referencias inválidas nuevas", () => {
   const oversized = "x".repeat(161);
   const legacy = {
     ...base,
@@ -146,8 +146,10 @@ test("descarta referencias y operaciones heredadas con IDs excesivos", () => {
     events: [{ ...base.events[0], appliedEffectIds: ["f1", oversized] }]
   };
   const result = Resolution.resolveEvent(legacy, "ev-1", "valid-op", {
-    outcome: "applied", summary: "Solo referencias válidas", effectIds: ["f1", oversized]
+    outcome: "applied", summary: "No debe ignorar una referencia inválida", effectIds: ["f1", oversized]
   });
-  assert.equal(result.applied, true);
-  assert.deepEqual(result.event.resolution.effectIds, ["f1"]);
+  assert.equal(result.applied, false);
+  assert.equal(result.reason, "invalid-effect-reference");
+  assert.equal(result.world.events[0].status, "pending");
+  assert.deepEqual(result.world.processedEventResolutions, []);
 });
