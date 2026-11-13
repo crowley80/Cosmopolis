@@ -1419,3 +1419,10 @@ En la misma sesión se corrigió `world-scheduler.js`: se reparó el comparador 
 Se incorpora a `work/arquitectura-mundo-vivo` el módulo experimental `app/js/game/world-event-resolution.js` y su suite `scripts/test-world-event-resolution.js`. El módulo controla transiciones de eventos pendientes a aplicados, cancelados o fallidos; exige operación idempotente, tick válido, resumen y referencias explícitas de efectos cuando el resultado es aplicado. Conserva causalidad y no muta el estado de entrada.
 
 Se añaden nueve pruebas escritas. La batería documentada pasa de 75 a 84 pruebas y se actualiza el comando de ejecución. Importante: el módulo registra el resultado y las referencias de efectos, pero todavía no ejecuta las mutaciones del mundo. No está conectado al runtime ni se han ejecutado las suites en un checkout real. No se ha modificado Termux ni integrado la rama en `main`.
+
+
+## Plan de integración del runtime — 13/11/2026
+
+Se crea `docs/PLAN_INTEGRACION_MUNDO_VIVO.md` con los puntos de entrada verificados de la instantánea remota y un orden de integración por etapas. Incluye reconciliación obligatoria con Termux, persistencia idempotente, protección de conocimiento, percepción, scheduler, iniciativas, resolución y efectos tipados, además de criterios para la primera partida. Se documentan los riesgos de `Session.addAction` sin operationId, duplicidad de historiales y spreads en `Narrator.buildMessages`.
+
+Es documentación basada en la instantánea de la rama remota, no una modificación del runtime. Se mantiene la precaución de no sobrescribir la copia Termux, que contiene cambios más recientes.
