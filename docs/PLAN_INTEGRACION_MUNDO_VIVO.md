@@ -73,3 +73,8 @@ Se incorporan al inventario `world-effects.js` y sus validaciones cruzadas con `
 ## 7. Contratos añadidos para iniciativas NPC — 13/11/2026
 
 La integración de `npc-proposal.js` debe pasar dos datos derivados del contexto privado de cada actor: `eligibleActorIds` y `knownCauseIdsByActor`. El segundo debe contener exclusivamente causas presentes en la memoria del NPC concreto; nunca debe construirse desde el inventario global de hechos/eventos. El payload estructurado de la propuesta se valida y copia en profundidad antes de entrar en `world.events`: solo valores JSON-like, profundidad 3, máximo 20 elementos por contenedor, 100 nodos y 500 caracteres por cadena; se rechazan ciclos y claves peligrosas. La capa runtime debe mantener estos mismos límites al construir el prompt y validar la respuesta del modelo.
+
+
+## Estado de validación actualizado — 13/11/2026
+
+La rama experimental contiene doce suites automatizadas y **123 pruebas**. La última ejecución de GitHub Actions sobre `8d8588858b3bb05b3ea92af3470b04e4033cd19d` terminó correctamente (123/123). Se añadió protección contra la resurrección de eventos duplicados en el scheduler. Esta validación no elimina el bloqueo de integración: sigue siendo obligatorio reconciliar primero la copia Termux más reciente y comprobar el runtime real antes de conectar módulos o modificar la partida del usuario.
