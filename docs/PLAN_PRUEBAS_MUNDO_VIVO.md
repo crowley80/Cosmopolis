@@ -141,7 +141,7 @@ Este plan no afirma que las pruebas estén implementadas ni ejecutadas. La rama 
 
 ## 9. Casos específicos para vistas de conocimiento
 
-El módulo experimental `app/js/game/knowledge.js` incorpora ocho pruebas en `scripts/test-knowledge.js`. Añadir a la futura integración los siguientes contratos:
+El módulo experimental `app/js/game/knowledge.js` incorpora doce pruebas en `scripts/test-knowledge.js`. Añadir a la futura integración los siguientes contratos:
 
 - Cada registro pertenece a un único actor; la vista de otro actor no puede incluirlo por defecto.
 - La fuente debe ser percepción, comunicación o inferencia explícita. No existe una fuente implícita de omnisciencia.
