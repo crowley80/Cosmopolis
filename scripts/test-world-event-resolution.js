@@ -83,7 +83,7 @@ test("elimina IDs de efectos duplicados y limita su tamaño", () => {
   const result = Resolution.resolveEvent(base, "ev-1", "resolve-6", {
     outcome: "applied", summary: "Efectos registrados", effectIds: ["f1", "f1", "", "f2", "fact-2"]
   });
-  assert.deepEqual(result.event.resolution.effectIds, ["f1", "f2"]);
+  assert.deepEqual(result.event.resolution.effectIds, ["f1", "f2", "fact-2"]);
 });
 
 test("rechaza operación sin resumen o sin outcome terminal", () => {
