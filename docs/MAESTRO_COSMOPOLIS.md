@@ -1262,3 +1262,12 @@ La propuesta respeta las decisiones ya aprobadas: mundo congelado al cerrar la p
 **Importante sobre la base de trabajo:** el repositorio remoto consultado no contiene todavía el último avance local de `aiUsed` documentado el 13/11. Para evitar sobrescribir cambios del teléfono, esta preparación se ha realizado en la rama aislada `work/arquitectura-mundo-vivo`, partiendo del último estado remoto disponible. No se han modificado archivos de ejecución ni se ha integrado nada en `main`. Antes de integrar, reconciliar la rama con la copia local actualizada de Termux.
 
 Estado: diseño documentado; implementación y pruebas de ejecución pendientes.
+
+
+## Contratos y plan de pruebas del mundo vivo — 13 de noviembre de 2026
+
+Se añade `docs/PLAN_PRUEBAS_MUNDO_VIVO.md` como complemento ejecutable de la arquitectura: contratos de estado canónico, idempotencia, congelación offline, conocimiento limitado, iniciativas causales y migración no destructiva. Incluye una matriz de pruebas unitarias, integración, cierre/reapertura y calidad narrativa con el modelo local, además de criterios para cerrar cada fase.
+
+No se afirma que estas pruebas estén implementadas ni ejecutadas. Se mantiene la precaución de no integrar código de runtime hasta reconciliar esta rama con la copia vigente de Termux, que contiene avances posteriores al último commit remoto consultado.
+
+Estado: arquitectura y criterios de aceptación documentados; implementación pendiente de sincronización segura.
