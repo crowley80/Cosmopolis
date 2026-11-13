@@ -346,3 +346,8 @@ Se añade una prueba en scripts/test-world-event-resolution.js para comprobar qu
 ## Incidencia CI: expectativa obsoleta del scheduler
 
 La ejecución de GitHub Actions sobre el commit c065a7c detectó 91/92 pruebas correctas y un fallo en scripts/test-world-scheduler.js: la prueba "limita la agenda y no usa el reloj de pared" esperaba e5, aunque la regla documentada y otra prueba exigen conservar los eventos más próximos e0–e499. Se corrige la expectativa a e0; el algoritmo de producción no se altera. El nuevo commit disparará otra ejecución. La batería en ese momento era de 92 pruebas; las nuevas pruebas añadidas después se incluyen en la siguiente ejecución.
+
+
+## Primera ejecución completa de CI — 13/11/2026
+
+GitHub Actions ejecutó las once suites con Node.js 22 sobre el commit 90cd4cf1c630534c44609b193e4adc94a89f0a26. Resultado verificado: **94 pruebas, 94 pasaron, 0 fallaron**. La ejecución detectó antes una expectativa contradictoria en una prueba del scheduler; se corrigió la expectativa obsoleta (de e5 a e0) sin alterar el algoritmo y la nueva ejecución quedó verde. Esto valida los módulos aislados en Ubuntu/Node 22, no la integración en Termux ni el runtime de la aplicación.
