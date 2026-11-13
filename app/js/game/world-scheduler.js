@@ -35,7 +35,9 @@
           : {}
       });
     }
-    return Array.from(byId.values()).sort((a, b) =>\n      a.dueTick !== b.dueTick ? a.dueTick - b.dueTick : (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)\n    ).slice(0, MAX_SCHEDULED);
+    return Array.from(byId.values()).sort((a, b) =>
+      a.dueTick !== b.dueTick ? a.dueTick - b.dueTick : (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
+    ).slice(0, MAX_SCHEDULED);
   }
 
   function scheduleEvent(events, event) {
@@ -49,6 +51,9 @@
     }
     if (current.some(item => item.id === id)) {
       return { applied: false, reason: "duplicate-id", events: current };
+    }
+    if (current.length >= MAX_SCHEDULED) {
+      return { applied: false, reason: "capacity", events: current };
     }
     const entry = {
       ...event,
