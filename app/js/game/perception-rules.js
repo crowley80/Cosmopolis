@@ -20,18 +20,20 @@
   const MAX_ACTORS = 500;
   const MAX_STIMULI = 200;
 
-  function clean(value) {
-    return typeof value === "string" ? value.trim().slice(0, 120) : "";
+  function cleanId(value) {
+    if (typeof value !== "string") return "";
+    const id = value.trim();
+    return id && id.length <= 120 ? id : "";
   }
 
   function hasId(list, id) {
-    return Array.isArray(list) && list.some(value => clean(value) === id);
+    return Array.isArray(list) && list.some(value => cleanId(value) === id);
   }
 
   function canPerceive(actor, stimulus) {
-    const actorId = clean(actor && actor.id);
-    const locationId = clean(actor && actor.locationId);
-    const stimulusLocation = clean(stimulus && stimulus.locationId);
+    const actorId = cleanId(actor && actor.id);
+    const locationId = cleanId(actor && actor.locationId);
+    const stimulusLocation = cleanId(stimulus && stimulus.locationId);
     const channel = stimulus && stimulus.channel;
     if (!actorId || !locationId || !stimulusLocation || locationId !== stimulusLocation) return false;
     if (!CHANNELS.has(channel)) return false;
