@@ -544,3 +544,8 @@ La primera ejecución tras exigir referencias de efectos reales pasó 106 de 107
 ## Límite de efectos por evento causal
 
 Se fija un máximo explícito de 50 efectos registrados por evento causal, alineado con el máximo de referencias que acepta world-event-resolution.js. world-effects.js rechaza el efecto número 51 con event-effect-capacity antes de mutar hechos, relaciones o personajes. Así se evita aplicar efectos que después no podrían incluirse en el registro de resolución. Se añade una prueba de capacidad; la batería pasa a 108 pruebas escritas.
+
+
+## CI verde con efectos tipados — 13/11/2026
+
+La ejecución GitHub Actions del commit 3b0495614d0df6a0462f1c06f25f9d6102a0fbb8 completó las doce suites con Node.js 22: **108 pruebas, 108 pasaron, 0 fallaron**. Incluye el módulo nuevo de efectos tipados, la verificación de referencias reales al resolver eventos y el límite de 50 efectos por evento causal. Validación confirmada en Ubuntu/Node 22; la integración en Termux y en la aplicación sigue pendiente de reconciliación.
