@@ -25,7 +25,7 @@
       const id = typeof raw.id === "string" ? raw.id.trim() : "";
       const dueTick = raw.dueTick;
       if (!id || id.length > MAX_ID_LENGTH || !Number.isSafeInteger(dueTick) || dueTick < 0) continue;
-      const status = STATUSES.has(raw.status) ? raw.status : "pending";
+      const status = raw.status == null || raw.status === "" ? "pending" : (STATUSES.has(raw.status) ? raw.status : "cancelled");
       const normalized = {
         ...raw,
         id,
