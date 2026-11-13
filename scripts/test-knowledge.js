@@ -129,3 +129,26 @@ test("una inferencia exige evidencia que el actor ya conoce", () => {
   assert.equal(inference.source, "inferred");
   assert.deepEqual(inference.evidenceIds, ["e1"]);
 });
+
+test("rechaza IDs de conocimiento excesivos y conserva la primera copia duplicada", () => {
+  const oversized = "k".repeat(121);
+  const normalized = Knowledge.normalizeKnowledge([
+    { id: oversized, actorId: "npc", content: "ID inválido", type: "fact", source: "perceived" },
+    { id: "same", actorId: "npc", content: "Primera versión", type: "fact", source: "perceived" },
+    { id: "same", actorId: "npc", content: "Versión sobrescrita", type: "secret", source: "communicated" }
+  ]);
+  assert.equal(normalized.length, 1);
+  assert.equal(normalized[0].content, "Primera versión");
+  assert.equal(normalized[0].type, "fact");
+});
+
+test("no trunca IDs compuestos al comunicar conocimiento", () => {
+  const sourceId = "k".repeat(100);
+  const entries = [{
+    id: sourceId, actorId: "speaker", content: "Información", type: "fact", source: "perceived"
+  }];
+  const result = Knowledge.communicateKnowledge(entries, "speaker", "listener", [sourceId], 2);
+  assert.equal(result.applied, false);
+  assert.equal(result.reason, "generated-id-too-long");
+  assert.equal(result.entries.length, 1);
+});
