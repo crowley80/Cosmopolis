@@ -149,3 +149,24 @@ test("trata IDs especiales como claves propias sin tocar prototipos", () => {
   assert.equal(Object.prototype.hasOwnProperty.call(relation.world.relationships, "__proto__"), true);
   assert.equal(Object.prototype.hasOwnProperty.call(relation.world.relationships["__proto__"], "constructor"), true);
 });
+
+
+test("un ID de efecto no puede reutilizarse en otro evento aunque expire el registro global", () => {
+  const first = Effects.applyEffect(base, {
+    id: "globally-unique-effect", type: "fact.add", causeEventId: "event-1",
+    factId: "fact-global", content: "Hecho persistente"
+  });
+  const world = {
+    ...first.world,
+    processedEffects: [],
+    events: [...first.world.events, { id: "event-2", status: "pending", appliedEffectIds: [] }]
+  };
+  const second = Effects.applyEffect(world, {
+    id: "globally-unique-effect", type: "fact.add", causeEventId: "event-2",
+    factId: "fact-second", content: "No debe duplicarse"
+  });
+  assert.equal(second.applied, false);
+  assert.equal(second.reason, "duplicate-effect");
+  assert.equal(second.world.facts.length, 1);
+  assert.deepEqual(second.world.events[1].appliedEffectIds, []);
+});
