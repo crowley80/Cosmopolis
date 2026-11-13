@@ -113,3 +113,8 @@ Las consultas de memoria, transferencias e inferencias ya no truncan IDs de acto
 ## Validación de identidad espacial en contexto NPC — 13/11/2026
 
 npc-context.js rechaza IDs de actor/localización inválidos o superiores a 120 caracteres y compara las localizaciones completas, sin truncar prefijos. Esto impide que el contexto narrativo de un NPC acepte una escena distinta con un identificador que solo comparte prefijo. CI verde: **135/135 pruebas** en ejecución 43486206002. No altera el requisito de reconciliar Termux antes de integrar.
+
+
+## Identidad segura en selección de iniciativas NPC — 13/11/2026
+
+npc-initiative.js valida los IDs de actor, lista de elegibles, cursor y localización sin truncarlos. Los identificadores largos se descartan, evitando colisiones entre NPC con prefijos iguales. La marcación de iniciativa aplica el mismo contrato. CI verde: **136/136 pruebas** en ejecución 43486310338. Sigue pendiente reconciliar la instalación Termux antes de integrar.
