@@ -417,3 +417,8 @@ Se añaden cuatro pruebas para límites de tamaño, profundidad, ciclos, claves 
 ## 31. Causas conocidas por el NPC
 
 Se añaden dos pruebas que verifican que una propuesta solo puede referenciar una causa presente en `knownCauseIdsByActor[actorId]`. El motor debe derivar esta allowlist del conocimiento individual. La batería documentada queda en **118 pruebas escritas**.
+
+
+## CI verde con 118 pruebas y causalidad privada NPC — 13/11/2026
+
+GitHub Actions completó las doce suites en el commit `db91b8bcccfd56c18d61acc5b5c0c3753dbc30a5`: **118 pruebas, 118 pasaron, 0 fallaron** con Node.js 22. Incluye validación profunda de payloads NPC y la nueva condición de que cada iniciativa cite una causa conocida por el actor que la propone. La validación cubre módulos aislados; no acredita todavía integración en la aplicación ni en Termux.
