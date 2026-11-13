@@ -305,3 +305,10 @@ node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-pe
 ```
 
 No se afirma ejecución en checkout real ni en Termux. Esta suite comprueba la integración entre dos módulos puros, no la integración del runtime ni la aplicación de efectos de dominio.
+
+
+## 21. Ejecución automática en GitHub Actions
+
+Se añade `.github/workflows/world-tests.yml`. En cada push a `work/arquitectura-mundo-vivo`, en pull requests hacia `main` o mediante ejecución manual, GitHub Actions prepara Node.js 22 y ejecuta las once suites aisladas con `node --test`. Esto permite que el repositorio ejecute la batería en un checkout real sin depender del entorno Android.
+
+El workflow acaba de incorporarse; todavía no se dispone aquí de un resultado de ejecución. No debe considerarse la batería aprobada hasta consultar un run completado y revisar su salida.
