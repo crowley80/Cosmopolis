@@ -404,4 +404,7 @@ Reglas aplicadas:
 - La salida es determinista y elimina IDs de actor duplicados.
 
 Límite deliberado: no calcula distancias, geometría, línea de visión, paredes, propagación acústica, viento, ni atención psicológica. La capa de escena debe aportar esas restricciones mediante las listas explícitas; la ausencia de una lista no demuestra que exista línea de visión ni alcance físico. Este módulo solo resuelve elegibilidad con los datos proporcionados. No está integrado en el runtime.
+## 18. Contrato de extremo a extremo de percepción
+
+Se añade `scripts/test-perception-pipeline.js` para comprobar la conexión lógica entre `perception-rules.js`, `perception.js` y `knowledge.js`: los observadores elegibles reciben recuerdos individuales, las listas de visibilidad excluyen actores presentes y los canales sensoriales generan recuerdos diferenciados. Es una prueba de contrato aislada; no implica que el flujo esté conectado a la aplicación.
 
