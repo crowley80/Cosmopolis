@@ -71,3 +71,15 @@ test("rechaza capacidad completa sin perder eventos previos", () => {
   assert.equal(result.world.events.length, Proposal.limits.maxEvents);
   assert.equal(result.world.events[0].id, "e0");
 });
+
+
+test("rechaza duplicado aunque el ID del evento heredado tenga espacios exteriores", () => {
+  const legacyWorld = {
+    ...world,
+    events: [{ id: "  npc-proposal:p-1  ", status: "pending" }]
+  };
+  const result = Proposal.registerNpcProposal(legacyWorld, proposal, options);
+  assert.equal(result.applied, false);
+  assert.equal(result.reason, "duplicate-proposal");
+  assert.equal(result.world.events.length, 1);
+});
