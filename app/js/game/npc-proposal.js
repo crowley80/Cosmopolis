@@ -43,7 +43,9 @@
         !Number.isSafeInteger(proposal.tick) || proposal.tick !== tick) return rejected("invalid-proposal");
 
     const proposalEventId = "npc-proposal:" + id;
-    if (processed.includes(id) || events.some(event => event && event.id === proposalEventId)) {
+    if (processed.includes(id) || events.some(event =>
+      event && typeof event.id === "string" && event.id.trim() === proposalEventId
+    )) {
       return rejected("duplicate-proposal");
     }
     if (events.length >= MAX_EVENTS) return rejected("event-capacity");
