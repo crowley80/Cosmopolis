@@ -1579,3 +1579,8 @@ GitHub Actions completó las doce suites en el commit `d216f14d62d700a03daefa477
 ## Prevención de resurrección de eventos duplicados en la agenda — 13/11/2026
 
 La auditoría del scheduler detectó que normalizeScheduledEvents sobrescribía cada ID repetido con la última copia. Un duplicado heredado pendiente podía sustituir un evento ya disparado o cancelado y hacerlo elegible otra vez. Se corrigió la normalización para conservar el primer registro canónico y permitir únicamente la transición de pendiente a un estado terminal cuando aparece una copia terminal. Los estados terminales nunca retroceden a pendiente. Se añadieron dos pruebas de regresión que cubren ambos órdenes de duplicación y verifican que el evento no vuelve a entregarse. La batería pasa de 121 a **123 pruebas escritas**; CI pendiente. El cambio permanece aislado en work/arquitectura-mundo-vivo y no toca Termux ni main.
+
+
+## CI verde tras protección de estados terminales del scheduler — 13/11/2026
+
+GitHub Actions completó las doce suites en el commit `8d8588858b3bb05b3ea92af3470b04e4033cd19d`: **123 pruebas, 123 pasaron, 0 fallaron** con Node.js 22. La corrección evita que copias duplicadas pendientes hagan resucitar eventos ya disparados o cancelados. La ejecución valida los módulos aislados en Ubuntu/Node 22; no certifica integración en Termux ni en el runtime principal.
