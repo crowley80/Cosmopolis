@@ -1403,3 +1403,12 @@ Se han actualizado arquitectura y plan de pruebas. El módulo sigue aislado: no 
 Durante la revisión autónoma del núcleo se detectaron y corrigieron dos fallos en `app/js/game/world-scheduler.js`: un escape literal de salto de línea que podía romper la sintaxis del comparador y la falta del control de capacidad de 500 entradas que ya exigía su suite de pruebas. Ahora `scheduleEvent` rechaza nuevas altas con `reason: "capacity"` sin descartar ni alterar eventos existentes. La prueba correspondiente ya estaba escrita en `scripts/test-world-scheduler.js`.
 
 La corrección se ha guardado en `work/arquitectura-mundo-vivo`. No se afirma ejecución de la suite: sigue pendiente validarla en un checkout real. No se ha modificado Termux ni se ha integrado la rama en `main`.
+
+
+## Propuestas causales de iniciativa NPC — 13/11/2026
+
+Se incorpora a la rama `work/arquitectura-mundo-vivo` el módulo experimental `app/js/game/npc-proposal.js` y su suite `scripts/test-npc-proposal.js`. El módulo registra propuestas estructuradas como eventos pendientes únicamente si tienen causa explícita, tick actual, actor autorizado y objetivo activo; rechaza duplicados, actores no elegibles, discrepancias de localización y falta de capacidad. Conserva campos desconocidos del mundo y no modifica el objeto de entrada.
+
+Se añaden ocho pruebas escritas. La batería documentada pasa de 67 a 75 pruebas y el comando completo se actualiza en `docs/PLAN_PRUEBAS_MUNDO_VIVO.md`. No se afirma que se hayan ejecutado en checkout real. El módulo no genera narración ni se conecta todavía al runtime.
+
+En la misma sesión se corrigió `world-scheduler.js`: se reparó el comparador con escapes de salto de línea literales y se añadió el control de capacidad que faltaba pese a estar cubierto por una prueba existente. Todo permanece en la rama aislada; no se ha modificado Termux ni integrado en `main`.
