@@ -137,3 +137,17 @@ Una fase no se considera terminada solo porque el código compile. Debe incluir:
 ## 8. Límites de este documento
 
 Este plan no afirma que las pruebas estén implementadas ni ejecutadas. La rama de trabajo parte de una versión remota anterior a los últimos cambios locales de Termux. Hasta reconciliar ambas copias, los cambios de esta rama son documentación de diseño y criterios de aceptación; no deben integrarse a ciegas en `main` ni copiarse encima del teléfono.
+
+
+## 9. Casos específicos para vistas de conocimiento
+
+El módulo experimental `app/js/game/knowledge.js` incorpora ocho pruebas en `scripts/test-knowledge.js`. Añadir a la futura integración los siguientes contratos:
+
+- Cada registro pertenece a un único actor; la vista de otro actor no puede incluirlo por defecto.
+- La fuente debe ser percepción, comunicación o inferencia explícita. No existe una fuente implícita de omnisciencia.
+- Rumor, creencia, hecho y secreto son estados diferenciados; la presentación nunca convierte rumor o creencia en hecho confirmado.
+- La vista de escena filtra por localización y no incorpora estado canónico no proporcionado.
+- La entrega de información comunicada debe crear un registro nuevo para el receptor, con emisor y fuente, sin transferir automáticamente toda la memoria del emisor.
+- La deducción debe registrar la evidencia que la sustenta en una capa superior; este módulo etiqueta la inferencia, pero no valida su razonamiento.
+
+La batería escrita cubre validación, aislamiento por actor, secretos, rumores, inferencias, deduplicación, localización y límites de confianza. La ejecución real en el repositorio y la validación en dispositivo siguen pendientes.
