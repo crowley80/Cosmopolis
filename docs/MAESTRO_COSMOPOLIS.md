@@ -1335,3 +1335,24 @@ Se han escrito cinco pruebas para autorización, rechazo de observaciones no aut
 Se ha documentado el orden de dependencias previsto: núcleo del mundo, conocimiento, percepción, motor espacial, motor de turno y finalmente narrador filtrado. `perception.js` depende de `CosmopolisKnowledge`, por lo que el módulo de conocimiento debe cargarse antes. No se han añadido etiquetas de carga ni cambios en la aplicación.
 
 Comando preparado para ejecutar las suites desde la raíz del repositorio: `node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js`. Es una instrucción documentada; no se declara ejecutada en el checkout ni en Termux.
+
+## Continuidad técnica — reglas explícitas de percepción (13/11/2026)
+
+Se ha añadido a la rama `work/arquitectura-mundo-vivo` el módulo experimental puro `app/js/game/perception-rules.js`. Resuelve qué actores son elegibles para percibir un estímulo a partir de datos explícitos: misma localización, sentido habilitado, listas opcionales de visibilidad/audibilidad/alcance, ocultación, bloqueo y atención requerida. Produce `observerIds` para el adaptador `perception.js`.
+
+También se ha añadido `scripts/test-perception-rules.js` con diez pruebas escritas para localización, sentidos, autorización visual y auditiva, ocultación, obstáculos, atención, canales desconocidos, determinismo y salida de resolución.
+
+Límites: no calcula geometría, distancia, paredes, línea de visión ni propagación sensorial. Las restricciones físicas deben ser proporcionadas explícitamente por una futura capa de escena. No se han conectado estos módulos al runtime ni se han modificado los archivos activos de Termux.
+
+Documentación ampliada:
+- `docs/ARQUITECTURA_MUNDO_VIVO.md`, sección 17.
+- `docs/PLAN_PRUEBAS_MUNDO_VIVO.md`, sección 13.
+
+Comando de validación previsto desde la raíz de un checkout actualizado:
+
+```sh
+node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js scripts/test-perception-rules.js
+```
+
+Las pruebas están escritas, pero no se afirma que se hayan ejecutado en un checkout real ni en el teléfono. La rama remota sigue pendiente de reconciliación con la copia más reciente de Termux antes de cualquier integración.
+
