@@ -12,7 +12,7 @@ const proposal = {
   type: "investigation-started", description: "Elia comienza a investigar el rumor",
   locationId: "market", payload: { target: "old-docks" }
 };
-const options = { actors: [actor], eligibleActorIds: ["elia"] };
+const options = { actors: [actor], eligibleActorIds: ["elia"], knownCauseIdsByActor: { elia: ["rumour-7"] } };
 
 test("registra una propuesta válida como evento pendiente y conserva estado ajeno", () => {
   const result = Proposal.registerNpcProposal(world, proposal, options);
@@ -113,4 +113,23 @@ test("copia payload seguro sin compartir referencias anidadas", () => {
   assert.deepEqual(result.event.payload, payload);
   assert.notEqual(result.event.payload.evidence, payload.evidence);
   assert.notEqual(result.event.payload.evidence[1], payload.evidence[1]);
+});
+
+test("rechaza causas que el NPC no conoce", () => {
+  const unknown = Proposal.registerNpcProposal(world, proposal, {
+    ...options, knownCauseIdsByActor: { elia: ["other-rumour"] }
+  });
+  assert.equal(unknown.applied, false);
+  assert.equal(unknown.reason, "cause-not-known-by-actor");
+  const missingMap = Proposal.registerNpcProposal(world, proposal, {
+    actors: [actor], eligibleActorIds: ["elia"]
+  });
+  assert.equal(missingMap.reason, "cause-not-known-by-actor");
+});
+
+test("la causa conocida debe pertenecer al NPC que propone", () => {
+  const result = Proposal.registerNpcProposal(world, proposal, {
+    ...options, knownCauseIdsByActor: { anotherNpc: ["rumour-7"] }
+  });
+  assert.equal(result.reason, "cause-not-known-by-actor");
 });
