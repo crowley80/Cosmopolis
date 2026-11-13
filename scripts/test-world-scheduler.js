@@ -87,3 +87,28 @@ test("la normalización conserva primero los eventos más próximos", () => {
   assert.equal(result[0].id, "event-0");
   assert.equal(result[result.length - 1].id, "event-499");
 });
+
+
+test("un duplicado pendiente no resucita un evento ya disparado", () => {
+  const legacy = [
+    { id: "same", dueTick: 2, status: "fired", firedAtTick: 2 },
+    { id: " same ", dueTick: 9, status: "pending", payload: { changed: true } }
+  ];
+  const normalized = Scheduler.normalizeScheduledEvents(legacy);
+  assert.equal(normalized.length, 1);
+  assert.equal(normalized[0].status, "fired");
+  assert.equal(normalized[0].dueTick, 2);
+  assert.equal(normalized[0].firedAtTick, 2);
+  assert.equal(Scheduler.collectDueEvents(normalized, 20).due.length, 0);
+});
+
+test("una copia terminal posterior prevalece sobre una copia pendiente anterior", () => {
+  const legacy = [
+    { id: "same", dueTick: 2, status: "pending" },
+    { id: "same", dueTick: 9, status: "cancelled" }
+  ];
+  const normalized = Scheduler.normalizeScheduledEvents(legacy);
+  assert.equal(normalized.length, 1);
+  assert.equal(normalized[0].status, "cancelled");
+  assert.equal(Scheduler.collectDueEvents(normalized, 20).due.length, 0);
+});
