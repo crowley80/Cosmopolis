@@ -43,7 +43,9 @@
     }
     if (operations.includes(opId)) return rejected("duplicate-operation");
 
-    const index = events.findIndex(event => event && event.id === targetId);
+    const index = events.findIndex(event =>
+      event && typeof event.id === "string" && event.id.trim() === targetId
+    );
     if (index < 0) return rejected("event-not-found");
     const current = events[index];
     if (current.status !== "pending") return rejected("event-not-pending");
@@ -57,6 +59,7 @@
 
     const updated = {
       ...current,
+      id: targetId,
       status: outcome,
       resolution: {
         operationId: opId,
