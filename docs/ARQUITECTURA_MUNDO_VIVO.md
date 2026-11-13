@@ -598,3 +598,8 @@ GitHub Actions completó las doce suites en el commit `db91b8bcccfd56c18d61acc5b
 ## Límite aritmético del cooldown NPC — 13/11/2026
 
 Se endurece markInitiative para rechazar la suma tick + cooldownTicks cuando deja de ser un entero seguro de JavaScript. Así no se guardan ticks de próxima iniciativa imprecisos por desbordamiento numérico. Se añade una prueba de borde; la batería pasa a **119 pruebas escritas**.
+
+
+## CI verde con 119 pruebas — 13/11/2026
+
+GitHub Actions completó las doce suites en el commit `e39e93fd8c12dfc646dd2da9ca0d827cefb82d3c`: **119 pruebas, 119 pasaron, 0 fallaron** con Node.js 22. La ejecución incluye el control de desbordamiento aritmético del cooldown de iniciativas NPC. Sigue siendo una validación de módulos aislados, no de la integración en Termux.
