@@ -115,3 +115,16 @@ test("un efecto aplicado queda referenciado en su evento causal", () => {
   });
   assert.deepEqual(result.world.events[0].appliedEffectIds, ["fx-12"]);
 });
+
+
+test("limita los efectos por evento sin descartar los ya aplicados", () => {
+  const appliedEffectIds = Array.from({ length: Effects.limits.maxEffectsPerEvent }, (_, i) => "fx-" + i);
+  const full = { ...base, events: [{ id: "event-1", status: "pending", appliedEffectIds }] };
+  const result = Effects.applyEffect(full, {
+    id: "fx-overflow", type: "fact.add", causeEventId: "event-1", factId: "overflow", content: "No debe añadirse"
+  });
+  assert.equal(result.applied, false);
+  assert.equal(result.reason, "event-effect-capacity");
+  assert.equal(result.world.events[0].appliedEffectIds.length, Effects.limits.maxEffectsPerEvent);
+  assert.equal(result.world.facts.length, 0);
+});
