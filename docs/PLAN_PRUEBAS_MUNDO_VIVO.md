@@ -279,3 +279,16 @@ node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-pe
 ```
 
 Las pruebas siguen pendientes de ejecución en un checkout real de la rama y en Termux. El nuevo módulo es experimental y no está integrado en la aplicación.
+
+
+## 19. Pruebas del ciclo de resolución de eventos
+
+Se añade `scripts/test-world-event-resolution.js` con nueve pruebas: resolución aplicada con referencias de efectos, obligación de referencias al aplicar, cancelación y fallo, idempotencia por operación, rechazo de segunda transición terminal, evento inexistente, resultado y resumen inválidos, validación del tick e identificación, y normalización de referencias de efectos.
+
+La batería documentada asciende a **84 pruebas escritas** (75 anteriores + 9 nuevas). Comando completo:
+
+```sh
+node --test scripts/test-world-core.js scripts/test-knowledge.js scripts/test-perception.js scripts/test-perception-rules.js scripts/test-perception-pipeline.js scripts/test-world-scheduler.js scripts/test-npc-initiative.js scripts/test-npc-context.js scripts/test-npc-proposal.js scripts/test-world-event-resolution.js
+```
+
+No se afirma ejecución en checkout real ni en Termux. El módulo registra estados y referencias, pero no aplica efectos de mundo; permanece experimental y sin integración en la aplicación.
