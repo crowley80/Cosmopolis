@@ -1590,3 +1590,8 @@ GitHub Actions completó las doce suites en el commit `8d8588858b3bb05b3ea92af34
 
 Se detectó que el scheduler recortaba IDs de agenda a 120 caracteres. Dos IDs distintos con el mismo prefijo podían colisionar y una cancelación con ID excesivo podía dirigirse a otro evento tras el recorte. Ahora se rechazan IDs nuevos excesivos, se descartan IDs heredados fuera del límite y cancelEvent devuelve "invalid-id" sin modificar la agenda. Se exponen los límites en la API y se añaden dos pruebas de regresión. La batería pasa de 123 a **125 pruebas escritas**; CI pendiente. Cambio aislado en la rama experimental, sin tocar Termux ni main.
 
+
+
+## CI verde con límites estrictos de IDs del scheduler — 13/11/2026
+
+GitHub Actions completó la ejecución 43481478082 sobre el commit `d3306c1ed999fc2cfd1007ee3adc4e9c7c0d891e`: **125 pruebas, 125 pasaron, 0 fallaron**, en Node.js 22. La suite valida que el scheduler rechace IDs nuevos superiores a 120 caracteres, descarte IDs heredados fuera de límite y no permita que una cancelación excesiva afecte a otro evento por truncamiento. También incluye las dos regresiones que impiden resucitar eventos duplicados ya terminales. La validación es de módulos aislados en CI; no acredita integración en Termux ni en el runtime principal. La rama sigue siendo `work/arquitectura-mundo-vivo`.
