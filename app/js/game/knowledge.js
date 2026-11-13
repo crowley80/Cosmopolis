@@ -138,11 +138,13 @@
   function recordInference(entries, actorId, inference) {
     const actor = cleanId(actorId);
     const current = normalizeKnowledge(entries);
-    const evidenceIds = inference && Array.isArray(inference.evidenceIds)
-      ? Array.from(new Set(inference.evidenceIds.map(cleanId).filter(Boolean)))
-      : [];
+    const requestedEvidence = inference && Array.isArray(inference.evidenceIds)
+      ? inference.evidenceIds : [];
+    const evidenceIds = Array.from(new Set(requestedEvidence.map(cleanId).filter(Boolean)));
+    const invalidEvidence = !Array.isArray(inference && inference.evidenceIds) ||
+      requestedEvidence.some(id => !cleanId(id));
     const ownedIds = new Set(current.filter(item => item.actorId === actor).map(item => item.id));
-    if (!actor || !evidenceIds.length || evidenceIds.some(id => !ownedIds.has(id))) {
+    if (!actor || invalidEvidence || !evidenceIds.length || evidenceIds.some(id => !ownedIds.has(id))) {
       return { applied: false, reason: "missing-owned-evidence", entries: current };
     }
     return recordKnowledge(current, {
