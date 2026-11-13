@@ -1505,3 +1505,8 @@ La ejecución GitHub Actions del commit 3b0495614d0df6a0462f1c06f25f9d6102a0fbb8
 ## Protección frente a IDs especiales en efectos — 13/11/2026
 
 Se endurece world-effects.js frente a IDs como __proto__ y constructor: las lecturas verifican propiedades propias y las escrituras usan definición explícita de propiedad de datos, evitando setters heredados. Se añade una prueba para movimientos y relaciones con esos identificadores. La batería pasa de 108 a 109 pruebas escritas. Pendiente CI.
+
+
+## CI verde tras endurecimiento de efectos — 13/11/2026
+
+GitHub Actions completó las doce suites en el commit f3ed516a008c47b0d0c0715144d6c03d2fb2a6e7: **109 pruebas, 109 pasaron, 0 fallaron**. Esta ejecución incluye la validación de referencias de efectos, el límite de 50 efectos por evento y la protección de IDs especiales (`__proto__`, `constructor`). La validación corresponde a módulos aislados en Node.js 22; no certifica integración en Termux.
