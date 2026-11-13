@@ -66,3 +66,24 @@ test("limita la agenda y no usa el reloj de pared", () => {
   assert.equal(result.length, Scheduler.limits.maxScheduled);
   assert.equal(result[0].id, "e5");
 });
+
+test("al alcanzar capacidad rechaza nuevas entradas sin descartar eventos existentes", () => {
+  const events = Array.from({ length: Scheduler.limits.maxScheduled }, (_, i) => ({
+    id: "event-" + i, dueTick: i
+  }));
+  const result = Scheduler.scheduleEvent(events, { id: "extra", dueTick: 9999 });
+  assert.equal(result.applied, false);
+  assert.equal(result.reason, "capacity");
+  assert.equal(result.events.length, Scheduler.limits.maxScheduled);
+  assert.equal(result.events[0].id, "event-0");
+});
+
+test("la normalización conserva primero los eventos más próximos", () => {
+  const events = Array.from({ length: Scheduler.limits.maxScheduled + 2 }, (_, i) => ({
+    id: "event-" + i, dueTick: i
+  }));
+  const result = Scheduler.normalizeScheduledEvents(events);
+  assert.equal(result.length, Scheduler.limits.maxScheduled);
+  assert.equal(result[0].id, "event-0");
+  assert.equal(result[result.length - 1].id, "event-499");
+});
