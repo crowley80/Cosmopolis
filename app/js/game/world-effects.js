@@ -71,8 +71,13 @@
       const factId = clean(effect.factId);
       const content = clean(effect.content, 2000);
       const visibility = clean(effect.visibility, 20) || "local";
+      const locationId = clean(effect.locationId);
+      const locations = object(source.locations) ? source.locations : {};
       if (!factId || !content || !["public", "local", "private", "secret"].includes(visibility)) {
         return rejected("invalid-fact");
+      }
+      if (locationId && !Object.prototype.hasOwnProperty.call(locations, locationId)) {
+        return rejected("fact-location-not-found");
       }
       const facts = Array.isArray(source.facts) ? source.facts.slice() : [];
       if (facts.some(fact => fact && clean(fact.id) === factId)) return rejected("duplicate-fact");
@@ -82,7 +87,7 @@
         sourceEventId: causeEventId,
         tick,
         visibility,
-        locationId: clean(effect.locationId) || null
+        locationId: locationId || null
       });
       next.facts = facts;
     } else if (type === "relationship.adjust") {
