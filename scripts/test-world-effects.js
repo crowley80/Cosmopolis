@@ -181,3 +181,20 @@ test("rechaza hechos asociados a una localización inexistente", () => {
   assert.equal(result.reason, "fact-location-not-found");
   assert.equal(result.world.facts.length, 0);
 });
+
+test("rechaza IDs de efecto y causa excesivos sin truncarlos", () => {
+  const oversized = "x".repeat(161);
+  const longEffectId = Effects.applyEffect(base, {
+    id: oversized, type: "fact.add", causeEventId: "event-1",
+    factId: "long-effect", content: "No debe aplicarse"
+  });
+  assert.equal(longEffectId.applied, false);
+  assert.equal(longEffectId.reason, "invalid-effect");
+  const longCauseId = Effects.applyEffect(base, {
+    id: "valid-effect", type: "fact.add", causeEventId: "event-1" + oversized,
+    factId: "long-cause", content: "No debe aplicarse"
+  });
+  assert.equal(longCauseId.applied, false);
+  assert.equal(longCauseId.reason, "invalid-effect");
+  assert.equal(base.facts.length, 0);
+});
