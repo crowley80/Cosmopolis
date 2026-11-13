@@ -427,3 +427,8 @@ GitHub Actions completó las doce suites en el commit `db91b8bcccfd56c18d61acc5b
 ## 32. Desbordamiento del cooldown de iniciativas
 
 Se añade una prueba de borde que pasa Number.MAX_SAFE_INTEGER como tick y comprueba que la suma con el cooldown se rechaza antes de actualizar el actor. La batería documentada queda en **119 pruebas escritas**.
+
+
+## CI verde con 119 pruebas — 13/11/2026
+
+GitHub Actions completó las doce suites en el commit `e39e93fd8c12dfc646dd2da9ca0d827cefb82d3c`: **119 pruebas, 119 pasaron, 0 fallaron** con Node.js 22. La ejecución incluye el control de desbordamiento aritmético del cooldown de iniciativas NPC. Sigue siendo una validación de módulos aislados, no de la integración en Termux.
