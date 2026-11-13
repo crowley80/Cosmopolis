@@ -54,6 +54,12 @@
     return typeof value === "string" ? value.trim().slice(0, max) : "";
   }
 
+  function cleanId(value, max = 160) {
+    if (typeof value !== "string") return "";
+    const id = value.trim();
+    return id && id.length <= max ? id : "";
+  }
+
   function isObject(value) {
     return value !== null && typeof value === "object" && !Array.isArray(value);
   }
@@ -77,11 +83,15 @@
     // dentro del límite global de 160 sin truncar ni colisionar identificadores.
     if (!rawProposalId || rawProposalId.length > 147) return rejected("invalid-proposal");
     const id = rawProposalId;
-    const actorId = clean(proposal.actorId, 120);
-    const causeId = clean(proposal.causeId, 160);
+    const actorId = cleanId(proposal.actorId, 120);
+    const causeId = cleanId(proposal.causeId, 160);
+    const proposalLocationId = proposal.locationId == null || proposal.locationId === ""
+      ? ""
+      : cleanId(proposal.locationId, 120);
     const type = clean(proposal.type, 80);
     const description = clean(proposal.description, 1200);
     if (!id || !actorId || !causeId || !type || !description ||
+        (proposal.locationId != null && proposal.locationId !== "" && !proposalLocationId) ||
         !Number.isSafeInteger(proposal.tick) || proposal.tick !== tick) return rejected("invalid-proposal");
 
     const safePayload = proposal.payload === undefined ? { valid: true, value: {} } : copyPayload(proposal.payload);
@@ -97,11 +107,11 @@
 
     const eligibleIds = new Set(
       Array.isArray(options.eligibleActorIds)
-        ? options.eligibleActorIds.map(value => clean(value, 120)).filter(Boolean)
+        ? options.eligibleActorIds.map(value => cleanId(value, 120)).filter(Boolean)
         : []
     );
     const actors = Array.isArray(options.actors) ? options.actors : [];
-    const actor = actors.find(item => item && clean(item.id, 120) === actorId);
+    const actor = actors.find(item => item && cleanId(item.id, 120) === actorId);
     if (!actor || !eligibleIds.has(actorId)) return rejected("actor-not-eligible");
     if (actor.isPlayer === true || actor.autonomous === false || actor.alive === false) {
       return rejected("actor-not-eligible");
@@ -112,10 +122,13 @@
     }
     const knownByActor = options.knownCauseIdsByActor;
     const knownCauses = isObject(knownByActor) && Object.prototype.hasOwnProperty.call(knownByActor, actorId)
-      && Array.isArray(knownByActor[actorId]) ? knownByActor[actorId].map(value => clean(value, 160)) : [];
+      && Array.isArray(knownByActor[actorId]) ? knownByActor[actorId].map(value => cleanId(value, 160)).filter(Boolean) : [];
     if (!knownCauses.includes(causeId)) return rejected("cause-not-known-by-actor");
-    if (actor.locationId && proposal.locationId &&
-        clean(actor.locationId, 120) !== clean(proposal.locationId, 120)) {
+    const actorLocationId = actor.locationId == null || actor.locationId === ""
+      ? ""
+      : cleanId(actor.locationId, 120);
+    if ((actor.locationId != null && actor.locationId !== "" && !actorLocationId) ||
+        (actorLocationId && proposalLocationId && actorLocationId !== proposalLocationId)) {
       return rejected("actor-location-mismatch");
     }
 
@@ -126,7 +139,7 @@
       description,
       actorId,
       causeId,
-      locationId: clean(proposal.locationId, 120) || clean(actor.locationId, 120) || null,
+      locationId: proposalLocationId || actorLocationId || null,
       status: "pending",
       source: "npc-initiative",
       proposalId: id,
