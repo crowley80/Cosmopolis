@@ -122,3 +122,32 @@ test("exige incluir todos los efectos aplicados al cerrar el evento", () => {
   assert.equal(result.reason, "incomplete-effect-references");
   assert.equal(base.events[0].status, "pending");
 });
+
+test("rechaza IDs de evento y operación excesivos sin truncarlos", () => {
+  const oversized = "x".repeat(161);
+  const byEvent = Resolution.resolveEvent(base, "ev-1" + oversized, "valid-op", {
+    outcome: "failed", summary: "No debe cerrar"
+  });
+  assert.equal(byEvent.applied, false);
+  assert.equal(byEvent.reason, "invalid-input");
+  const byOperation = Resolution.resolveEvent(base, "ev-1", "valid-op" + oversized, {
+    outcome: "failed", summary: "No debe cerrar"
+  });
+  assert.equal(byOperation.applied, false);
+  assert.equal(byOperation.reason, "invalid-input");
+  assert.equal(base.events[0].status, "pending");
+});
+
+test("descarta referencias y operaciones heredadas con IDs excesivos", () => {
+  const oversized = "x".repeat(161);
+  const legacy = {
+    ...base,
+    processedEventResolutions: [oversized],
+    events: [{ ...base.events[0], appliedEffectIds: ["f1", oversized] }]
+  };
+  const result = Resolution.resolveEvent(legacy, "ev-1", "valid-op", {
+    outcome: "applied", summary: "Solo referencias válidas", effectIds: ["f1", oversized]
+  });
+  assert.equal(result.applied, true);
+  assert.deepEqual(result.event.resolution.effectIds, ["f1"]);
+});
