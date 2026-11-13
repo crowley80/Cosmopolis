@@ -46,10 +46,15 @@
     if (!object(effect) || !Number.isSafeInteger(source.clock && source.clock.tick) ||
         source.clock.tick < 0) return rejected("invalid-input");
 
-    const id = clean(effect.id);
+    const rawId = typeof effect.id === "string" ? effect.id.trim() : "";
+    const rawCauseEventId = typeof effect.causeEventId === "string" ? effect.causeEventId.trim() : "";
+    const id = clean(rawId);
     const type = clean(effect.type, 80);
-    const causeEventId = clean(effect.causeEventId);
-    if (!id || !TYPES.has(type) || !causeEventId) return rejected("invalid-effect");
+    const causeEventId = clean(rawCauseEventId);
+    // IDs são rejeitados, nunca truncados: truncar poderia colidir com outra operação.
+    if (!id || rawId.length > 160 || !TYPES.has(type) || !causeEventId || rawCauseEventId.length > 160) {
+      return rejected("invalid-effect");
+    }
     if (processed.includes(id) || events.some(event =>
       event && Array.isArray(event.appliedEffectIds) && event.appliedEffectIds.some(value => clean(value) === id)
     )) return rejected("duplicate-effect");
