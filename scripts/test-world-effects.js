@@ -170,3 +170,14 @@ test("un ID de efecto no puede reutilizarse en otro evento aunque expire el regi
   assert.equal(second.world.facts.length, 1);
   assert.deepEqual(second.world.events[1].appliedEffectIds, []);
 });
+
+
+test("rechaza hechos asociados a una localización inexistente", () => {
+  const result = Effects.applyEffect(base, {
+    id: "fx-missing-place", type: "fact.add", causeEventId: "event-1",
+    factId: "fact-nowhere", content: "No debe registrarse", locationId: "nonexistent"
+  });
+  assert.equal(result.applied, false);
+  assert.equal(result.reason, "fact-location-not-found");
+  assert.equal(result.world.facts.length, 0);
+});
