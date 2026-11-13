@@ -473,3 +473,8 @@ Se crea `docs/PLAN_INTEGRACION_MUNDO_VIVO.md`, que identifica los puntos de entr
 ## 26. Prueba integrada de causalidad NPC
 
 Se añade `scripts/test-npc-event-lifecycle.js`, que ejercita en secuencia la propuesta de iniciativa y la resolución terminal. Comprueba que actor, causa y localización sobreviven al ciclo; que los reintentos no duplican; que un evento cancelado no se reabre; y que registrar referencias de efectos no muta hechos del mundo por sí solo. Es integración entre módulos aislados, no integración con la aplicación.
+
+
+## 27. Corrección de equidad del cursor de iniciativas
+
+La revisión del selector encontró que el cursor buscaba el primer ID lexicográficamente mayor, aunque los candidatos se ordenan primero por cooldown. Si el último actor seleccionado era `zeta` y el siguiente ordenado era `alfa`, el selector podía volver a elegir `zeta` y romper la rotación. Ahora el cursor localiza el actor exacto en la lista ordenada y continúa desde el siguiente índice, con vuelta circular. Se añade una prueba para IDs cuyo orden alfabético no coincide con el orden de cooldown. La selección sigue siendo determinista.
