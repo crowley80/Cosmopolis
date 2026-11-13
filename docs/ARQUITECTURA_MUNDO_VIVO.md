@@ -626,3 +626,8 @@ Se añade `app/js/game/spatial-perception.js` como capa pura sobre `perception-r
 - No se inventan posiciones, rutas, paredes ni línea de visión. Las exclusiones existentes (`blockedFor`, `concealedFrom`, allowlists) siguen siendo responsabilidad explícita del motor de escena.
 
 Se añaden nueve pruebas en `scripts/test-spatial-perception.js` y la suite se incorpora al workflow `.github/workflows/world-tests.yml`. La geometría queda aislada y no se conecta a la aplicación ni al narrador. Pendiente CI y posterior validación en checkout real/Termux.
+
+
+## CI verde de percepción espacial — 13 de noviembre de 2026
+
+GitHub Actions, ejecución `43498226091` sobre el commit `c250fff84276e73f0cea9f6251c1aea31c4ef6fe`: **154 pruebas, 154 pasaron, 0 fallaron**, doce suites con Node.js 22. La nueva suite espacial aporta nueve pruebas. Esto valida módulos aislados en CI; no acredita integración con la partida ni prueba en Termux.
