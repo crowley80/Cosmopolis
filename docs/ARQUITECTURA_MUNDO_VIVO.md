@@ -564,3 +564,8 @@ GitHub Actions completó las doce suites en el commit f3ed516a008c47b0d0c0715144
 ## Unicidad global durable de IDs de efecto
 
 Se añade una prueba que elimina deliberadamente el registro global `processedEffects` y comprueba que un ID ya aplicado no puede reutilizarse en otro evento: la referencia persistida en el evento original sigue impidiendo la duplicación. La batería asciende a 110 pruebas escritas.
+
+
+## CI verde con unicidad durable de efectos — 13/11/2026
+
+GitHub Actions completó las doce suites en el commit 5397518ca02c0ad1989369f0105eb5ddc9d853eb: **110 pruebas, 110 pasaron, 0 fallaron**. La ejecución incluye el caso que demuestra que los IDs de efecto siguen siendo únicos aunque se compacte el registro global, gracias a las referencias guardadas en cada evento causal. Validación en Node.js 22; integración en Termux pendiente.
