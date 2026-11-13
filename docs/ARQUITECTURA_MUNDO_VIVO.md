@@ -390,3 +390,18 @@ Cuando se reconcilie la rama con la copia móvil, el orden de dependencias de es
 6. Narrador: recibe únicamente la vista de escena del protagonista, nunca el estado canónico ni memorias privadas de otros actores.
 
 Este orden es una especificación de dependencias, no una modificación de `index.html`. No añadir aún etiquetas `script` ni activar los módulos en la aplicación.
+
+## 17. Reglas explícitas de elegibilidad perceptiva
+
+Se añade el módulo experimental puro `app/js/game/perception-rules.js`. A partir de actores y estímulos declarados, produce `observerIds` para alimentar el adaptador `perception.js`.
+
+Reglas aplicadas:
+- La primera versión exige coincidencia exacta de `locationId`; no permite percepción entre localizaciones.
+- El actor debe tener habilitado explícitamente el sentido correspondiente (`sight`, `hearing`, `smell`, `touch` u `other`).
+- Las listas opcionales `visibleTo`, `audibleTo`, `smellableTo`, `reachableBy` y `availableTo` actúan como listas de autorización cuando están presentes.
+- `concealedFrom` y `blockedFor` excluyen actores concretos.
+- Los estímulos con `requiresAttention` exigen `attentiveActorIds`, o en su ausencia `actor.attention === true`.
+- La salida es determinista y elimina IDs de actor duplicados.
+
+Límite deliberado: no calcula distancias, geometría, línea de visión, paredes, propagación acústica, viento, ni atención psicológica. La capa de escena debe aportar esas restricciones mediante las listas explícitas; la ausencia de una lista no demuestra que exista línea de visión ni alcance físico. Este módulo solo resuelve elegibilidad con los datos proporcionados. No está integrado en el runtime.
+
