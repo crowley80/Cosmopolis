@@ -1660,3 +1660,10 @@ Se elimina el truncamiento de IDs en `perception-rules.js`: actores, localizacio
 ## Estados desconocidos en la agenda de eventos — 13/11/2026
 
 `world-scheduler.js` trataba cualquier estado desconocido como `pending`. Esto podía reactivar una entrada heredada cuyo estado terminal tuviera otro nombre o proviniera de una versión futura. Ahora solo la ausencia de estado (o cadena vacía) se interpreta como pendiente; los estados explícitos desconocidos se neutralizan como `cancelled`, y no vuelven a dispararse. Se actualiza la prueba para cubrir ambos casos y comprobar que solo se entrega el evento sin estado heredado. CI GitHub Actions, ejecución 43496052541 sobre `cfb39c2743df80ff930bdcea98f515860ae61ac3`, terminó correctamente: **145/145 pruebas aprobadas**, doce suites, Node.js 22. Validación aislada; sin integración en runtime/Termux.
+
+
+## Percepción espacial con distancia local — 13/11/2026
+
+En la rama experimental `work/arquitectura-mundo-vivo` se añade `app/js/game/spatial-perception.js`, capa pura sobre las reglas perceptivas existentes. Cuando un estímulo declara `range`, compara posiciones explícitas `{x, y}` mediante distancia euclídea; conserva las reglas de sentido, localización, atención y exclusiones. Si falta una posición con rango declarado o el rango/coordenada es inválido, no concede percepción. Sin rango mantiene compatibilidad con el comportamiento anterior. No calcula todavía paredes, rutas ni línea de visión y no se integra en el runtime.
+
+Se añaden nueve pruebas en `scripts/test-spatial-perception.js` y se incorpora al workflow de CI. Commits: `2fd3157` (módulo) y `ccd2c49` (pruebas). Pendiente actualizar/verificar el workflow y ejecutar CI; no se modifica `main` ni Termux.
