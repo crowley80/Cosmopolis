@@ -534,3 +534,8 @@ Se añaden doce pruebas unitarias. El módulo sigue aislado y usa la forma canó
 Se endurece world-event-resolution.js: para cerrar un evento con resultado applied, ya no basta con proporcionar IDs de texto no vacíos. Cada ID debe existir en event.appliedEffectIds, registro que escribe world-effects.js al aplicar realmente el efecto. Una referencia inventada o perteneciente a otro evento se rechaza con unregistered-effect-reference. Las resoluciones cancelled y failed siguen sin exigir efectos.
 
 Se actualizan las pruebas de resolución y el flujo causal integrado para aplicar primero un efecto tipado y después cerrar el evento con sus referencias reales. Así se comprueba el orden correcto: propuesta pendiente → efecto de dominio → resolución terminal. La batería asciende a 107 pruebas escritas.
+
+
+## Ajuste de expectativa en el ciclo causal integrado — 13/11/2026
+
+La primera ejecución tras exigir referencias de efectos reales pasó 106 de 107 pruebas. El único fallo era una expectativa antigua del test integrado: comparaba el ID del hecho (`clue-map-fragment`) con el ID del efecto (`effect-clue-map`). La implementación conserva correctamente el ID del efecto en `resolution.effectIds`; se corrige la expectativa de la prueba sin cambiar el código de dominio.
