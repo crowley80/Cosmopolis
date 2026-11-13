@@ -198,3 +198,49 @@ test("rechaza IDs de efecto y causa excesivos sin truncarlos", () => {
   assert.equal(longCauseId.reason, "invalid-effect");
   assert.equal(base.facts.length, 0);
 });
+
+
+test("rechaza IDs de dominio excesivos sin truncarlos a otra entidad", () => {
+  const long = "x".repeat(161);
+  const fact = Effects.applyEffect(base, {
+    id: "fx-long-fact", type: "fact.add", causeEventId: "event-1",
+    factId: long, content: "No debe crearse"
+  });
+  assert.equal(fact.applied, false);
+  assert.equal(fact.reason, "invalid-fact");
+
+  const location = Effects.applyEffect(base, {
+    id: "fx-long-location", type: "fact.add", causeEventId: "event-1",
+    factId: "fact-location", content: "No debe asociarse",
+    locationId: "market" + long
+  });
+  assert.equal(location.applied, false);
+  assert.equal(location.reason, "invalid-fact");
+
+  const relationship = Effects.applyEffect(base, {
+    id: "fx-long-actor", type: "relationship.adjust", causeEventId: "event-1",
+    fromActorId: "npc" + long, toActorId: "player", axis: "trust", delta: 1
+  });
+  assert.equal(relationship.applied, false);
+  assert.equal(relationship.reason, "invalid-relationship-effect");
+  assert.deepEqual(base.relationships, {});
+});
+
+test("rechaza IDs excesivos de personaje y localización de origen", () => {
+  const long = "x".repeat(161);
+  const character = Effects.applyEffect(base, {
+    id: "fx-long-character", type: "character.move", causeEventId: "event-1",
+    characterId: "npc" + long, toLocationId: "archive"
+  });
+  assert.equal(character.applied, false);
+  assert.equal(character.reason, "invalid-character-move");
+  assert.equal(character.world.characters.npc.locationId, "market");
+
+  const origin = Effects.applyEffect(base, {
+    id: "fx-long-origin", type: "character.move", causeEventId: "event-1",
+    characterId: "npc", fromLocationId: "market" + long, toLocationId: "archive"
+  });
+  assert.equal(origin.applied, false);
+  assert.equal(origin.reason, "invalid-character-move");
+  assert.equal(origin.world.characters.npc.locationId, "market");
+});
