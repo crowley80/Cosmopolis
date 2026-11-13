@@ -358,3 +358,14 @@ El módulo experimental `app/js/game/knowledge.js` separa los registros de conoc
 **Límite de seguridad:** el módulo no conoce la verdad canónica ni la consulta. Esto es deliberado: el motor que lo invoque debe decidir, con reglas comprobables, qué observó, recibió o pudo inferir cada actor. No se debe copiar el estado completo del mundo a una entrada de conocimiento ni confiar en instrucciones del prompt para ocultarlo. Un rumor permanece como rumor y una inferencia conserva su fuente.
 
 El módulo es experimental, no se carga desde `index.html` y no está conectado al narrador ni al guardado. Sus ocho pruebas están escritas, pero aún requieren ejecución en un checkout real y posterior validación en Termux.
+
+
+
+## 14. Comunicación e inferencia con evidencia
+
+El módulo incorpora dos operaciones explícitas adicionales:
+
+- `communicateKnowledge`: el emisor selecciona IDs concretos de su propia memoria. Solo esos registros se copian al receptor, con fuente `communicated`, emisor y tick. No se transfiere la memoria completa. Los rumores y creencias conservan su tipo y confianza; comunicar un rumor no lo confirma.
+- `recordInference`: exige que todas las evidencias citadas ya pertenezcan al actor. La conclusión se registra como `belief` con fuente `inferred` y referencias a sus evidencias. El módulo no valida la lógica de la deducción ni la convierte en verdad canónica.
+
+La comunicación es una operación explícita del motor: la capa superior debe decidir qué se dijo realmente y qué información incluyó el mensaje. No se debe invocar con todos los IDs del emisor ni inferir que una conversación transfiere automáticamente toda su memoria.
