@@ -1412,3 +1412,10 @@ Se incorpora a la rama `work/arquitectura-mundo-vivo` el módulo experimental `a
 Se añaden ocho pruebas escritas. La batería documentada pasa de 67 a 75 pruebas y el comando completo se actualiza en `docs/PLAN_PRUEBAS_MUNDO_VIVO.md`. No se afirma que se hayan ejecutado en checkout real. El módulo no genera narración ni se conecta todavía al runtime.
 
 En la misma sesión se corrigió `world-scheduler.js`: se reparó el comparador con escapes de salto de línea literales y se añadió el control de capacidad que faltaba pese a estar cubierto por una prueba existente. Todo permanece en la rama aislada; no se ha modificado Termux ni integrado en `main`.
+
+
+## Ciclo de resolución de eventos — 13/11/2026
+
+Se incorpora a `work/arquitectura-mundo-vivo` el módulo experimental `app/js/game/world-event-resolution.js` y su suite `scripts/test-world-event-resolution.js`. El módulo controla transiciones de eventos pendientes a aplicados, cancelados o fallidos; exige operación idempotente, tick válido, resumen y referencias explícitas de efectos cuando el resultado es aplicado. Conserva causalidad y no muta el estado de entrada.
+
+Se añaden nueve pruebas escritas. La batería documentada pasa de 75 a 84 pruebas y se actualiza el comando de ejecución. Importante: el módulo registra el resultado y las referencias de efectos, pero todavía no ejecuta las mutaciones del mundo. No está conectado al runtime ni se han ejecutado las suites en un checkout real. No se ha modificado Termux ni integrado la rama en `main`.
