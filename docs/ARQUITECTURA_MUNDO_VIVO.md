@@ -583,3 +583,8 @@ La ejecución CI de 112 pruebas detectó un único test de normalización que a�
 ## Validación profunda de payloads de propuestas NPC — 13/11/2026
 
 Se endurece npc-proposal.js para que el payload estructurado no pueda introducir objetos arbitrarios, ciclos, prototipos especiales ni estructuras desmesuradas en el estado del mundo. La copia admite solo valores JSON-like, arrays y objetos planos, con profundidad máxima 3, 20 elementos/propiedades por contenedor, 100 nodos, cadenas de 500 caracteres y rechazo de claves peligrosas. La copia es profunda y no comparte referencias con la propuesta. Se añaden cuatro pruebas; la batería pasa de 112 a **116 pruebas escritas**. Pendiente CI.
+
+
+## Causalidad limitada al conocimiento del NPC — 13/11/2026
+
+Se endurece registerNpcProposal: ya no basta con que el modelo proponga un causeId no vacío. El motor debe proporcionar explícitamente knownCauseIdsByActor y la causa debe estar en la lista de conocimiento del actor que inicia la acción. Esto impide que una iniciativa se apoye en rumores, hechos o acciones que ese NPC no conoce. Se añaden dos pruebas y se actualizan las fixtures. La batería asciende a **118 pruebas escritas**. El runtime deberá construir esta allowlist desde la memoria individual del NPC, nunca desde el inventario global de causas.
