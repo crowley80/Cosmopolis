@@ -118,3 +118,8 @@ npc-context.js rechaza IDs de actor/localización inválidos o superiores a 120 
 ## Identidad segura en selección de iniciativas NPC — 13/11/2026
 
 npc-initiative.js valida los IDs de actor, lista de elegibles, cursor y localización sin truncarlos. Los identificadores largos se descartan, evitando colisiones entre NPC con prefijos iguales. La marcación de iniciativa aplica el mismo contrato. CI verde: **136/136 pruebas** en ejecución 43486310338. Sigue pendiente reconciliar la instalación Termux antes de integrar.
+
+
+## IDs causales y espaciales en propuestas NPC — 13/11/2026
+
+npc-proposal.js valida sin truncamiento la identidad del actor, la causa conocida y la localización propuesta, además de las allowlists de elegibilidad y conocimiento. Se rechazan actor/localización >120 caracteres y causa >160. CI verde: **137/137 pruebas** en ejecución 43486527033. La integración real sigue pendiente de reconciliación de Termux.
