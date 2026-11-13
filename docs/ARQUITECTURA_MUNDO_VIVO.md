@@ -408,3 +408,17 @@ Límite deliberado: no calcula distancias, geometría, línea de visión, parede
 
 Se añade `scripts/test-perception-pipeline.js` para comprobar la conexión lógica entre `perception-rules.js`, `perception.js` y `knowledge.js`: los observadores elegibles reciben recuerdos individuales, las listas de visibilidad excluyen actores presentes y los canales sensoriales generan recuerdos diferenciados. Es una prueba de contrato aislada; no implica que el flujo esté conectado a la aplicación.
 
+## 19. Agenda de eventos futuros por ticks lógicos
+
+Se añade el módulo puro experimental `app/js/game/world-scheduler.js`. Mantiene una agenda persistible con `id`, `dueTick`, `status` y `payload`, sin temporizadores ni reloj de pared.
+
+Operaciones:
+- `scheduleEvent`: registra un evento pendiente con ID único y tick lógico de vencimiento.
+- `cancelEvent`: cancela únicamente eventos pendientes.
+- `collectDueEvents`: entrega una sola vez los eventos cuyo `dueTick` ya se ha alcanzado y los marca como `fired`.
+- `normalizeScheduledEvents`: normaliza registros y conserva campos de extensión.
+
+La agenda se ordena por tick e ID para que el resultado sea determinista. La capacidad máxima es 500 entradas; al llenarse, las nuevas altas se rechazan sin borrar eventos ya programados. Si una agenda heredada supera el límite, la normalización conserva los 500 vencimientos más próximos.
+
+El scheduler no avanza el reloj ni se ejecuta en segundo plano: el motor de turnos debe llamarlo después de un paso lógico válido y persistir el resultado junto con el estado del mundo. Por tanto, al cerrar la partida no se consumen eventos ni se simula tiempo offline. El scheduler entrega eventos como datos; la capa superior aún debe validar sus consecuencias, permisos, causalidad y conocimiento de los personajes. No está integrado en runtime.
+
