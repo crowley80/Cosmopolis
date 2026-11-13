@@ -78,7 +78,8 @@
   function markInitiative(actor, tick, cooldownTicks = 1) {
     if (!actor || typeof actor !== "object" || !clean(actor.id) ||
         !Number.isSafeInteger(tick) || tick < 0 ||
-        !Number.isSafeInteger(cooldownTicks) || cooldownTicks < 1) {
+        !Number.isSafeInteger(cooldownTicks) || cooldownTicks < 1 ||
+        !Number.isSafeInteger(tick + cooldownTicks)) {
       return { applied: false, reason: "invalid-input", actor };
     }
     if (Number.isSafeInteger(actor.lastInitiativeTick) && actor.lastInitiativeTick >= tick) {
