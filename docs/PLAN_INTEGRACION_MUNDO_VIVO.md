@@ -62,7 +62,7 @@ La rama contiene módulos experimentales aislados. La copia Termux del usuario e
 
 ## 5. Estado real
 
-Los módulos `world-core`, `knowledge`, `perception`, `perception-rules`, `world-scheduler`, `npc-initiative`, `npc-context`, `npc-proposal`, `world-event-resolution` y `world-effects` están aislados y no se cargan desde `index.html`. La batería comprende doce suites y **110 pruebas**; GitHub Actions las ejecutó con Node.js 22 y confirmó 110/110 correctas en el commit `5397518ca02c0ad1989369f0105eb5ddc9d853eb`. Esto valida los módulos aislados, no su integración en el runtime ni en Termux. La copia local de Termux sigue siendo la referencia más reciente y debe reconciliarse antes de activar cualquier módulo.
+Los módulos `world-core`, `knowledge`, `perception`, `perception-rules`, `world-scheduler`, `npc-initiative`, `npc-context`, `npc-proposal`, `world-event-resolution` y `world-effects` están aislados y no se cargan desde `index.html`. La batería comprende doce suites y **125 pruebas**; GitHub Actions las ejecutó con Node.js 22 y confirmó 125/125 correctas en el commit `d3306c1ed999fc2cfd1007ee3adc4e9c7c0d891e` (ejecución 43481478082). El scheduler impide resucitar eventos terminales mediante duplicados y rechaza IDs de más de 120 caracteres sin truncarlos. Esto valida los módulos aislados, no su integración en el runtime ni en Termux. La copia local de Termux sigue siendo la referencia más reciente y debe reconciliarse antes de activar cualquier módulo.
 
 
 ## 6. Actualización de módulos y pruebas — 13/11/2026
@@ -78,3 +78,8 @@ La integración de `npc-proposal.js` debe pasar dos datos derivados del contexto
 ## Estado de validación actualizado — 13/11/2026
 
 La rama experimental contiene doce suites automatizadas y **123 pruebas**. La última ejecución de GitHub Actions sobre `8d8588858b3bb05b3ea92af3470b04e4033cd19d` terminó correctamente (123/123). Se añadió protección contra la resurrección de eventos duplicados en el scheduler. Esta validación no elimina el bloqueo de integración: sigue siendo obligatorio reconciliar primero la copia Termux más reciente y comprobar el runtime real antes de conectar módulos o modificar la partida del usuario.
+
+
+## Estado de validación actualizado — 13/11/2026 (125 pruebas)
+
+La ejecución 43481478082 de GitHub Actions terminó con éxito sobre `d3306c1ed999fc2cfd1007ee3adc4e9c7c0d891e`: doce suites, **125/125 pruebas correctas** con Node.js 22. Además de la protección de estados terminales, el scheduler fija un máximo de 120 caracteres por ID: los nuevos se rechazan si exceden el límite, los heredados inválidos se descartan y cancelEvent no trunca identificadores. El bloqueo de integración permanece intacto: reconciliar primero Termux, validar persistencia y privacidad del contexto y probar el runtime antes de conectar los módulos.
