@@ -1605,3 +1605,8 @@ La auditoría de world-core.js detectó que incrementar el contador cuando ya va
 ## Protección de identificadores en efectos y resolución causal — 13/11/2026
 
 Se detectó otro riesgo de colisión por truncamiento: world-effects.js recortaba IDs de efecto/causa a 160 caracteres; world-event-resolution.js hacía lo mismo con IDs de evento, operación, referencias de efectos y registros heredados. Ahora los IDs principales excesivos se rechazan y las referencias/registros heredados fuera del límite se descartan, en lugar de convertirlos en prefijos potencialmente coincidentes. Se añaden tres pruebas de regresión entre ambos módulos. CI GitHub Actions, ejecución 43485613054 sobre `4b32e6b834b22f0b535640022d629a95fcd9e141`: **129 pruebas, 129 pasaron, 0 fallaron**, doce suites con Node.js 22. Validación aislada; no integración en Termux/runtime.
+
+
+## Coherencia del ID compuesto de propuesta NPC — 13/11/2026
+
+La auditoría detectó que npc-proposal.js permitía un ID de propuesta de hasta 160 caracteres y luego le añadía el prefijo `npc-proposal:` (13 caracteres), generando un ID de evento de hasta 173, incompatible con el límite global de 160 del núcleo. Ahora se rechazan propuestas cuyo ID supere 147 caracteres; el máximo permitido produce exactamente un ID de evento de 160. Se añade prueba de límite y frontera. CI GitHub Actions, ejecución 43485723310 sobre `c27f529f8e2a0216a63d50e5d2e441f737b4f448`: **130 pruebas, 130 pasaron, 0 fallaron**, Node.js 22. Sigue siendo validación de módulos aislados.
