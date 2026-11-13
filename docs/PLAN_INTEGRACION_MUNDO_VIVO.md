@@ -39,8 +39,8 @@ La rama contiene módulos experimentales aislados. La copia Termux del usuario e
 ### Etapa D — Eventos e iniciativas
 12. Llamar al scheduler solo después de un tick válido; persistir el estado de agenda y la entrega de eventos en la misma operación.
 13. Seleccionar iniciativas mediante `npc-initiative.js`, validar propuesta mediante `npc-proposal.js` y guardar evento causal pendiente.
-14. Validar y resolver el evento con `world-event-resolution.js`. Su estado `applied` solo significa que se registraron referencias a efectos: **no aplica todavía efectos de dominio**.
-15. Crear un registro cerrado de efectos tipados (por ejemplo, añadir hecho observado, cambiar relación con causa, mover personaje con precondiciones). Cada efecto necesita validador, límites y pruebas de idempotencia antes de ejecutarse.
+14. Aplicar los efectos validados mediante `world-effects.js` y resolver después el evento con `world-event-resolution.js`. El estado `applied` exige que cada ID citado esté realmente registrado en `event.appliedEffectIds`; no basta con que la IA devuelva referencias arbitrarias.
+15. El catálogo experimental ya existe en `world-effects.js`: `fact.add`, `relationship.adjust` y `character.move`. Exige un evento causal pendiente, IDs idempotentes, límites de variación y de capacidad, referencias persistentes en el evento y precondiciones de localización. Antes de producción hay que reconciliar el esquema de `world.characters`/`world.locations` con Termux y ampliar los efectos según las necesidades reales.
 16. Integrar la salida narrativa después de validar los cambios. La narración debe describir lo que el motor ya aceptó, no actuar como autoridad para mutar el mundo.
 
 ### Etapa E — Validación y primera partida
@@ -62,4 +62,9 @@ La rama contiene módulos experimentales aislados. La copia Termux del usuario e
 
 ## 5. Estado real
 
-Los módulos `world-core`, `knowledge`, `perception`, `perception-rules`, `world-scheduler`, `npc-initiative`, `npc-context`, `npc-proposal` y `world-event-resolution` están aislados. Hay 84 pruebas escritas documentadas, pero no se afirma que hayan sido ejecutadas en checkout real. Ningún módulo de esta lista se carga desde `index.html` ni se ha integrado en el runtime de Termux.
+Los módulos `world-core`, `knowledge`, `perception`, `perception-rules`, `world-scheduler`, `npc-initiative`, `npc-context`, `npc-proposal`, `world-event-resolution` y `world-effects` están aislados y no se cargan desde `index.html`. La batería comprende doce suites y **110 pruebas**; GitHub Actions las ejecutó con Node.js 22 y confirmó 110/110 correctas en el commit `5397518ca02c0ad1989369f0105eb5ddc9d853eb`. Esto valida los módulos aislados, no su integración en el runtime ni en Termux. La copia local de Termux sigue siendo la referencia más reciente y debe reconciliarse antes de activar cualquier módulo.
+
+
+## 6. Actualización de módulos y pruebas — 13/11/2026
+
+Se incorporan al inventario `world-effects.js` y sus validaciones cruzadas con `world-event-resolution.js`. La secuencia de una iniciativa causal ya puede probarse de extremo a extremo en memoria: propuesta NPC pendiente → efecto tipado real → resolución terminal con referencias verificadas. La suite incluye 110 pruebas distribuidas en doce archivos, todas aprobadas por CI Node 22. No se ha hecho integración con la aplicación activa; sigue bloqueada hasta reconciliar Termux y fijar el contrato de persistencia.
