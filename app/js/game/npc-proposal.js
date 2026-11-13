@@ -106,6 +106,10 @@
     if (!clean(actor.personalGoal, 1000) || TERMINAL_GOALS.has(goalStatus)) {
       return rejected("actor-goal-inactive");
     }
+    const knownByActor = options.knownCauseIdsByActor;
+    const knownCauses = isObject(knownByActor) && Object.prototype.hasOwnProperty.call(knownByActor, actorId)
+      && Array.isArray(knownByActor[actorId]) ? knownByActor[actorId].map(value => clean(value, 160)) : [];
+    if (!knownCauses.includes(causeId)) return rejected("cause-not-known-by-actor");
     if (actor.locationId && proposal.locationId &&
         clean(actor.locationId, 120) !== clean(proposal.locationId, 120)) {
       return rejected("actor-location-mismatch");
