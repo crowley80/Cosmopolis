@@ -77,3 +77,20 @@ test("rechaza un ID de evento ya utilizado por otra operación sin avanzar el ti
   assert.equal(second.world.events.length, 1);
   assert.equal(second.world.processedOperations.includes("operation-2"), false);
 });
+
+
+test('normaliza espacios en IDs de eventos para impedir duplicados equivalentes', () => {
+  const first = World.applyStep({}, 'op-a', { id: '  event-x  ', description: 'Primero' });
+  assert.equal(first.world.events[0].id, 'event-x');
+  const second = World.applyStep(first.world, 'op-b', { id: 'event-x', description: 'Duplicado' });
+  assert.equal(second.applied, false);
+  assert.equal(second.reason, 'duplicate-event-id');
+  assert.equal(second.world.clock.tick, 1);
+  assert.equal(second.world.processedOperations.includes('op-b'), false);
+});
+
+test('un ID de evento compuesto solo por espacios usa operationId normalizado', () => {
+  const result = World.applyStep({}, '  op-space  ', { id: '   ', description: 'Evento' });
+  assert.equal(result.applied, true);
+  assert.equal(result.world.events[0].id, 'op-space');
+});
