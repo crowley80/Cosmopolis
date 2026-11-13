@@ -108,3 +108,8 @@ knowledge.js rechaza IDs de entrada/actor que excedan 120 caracteres, conserva l
 ## Aislamiento de IDs y localizaciones en memoria NPC — 13/11/2026
 
 Las consultas de memoria, transferencias e inferencias ya no truncan IDs de actor o conocimiento. Las entradas con emisor/localización excesivos se descartan por completo: no se convierten en recuerdos globales por perder su localización. Las referencias de evidencia fuera del límite se descartan sin alterar sus prefijos. CI verde: **134/134 pruebas** en ejecución 43486091187. La integración sigue pendiente de reconciliación con Termux y validación real del runtime.
+
+
+## Validación de identidad espacial en contexto NPC — 13/11/2026
+
+npc-context.js rechaza IDs de actor/localización inválidos o superiores a 120 caracteres y compara las localizaciones completas, sin truncar prefijos. Esto impide que el contexto narrativo de un NPC acepte una escena distinta con un identificador que solo comparte prefijo. CI verde: **135/135 pruebas** en ejecución 43486206002. No altera el requisito de reconciliar Termux antes de integrar.
