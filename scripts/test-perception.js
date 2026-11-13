@@ -14,6 +14,7 @@ test("solo registra estímulos cuya percepción autorizó el motor", () => {
   const view = Knowledge.buildKnowledgeView(result.entries, "player").knowledge;
   assert.equal(view[0].content, "Una lámpara encendida");
   assert.equal(view[0].source, "perceived");
+  assert.equal(view[0].channel, "sight");
 });
 
 test("no registra estímulos sin lista explícita de observadores", () => {
