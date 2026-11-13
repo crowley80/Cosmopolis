@@ -1304,3 +1304,12 @@ La revisión de `Narrator.buildMessages()` añade el hallazgo P-06 a `docs/AUDIT
 
 Este punto es prioritario para el futuro motor: la IA no debe recibir indiscriminadamente toda la verdad del mundo para después intentar no contarla. No se ha modificado el narrador actual ni se afirma que exista una filtración observada; es un riesgo estático de la versión remota.
 
+
+
+## Vistas de conocimiento por actor — 13 de noviembre de 2026
+
+Se ha añadido en la rama aislada `work/arquitectura-mundo-vivo` el módulo puro `app/js/game/knowledge.js` y su batería `scripts/test-knowledge.js`. El módulo mantiene registros de conocimiento ligados a un actor, exige fuente (`perceived`, `communicated` o `inferred`), distingue tipo (`fact`, `rumor`, `belief`, `secret`), limita confianza y permite construir vistas por actor y localización. Los IDs duplicados se rechazan.
+
+La API no recibe el estado canónico del mundo: por diseño, el llamador debe proporcionar exclusivamente entradas autorizadas para el actor. Por tanto, este módulo es una barrera estructural útil, pero no sustituye la obligación de filtrar correctamente en el motor que registre y entregue los datos. Tampoco se ha conectado a `Narrator`, `app.js` ni al guardado actual.
+
+Se añadieron ocho pruebas automatizadas para validación de fuentes, separación entre actores, secretos, rumores, inferencias, idempotencia y filtro de localización. Estado de ejecución: código y pruebas guardados en GitHub; pendiente ejecutarlas en un checkout real de la rama y validar compatibilidad con Node/Termux. No está integrado en la instalación móvil.
