@@ -9,6 +9,7 @@
     const SCHEMA_VERSION = 1;
     const MAX_PROCESSED_OPERATIONS = 500;
     const MAX_EVENTS = 200;
+    const MAX_ID_LENGTH = 160;
 
     function isObject(value) {
         return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -20,7 +21,7 @@
         (Array.isArray(values) ? values : []).forEach(value => {
             if (typeof value !== 'string') return;
             const item = value.trim();
-            if (!item || seen.has(item)) return;
+            if (!item || item.length > MAX_ID_LENGTH || seen.has(item)) return;
             seen.add(item);
             result.push(item);
         });
@@ -58,14 +59,17 @@
 
         const next = normalize(world);
         const id = operationId.trim();
+        if (id.length > MAX_ID_LENGTH) throw new RangeError('operationId supera el límite de 160 caracteres');
 
         if (next.processedOperations.includes(id)) {
             return { world: next, applied: false, reason: 'duplicate-operation', tick: next.clock.tick };
         }
 
-        const requestedEventId = isObject(event) && typeof event.id === 'string' && event.id.trim()
-            ? event.id.trim()
-            : id;
+        const suppliedEventId = isObject(event) && typeof event.id === 'string' ? event.id.trim() : '';
+        if (suppliedEventId.length > MAX_ID_LENGTH) {
+            throw new RangeError('event.id supera el límite de 160 caracteres');
+        }
+        const requestedEventId = suppliedEventId || id;
         if (next.events.some(existing =>
             existing && typeof existing.id === 'string' && existing.id.trim() === requestedEventId
         )) {
@@ -101,6 +105,7 @@
         SCHEMA_VERSION,
         MAX_PROCESSED_OPERATIONS,
         MAX_EVENTS,
+        MAX_ID_LENGTH,
         normalize,
         applyStep
     });
