@@ -39,7 +39,7 @@ function read(relative) {
   const allowed = relative.startsWith('app/') || relative.startsWith('scripts/') ||
     relative === 'index.html' || relative === 'server.js';
   if (!allowed || relative === 'scripts/agente_cosmopolis.js' || relative.includes('.bak') ||
-      path.isAbsolute(relative) || relative.includes('\\\\') ||
+      path.isAbsolute(relative) || relative.includes(String.fromCharCode(92)) ||
       path.posix.normalize(relative) !== relative) {
     throw new Error(`Ruta no autorizada o insegura: ${relative}`);
   }
@@ -212,6 +212,9 @@ function applyTask(task, patch) {
   const target = path.join(ROOT, task.file);
   const original = fs.readFileSync(target);
   const masterPath = path.join(ROOT, 'docs/MAESTRO_COSMOPOLIS.md');
+  if (run('git', ['status', '--porcelain', '--', 'docs/MAESTRO_COSMOPOLIS.md']).trim()) {
+    throw new Error('El documento maestro tiene cambios previos; no se modificará.');
+  }
   const masterOriginal = fs.readFileSync(masterPath);
 
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -243,11 +246,11 @@ function applyTask(task, patch) {
 - Tarea: ${task.id}
 - Archivo modificado: \`${task.file}\`
 - Copia de seguridad: \`${path.basename(backup)}\`
-- Validación: \`node --check\` superada.
+- Validación: \`node --check\` cuando el archivo es JavaScript.
 - Integridad del diff: \`git diff --check\` superada.
 - Aplicación: parche comprobado previamente con \`git apply --check\`.
 - Alcance: solo se autorizó modificar el archivo indicado.
-- Revisión narrativa en navegador: pendiente.
+- Validación adicional: \`git diff --check\` superada.
 
 `;
 
