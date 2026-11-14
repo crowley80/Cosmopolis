@@ -67,4 +67,24 @@ assert.equal(distantInspection.state.wellInspected, undefined,
     'No se puede inspeccionar el pozo desde otra ubicación.');
 assert.doesNotMatch(distantInspection.reply, /Elia/i);
 
-console.log('Pruebas del director narrativo: correctas.');
+
+global.Session = {
+    getWorld: () => ({ facts: [], events: [], relationships: {} })
+};
+require('../app/js/game/narrator.js');
+const openingText = 'Llegas a un camino desconocido. Todavía no has conocido a nadie.';
+const narratorAdventure = {
+    title: 'Prueba',
+    text: openingText,
+    location: 'Camino de entrada',
+    state: { currentLocation: 'Camino de entrada', characters: {}, knownFacts: [], clues: [], events: [] }
+};
+const messages = global.window.Narrator.buildMessages(
+    'Observo alrededor.', player, narratorAdventure, []
+);
+assert.match(messages[0].content, /El registro characters describe el mundo/);
+assert.match(messages[0].content, /No presupongas que el jugador conoce a Elia/);
+assert.equal(JSON.parse(messages[1].content).currentAdventure.opening, openingText,
+    'El narrador debe recibir el prólogo para saber qué se ha presentado al jugador.');
+
+console.log('Pruebas de director y narrador: correctas.');
