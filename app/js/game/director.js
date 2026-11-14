@@ -32,6 +32,7 @@ const Director = {
             state.events.some(item => /\belia\b/i.test(String(item)))
         );
         const eliaPresent = !!elia && elia.location === currentLocation;
+        const eliaIdentifiedPresent = eliaKnown && eliaPresent;
         if (elia) {
             state.eliaTrust = Number.isFinite(state.eliaTrust) ? state.eliaTrust : (Number(elia.trust) || 0);
             elia.trust = state.eliaTrust;
@@ -109,7 +110,7 @@ const Director = {
             state.wellInspected = true;
             state.bellInvestigated = true;
             reply = 'Te acercas al pozo y examinas la losa. Las cadenas están oxidadas, pero algunos eslabones presentan arañazos recientes. En la piedra descubres tres símbolos casi borrados: una montaña, una puerta y una línea ondulada que podría representar agua... o sonido.' +
-                (eliaPresent ? '\n\nElia se agacha a tu lado.\n\n—Eso no estaba ahí ayer —murmura.' : '');
+                (eliaIdentifiedPresent ? '\n\nElia se agacha a tu lado.\n\n—Eso no estaba ahí ayer —murmura.' : '');
             if (!clues.includes('Tres símbolos grabados en la losa')) clues.push('Tres símbolos grabados en la losa');
             if (!facts.includes('La losa presenta arañazos recientes y tres símbolos.')) facts.push('La losa presenta arañazos recientes y tres símbolos.');
             event = 'Se han descubierto tres símbolos y arañazos recientes en la losa.';
@@ -119,7 +120,7 @@ const Director = {
                 reply = 'Tiras de las cadenas y pruebas a mover la losa. El metal protesta con un chirrido, pero el cierre resiste. No parece una simple tapa: alguien la aseguró para que no pudiera abrirse fácilmente. Necesitarás encontrar otra manera.';
             } else {
                 reply = 'Te dispones a mover la losa, pero las cadenas están tensas y el cierre no cede. Antes de forzarlo quizá convendría examinarlo.' +
-                    (eliaPresent ? ' Elia te observa con evidente inquietud.' : '');
+                    (eliaIdentifiedPresent ? ' Elia te observa con evidente inquietud.' : '');
             }
             event = `${name} ha intentado abrir el pozo.`;
         } else if (atWell) {
@@ -159,7 +160,9 @@ const Director = {
             } else if (this.has(text, ['elia', 'pozo', 'plaza'])) {
                 state.currentLocation = 'Plaza del pozo';
                 reply = elia && elia.location === 'Plaza del pozo'
-                    ? 'Regresas a la plaza. Elia sigue junto al pozo, revisando unas notas en un papel doblado. Al verte, levanta la mirada.'
+                    ? (eliaKnown
+                        ? 'Regresas a la plaza. Elia sigue junto al pozo, revisando unas notas en un papel doblado. Al verte, levanta la mirada.'
+                        : 'Regresas a la plaza. Una mujer revisa unos papeles junto al pozo, mientras los vecinos continúan con sus tareas.')
                     : 'Regresas a la plaza. Los vecinos continúan con sus tareas y el pozo ocupa el centro del lugar.';
             } else {
                 reply = 'Te desplazas por Valdebruma y te alejas de la plaza. Las calles ascienden entre casas de piedra y pequeños comercios. La niebla hace difícil distinguir qué camino conduce a la parte alta del pueblo.';
