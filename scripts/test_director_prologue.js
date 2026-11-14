@@ -32,8 +32,8 @@ assert.deepEqual(Object.keys(genericOffer.state.characters), [],
     'Un ofrecimiento genérico no debe crear personajes ni relaciones.');
 
 const unknownElia = Director.respond('Pregunto quién es Elia.', player, unintroduced, []);
-assert.doesNotMatch(unknownElia.reply, /Elia/i,
-    'El director no debe fingir que Elia ya ha sido presentada.');
+assert.match(unknownElia.reply, /Todavía no conoces a nadie llamado Elia/i,
+    'El director debe reconocer que el jugador aún no conoce a Elia, sin inventar un encuentro.');
 
 const eliaPresent = opening({
     currentLocation: 'Plaza del pozo',
