@@ -66,7 +66,7 @@ const Director = {
         if (combat) {
             category = 'combat';
             reply = 'Tu acción rompe la quietud del lugar. Quienes están cerca retroceden, alarmados. El resultado de tu ataque aún no está claro.';
-            event = `${name} ha recurrido a la violencia en la plaza del pozo.`;
+            event = `${name} ha recurrido a la violencia en ${currentLocation || 'el lugar'}.`;
         } else if (magic) {
             category = 'magic';
             if (atWell) {
@@ -153,7 +153,9 @@ const Director = {
                 reply = 'Te adentras en la Calle Mayor. Los comerciantes siguen atendiendo sus puestos, aunque todos parecen evitar mencionar el pozo. Una campanilla de tienda suena y tres personas se sobresaltan al mismo tiempo.';
             } else if (this.has(text, ['elia', 'pozo', 'plaza'])) {
                 state.currentLocation = 'Plaza del pozo';
-                reply = 'Regresas a la plaza. Elia sigue junto al pozo, revisando unas notas en un papel doblado. Al verte, levanta la mirada.';
+                reply = elia && elia.location === 'Plaza del pozo'
+                    ? 'Regresas a la plaza. Elia sigue junto al pozo, revisando unas notas en un papel doblado. Al verte, levanta la mirada.'
+                    : 'Regresas a la plaza. Los vecinos continúan con sus tareas y el pozo ocupa el centro del lugar.';
             } else {
                 reply = 'Te desplazas por Valdebruma y te alejas de la plaza. Las calles ascienden entre casas de piedra y pequeños comercios. La niebla hace difícil distinguir qué camino conduce a la parte alta del pueblo.';
                 state.currentLocation = 'Calles de Valdebruma';
