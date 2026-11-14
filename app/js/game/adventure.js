@@ -7,42 +7,34 @@ const Adventure = {
         return {
             id: 'campana-valdebruma-001',
             title: 'La campana bajo la montaña',
-            image: 'app/assets/scenes/ultima-advertencia.webp',
-            location: 'Valdebruma',
-            text:
-                `El camino desciende entre montañas cubiertas de niebla. Al final aparece Valdebruma, un pueblo de tejados oscuros, chimeneas humeantes y calles empedradas. No figura en muchos mapas. En algunos, ni siquiera figura correctamente.\n\n` +
-                `${name}, llevas poco tiempo en el pueblo cuando escuchas una campanada. Es profunda, lenta y parece subir desde debajo de tus pies.\n\n` +
-                `La gente se detiene. Nadie mira hacia el campanario de la plaza. Todos miran hacia el viejo pozo de piedra, cerrado con una losa y varias cadenas oxidadas.\n\n` +
-                `Una mujer se abre paso entre los vecinos. Lleva un tubo de mapas colgado al hombro y tiene barro hasta las rodillas.\n\n` +
-                `—Me llamo Elia. Soy cartógrafa —dice, sin apartar los ojos del pozo—. Esa campana lleva treinta años sin existir. Y, sin embargo, acaba de sonar por tercera vez esta semana.\n\n` +
-                `Se vuelve hacia ti.\n\n` +
-                `—No te conozco, pero pareces alguien capaz de escuchar antes de salir corriendo. Necesito ayuda. Y antes de que preguntes: no, el alcalde no piensa hacer nada.\n\n` +
-                `Elia espera tu respuesta. A vuestro alrededor, el pueblo finge que no está pasando nada.`,
+            location: 'Camino de entrada a Valdebruma',
+            text: `El camino lleva un buen rato descendiendo entre las montañas. La niebla se aferra a las laderas y el aire huele a tierra húmeda, leña y hojas caídas.
+
+Al doblar una curva aparece Valdebruma. El pueblo se extiende en el fondo del valle, entre tejados oscuros y chimeneas que dejan escapar columnas de humo. Una torre de piedra sobresale por encima de las casas. Más allá, las montañas cierran el horizonte.
+
+${name}, estás llegando al pueblo. No hay nadie esperándote en el camino ni una urgencia que te obligue a correr. Por el momento, Valdebruma parece un lugar corriente: una carreta avanza lentamente hacia la entrada, alguien recoge leña junto a una casa y, desde una ventana abierta, llega el sonido de una conversación.
+
+El camino principal conduce hasta las primeras calles. Puedes detenerte a observar el valle, entrar en el pueblo, buscar alojamiento o acercarte a sus habitantes.
+
+La mañana sigue su curso. Tu historia en Valdebruma comienza aquí.`,
             state: {
-                currentLocation: 'Plaza del pozo',
+                phase: 'arrival',
+                arrivalActions: 0,
+                currentLocation: 'Camino de entrada a Valdebruma',
                 time: 'Mañana',
-                bellRings: 3,
+                bellRings: 0,
                 bellInvestigated: false,
                 wellInspected: false,
                 wellOpened: false,
                 eliaTrust: 0,
-                eliaMet: true,
+                eliaMet: false,
                 clues: [],
                 knownFacts: [
                     'El personaje ha llegado a Valdebruma.',
-                    'Elia es una cartógrafa del pueblo.',
-                    'Una campana suena desde debajo del viejo pozo.',
-                    'El pozo está cerrado con una losa y cadenas.'
+                    'Valdebruma es un pueblo situado en un valle entre montañas.'
                 ],
-                characters: {
-                    Elia: {
-                        role: 'Cartógrafa',
-                        location: 'Plaza del pozo',
-                        attitude: 'Cautelosa',
-                        trust: 0
-                    }
-                },
-                events: ['Llegada a Valdebruma', 'Encuentro con Elia', 'La campana vuelve a sonar']
+                characters: {},
+                events: ['Llegada a Valdebruma']
             },
             createdAt: new Date().toISOString()
         };

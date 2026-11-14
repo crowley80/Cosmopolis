@@ -853,3 +853,151 @@ El cliente `Narrator` incorpora también la memoria persistente recuperada media
 ### Comprobación estática del lanzador y cliente — 12 de noviembre de 2026
 
 Se ha ejecutado una validación sintáctica con Node.js sobre el cliente `narrator.js` y `bash -n` sobre el lanzador `scripts/iniciar_ia_local.sh`; ambos han pasado. También se ha comprobado en GitHub que el formulario usa el envío asíncrono, que el módulo se carga después de `Director` y que el estado de espera queda fuera de la cuadrícula de tres columnas. Esto no sustituye las pruebas de ejecución en Android ni confirma que Qwen3.5-4B cargue y genere respuestas; esas pruebas siguen pendientes.
+
+
+## Retirada definitiva de los cuatro pliegues triangulares — 12 de noviembre de 2026
+
+Se eliminan los cuatro adornos triangulares de las esquinas del pergamino, tras comprobar que no encajan con la estética visual deseada.
+
+- Se retira el bloque CSS `.paper-fold` y sus cuatro variantes.
+- Se elimina la regla de posicionamiento específica de esos elementos.
+- Se retiran los cuatro elementos HTML generados desde `app/js/app.js`.
+- Se actualiza la versión de caché en `index.html` a `20261112-sin-pliegues`.
+- Se conservan la textura, el borde quemado, los marcos ornamentales y la paleta del pergamino.
+
+La validación visual en Chrome queda pendiente de confirmación del usuario.
+
+
+### Primera ejecución real de Qwen3.5-4B en Android — 12 de noviembre de 2026
+
+Se completa satisfactoriamente el primer arranque del narrador local en Termux utilizando el modelo existente `Qwen3.5-4B-Q4_K_M.gguf`.
+
+- Se modifica `scripts/iniciar_ia_local.sh` para incorporar `--reasoning off` en el arranque de llama-server.
+- Se crea una copia de seguridad anterior al cambio: `scripts/iniciar_ia_local.sh.bak-20261112-reasoning`.
+- Se reinicia el servidor y se comprueba que el modelo termina de cargar.
+- El endpoint `http://127.0.0.1:8081/health` responde HTTP 200 con `{"status":"ok"}`.
+- El registro confirma `model loaded` y que el servidor escucha en `127.0.0.1:8081`.
+- Se realiza la primera petición real a `/v1/chat/completions` con instrucciones narrativas en español.
+- Qwen3.5-4B genera una narración coherente en español, sin mostrar bloques de razonamiento interno.
+- Rendimiento medido: 57 tokens de entrada, 180 tokens generados, 6,42 tokens por segundo y 31,05 segundos de tiempo total.
+- La respuesta termina con `finish_reason: length` porque la prueba limita deliberadamente la generación a 180 tokens. No constituye un error del servidor.
+
+**Resultado:** servidor local operativo y primera generación narrativa real confirmada en Android.
+
+**Pendiente:** probar una respuesta más larga sin el límite de 180 tokens, evaluar la calidad literaria, comprobar la respuesta JSON estructurada que necesita `Narrator` y realizar una prueba completa desde Cosmopolis en el navegador. La integración con la partida y su persistencia todavía no se consideran validadas.
+
+
+
+### Primera respuesta JSON estructurada de Qwen3.5-4B — 12 de noviembre de 2026
+
+Se completa satisfactoriamente una petición real al endpoint `/v1/chat/completions` utilizando el mismo esquema JSON que emplea `app/js/game/narrator.js`.
+
+- Se envía el esquema con los siete campos obligatorios: `reply`, `event`, `category`, `location`, `factsToAdd`, `cluesToAdd` y `eliaTrustDelta`.
+- Qwen devuelve los siete campos con sus tipos correspondientes y sin texto explicativo fuera del objeto JSON.
+- La generación termina con `finish_reason: stop`, sin alcanzar el límite de tokens.
+- Rendimiento: 103 tokens de entrada, 231 tokens generados y aproximadamente 6,00 tokens por segundo.
+- La ubicación devuelta es `La Taberna del Ciervo`.
+- Se detecta un error semántico: el modelo clasifica la entrada en una taberna como `combat`. Aunque respeta el esquema, necesita mejorar la clasificación de acciones.
+
+**Resultado:** primera respuesta estructurada satisfactoria. El modelo demuestra que puede producir el formato de datos que espera el cliente Narrator.
+
+**Pendiente:** validar automáticamente el JSON, comprobar la integración real desde el navegador y mejorar las instrucciones de clasificación. La persistencia y la aplicación de cambios a una partida todavía no están verificadas.
+
+
+## 13/11/2026 — Validación del flujo narrativo en navegador
+
+- Se amplió el timeout de las peticiones al narrador IA de 90 a 180 segundos en `app/js/game/narrator.js`.
+- Se creó la copia de seguridad `app/js/game/narrator.js.bak-20261113-timeout`.
+- Prueba en Chrome: se envió la acción «Miro a Elia» y apareció la escena narrativa sin avisos de error.
+- Tras recargar la página, la narración seguía visible: persistencia confirmada en esta prueba.
+- El servidor local había completado una generación de 87,4 segundos (tarea 777). La generación desde el navegador y la persistencia funcionan, aunque queda pendiente confirmar inequívocamente que la respuesta mostrada procedía de la IA y no del fallback.
+
+
+## 13/11/2026 — Registro del motor narrativo por acción
+
+- Se añade `aiUsed` al registro persistente de cada acción en `app/js/game/session.js`.
+- `true`: respuesta generada por la IA local.
+- `false`: respuesta del narrador alternativo.
+- `null`: acción antigua o sin información verificable.
+- Las acciones anteriores y las partidas existentes no se modifican retrospectivamente.
+- Se conserva una copia de seguridad de los archivos modificados.
+
+
+## 14/11/2026 — Corrección del contexto del agente autónomo
+
+- Se investigan dos rechazos consecutivos de Qwen al abordar la tarea director.
+- Se identifica que askQwen() leía únicamente el archivo principal e ignoraba los archivos auxiliares declarados en task.support.
+- Se modifica exclusivamente scripts/agente_cosmopolis.js para incorporar los archivos auxiliares como contexto de solo referencia.
+- El archivo principal sigue siendo el único autorizado para recibir modificaciones.
+- Se conserva la protección NO_SEGURO, la validación de parches, las copias de seguridad y la reversión ante errores.
+- Copia de seguridad: scripts/agente_cosmopolis.js.bak-contexto-1794612061508.
+- Sintaxis JavaScript comprobada y git diff --check sin errores.
+
+**Resultado:** contexto auxiliar incorporado. Todavía no se ha modificado director.js ni se ha validado una nueva respuesta de Qwen.
+
+**Pendiente:** probar la petición con el contexto completo, adaptar y validar director.js, continuar con narrator.js y realizar la validación narrativa final.
+
+## 14/11/2026 — Optimización del contexto de la tarea Director
+- La tarea director recibe un resumen explícito del estado inicial de Adventure y de los contratos existentes de Session, en lugar de enviar ambos archivos auxiliares completos.
+- Las demás tareas conservan el envío íntegro de sus archivos auxiliares.
+- El archivo modificable sigue siendo exclusivamente el indicado por cada tarea.
+- Se mantienen las protecciones de parches, las comprobaciones y las copias de seguridad del agente.
+- Copia del agente: scripts/agente_cosmopolis.js.bak-contexto-director-2026-11-13T23-49-58-281Z.
+- Copia del historial: docs/MAESTRO_COSMOPOLIS.md.bak-contexto-director-2026-11-13T23-49-58-281Z.
+- Sintaxis del agente comprobada con node --check.
+**Resultado:** contexto de Director optimizado. Pendiente probar la petición contra Qwen y validar el parche antes de aplicarlo.
+
+
+## 14/11/2026 — Delimitación de la tarea narrativa de Director
+- Se concreta el objetivo para corregir referencias prematuras a Elia y al pozo en las respuestas genéricas.
+- Se explicita el estado inicial real de Adventure y los conocimientos disponibles para el jugador.
+- Se prohíbe inventar encuentros o descubrimientos y se preservan las acciones explícitas del jugador.
+- Se mantienen los contratos existentes y la protección NO_SEGURO; no se modifica todavía director.js.
+- Copias previas: scripts/agente_cosmopolis.js.bak-objetivo-director-2026-11-13T23-59-30-017Z y docs/MAESTRO_COSMOPOLIS.md.bak-objetivo-director-2026-11-13T23-59-30-017Z.
+
+
+## 14/11/2026 — Coherencia entre instrucciones y contexto de Qwen
+- Se ajusta la regla de lectura del agente para que exija estudiar el archivo completo y el contexto auxiliar realmente proporcionado.
+- Se aclara que Qwen no debe presuponer información de archivos cuyo contenido no haya recibido.
+- Se conserva íntegra la protección NO_SEGURO y el resto de las reglas.
+- Copias previas: scripts/agente_cosmopolis.js.bak-contexto-real-2026-11-14T00-22-59-771Z y docs/MAESTRO_COSMOPOLIS.md.bak-contexto-real-2026-11-14T00-22-59-771Z.
+
+
+## 14/11/2026 — Corrección de progresión narrativa en Director
+- Se evita que las respuestas genéricas presupongan que el jugador está en la plaza o conoce el pozo.
+- Las referencias a Elia en respuestas genéricas quedan condicionadas al conocimiento previo de ella.
+- Se eliminan revelaciones anticipadas sobre campanadas, mapas cambiantes y sucesos todavía no descubiertos.
+- Se conserva la información de la conversación explícita con Elia.
+- La confianza de Elia solo aumenta mediante ofrecimientos cuando el personaje ya la conoce.
+- Se mantienen las categorías, los eventos y el contrato de retorno.
+- Copias previas: app/js/game/director.js.bak-progresion-2026-11-14T00-32-38-104Z y docs/MAESTRO_COSMOPOLIS.md.bak-progresion-2026-11-14T00-32-38-104Z.
+- Pendiente: validación de sintaxis y revisión del diff.
+
+
+## 14/11/2026 — Declaración del conocimiento de Elia
+- Se define `knowsElia` usando el estado del encuentro o los hechos conocidos, evitando referencias a una variable no declarada.
+- Copias previas: `app/js/game/director.js.bak-20261114-knows-elia-a` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261114-knows-elia-a`.
+- Pendiente: registrar el encuentro explícito y validar las respuestas narrativas.
+
+
+## 14/11/2026 — Registro del primer encuentro con Elia
+- Las dos ramas de diálogo explícito activan `state.eliaMet`, para que las acciones posteriores reconozcan el encuentro.
+- Copias previas: `app/js/game/director.js.bak-20261114-registro-encuentro-elia` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261114-registro-encuentro-elia`.
+- Pendiente: pruebas de progresión narrativa con el estado inicial.
+
+
+## 14/11/2026 — Respuestas genéricas neutrales en Director
+- El combate ya no presupone que Elia esté presente ni que la acción ocurra en la plaza; el evento usa la ubicación real.
+- La magia genérica deja de anticipar el pozo y la presencia de Elia.
+- Las preguntas genéricas ya no revelan la campana ni la tormenta.
+- Se conservan las respuestas de investigación explícita y diálogo con Elia.
+- Copias previas: `app/js/game/director.js.bak-20261114-respuestas-neutrales` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261114-respuestas-neutrales`.
+- Pendiente: validación de comportamiento con el estado inicial.
+
+
+## 14/11/2026 — Progresión del descubrimiento del pozo
+- La inspección de los símbolos ya no introduce a Elia si el personaje todavía no la conoce.
+- El intento de abrir el pozo sin inspeccionarlo no presupone la presencia de Elia.
+- La respuesta genérica al acercarse al pozo evita revelar detalles antes de examinarlos.
+- Copias previas: `app/js/game/director.js.bak-20261114-pozo-sin-elia-prematura` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261114-pozo-sin-elia-prematura`.
+- Pendiente: pruebas automatizadas de acciones iniciales y conocidas.
