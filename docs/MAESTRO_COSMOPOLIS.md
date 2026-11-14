@@ -1251,3 +1251,16 @@ Se ajusta `Narrator.buildMessages()` para que las iniciativas autónomas registr
 
 
 Corrección de validación — 12 de noviembre de 2026: la prueba de iniciativa autónoma estaba comprobando la acción de Elia después de una segunda acción del jugador, cuando la interfaz muestra únicamente la narración de esa segunda acción. El comportamiento probado era correcto; el momento de la aserción era incorrecto. Se ha trasladado la comprobación inmediatamente después de la primera acción, que es la que genera la iniciativa, y se mantiene la comprobación de que no aparezca como ficha ni con escapes visibles. Nuevo commit de prueba: `a595a391d346aded934167d937841ebb237f6abf`. Validación pendiente de la nueva ejecución.
+
+
+### Primera conversión del agente en ejecutor configurable — 14 de noviembre de 2026
+
+Se sustituye la lista fija de dos tareas narrativas por tareas suministradas al ejecutar el agente mediante argumentos: se indica la ruta con `--file` y la tarea en texto entre comillas. Se pueden indicar varios archivos; cada uno se procesa de forma independiente. El identificador de ejecución se deriva de la ruta y la tarea para conservar el registro de estado.
+
+Se ajusta la petición a Qwen3.5-4B para desactivar el razonamiento explícito mediante `chat_template_kwargs.enable_thinking=false`, confirmado en el Samsung: la petición de prueba devolvió `PRUEBA_OK` con cinco tokens de salida, frente a una primera prueba que agotó 32 tokens en razonamiento sin contenido visible. El máximo de salida del agente pasa a 1400 tokens.
+
+Para reducir desbordamientos del contexto de 4096 tokens, el agente limita cada archivo objetivo a 6500 caracteres y detiene la tarea si lo supera, en lugar de enviar decenas de miles de caracteres al modelo. Se mantienen el parche unified diff, la comprobación previa con `git apply --check`, los backups del archivo y del documento maestro, la validación de sintaxis JavaScript cuando corresponde, `git diff --check`, el rollback ante errores y la ausencia de commit/push automáticos.
+
+Uso: `node scripts/agente_cosmopolis.js --file app/ruta/archivo.js "Describe el cambio que debe realizar"`. Solo se admiten rutas del proyecto bajo `app/`, `scripts/`, además de `index.html` y `server.js`; el propio agente y sus backups quedan excluidos. Los archivos con cambios locales previos se rechazan.
+
+Pendiente: validar sintaxis y funcionamiento real desde Termux, probar una tarea pequeña y ampliar la selección de contexto para que el agente pueda trabajar con archivos mayores de 6500 caracteres sin exceder el contexto. Esta primera etapa requiere que la tarea indique expresamente los archivos; aún no selecciona por sí solo todo el alcance del proyecto.
