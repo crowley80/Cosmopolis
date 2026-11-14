@@ -84,8 +84,8 @@ const Director = {
                 reply = 'Elia no está aquí. Puedes buscarla en el lugar donde la viste por última vez.';
             } else {
                 const eliaGoal = typeof elia.personalGoal === 'string' ? elia.personalGoal.trim() : '';
-                const goalDisclosure = eliaGoal ? `\\n\\n—Y no pienso dejarlo hasta conseguirlo: ${eliaGoal}` : '';
-                reply = 'Elia aprieta el tubo de mapas contra el pecho.\\n\\n—He medido este pueblo durante años. El pozo no tiene profundidad suficiente para producir un sonido así. Y hay algo más: cada vez que suena la campana, aparece una marca nueva en mis mapas. Una calle que no existe, un edificio que nadie recuerda...\\n\\nTe mira con atención.\\n\\n—Si quieres ayudarme, podemos examinar el pozo o revisar mis mapas.' + goalDisclosure;
+                const goalDisclosure = eliaGoal ? `\n\n—Y no pienso dejarlo hasta conseguirlo: ${eliaGoal}` : '';
+                reply = 'Elia aprieta el tubo de mapas contra el pecho.\n\n—He medido este pueblo durante años. El pozo no tiene profundidad suficiente para producir un sonido así. Y hay algo más: cada vez que suena la campana, aparece una marca nueva en mis mapas. Una calle que no existe, un edificio que nadie recuerda...\n\nTe mira con atención.\n\n—Si quieres ayudarme, podemos examinar el pozo o revisar mis mapas.' + goalDisclosure;
                 state.eliaTrust = Math.min(10, state.eliaTrust + 1);
                 elia.trust = state.eliaTrust;
                 event = `${name} ha hablado con Elia sobre la campana y los mapas.`;
@@ -104,7 +104,7 @@ const Director = {
             state.wellInspected = true;
             state.bellInvestigated = true;
             reply = 'Te acercas al pozo y examinas la losa. Las cadenas están oxidadas, pero algunos eslabones presentan arañazos recientes. En la piedra descubres tres símbolos casi borrados: una montaña, una puerta y una línea ondulada que podría representar agua... o sonido.' +
-                (eliaPresent ? '\\n\\nElia se agacha a tu lado.\\n\\n—Eso no estaba ahí ayer —murmura.' : '');
+                (eliaPresent ? '\n\nElia se agacha a tu lado.\n\n—Eso no estaba ahí ayer —murmura.' : '');
             if (!clues.includes('Tres símbolos grabados en la losa')) clues.push('Tres símbolos grabados en la losa');
             if (!facts.includes('La losa presenta arañazos recientes y tres símbolos.')) facts.push('La losa presenta arañazos recientes y tres símbolos.');
             event = 'Se han descubierto tres símbolos y arañazos recientes en la losa.';
