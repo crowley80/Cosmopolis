@@ -61,6 +61,16 @@ assert.match(absentDialogue.reply, /no está aquí|No ves a Elia/i);
 assert.equal(absentDialogue.state.characters.Elia.trust, 2,
     'No debe cambiar la relación si Elia no está presente.');
 
+const unseenElia = opening({
+    currentLocation: 'Plaza del pozo',
+    characters: {
+        Elia: { name: 'Elia', role: 'Cartógrafa', location: 'Plaza del pozo', trust: 0 }
+    }
+});
+const firstWellVisit = Director.respond('Examino el pozo.', player, unseenElia, []);
+assert.doesNotMatch(firstWellVisit.reply, /Elia/i,
+    'Ver a una persona registrada no autoriza a conocer su nombre antes de ser presentada.');
+
 const distantWell = opening({ currentLocation: 'Calle Mayor' });
 const distantInspection = Director.respond('Examino el pozo.', player, distantWell, []);
 assert.equal(distantInspection.state.wellInspected, undefined,
