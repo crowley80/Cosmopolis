@@ -33,16 +33,31 @@ function loadTaskFromArgs() {
   }));
 }
 
-const TASKS = loadTaskFromArgs();;
+const TASKS = loadTaskFromArgs();
 
 function read(relative) {
-  const file = path.join(ROOT, relative);
+  const allowed = relative.startsWith('app/') || relative.startsWith('scripts/') ||
+    relative === 'index.html' || relative === 'server.js';
+  if (!allowed || relative === 'scripts/agente_cosmopolis.js' || relative.includes('.bak') ||
+      path.isAbsolute(relative) || relative.includes('\\\\') ||
+      path.posix.normalize(relative) !== relative) {
+    throw new Error(`Ruta no autorizada o insegura: ${relative}`);
+  }
+  const file = path.resolve(ROOT, relative);
+  if (!file.startsWith(ROOT + path.sep)) throw new Error(`Ruta fuera del proyecto: ${relative}`);
+  gitStatusCheck(relative);
   if (!fs.existsSync(file)) throw new Error(`Falta el archivo ${relative}`);
   const content = fs.readFileSync(file, 'utf8');
   if (content.length > 6500) {
     throw new Error(`${relative} supera 6500 caracteres; acota la tarea a un fragmento para respetar los 4096 tokens.`);
   }
   return content;
+}
+
+function gitStatusCheck(relative) {
+  execFileSync('git', ['ls-files', '--error-unmatch', '--', relative], { cwd: ROOT, stdio: 'ignore' });
+  const status = execFileSync('git', ['status', '--porcelain', '--', relative], { cwd: ROOT, encoding: 'utf8' });
+  if (status.trim()) throw new Error(`El archivo tiene cambios previos; no se tocará: ${relative}`);
 }
 
 function run(command, args, input) {
@@ -142,7 +157,6 @@ REGLAS OBLIGATORIAS:
 - Conserva el comportamiento que no esté relacionado con la tarea.
 - No modifiques ningún otro archivo.
 - No elimines funcionalidades por simplificar.
-- No supongas que el jugador conoce a Elia ni el pozo al comenzar.
 - Si no puedes resolverlo con seguridad, devuelve exactamente: NO_SEGURO
 - No devuelvas explicaciones ni código completo.
 - Devuelve únicamente un parche unified diff aplicable con git apply.
