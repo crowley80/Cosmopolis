@@ -46,6 +46,7 @@ const Director = {
         const facts = state.knownFacts || [];
         const atWell = currentLocation === 'Plaza del pozo' &&
             this.has(text, ['pozo', 'losa', 'cadenas', 'campana']);
+        const mentionsElia = this.has(text, ['elia', 'cartografa']);
         const aboutElia = eliaKnown &&
             this.has(text, ['elia', 'cartografa', 'mapa', 'hablar con ella']);
         const asks = this.has(text, ['pregunto', 'preguntar', 'quien', 'que sabes', 'cuentame', 'explica', 'dime']);
@@ -78,6 +79,10 @@ const Director = {
                 reply = 'Tu poder se manifiesta en el lugar. La niebla se arremolina a tu alrededor y algunas personas se detienen para observar el fenómeno.';
                 event = `${name} ha utilizado sus poderes en Valdebruma.`;
             }
+        } else if (mentionsElia && !eliaKnown) {
+            category = 'dialogue';
+            reply = 'Todavía no conoces a nadie llamado Elia. Puedes preguntar a los vecinos si han oído ese nombre.';
+            event = `${name} ha preguntado por alguien llamado Elia.`;
         } else if (aboutElia && asks) {
             category = 'dialogue';
             if (!eliaPresent) {
@@ -150,7 +155,7 @@ const Director = {
                 reply = 'Dejas atrás la plaza y llegas a la Posada del Tejón, un edificio bajo con ventanas empañadas. Dentro huele a sopa, madera húmeda y conversaciones interrumpidas. La posadera te mira como si estuviera intentando recordar si ya te ha visto.';
             } else if (this.has(text, ['calle', 'mercado', 'tiendas'])) {
                 state.currentLocation = 'Calle Mayor';
-                reply = 'Te adentras en la Calle Mayor. Los comerciantes siguen atendiendo sus puestos, aunque todos parecen evitar mencionar el pozo. Una campanilla de tienda suena y tres personas se sobresaltan al mismo tiempo.';
+                reply = 'Te adentras en la Calle Mayor. Los comerciantes siguen atendiendo sus puestos. Una campanilla de tienda suena y tres personas se sobresaltan al mismo tiempo.';
             } else if (this.has(text, ['elia', 'pozo', 'plaza'])) {
                 state.currentLocation = 'Plaza del pozo';
                 reply = elia && elia.location === 'Plaza del pozo'
