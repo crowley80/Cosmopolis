@@ -9,38 +9,38 @@ const ROOT = path.resolve(__dirname, '..');
 const API = 'http://127.0.0.1:8081/v1/chat/completions';
 const STATE_FILE = path.join(__dirname, 'agente_estado.json');
 
-const TASKS = [
-  {
-    id: 'director',
-    file: 'app/js/game/director.js',
-    support: ['app/js/game/adventure.js', 'app/js/game/session.js'],
-    objective: `Corrige las referencias narrativas prematuras dentro de Director.respond().
-Al inicio de la aventura, phase es "arrival", currentLocation es "Camino de entrada a Valdebruma", eliaMet es false, wellInspected es false, clues está vacío y knownFacts solo contiene la llegada a Valdebruma y su ubicación en un valle entre montañas.
-En ese estado inicial, las respuestas genéricas no deben afirmar que Elia está presente ni introducir el pozo, sus cadenas, su losa o la campana como conocimientos del jugador.
-Usa el estado y los conocimientos existentes para respetar la progresión. No inventes encuentros ni descubrimientos. No impidas que el jugador mencione o investigue explícitamente algo por iniciativa propia.
-Conserva las funciones, categorías, eventos, estructura de retorno y contratos existentes. Modifica únicamente director.js.`
-  },
-  {
-    id: 'narrator',
-    file: 'app/js/game/narrator.js',
-    support: [
-      'app/js/game/director.js',
-      'app/js/game/adventure.js',
-      'app/js/game/session.js'
-    ],
-    objective: `Adapta Narrator para respetar la progresión narrativa del prólogo.
-No debe presuponer que el jugador conoce a Elia, el pozo o sus misterios.
-Debe respetar los hechos y conocimientos disponibles en el estado.
-Conserva los contratos existentes y no inventes APIs.`
+function loadTaskFromArgs() {
+  const args = process.argv.slice(2);
+  const files = [];
+  const description = [];
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--file') {
+      if (!args[i + 1]) throw new Error('Falta la ruta después de --file.');
+      files.push(args[++i]);
+    } else if (args[i] === '--help' || args[i] === '-h') {
+      console.log('Uso: node scripts/agente_cosmopolis.js --file ruta/archivo "tarea"');
+      process.exit(0);
+    } else description.push(args[i]);
   }
-];
+  const objective = description.join(' ').trim();
+  if (!objective) throw new Error('Indica la tarea entre comillas.');
+  if (!files.length) throw new Error('Indica al menos un archivo con --file.');
+  if (objective.length > 1800) throw new Error('La tarea supera 1800 caracteres.');
+  if (new Set(files).size !== files.length) throw new Error('Hay rutas repetidas.');
+  return files.map(file => ({
+    id: crypto.createHash('sha1').update(file + objective).digest('hex').slice(0, 12),
+    file, support: [], objective
+  }));
+}
+
+const TASKS = loadTaskFromArgs();;
 
 function read(relative) {
   const file = path.join(ROOT, relative);
   if (!fs.existsSync(file)) throw new Error(`Falta el archivo ${relative}`);
   const content = fs.readFileSync(file, 'utf8');
-  if (content.length > 35000) {
-    throw new Error(`${relative} supera el límite seguro de lectura.`);
+  if (content.length > 6500) {
+    throw new Error(`${relative} supera 6500 caracteres; acota la tarea a un fragmento para respetar los 4096 tokens.`);
   }
   return content;
 }
@@ -170,7 +170,8 @@ ${target}
           { role: 'user', content: prompt }
         ],
         temperature: 0.1,
-        max_tokens: 5000
+        max_tokens: 1400,
+        chat_template_kwargs: { enable_thinking: false }
       }),
       signal: controller.signal
     });
@@ -212,7 +213,7 @@ function applyTask(task, patch) {
     run('git', ['apply', '--whitespace=nowarn'], patch);
     applied = true;
 
-    run('node', ['--check', task.file]);
+    if (['.js', '.cjs', '.mjs'].includes(path.extname(task.file))) run('node', ['--check', task.file]);
     run('git', ['diff', '--check', '--', task.file]);
 
     const updated = fs.readFileSync(target, 'utf8');
@@ -248,6 +249,7 @@ function applyTask(task, patch) {
 async function main() {
   console.log('\n================================');
   console.log('   AGENTE COSMOPOLIS AUTÓNOMO');
+  console.log('Razonamiento interno desactivado para reservar tokens al parche.');
   console.log('================================\n');
 
   const state = loadState();
@@ -260,7 +262,7 @@ async function main() {
 
     console.log(`\nTAREA: ${task.id}`);
     console.log(`Archivo: ${task.file}`);
-    console.log('Leyendo archivos completos y consultando Qwen...');
+    console.log('Leyendo archivo dentro del límite de contexto y consultando Qwen...');
 
     let success = false;
 
