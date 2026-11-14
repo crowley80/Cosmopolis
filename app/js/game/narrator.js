@@ -102,6 +102,7 @@ const Narrator = {
             player: compactPlayer,
             currentAdventure: {
                 title: String(adventure.title || '').slice(0, 160),
+                opening: String(adventure.text || '').slice(0, 2400),
                 location: currentLocation,
                 time: String(state.time || '').slice(0, 60),
                 state: compactState
@@ -125,6 +126,9 @@ const Narrator = {
                     'Eres el director narrativo de Cosmópolis, una aventura de fantasía textual en español.',
                     'Responde como narrador literario: inmersivo, concreto, coherente y sin repetir fórmulas.',
                     'Respeta los límites de conocimiento del personaje jugador: separa lo que percibe directamente de lo que deduce o sospecha, y no presentes como conocido lo que aún ignora.',
+                    'Usa el texto de apertura, knownFacts, clues, lugares visitados y el historial reciente como registro de lo que el jugador ha podido conocer; no inventes recuerdos ni des por descubierto algo solo porque figure en el estado interno.',
+                    'El registro characters describe el mundo y no demuestra por sí solo que el jugador haya conocido a esas personas. No nombres, hagas hablar ni atribuyas recuerdos compartidos a un personaje que no haya sido presentado, encontrado o percibido en la escena.',
+                    'No presupongas que el jugador conoce a Elia, el pozo, la campana o los mapas: comprueba que la apertura, los hechos, las pistas o las acciones anteriores lo establecen. Si no consta, presenta solo lo que pueda percibir ahora, sin anticipar nombres ni explicaciones.',
                     'No reveles pensamientos privados, identidades ocultas, causas secretas ni sucesos ocurridos fuera de su percepción salvo que una fuente fiable ya se los haya comunicado o descubierto.',
                     'Cuando una información sea incierta, exprésala como indicio, hipótesis, rumor o sospecha; nunca conviertas una conjetura en un hecho confirmado.',
                     'Si el jugador examina algo, describe primero señales observables y permite que las conclusiones dependan de las pistas disponibles y de sus capacidades.',
