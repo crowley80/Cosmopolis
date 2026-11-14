@@ -25,12 +25,11 @@ const Director = {
         const eliaEntry = Object.entries(state.characters).find(([key, person]) =>
             this.normalize(person && person.name || key) === 'elia'
         );
-        const eliaKey = eliaEntry ? eliaEntry[0] : null;
         const elia = eliaEntry ? eliaEntry[1] : null;
         const eliaKnown = !!elia && (
             state.eliaMet === true ||
-            state.knownFacts.some(fact => /\\belia\\b/i.test(String(fact))) ||
-            state.events.some(item => /\\belia\\b/i.test(String(item)))
+            state.knownFacts.some(fact => /\belia\b/i.test(String(fact))) ||
+            state.events.some(item => /\belia\b/i.test(String(item)))
         );
         const eliaPresent = !!elia && elia.location === currentLocation;
         if (elia) {
@@ -96,13 +95,16 @@ const Director = {
             }
         } else if (aboutElia) {
             category = 'dialogue';
-            reply = 'Elia está junto al brocal del pozo, sujetando su tubo de mapas. Parece dispuesta a escucharte, aunque no deja de mirar de reojo las cadenas.';
+            reply = eliaPresent
+                ? 'Elia está junto al brocal del pozo, sujetando su tubo de mapas. Parece dispuesta a escucharte, aunque no deja de mirar de reojo las cadenas.'
+                : 'No ves a Elia en este lugar. Su última ubicación registrada es ' + (elia.location || 'desconocida') + '.';
             event = `${name} se ha dirigido a Elia.`;
         } else if (atWell && investigates) {
             category = 'investigation';
             state.wellInspected = true;
             state.bellInvestigated = true;
-            reply = 'Te acercas al pozo y examinas la losa. Las cadenas están oxidadas, pero algunos eslabones presentan arañazos recientes. En la piedra descubres tres símbolos casi borrados: una montaña, una puerta y una línea ondulada que podría representar agua... o sonido.\n\nElia se agacha a tu lado.\n\n—Eso no estaba ahí ayer —murmura.';
+            reply = 'Te acercas al pozo y examinas la losa. Las cadenas están oxidadas, pero algunos eslabones presentan arañazos recientes. En la piedra descubres tres símbolos casi borrados: una montaña, una puerta y una línea ondulada que podría representar agua... o sonido.' +
+                (eliaPresent ? '\\n\\nElia se agacha a tu lado.\\n\\n—Eso no estaba ahí ayer —murmura.' : '');
             if (!clues.includes('Tres símbolos grabados en la losa')) clues.push('Tres símbolos grabados en la losa');
             if (!facts.includes('La losa presenta arañazos recientes y tres símbolos.')) facts.push('La losa presenta arañazos recientes y tres símbolos.');
             event = 'Se han descubierto tres símbolos y arañazos recientes en la losa.';
@@ -111,7 +113,8 @@ const Director = {
             if (state.wellInspected) {
                 reply = 'Tiras de las cadenas y pruebas a mover la losa. El metal protesta con un chirrido, pero el cierre resiste. No parece una simple tapa: alguien la aseguró para que no pudiera abrirse fácilmente. Necesitarás encontrar otra manera.';
             } else {
-                reply = 'Te dispones a mover la losa, pero las cadenas están tensas y el cierre no cede. Antes de forzarlo quizá convendría examinarlo. Elia te observa con evidente inquietud.';
+                reply = 'Te dispones a mover la losa, pero las cadenas están tensas y el cierre no cede. Antes de forzarlo quizá convendría examinarlo.' +
+                    (eliaPresent ? ' Elia te observa con evidente inquietud.' : '');
             }
             event = `${name} ha intentado abrir el pozo.`;
         } else if (atWell) {
