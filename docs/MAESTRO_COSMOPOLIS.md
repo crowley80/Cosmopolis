@@ -1264,3 +1264,6 @@ Para reducir desbordamientos del contexto de 4096 tokens, el agente limita cada 
 Uso: `node scripts/agente_cosmopolis.js --file app/ruta/archivo.js "Describe el cambio que debe realizar"`. Solo se admiten rutas del proyecto bajo `app/`, `scripts/`, además de `index.html` y `server.js`; el propio agente y sus backups quedan excluidos. Los archivos con cambios locales previos se rechazan.
 
 Pendiente: validar sintaxis y funcionamiento real desde Termux, probar una tarea pequeña y ampliar la selección de contexto para que el agente pueda trabajar con archivos mayores de 6500 caracteres sin exceder el contexto. Esta primera etapa requiere que la tarea indique expresamente los archivos; aún no selecciona por sí solo todo el alcance del proyecto.
+
+
+Ajuste de seguridad del agente — 14 de noviembre de 2026: las rutas se normalizan y se restringen a archivos versionados dentro de las áreas autorizadas; se rechazan rutas absolutas, traversal, separadores no válidos, el propio agente y backups. También se rechazan objetivos con cambios locales previos y se detiene la operación si el documento maestro tiene modificaciones previas. La comprobación de sintaxis se aplica solo a archivos JavaScript.
