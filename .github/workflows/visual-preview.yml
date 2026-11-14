@@ -25,6 +25,7 @@ jobs:
       - name: Validate narrative prologue guards
         run: |
           node --check app/js/game/director.js
+          node --check app/js/game/narrator.js
           node scripts/test_director_prologue.js
       - name: Install Playwright
         run: |
