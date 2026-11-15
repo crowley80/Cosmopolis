@@ -1302,3 +1302,46 @@ La identidad vigente del proyecto es **Athun: el grimorio oscuro**. El nombre Co
 ### Estado de implementación de este flujo
 - La ruta actual de `Athun.init()` carga directamente la aventura si encuentra personaje y aventura guardados; si solo encuentra personaje, muestra su ficha; si no encuentra personaje, abre el formulario de creación.
 - Todavía no existe la presentación única del prólogo ni el registro persistente de que ya se mostró. El comportamiento solicitado está aprobado como requisito, pero **no está implementado ni probado**.
+## DECISIONES NARRATIVAS Y DE ARQUITECTURA — 15 DE NOVIEMBRE DE 2026
+
+### Athun, el grimorio consciente
+- Athun contiene toda la magia existente y todo el conocimiento, conocido y desconocido.
+- Tiene conciencia, voluntad y personalidad propias.
+- Se reescribe a sí mismo; su contenido y lo que revela no son estáticos.
+- Es conocido por su fama en el mundo, pero el protagonista conoce poco de su historia. El jugador descubre sus orígenes, secretos, capacidades y pasado progresivamente durante la aventura.
+- Athun se entrega al protagonista al principio de la historia para ayudarle.
+- Athun es un elemento permanente y protegido del inventario: nunca puede ser robado, vendido, destruido, perdido ni separado del jugador por ninguna circunstancia narrativa o mecánica.
+- Que contenga todo el conocimiento no significa que revele siempre sus respuestas: puede guardar silencio, ocultar información, negarse a responder o descubrir recuerdos que tenía olvidados.
+
+### Historias diferentes según el protagonista
+- Cada personaje jugable tiene su propia partida, decisiones, relaciones, misiones, descubrimientos y evolución.
+- La historia de Athun y la relación entre el grimorio y el protagonista varían según el personaje y los acontecimientos de esa partida.
+- Las diferencias deben afectar a acontecimientos, revelaciones, diálogos y evolución de la relación, no limitarse a cambiar unas pocas frases.
+- El mismo Athun puede mostrar facetas distintas de su conciencia a protagonistas diferentes.
+
+### Inicio y selección de partidas
+- Al arrancar, el jugador debe poder elegir entre iniciar una partida nueva o continuar una partida existente.
+- Nueva partida: elegir con qué personaje jugar y comenzar la historia particular de ese protagonista.
+- Continuar partida: mostrar las partidas/personajes disponibles y permitir reanudar la elegida.
+- Debe ser posible mantener varias partidas y probar protagonistas e historias diferentes sin sobrescribir accidentalmente las demás.
+- La selección/gestión de personajes puede permitir consultar los protagonistas y sus progresos.
+- La interfaz inicial debe integrarse con la identidad visual aprobada de Athun y seguir siendo cómoda en móvil.
+
+### Mundo y localizaciones compartidos
+- El mundo es una única entidad persistente y compartida entre todos los protagonistas.
+- Las localizaciones y elementos del mundo se crean o amplían conforme se desarrolla la historia; no es necesario generar todo el mundo por adelantado.
+- Una localización descubierta o creada por un protagonista permanece disponible para los demás.
+- Los cambios persistentes del mundo y las consecuencias globales de los acontecimientos se comparten entre partidas.
+- Cambiar de protagonista o iniciar una partida nueva no reinicia ni borra el mundo compartido.
+- Cada protagonista conserva, por separado, su posición, inventario, relaciones, misiones, decisiones y progreso individual.
+
+### Separación técnica obligatoria
+La arquitectura deberá separar claramente:
+1. **Estado global del mundo:** localizaciones, entidades compartidas, hechos y cambios persistentes.
+2. **Estado de cada partida/personaje:** ficha, inventario, posición, misiones, decisiones, relaciones y progreso.
+3. **Estado narrativo de Athun por partida:** recuerdos, revelaciones, relación y facetas descubiertas con ese protagonista.
+
+Cada partida debe recibir a Athun desde su creación y el inventario debe protegerlo mediante una regla estructural, no solo mediante instrucciones al narrador. La persistencia compartida del mundo debe evitar que guardar o cargar una partida sobrescriba los datos de otros protagonistas.
+
+### Estado de implementación
+Estas decisiones quedan aprobadas como requisitos de diseño y arquitectura, pero **todavía no se han implementado ni probado en el juego**. Antes de modificar código, revisar el sistema actual de guardado (app/js/core/save.js), la inicialización/navegación (app/js/app.js), la creación de personajes y el estado de sesión. Diseñar una migración compatible con partidas existentes y hacer copias de seguridad antes de cualquier cambio. No borrar ni reiniciar datos existentes.
