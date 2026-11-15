@@ -1345,3 +1345,16 @@ Cada partida debe recibir a Athun desde su creación y el inventario debe proteg
 
 ### Estado de implementación
 Estas decisiones quedan aprobadas como requisitos de diseño y arquitectura, pero **todavía no se han implementado ni probado en el juego**. Antes de modificar código, revisar el sistema actual de guardado (app/js/core/save.js), la inicialización/navegación (app/js/app.js), la creación de personajes y el estado de sesión. Diseñar una migración compatible con partidas existentes y hacer copias de seguridad antes de cualquier cambio. No borrar ni reiniciar datos existentes.
+
+## PANTALLA DE BIENVENIDA Y CARGA — DECISIÓN APROBADA EL 15/11/2026
+
+- La ilustración compartida en la conversación (grimorio antiguo flotando sobre un pedestal, energía mágica turquesa y figuras encapuchadas) queda aprobada como referencia artística principal de la entrada de Athun.
+- Se quiere una pantalla inicial vertical para móvil, en proporción aproximada 9:16, que aparezca al arrancar mientras se prepara el juego y antes de llegar a la selección de personaje/partidas.
+- La composición debe conservar el grimorio como foco central y su atmósfera de fantasía oscura. El título exacto «Athun: el grimorio oscuro» irá en la zona superior, con tipografía fantástica elegante y legible.
+- En la zona inferior se mostrará «Cargando…» y una barra de progreso discreta en tonos turquesa.
+- Esta pantalla no tendrá botones, menús ni controles de selección: es únicamente una presentación/carga previa a la pantalla de inicio y selección.
+- La pantalla debe ser breve y no retrasar innecesariamente la carga. No debe volver a mostrar el prólogo en cada arranque ni sustituir el flujo de nueva partida/continuar partida ya aprobado.
+- Esta nueva portada es una excepción visual concreta a la interfaz de juego predominantemente textual; no modifica por sí sola las decisiones sobre la narración y las pantallas interiores.
+- Estado: diseño aprobado, pero la imagen final vertical y su integración en el juego todavía no están generadas, guardadas ni implementadas. La generación de la imagen no pudo ejecutarse en esta sesión por el límite temporal del plan Free. No afirmar que existe un archivo final.
+- Próximo paso: cuando vuelva a estar disponible la generación, crear la composición vertical usando la ilustración compartida como referencia; después guardar el recurso en `app/assets/`, integrarlo como pantalla inicial y probarlo en el móvil.
+
