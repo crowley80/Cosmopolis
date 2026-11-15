@@ -1,6 +1,6 @@
 'use strict';
 
-const Athun: el grimorio oscuro = {
+const Athun = {
     fields: {
         nature: 'Naturaleza y especie',
         appearance: 'Apariencia',
@@ -463,4 +463,4 @@ const Athun: el grimorio oscuro = {
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => Athun: el grimorio oscuro.init());
+document.addEventListener('DOMContentLoaded', () => Athun.init());
