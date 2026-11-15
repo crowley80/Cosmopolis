@@ -1289,3 +1289,16 @@ La identidad vigente del proyecto es **Athun: el grimorio oscuro**. El nombre Co
 4. Revisar y probar el botón Pista con el estado narrativo actual, sin modificar la partida.
 5. Ejecutar comprobación de sintaxis JavaScript y abrir la versión real en Chrome desde Termux.
 6. Actualizar esta sección con resultados verificables. No afirmar que está integrado o probado antes de hacerlo.
+
+
+### Flujo de inicio y prólogo — decisión aprobada el 15/11/2026
+- El prólogo completo de Athun se presenta **una sola vez**, en el primer arranque de una instalación/partida nueva, como presentación inicial del juego.
+- Al terminar esa presentación, el jugador pasa a la creación de personaje y después al inicio de la historia.
+- En los arranques posteriores, si existe una partida guardada con personaje y aventura, se entra directamente en la historia: no se vuelve a mostrar el prólogo ni la creación del personaje.
+- No es necesario repetir pantallas introductorias en cada arranque. Como máximo, se permite una pantalla de espera breve con el logotipo o una presentación visual de Athun mientras se inicializa el juego; es opcional y no debe bloquear ni retrasar innecesariamente la carga.
+- El prólogo no debe confundirse con la narración recurrente de la aventura ni aparecer como escena inicial cada vez que se carga una partida.
+- La implementación debe guardar de forma persistente que la presentación inicial ya se mostró y manejar con cuidado instalaciones antiguas/partidas existentes: nunca reiniciar ni sobrescribir una partida guardada para mostrar el prólogo.
+
+### Estado de implementación de este flujo
+- La ruta actual de `Athun.init()` carga directamente la aventura si encuentra personaje y aventura guardados; si solo encuentra personaje, muestra su ficha; si no encuentra personaje, abre el formulario de creación.
+- Todavía no existe la presentación única del prólogo ni el registro persistente de que ya se mostró. El comportamiento solicitado está aprobado como requisito, pero **no está implementado ni probado**.
