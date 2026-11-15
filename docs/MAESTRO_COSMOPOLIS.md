@@ -1261,3 +1261,31 @@ Corrección de validación — 12 de noviembre de 2026: la prueba de iniciativa 
 - Se añade el acceso «Pista» a la barra de aventura. Consulta al narrador sin guardar una acción ni aplicar cambios a la partida. Si el narrador IA no está disponible, ofrece una orientación general y no inventa datos de la escena.
 - Se guardaron copias previas de `app/js/app.js`, `app/css/style.css`, `index.html` y este documento con el sufijo `.bak-20261115-athun-plantillas`.
 - Pendiente de esta integración: incorporar los dos archivos gráficos a `app/assets/templates/`, comprobar su carga en el navegador móvil y ajustar las posiciones si fuera necesario.
+
+
+## CONTINUIDAD — 15 DE NOVIEMBRE DE 2026: ATHUN
+
+La identidad vigente del proyecto es **Athun: el grimorio oscuro**. El nombre Cosmópolis queda obsoleto como identidad del juego; las referencias históricas y la ruta local antigua se conservan solo por compatibilidad técnica hasta que se migren de forma segura.
+
+### Decisiones visuales y narrativas vigentes
+- El prólogo aprobado es el texto proporcionado por el usuario el 15/11/2026; debe conservarse íntegro.
+- La plantilla narrativa debe ser la fotografía original del usuario, limpia de texto, usada como fondo de la aventura.
+- Debe existir una segunda plantilla de papiro en blanco para inicio, creación de personaje, mapa, opciones y demás pantallas.
+- Ambas plantillas deben ser archivos de imagen independientes; textos y controles se superponen como elementos de interfaz.
+- La barra de aventura debe incluir el botón **Pista**, que ya aparece implementado en el código consultado. Debe verificarse su funcionamiento real.
+
+### Estado remoto comprobado
+- Repositorio privado: https://github.com/crowley80/Cosmopolis, rama main.
+- `index.html` ya muestra el título «Athun: el grimorio oscuro».
+- `app/js/app.js` contenía dos identificadores JavaScript inválidos por incluir espacios y dos puntos. El 15/11/2026 se guardó una copia en `app/js/app.js.bak-20261115-reparacion-identificador` y se corrigieron ambas referencias para usar el identificador `Athun`. El cambio está en GitHub; aún requiere comprobación de sintaxis y prueba en Chrome.
+- La hoja `app/css/style.css` todavía construye el fondo con gradientes y SVG incrustados; no está usando la fotografía original como imagen de fondo.
+- No se ha localizado en el repositorio ningún archivo llamado `athun-plantilla-pergamino.webp` ni `athun-plantilla-pergamino-respaldo.webp`. Las rutas mencionadas anteriormente no deben darse por existentes: nunca se verificó su creación ni su incorporación al repositorio.
+- La fotografía original que el usuario quiere conservar no está disponible en los archivos consultados en esta sesión. No generar una sustitución ni inventar una plantilla. Para completar la integración hace falta recuperar esa imagen original desde el adjunto/conversación donde se proporcionó o pedir que se vuelva a adjuntar si no puede recuperarse.
+
+### Próximos pasos obligatorios
+1. Recuperar la fotografía original aportada por el usuario y preparar, a partir de ella, la versión narrativa limpia y la plantilla de papiro en blanco, sin alterar la composición aprobada.
+2. Guardar ambas imágenes maestras y sus copias de seguridad dentro de `app/assets/` y verificar que el servidor las entrega.
+3. Integrar las dos imágenes en CSS según el tipo de pantalla, manteniendo textos y controles como capas independientes.
+4. Revisar y probar el botón Pista con el estado narrativo actual, sin modificar la partida.
+5. Ejecutar comprobación de sintaxis JavaScript y abrir la versión real en Chrome desde Termux.
+6. Actualizar esta sección con resultados verificables. No afirmar que está integrado o probado antes de hacerlo.
