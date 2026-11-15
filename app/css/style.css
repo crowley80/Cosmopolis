@@ -800,3 +800,85 @@ body {
   .tool-panel-heading { padding:10px 12px 8px; }
   .player-heading #openExplore { font-size:.6rem; padding:2px 5px; }
 }
+
+
+/* ATHUN — plantillas maestras de papiro. El contenido permanece separado de las imágenes. */
+body {
+  padding: 8px;
+  color: #321907;
+  background: #1b1009 url('../assets/templates/athun-papiro-limpio.webp') center center / 100% 100% fixed no-repeat;
+}
+#app { min-height: calc(100vh - 16px); }
+.main-header { color:#321907; border:0; }
+.main-header h1 { color:#351704; text-shadow:1px 2px rgba(255,220,157,.65); }
+.main-header p,.welcome,.welcome p,.welcome h2 { color:#4b2b12; }
+.character-creation {
+  background:transparent;
+  border:0;
+  outline:0;
+  box-shadow:none;
+}
+.character-creation::before,.character-creation::after { display:none; }
+fieldset { background:rgba(255,242,211,.42); }
+.tool-panel {
+  background:#ead09a url('../assets/templates/athun-papiro-limpio.webp') center / 100% 100% no-repeat;
+  border:0;
+  outline:0;
+}
+.adventure-screen {
+  background:#160b05 url('../assets/templates/athun-aventura.webp') center / 100% 100% no-repeat;
+}
+.adventure-screen::before { content:none; display:none; }
+.adventure-screen::after { display:none; }
+.manuscript-header {
+  min-height:9.5%;
+  grid-template-columns:minmax(0,1fr) minmax(118px,.9fr);
+  gap:8px;
+  padding:5px 14px;
+  border:0;
+  outline:0;
+  background:transparent;
+  box-shadow:none;
+}
+.compass { display:none; }
+.wordmark h1 { font-size:clamp(1.15rem,5.5vw,2.5rem); }
+.manuscript-meta { border:0; background:transparent; padding:4px; }
+.story-panel { flex:1 1 auto; }
+.narrative-panel { padding:18px 20px 22px; }
+.player-panel {
+  padding:7px 13px 8px;
+  border:0;
+  outline:0;
+  background:transparent;
+  box-shadow:none;
+}
+.player-panel::before,.player-panel::after,.quill-inkwell { display:none; }
+.player-panel form { grid-template-columns:minmax(0,1fr) 78px; gap:7px; }
+.player-panel textarea {
+  min-height:64px;
+  background:rgba(255,239,207,.82);
+  border:1px solid #704017;
+  border-radius:5px;
+}
+.player-panel form > button { min-height:54px; }
+.manuscript-toolbar {
+  min-height:7.2%;
+  margin:2px 10px 8px;
+  padding:4px 8px;
+  grid-template-columns:repeat(9,minmax(0,1fr));
+  border:0;
+  outline:0;
+  background:transparent;
+  box-shadow:none;
+}
+.manuscript-toolbar::before,.manuscript-toolbar::after { display:none; }
+.toolbar-button { flex-direction:column; gap:0; font-size:clamp(.55rem,2.5vw,.82rem); }
+.toolbar-button > span[aria-hidden="true"] { font-size:1.4rem; line-height:1.1; }
+.toolbar-divider { background:linear-gradient(180deg,transparent,#67390f 12%,#67390f 88%,transparent); }
+@media (max-width:390px) {
+  body { padding:5px; }
+  .manuscript-header { grid-template-columns:minmax(0,1fr) minmax(104px,.9fr); padding:3px 10px; }
+  .manuscript-meta { font-size:.57rem; }
+  .manuscript-toolbar { margin:2px 7px 6px; padding:3px 5px; }
+  .toolbar-button { font-size:.56rem; }
+}
