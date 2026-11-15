@@ -1,10 +1,10 @@
-# COSMOPOLIS — DOCUMENTO MAESTRO
+# ATHUN: EL GRIMORIO OSCURO — DOCUMENTO MAESTRO
 
 Última actualización: 12 de noviembre de 2026.
 
 ## 1. IDENTIDAD DEL PROYECTO
 
-Nombre: Cosmopolis.
+Nombre: Athun: el grimorio oscuro.
 
 Tipo: juego web narrativo e interactivo.
 
@@ -1251,3 +1251,13 @@ Se ajusta `Narrator.buildMessages()` para que las iniciativas autónomas registr
 
 
 Corrección de validación — 12 de noviembre de 2026: la prueba de iniciativa autónoma estaba comprobando la acción de Elia después de una segunda acción del jugador, cuando la interfaz muestra únicamente la narración de esa segunda acción. El comportamiento probado era correcto; el momento de la aserción era incorrecto. Se ha trasladado la comprobación inmediatamente después de la primera acción, que es la que genera la iniciativa, y se mantiene la comprobación de que no aparezca como ficha ni con escapes visibles. Nuevo commit de prueba: `a595a391d346aded934167d937841ebb237f6abf`. Validación pendiente de la nueva ejecución.
+
+
+## ACTUALIZACIÓN — 15 DE NOVIEMBRE DE 2026 — IDENTIDAD ATHUN Y PLANTILLAS
+
+- Nuevo nombre visible del juego: **Athun: el grimorio oscuro**. Se conservan las rutas del proyecto y las claves internas de guardado para no romper partidas existentes.
+- Se incorporan dos fondos maestros independientes: `app/assets/templates/athun-aventura.webp` (plantilla narrativa con áreas vacías para la interfaz de aventura) y `app/assets/templates/athun-papiro-limpio.webp` (papiro vacío para inicio, creación, ficha y paneles).
+- El contenido de texto, formularios y controles se mantiene en HTML/CSS, superpuesto al fondo; no se incrusta en las imágenes.
+- Se añade el acceso «Pista» a la barra de aventura. Consulta al narrador sin guardar una acción ni aplicar cambios a la partida. Si el narrador IA no está disponible, ofrece una orientación general y no inventa datos de la escena.
+- Se guardaron copias previas de `app/js/app.js`, `app/css/style.css`, `index.html` y este documento con el sufijo `.bak-20261115-athun-plantillas`.
+- Pendiente de esta integración: incorporar los dos archivos gráficos a `app/assets/templates/`, comprobar su carga en el navegador móvil y ajustar las posiciones si fuera necesario.
