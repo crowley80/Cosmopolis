@@ -8,7 +8,7 @@ const Save = {
     worldKey: 'athun_shared_world_v1',
 
     emptyWorld() {
-        return { locations: [], entities: {}, facts: [], events: [], changes: [] };
+        return { locations: [], entities: {}, facts: [], events: [], changes: [], relationships: {} };
     },
 
     readJSON(key) {
@@ -245,10 +245,11 @@ const Save = {
         if (!index || !Array.isArray(index.saves) || !index.saves.some(entry => entry.id === id)) return false;
         if (index.saves.length <= 1) return false;
         try {
+            const wasActive = this.getActiveId() === id;
             const next = { version: 1, saves: index.saves.filter(entry => entry.id !== id) };
             if (!this.writeVerified(this.indexKey, next)) return false;
             localStorage.removeItem(this.slotPrefix + id);
-            if (this.getActiveId() === id) this.activate(next.saves[0].id);
+            if (wasActive && !this.writeVerified(this.activeKey, { id: next.saves[0].id })) return false;
             return true;
         } catch (error) {
             console.error('No se pudo eliminar la partida:', error);
@@ -269,6 +270,7 @@ const Save = {
         world.facts = Array.isArray(world.facts) ? world.facts : [];
         world.events = Array.isArray(world.events) ? world.events : [];
         world.changes = Array.isArray(world.changes) ? world.changes : [];
+        world.relationships = world.relationships && typeof world.relationships === 'object' ? world.relationships : {};
         return world;
     },
 
@@ -297,7 +299,8 @@ const Save = {
             entities: { ...current.entities, ...((world && world.entities) || {}) },
             facts: Array.isArray(world && world.facts) ? world.facts : current.facts,
             events: Array.isArray(world && world.events) ? world.events : current.events,
-            changes: Array.isArray(world && world.changes) ? world.changes : current.changes
+            changes: Array.isArray(world && world.changes) ? world.changes : current.changes,
+            relationships: { ...current.relationships, ...((world && world.relationships) || {}) }
         };
         try {
             return this.writeVerified(this.worldKey, updated);
