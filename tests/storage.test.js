@@ -5,6 +5,8 @@ const assert = require('node:assert/strict');
 
 class MemoryStorage {
     constructor() { this.data = new Map(); }
+    get length() { return this.data.size; }
+    key(index) { return Array.from(this.data.keys())[index] || null; }
     getItem(key) { return this.data.has(key) ? this.data.get(key) : null; }
     setItem(key, value) { this.data.set(String(key), String(value)); }
     removeItem(key) { this.data.delete(String(key)); }
@@ -111,6 +113,16 @@ test('una aventura nueva no elimina la anterior ni reinicia el mundo compartido'
     assert.ok(Save.getGlobalWorld().locations.some(item => item.name === 'Valdebruma'));
     assert.equal(Save.activate(first), true);
     assert.equal(Save.load().adventure.title, 'Primera aventura');
+});
+
+test('reconstruye el índice si desaparece sin perder los registros de partidas', () => {
+    Save.createSlot({ name: 'Ariadna' }, { title: 'Historia A', state: { inventory: [] } });
+    Save.createSlot({ name: 'Darian' }, { title: 'Historia B', state: { inventory: [] } });
+    localStorage.removeItem(Save.indexKey);
+
+    assert.equal(Save.list().length, 2);
+    assert.equal(Save.load().character.name, 'Darian');
+    assert.ok(localStorage.getItem(Save.indexKey));
 });
 
 test('Athun permanece en el inventario al guardar o normalizar una partida', () => {
