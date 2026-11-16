@@ -87,7 +87,7 @@ const Director = {
                         memories: ['Ha visto llegar al viajero por el camino de entrada.']
                     };
                 }
-                reply = 'Te acercas a la persona que está recogiendo leña junto a una de las casas. Al verte, deja el haz de ramas en el suelo y te saluda con naturalidad.\\n\\n—Buenos días. ¿Acabas de llegar? Si buscas algo en el pueblo, quizá pueda orientarte.';
+                reply = 'Te acercas a la persona que está recogiendo leña junto a una de las casas. Al verte, deja el haz de ramas en el suelo y te saluda con naturalidad.\n\n—Buenos días. ¿Acabas de llegar? Si buscas algo en el pueblo, quizá pueda orientarte.';
                 event = `${name} ha hablado con un habitante en el camino de entrada a Valdebruma.`;
             } else if (investigates) {
                 category = 'investigation';
