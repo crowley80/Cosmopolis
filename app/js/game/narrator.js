@@ -356,6 +356,8 @@ const Narrator = {
             result.itemsToAdd.slice(0, 10).forEach(item => {
                 if (typeof item !== 'string' || !item.trim()) return;
                 const clean = item.trim().slice(0, 120);
+                // El narrador no puede crear una segunda instancia ni una copia de Athun.
+                if (clean.toLocaleLowerCase('es').includes('athun')) return;
                 if (!state.inventory.some(existing => String(existing).toLocaleLowerCase('es') === clean.toLocaleLowerCase('es')) && state.inventory.length < 50) {
                     state.inventory.push(clean);
                 }
