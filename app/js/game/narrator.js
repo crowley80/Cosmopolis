@@ -88,6 +88,7 @@ const Narrator = {
             clues: shortList(state.clues, 25),
             inventory: shortList(state.inventory, 30, 120),
             visitedLocations: shortList(state.visitedLocations, 25, 120),
+            visibleLocations: shortList(state.visibleLocations, 12, 120),
             characters: compactCharacters
         };
 
@@ -156,6 +157,7 @@ const Narrator = {
                     'reply: respuesta narrativa de 2 a 4 párrafos breves, con diálogos cuando proceda.',
                     'event: una frase factual que registre lo ocurrido.',
                     'location: ubicación actual; conserva la existente si no hay desplazamiento.',
+                    'visibleLocations: lugares que el personaje puede ver claramente desde su posición actual. Recalcula la lista en cada respuesta; incluye solo nombres explícitos del contexto o de la escena, nunca inventes lugares, rutas ni coordenadas. No incluyas destinos lejanos ni sitios solo conocidos por rumores. Usa una lista vacía si no hay otros lugares visibles.',
                     'factsToAdd y cluesToAdd: solo datos nuevos realmente descubiertos, sin duplicados.',
                     'relationshipChanges: cambios justificados de confianza hacia personajes registrados, con character, delta entre -1 y 1 y reason breve. Usa cambios pequeños y no alteres relaciones sin una interacción significativa.',
                     'itemsToAdd: objetos que el personaje obtiene realmente y puede llevar consigo; no incluyas objetos solo vistos o examinados.',
@@ -196,6 +198,7 @@ const Narrator = {
                     enum: ['dialogue', 'investigation', 'movement', 'combat', 'magic', 'stealth', 'offer', 'rest', 'object', 'other']
                 },
                 location: { type: 'string' },
+                visibleLocations: { type: 'array', items: { type: 'string' } },
                 factsToAdd: { type: 'array', items: { type: 'string' } },
                 cluesToAdd: { type: 'array', items: { type: 'string' } },
                 relationshipChanges: {
@@ -283,7 +286,7 @@ const Narrator = {
                     }
                 }
             },
-            required: ['reply', 'event', 'category', 'location', 'factsToAdd', 'cluesToAdd', 'relationshipChanges', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd', 'charactersToAdd', 'characterUpdates', 'characterActions', 'goalUpdates', 'time', 'day']
+            required: ['reply', 'event', 'category', 'location', 'visibleLocations', 'factsToAdd', 'cluesToAdd', 'relationshipChanges', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd', 'charactersToAdd', 'characterUpdates', 'characterActions', 'goalUpdates', 'time', 'day']
         };
 
         const controller = new AbortController();
@@ -317,6 +320,7 @@ const Narrator = {
             const result = JSON.parse(content);
             if (!result || typeof result.reply !== 'string' || !result.reply.trim() ||
                 typeof result.event !== 'string' || typeof result.location !== 'string' ||
+                !Array.isArray(result.visibleLocations) ||
                 !Array.isArray(result.factsToAdd) || !Array.isArray(result.cluesToAdd) ||
                 !Array.isArray(result.itemsToAdd) || !Array.isArray(result.itemsToRemove) ||
                 !Array.isArray(result.characterMemoriesToAdd) ||
@@ -336,6 +340,10 @@ const Narrator = {
             state.day = Math.max(previousDay, Math.max(1, Math.min(9999, result.day)));
             state.currentLocation = result.location.trim().slice(0, 120) ||
                 state.currentLocation || updated.location || 'Lugar desconocido';
+            state.visibleLocations = result.visibleLocations
+                .filter(name => typeof name === 'string' && name.trim())
+                .slice(0, 12)
+                .map(name => name.trim().slice(0, 120));
             state.knownFacts = Array.isArray(state.knownFacts) ? state.knownFacts : [];
             state.clues = Array.isArray(state.clues) ? state.clues : [];
             state.events = Array.isArray(state.events) ? state.events : [];
