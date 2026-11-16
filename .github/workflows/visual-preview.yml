@@ -130,6 +130,22 @@ jobs:
               const magic = Director.respond('Invoco magia sobre el pozo.', player, inspect.adventure, [{ text: 'Entro en el pueblo' }, { text: 'Camino hacia la plaza' }, { text: 'Examino el pozo' }]);
               if (!magic.state.bellDiscovered || !/campanada|campana/i.test(magic.reply)) fail('la magia no descubre la respuesta de la campana');
 
+              // La interacción con lugares y personajes exige presencia en la escena.
+              const awayState = JSON.parse(JSON.stringify(magic.adventure));
+              awayState.state.currentLocation = 'Calle Mayor';
+              awayState.location = 'Calle Mayor';
+              const remoteWell = Director.respond('Examino el pozo con cuidado.', player, awayState, []);
+              if (remoteWell.state.wellInspected) fail('se puede inspeccionar el pozo desde otra ubicación');
+
+              const eliaAway = JSON.parse(JSON.stringify(awayState));
+              eliaAway.state.eliaMet = true;
+              eliaAway.state.eliaTrust = 3;
+              eliaAway.state.characters.Elia = { name: 'Elia', role: 'Cartógrafa', location: 'Plaza del pozo', trust: 3 };
+              const eliaQuestion = Director.respond('Pregunto por Elia.', player, eliaAway, []);
+              if (/Elia aprieta|podemos examinar el pozo/i.test(eliaQuestion.reply) || eliaQuestion.state.eliaTrust !== 3) fail('Elia responde o aumenta confianza estando en otro lugar');
+              const remoteOffer = Director.respond('Ofrezco ayuda a Elia.', player, eliaAway, []);
+              if (remoteOffer.state.eliaTrust !== 3 || /Elia acepta tu gesto/i.test(remoteOffer.reply)) fail('se ofrece ayuda a Elia a distancia');
+
               const originalFetch = window.fetch;
               const fakeNarrative = {
                 reply: 'Athun permanece contigo.',
