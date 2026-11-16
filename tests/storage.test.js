@@ -139,3 +139,54 @@ test('Athun permanece en el inventario al guardar o normalizar una partida', () 
         String(item).toLocaleLowerCase('es').includes('athun')
     ));
 });
+
+
+test('la migración heredada es idempotente y no duplica partidas ni lugares', () => {
+    const legacy = {
+        character: { name: 'Ariadna' },
+        adventure: { title: 'La campana', state: { currentLocation: 'Valdebruma', visitedLocations: ['Valdebruma'] } },
+        actions: [{ text: 'Primera acción' }],
+        createdAt: '2026-01-01T00:00:00.000Z'
+    };
+    const original = JSON.stringify(legacy);
+    localStorage.setItem(Save.key, original);
+
+    const first = Save.list();
+    const firstWorld = Save.getGlobalWorld();
+    const firstSlot = Save.load();
+    const second = Save.list();
+
+    assert.equal(first.length, 1);
+    assert.equal(second.length, 1);
+    assert.equal(Save.load().id, first[0].id);
+    assert.deepEqual(Save.getGlobalWorld().locations, firstWorld.locations);
+    assert.deepEqual(Save.load().actions, firstSlot.actions);
+    assert.equal(localStorage.getItem(Save.key), original);
+});
+
+test('si falla la activación de una partida nueva, conserva la partida anterior', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia conservada', state: { inventory: ['Llave'] }
+    });
+    assert.ok(first);
+    const originalActive = localStorage.getItem(Save.activeKey);
+    const originalIndex = localStorage.getItem(Save.indexKey);
+    const originalSlot = localStorage.getItem(Save.slotPrefix + first);
+
+    const setItem = localStorage.setItem.bind(localStorage);
+    localStorage.setItem = (key, value) => {
+        if (key === Save.activeKey) throw new Error('Almacenamiento simulado no disponible');
+        setItem(key, value);
+    };
+
+    assert.equal(Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia que no debe activarse', state: { inventory: [] }
+    }), false);
+
+    localStorage.setItem = setItem;
+    assert.equal(localStorage.getItem(Save.activeKey), originalActive);
+    assert.equal(localStorage.getItem(Save.indexKey), originalIndex);
+    assert.equal(localStorage.getItem(Save.slotPrefix + first), originalSlot);
+    assert.equal(Save.load().character.name, 'Ariadna');
+    assert.equal(Save.list().length, 1);
+});
