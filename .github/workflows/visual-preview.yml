@@ -393,9 +393,8 @@ jobs:
             await page.locator('#playerAction').fill('Entrego el medallón de cobre a Elia.');
             await page.locator('#actionForm button[type="submit"]').click();
             await page.waitForFunction(() => {
-              const raw = localStorage.getItem('cosmopolis_save');
-              if (!raw) return false;
-              const data = JSON.parse(raw);
+              const data = Save.load();
+              if (!data) return false;
               return data.actions && data.actions.length === 2 &&
                 !data.adventure.state.inventory.includes('Medallón de cobre') &&
                 data.adventure.state.characters.Elia.trust === 1 &&
