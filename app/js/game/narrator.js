@@ -38,6 +38,12 @@ const Narrator = {
         const world = Session.getWorld();
         const activeSave = Save.load() || {};
         const personalWorld = activeSave.world || {};
+        const athunState = state.athun && typeof state.athun === 'object' ? state.athun : {};
+        const athunContext = {
+            bond: Number.isFinite(Number(athunState.bond)) ? Math.max(-100, Math.min(100, Number(athunState.bond))) : 0,
+            memories: shortList(athunState.memories, 12, 240),
+            revelations: shortList(athunState.revelations, 12, 240)
+        };
         const history = previousActions.slice(-6).map(item => ({
             action: item.text || '',
             response: item.response || ''
@@ -107,6 +113,7 @@ const Narrator = {
                 title: String(adventure.title || '').slice(0, 160),
                 location: currentLocation,
                 time: String(state.time || '').slice(0, 60),
+                athun: athunContext,
                 state: compactState
             },
             persistentWorld: {
@@ -151,6 +158,7 @@ const Narrator = {
                     'Si el jugador examina algo, describe primero señales observables y permite que las conclusiones dependan de las pistas disponibles y de sus capacidades.',
                     'El mundo persistente es compartido entre protagonistas: usa sus localizaciones y entidades como referencias comunes. No traslades recuerdos, confianza, objetivos ni relaciones personales de un protagonista a otro; esos datos pertenecen a cada partida.',
                     'personalWorld contiene hechos, acontecimientos y relaciones exclusivos de la partida activa: consúltalos para mantener su continuidad, pero nunca los trates como hechos universales ni los transfieras a otro protagonista.',
+                    'athun contiene el vínculo, recuerdos y revelaciones del grimorio exclusivos de esta partida. Tenlos presentes para que Athun reconozca decisiones y experiencias compartidas con este protagonista, pero no inventes recuerdos, no los atribuyas a otro protagonista y no reveles sus secretos antes de tiempo. Su conocimiento extraordinario no significa que deba intervenir en cada acción.',
                     'Si una entidad ya figura en el registro compartido, conserva su identidad y función; no crees un duplicado con otro nombre salvo que la historia establezca claramente que se trata de otra persona.',
                     'Respeta estrictamente los hechos, lugares, personajes, capacidades y consecuencias ya establecidos.',
                     'No decidas las intenciones del jugador ni fuerces una misión. Resuelve la acción que ha escrito.',
