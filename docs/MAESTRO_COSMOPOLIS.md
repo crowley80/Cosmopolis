@@ -1706,3 +1706,15 @@ La revisión de `Director.respond()` detectó que algunas interacciones podían 
 - Se añadió una prueba con 40 lugares para comprobar que no se pierden nodos, no aparecen duplicados y todas las posiciones quedan dentro del lienzo.
 - Copias previas: `app/js/game/map.js.bak-20261116-atlas-muchos-lugares` y `tests/map.test.js.bak-20261116-atlas-limites`.
 - La validación CI de esta ampliación queda pendiente.
+
+### Separación entre mundo compartido y conocimiento personal — 16/11/2026
+La revisión de `WorldMap.getAtlas()`, `Session` y el guardado por partidas confirma una separación deliberada que debe preservarse:
+
+- El registro global puede conservar nombres de lugares, conexiones realmente recorridas y datos básicos de entidades para dar continuidad al mundo entre protagonistas.
+- Cada atlas clasifica esos lugares según el estado de su propia partida: ubicación actual, zonas visibles declaradas, lugares visitados y lugares conocidos por el registro global. Que otro protagonista haya descubierto una zona no la marca como visitada ni visible para el personaje activo.
+- Los hechos, acontecimientos, relaciones, confianza y recuerdos narrativos permanecen en el guardado personal; no deben copiarse al mundo global.
+- Los datos compartidos de personajes se limitan a identidad, función y ubicación. No incluyen confianza ni recuerdos privados.
+- El vínculo, memorias y revelaciones de Athun también son independientes por protagonista.
+- Esta separación está cubierta por pruebas de `tests/map.test.js` y `tests/storage.test.js`, incluidas las regresiones de conocimiento de ubicaciones, rutas compartidas, privacidad de Elia y recuerdos de Athun.
+
+No se cambia esta arquitectura: el mundo conserva continuidad común, mientras la experiencia, la niebla de guerra y la memoria del protagonista siguen siendo personales.
