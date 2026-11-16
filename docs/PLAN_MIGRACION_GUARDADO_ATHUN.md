@@ -162,3 +162,7 @@ La tanda ampliada pasa a **18 pruebas previstas**; CI de esta última correcció
 
 ### Validación final del refinamiento de visibilidad — 16/11/2026
 GitHub Actions, ejecución **142**: comprobación de sintaxis JavaScript correcta y **18/18 pruebas aprobadas**. Incluye la prioridad de zonas actualmente visibles sobre visitas antiguas y la conservación de una nueva lista `visibleLocations` declarada explícitamente por el narrador al desplazarse.
+
+
+## Red conservadora de caminos del atlas — 16/11/2026
+La siguiente fase registra una conexión direccional cuando el estado de una partida cambia de una localización A a una localización B tras una acción. Esa transición es evidencia de un tramo recorrido; no demuestra distancias, orientación, geometría ni que el regreso sea posible, por lo que no se genera automáticamente la conexión B → A. El registro se guarda en el mundo compartido, separado de visitas personales, y se muestra como lista de caminos recorridos. Las rutas antiguas no se reconstruyen a partir de simples listas de lugares visitados porque su orden no demuestra que existiera un trayecto directo entre cada par. Se mantiene pendiente la cartografía geográfica con posiciones verificadas.
