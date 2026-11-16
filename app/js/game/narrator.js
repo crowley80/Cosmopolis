@@ -38,12 +38,6 @@ const Narrator = {
         const world = Session.getWorld();
         const activeSave = Save.load() || {};
         const personalWorld = activeSave.world || {};
-        const athunState = state.athun && typeof state.athun === 'object' ? state.athun : {};
-        const athunContext = {
-            bond: Number.isFinite(Number(athunState.bond)) ? Math.max(-100, Math.min(100, Number(athunState.bond))) : 0,
-            memories: shortList(athunState.memories, 12, 240),
-            revelations: shortList(athunState.revelations, 12, 240)
-        };
         const history = previousActions.slice(-6).map(item => ({
             action: item.text || '',
             response: item.response || ''
@@ -54,6 +48,12 @@ const Narrator = {
                 .slice(-count)
                 .map(item => typeof item === 'string' ? item.slice(0, maxLength) : item);
 
+        const athunState = state.athun && typeof state.athun === 'object' ? state.athun : {};
+        const athunContext = {
+            bond: Number.isFinite(Number(athunState.bond)) ? Math.max(-100, Math.min(100, Number(athunState.bond))) : 0,
+            memories: shortList(athunState.memories, 12, 240),
+            revelations: shortList(athunState.revelations, 12, 240)
+        };
         const currentLocation = state.currentLocation || adventure.location || '';
         const allCharacters = Object.entries(state.characters || {});
         const nearby = allCharacters.filter(([, person]) =>
