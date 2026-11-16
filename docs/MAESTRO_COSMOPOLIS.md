@@ -1367,3 +1367,22 @@ Se ha revisado en GitHub el guardado, la sesión, la creación de personajes, el
 Estos límites contradicen los requisitos aprobados el 15/11/2026 de múltiples partidas independientes, mundo compartido persistente y Athun inseparable del protagonista. Antes de tocar código se ha creado el respaldo `docs/MAESTRO_COSMOPOLIS.md.bak-20261116-guardado` y el plan detallado `docs/PLAN_MIGRACION_GUARDADO_ATHUN.md`.
 
 **Estado:** auditoría estática completada y plan de migración documentado. No se ha modificado código ejecutable ni se ha probado el juego en Android. La implementación queda dividida en migración compatible de partidas, separación del mundo global, protección de Athun y, finalmente, selector de partidas. No se debe reiniciar, sobrescribir ni eliminar el guardado heredado. Cada fase deberá contar con pruebas de recuperación, aislamiento entre protagonistas e idempotencia antes de continuar.
+
+
+## IMPLEMENTACIÓN INICIAL DE PARTIDAS MÚLTIPLES — 16 DE NOVIEMBRE DE 2026
+
+Se ha iniciado la implementación en la rama independiente `feat/athun-multisave-world`, sin modificar `main`.
+
+- Se creó un índice de partidas, un identificador de partida activa y un registro independiente por protagonista.
+- La partida antigua `cosmopolis_save` se migra como partida heredada y su clave original se conserva intacta.
+- Se incorporaron creación, listado y activación de partidas; la ficha puede editarse sin crear otra partida.
+- Una aventura nueva crea un registro independiente cuando ya existe una aventura, evitando archivar y reemplazar la anterior.
+- Se separó el almacenamiento del mundo compartido. Las localizaciones descubiertas se registran globalmente y aparecen en el mapa de los protagonistas.
+- Se añadió el selector inicial de partidas y accesos para cambiar de historia o crear otro protagonista.
+- Athun se repone en la normalización del inventario y el narrador no puede retirarlo mediante `itemsToRemove`.
+- Se añadieron pruebas automatizadas y un flujo de GitHub Actions para comprobar sintaxis y almacenamiento.
+- Se guardaron copias de seguridad de los archivos de ejecución modificados y de este documento.
+
+**Estado de validación:** implementación en rama de trabajo; pruebas automáticas pendientes de resultado confirmado; no probada todavía en Chrome/Android. El mundo global comparte localizaciones en esta fase. No se migran automáticamente hechos, relaciones ni acontecimientos personales al mundo global. La incorporación a `main` queda supeditada a las pruebas y revisión del pull request.
+
+Plan técnico y alcance pendiente: `docs/PLAN_MIGRACION_GUARDADO_ATHUN.md`.
