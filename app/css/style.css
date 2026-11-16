@@ -806,7 +806,11 @@ body {
 body {
   padding: 8px;
   color: #321907;
-  background: #1b1009 url('../assets/templates/athun-papiro-limpio.webp') center center / 100% 100% fixed no-repeat;
+  background-color: #1b1009;
+  background-image:
+    radial-gradient(ellipse at 50% 18%, rgba(245, 225, 190, .96) 0%, rgba(205, 165, 108, .91) 58%, rgba(75, 42, 19, .96) 100%),
+    repeating-linear-gradient(0deg, rgba(91, 55, 24, .045) 0 1px, transparent 1px 5px);
+  background-attachment: fixed;
 }
 #app { min-height: calc(100vh - 16px); }
 .main-header { color:#321907; border:0; }
@@ -821,12 +825,18 @@ body {
 .character-creation::before,.character-creation::after { display:none; }
 fieldset { background:rgba(255,242,211,.42); }
 .tool-panel {
-  background:#ead09a url('../assets/templates/athun-papiro-limpio.webp') center / 100% 100% no-repeat;
+  background-color:#ead09a;
+  background-image:
+    linear-gradient(135deg, rgba(255, 247, 221, .72), rgba(137, 91, 43, .12)),
+    repeating-linear-gradient(0deg, rgba(89, 55, 23, .055) 0 1px, transparent 1px 5px);
   border:0;
   outline:0;
 }
 .adventure-screen {
-  background:#160b05 url('../assets/templates/athun-aventura.webp') center / 100% 100% no-repeat;
+  background-color:#160b05;
+  background-image:
+    radial-gradient(ellipse at 50% 14%, rgba(121, 78, 42, .24), transparent 66%),
+    linear-gradient(180deg, #2b1a0e 0%, #160b05 100%);
 }
 .adventure-screen::before { content:none; display:none; }
 .adventure-screen::after { display:none; }
