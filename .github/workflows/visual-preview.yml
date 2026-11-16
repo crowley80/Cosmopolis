@@ -478,6 +478,50 @@ jobs:
             assert.ok(desktopWidth.document <= desktopWidth.viewport, 'La interfaz de escritorio no debe desbordarse horizontalmente');
             assert.equal(desktopErrors.length, 0, 'No deben producirse errores JavaScript en escritorio: ' + desktopErrors.join('; '));
             await desktopPage.screenshot({ path: 'artifacts/cosmopolis-desktop.png', fullPage: true });
+
+            // Regresión de interfaz: dos protagonistas, alternancia y aislamiento personal.
+            const slotIds = await desktopPage.evaluate(() => {
+              const ari = Save.list().find(entry => entry.name === 'Ariadna');
+              const darian = Save.createSlot({
+                name: 'Darian',
+                nature: 'Humano',
+                appearance: 'Viajero de ojos claros.',
+                history: 'Procede del norte.',
+                abilities: 'Orientación.',
+                personality: 'Reservado.'
+              }, {
+                id: 'darian-adventure',
+                title: 'La ruta del norte',
+                location: 'Puerto de Bruma',
+                text: 'Una historia distinta.',
+                state: { currentLocation: 'Puerto de Bruma', inventory: ['Mapa antiguo'], visitedLocations: ['Puerto de Bruma'], visibleLocations: [], characters: {} }
+              }, {
+                world: { facts: ['Recuerdo privado de Darian'], events: [], relationships: {} }
+              });
+              return { ari: ari && ari.id, darian, globalLocations: Save.getGlobalWorld().locations };
+            });
+            assert.ok(slotIds.ari && slotIds.darian, 'Deben existir dos partidas independientes');
+            assert.ok(slotIds.globalLocations.includes('Plaza del pozo'), 'El mundo común debe conservar el lugar descubierto por Ariadna');
+
+            await desktopPage.reload({ waitUntil: 'networkidle' });
+            await desktopPage.locator('[data-load-save]').first().waitFor();
+            assert.equal(await desktopPage.locator('[data-load-save]').count(), 2, 'El selector debe mostrar ambos protagonistas');
+            await desktopPage.locator('[data-load-save="' + slotIds.ari + '"]').click();
+            const ariState = await desktopPage.evaluate(() => Save.load());
+            assert.equal(ariState.character.name, 'Ariadna', 'El selector debe abrir la partida elegida');
+            assert.ok(!ariState.world.facts.includes('Recuerdo privado de Darian'), 'Los recuerdos personales de Darian no deben filtrarse a Ariadna');
+            assert.ok(ariState.adventure.state.inventory.includes('Athun — grimorio consciente'), 'Ariadna debe conservar a Athun');
+
+            await desktopPage.locator('#openOptions').click();
+            await desktopPage.locator('#toolOverlay #switchSaveFromOptions').click();
+            await desktopPage.locator('[data-load-save="' + slotIds.darian + '"]').click();
+            const darianState = await desktopPage.evaluate(() => Save.load());
+            assert.equal(darianState.character.name, 'Darian', 'Debe poder alternarse al segundo protagonista');
+            assert.ok(darianState.world.facts.includes('Recuerdo privado de Darian'), 'La segunda partida debe conservar sus recuerdos propios');
+            assert.ok(!darianState.world.facts.includes('El personaje ha mostrado generosidad.'), 'El progreso personal de Ariadna no debe filtrarse a Darian');
+            assert.ok(darianState.adventure.state.inventory.includes('Mapa antiguo'), 'Darian debe conservar su inventario independiente');
+            assert.ok(darianState.adventure.state.inventory.includes('Athun — grimorio consciente'), 'Athun debe existir también en la partida de Darian');
+
             await browser.close();
           })().catch(error => { console.error(error); process.exit(1); });
           NODE
