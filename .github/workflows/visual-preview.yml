@@ -252,7 +252,7 @@ jobs:
             await page.locator('#closeToolPanel').click();
 
             await page.locator('#openMap').click();
-            await page.locator('#toolOverlay').getByText('Plaza del pozo').waitFor();
+            await page.locator('#toolOverlay .atlas-place-name').filter({ hasText: 'Plaza del pozo' }).waitFor();
             await page.locator('#closeToolPanel').click();
 
             await page.locator('#openInventory').click();
