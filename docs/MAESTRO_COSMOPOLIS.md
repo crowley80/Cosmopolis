@@ -1419,3 +1419,16 @@ Se recuperó el texto íntegro aprobado para el comienzo de Valdebruma y se apli
 **Commits de implementación:** aventura `7077bc7`; director `ba34e20` y `39c7942`; narrador `a421511`; pruebas `d0206a0`; renovación de caché `4c91999`.
 
 **Estado de validación:** las pruebas de regresión quedaron incorporadas al workflow de GitHub Actions, que se activa al actualizar `index.html`. No se declara todavía una validación visual en Chrome/Android ni un resultado verde del workflow hasta consultar su ejecución. Las partidas guardadas existentes no se han modificado ni migrado.
+
+
+### Ajuste adicional de la primera interacción — 16 de noviembre de 2026
+
+La apertura permite ahora conversar desde el propio camino con la persona que recoge leña junto a una casa. El director registra a ese habitante solo cuando el protagonista intenta hablar con alguien; no lo introduce como personaje conocido antes de tiempo. La pregunta inicial ya no se confunde con una orden de entrar en el pueblo. Tras esa primera conversación comienza la fase de exploración, y el habitante puede conservar su ubicación y recuerdos.
+
+Se amplió el workflow de regresión para comprobar también esa conversación y la sincronización de descubrimientos que realiza el narrador: al registrar hechos nuevos sobre el pozo o la campana, se activan las marcas correspondientes; cuando el narrador incorpora a Elia como personaje, queda registrado que el protagonista la ha conocido. Al cambiar de ubicación desde el camino inicial, la fase pasa a exploración.
+
+**Pruebas ejecutadas en esta sesión:** se analizaron sintácticamente los tres scripts actualizados y se ejecutaron pruebas directas de apertura, conversación con el primer habitante, entrada al pueblo, preguntas sin revelaciones, descubrimiento del pozo, inspección sin revelar la campana y descubrimiento mediante magia. Todas pasaron. También se simuló una respuesta de IA que intentaba retirar Athun y se comprobó que el inventario lo conserva y mantiene su marca permanente. Se simuló además la incorporación de hechos y de Elia y se comprobó que se sincronizan sus indicadores de descubrimiento.
+
+**Pendiente de verificación externa:** el workflow de Chrome/Playwright contiene ahora estas pruebas ampliadas y se activa con los cambios de `index.html` y del propio workflow. No se ha podido consultar desde esta sesión el resultado final de GitHub Actions ni realizar una prueba física en Chrome de Android; no se afirma que esa validación visual esté completada.
+
+**Últimos commits:** director `0a41be7`; pruebas `c5bb316`; caché `43fb158`. El documento maestro mantiene la arquitectura de múltiples partidas y mundo compartido como siguiente línea técnica, sin modificar todavía los guardados existentes.
