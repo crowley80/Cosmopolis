@@ -224,3 +224,8 @@ GitHub Actions, ejecución 317 (`43907207244`): sintaxis JavaScript correcta y 2
 ## Validación automatizada de navegador — 16/11/2026
 
 Playwright, ejecución 173 (`43909804808`): éxito en Chromium móvil simulado (390 × 844) y escritorio (1024 × 900). Pasaron la regresión narrativa, selector y recuperación tras recarga, interacciones, inventario, mapa, historial, guardado y persistencia. La suite de almacenamiento, ejecución 348 (`43909804692`), pasó 27/27 pruebas. Pendiente: prueba real en Chrome para Android físico y revisión de los recursos HTTP 404 no bloqueantes registrados en consola.
+
+
+## Selector visual y alternancia de partidas — 16/11/2026
+
+Playwright, ejecución 180 (`43910478567`): éxito al crear dos protagonistas, mostrar ambas partidas en el selector, alternar entre Ariadna y Darian, conservar inventarios y datos personales aislados y compartir la localización global descubierta. Athun aparece en ambas partidas. GitHub Actions, ejecución 361 (`43910479940`): 27/27 pruebas aprobadas. Rama basada en main sin divergencia. Pendiente solo la validación táctil en Android físico y la identificación de recursos HTTP 404 no bloqueantes.
