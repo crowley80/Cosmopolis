@@ -1665,3 +1665,12 @@ Se recupera sobre la rama de integración de Athun el trabajo narrativo rescatad
 Esta recuperación se realiza en `integration/athun-narrative-recovery-fixed`, creada a partir de `integration/athun-multisave-main-20261116`. No se modifica `main`, no se fusiona el PR #4 y no se descarta la rama de rescate.
 
 Validación pendiente: ejecutar las pruebas automatizadas y la vista previa visual sobre esta rama; la prueba física en Android sigue pendiente.
+
+
+### Validación de la recuperación narrativa — 16/11/2026
+
+La recuperación selectiva de los avances narrativos y del agente local quedó validada en la rama de integración:
+- GitHub Actions «Athun storage tests», ejecución 441 (ID `43939916206`): completada correctamente; comprobación de sintaxis JavaScript y pruebas de almacenamiento/mundo compartido aprobadas.
+- GitHub Actions «Visual preview», ejecución 230 (ID `43939916229`): completada correctamente; Playwright renderizó y comprobó la interfaz móvil y de escritorio.
+
+Estas ejecuciones sustituyen el estado de validación pendiente indicado en la sección de recuperación anterior. Son pruebas automatizadas en Chromium simulado; no equivalen a una prueba táctil en un dispositivo Android físico. El PR #4 sigue abierto en borrador, sin fusionar, y `main` permanece intacta.
