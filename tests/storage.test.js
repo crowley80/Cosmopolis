@@ -268,3 +268,25 @@ test('conserva la nueva visibilidad cuando el narrador la declara explícitament
     const atlas = WorldMap.getAtlas(Save.getGlobalWorld(), Save.load().adventure.state, Save.load().adventure);
     assert.deepEqual(atlas.currentAndVisible.map(item => item.name), ['Calle del molino', 'Puente viejo']);
 });
+
+
+test('comparte el tramo realmente recorrido sin inventar el camino inverso', () => {
+    Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Exploración',
+        state: { currentLocation: 'Plaza del pozo', visitedLocations: ['Plaza del pozo'], inventory: [] }
+    });
+    const nextAdventure = JSON.parse(JSON.stringify(Save.load().adventure));
+    nextAdventure.state.currentLocation = 'La Posada del Tejón';
+
+    assert.equal(Session.addAction('Camino hasta la posada', 'Llegas a la posada.', {
+        adventure: nextAdventure
+    }), true);
+
+    const world = Save.getGlobalWorld();
+    assert.deepEqual(world.connections.map(item => ({ from: item.from, to: item.to })), [
+        { from: 'Plaza del pozo', to: 'La Posada del Tejón' }
+    ]);
+    assert.equal(Save.addGlobalConnection('La Posada del Tejón', 'La Posada del Tejón', 'Ariadna'), false);
+    assert.equal(Save.addGlobalConnection('La Posada del Tejón', 'Plaza del pozo', 'Ariadna'), true);
+    assert.equal(Save.getGlobalWorld().connections.length, 2);
+});
