@@ -1358,3 +1358,12 @@ Estas decisiones quedan aprobadas como requisitos de diseño y arquitectura, per
 - Estado: diseño aprobado, pero la imagen final vertical y su integración en el juego todavía no están generadas, guardadas ni implementadas. La generación de la imagen no pudo ejecutarse en esta sesión por el límite temporal del plan Free. No afirmar que existe un archivo final.
 - Próximo paso: cuando vuelva a estar disponible la generación, crear la composición vertical usando la ilustración compartida como referencia; después guardar el recurso en `app/assets/`, integrarlo como pantalla inicial y probarlo en el móvil.
 
+
+
+## AUDITORÍA DEL GUARDADO Y PLAN DE MIGRACIÓN — 16 DE NOVIEMBRE DE 2026
+
+Se ha revisado en GitHub el guardado, la sesión, la creación de personajes, el inicio de aventura y el mapa. Se confirma que el sistema actual utiliza una sola clave `cosmopolis_save`; `Session.startNewAdventure()` archiva el registro anterior y reinicia los datos del mundo; `Character.create()` guarda dentro de ese único registro; y `Athun.init()` recupera automáticamente una sola partida. El mundo y las localizaciones no están separados de la partida individual. El inventario tampoco protege estructuralmente a Athun.
+
+Estos límites contradicen los requisitos aprobados el 15/11/2026 de múltiples partidas independientes, mundo compartido persistente y Athun inseparable del protagonista. Antes de tocar código se ha creado el respaldo `docs/MAESTRO_COSMOPOLIS.md.bak-20261116-guardado` y el plan detallado `docs/PLAN_MIGRACION_GUARDADO_ATHUN.md`.
+
+**Estado:** auditoría estática completada y plan de migración documentado. No se ha modificado código ejecutable ni se ha probado el juego en Android. La implementación queda dividida en migración compatible de partidas, separación del mundo global, protección de Athun y, finalmente, selector de partidas. No se debe reiniciar, sobrescribir ni eliminar el guardado heredado. Cada fase deberá contar con pruebas de recuperación, aislamiento entre protagonistas e idempotencia antes de continuar.
