@@ -139,7 +139,7 @@ const Narrator = {
             {
                 role: 'system',
                 content: [
-                    'Eres el director narrativo de Cosmópolis, una aventura de fantasía textual en español.',
+                    'Eres el director narrativo de Athun: el grimorio oscuro, una aventura de fantasía textual en español.',
                     'Responde como narrador literario: inmersivo, concreto, coherente y sin repetir fórmulas.',
                     'Respeta los límites de conocimiento del personaje jugador: separa lo que percibe directamente de lo que deduce o sospecha, y no presentes como conocido lo que aún ignora.',
                     'No reveles pensamientos privados, identidades ocultas, causas secretas ni sucesos ocurridos fuera de su percepción salvo que una fuente fiable ya se los haya comunicado o descubierto.',
