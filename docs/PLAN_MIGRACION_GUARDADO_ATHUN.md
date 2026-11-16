@@ -77,3 +77,12 @@ La migración completa de guardado sigue pendiente: índice de múltiples partid
 Para evitar integrar una rama desfasada, se abrió `integracion/athun-multisave-main-20261116` directamente desde el `main` actual y se trasladaron a ella los módulos de partidas múltiples, atlas, pruebas y workflow. Se conservaron las versiones narrativas más recientes de `adventure.js` y `director.js`; el narrador principal recibió únicamente el guardado de protección contra copias de Athun. La capa de guardado incorpora el estado permanente del grimorio y preserva sus recuerdos y revelaciones por partida.
 
 Respaldos previos creados en la propia rama para CSS, aplicación, guardado, personaje, sesión, narrador, HTML y ambos documentos. CI de integración completada: ejecución 237, sintaxis correcta y 25/25 pruebas aprobadas. La comparación confirma que la rama parte del main actual (0 commits detrás) y no modifica adventure.js ni director.js. Pendiente la validación manual en Chrome/Android. No se ha fusionado en `main` ni se han tocado datos de partidas del dispositivo.
+
+
+### Regresión de diálogo desde el camino y descubrimiento gradual — 16/11/2026
+
+Las pruebas narrativas nuevas detectaron que la expresión «me acerco y pregunto a la persona que recoge leña» se clasificaba como movimiento por contener «me acerco», y adelantaba al protagonista a las primeras calles. Se corrigió `Director.respond()` para priorizar las entradas explícitas al pueblo y resolver el diálogo con el habitante antes de los movimientos genéricos. Hablar con quien recoge leña mantiene ubicación y fase de llegada; solo una orden explícita de entrar o seguir hacia las primeras calles cambia de zona.
+
+Se añadieron regresiones automatizadas para: apertura en el camino sin conocer a Elia, pozo o campana; conversación junto al camino sin entrar; entrada al pueblo sin revelaciones prematuras; descubrimiento e inspección del pozo sin revelar la campana; y revelación de la campana solo al provocar una respuesta mágica. Se actualizó la versión de caché del director en `index.html`.
+
+**Validación:** GitHub Actions, ejecución 265: sintaxis JavaScript correcta y 30/30 pruebas aprobadas. La validación visual y táctil en Chrome/Android sigue pendiente.
