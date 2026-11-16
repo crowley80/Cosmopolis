@@ -355,3 +355,41 @@ test('normaliza Athun como una única pertenencia canónica aunque lleguen copia
     assert.equal(world.connections.length, 0);
     assert.ok(world.locations.some(item => item.name === 'La Posada del Tejón'));
 });
+
+
+test('si falla la activación al eliminar una partida, restaura índice, datos y selección', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Partida que se conserva', state: { inventory: ['Llave'] }
+    });
+    const second = Save.createSlot({ name: 'Darian' }, {
+        title: 'Partida alternativa', state: { inventory: ['Mapa'] }
+    });
+    assert.ok(first);
+    assert.ok(second);
+    assert.equal(Save.activate(first), true);
+
+    const originalActive = localStorage.getItem(Save.activeKey);
+    const originalIndex = localStorage.getItem(Save.indexKey);
+    const originalSlot = localStorage.getItem(Save.slotPrefix + first);
+    const setItem = localStorage.setItem.bind(localStorage);
+    localStorage.setItem = (key, value) => {
+        if (key === Save.activeKey && String(value) !== originalActive) {
+            throw new Error('Fallo simulado al cambiar la partida activa');
+        }
+        setItem(key, value);
+    };
+
+    assert.equal(Save.deleteSlot(first), false);
+    localStorage.setItem = setItem;
+
+    assert.equal(localStorage.getItem(Save.activeKey), originalActive);
+    assert.equal(localStorage.getItem(Save.indexKey), originalIndex);
+    assert.equal(localStorage.getItem(Save.slotPrefix + first), originalSlot);
+    assert.equal(Save.list().length, 2);
+    assert.equal(Save.load().character.name, 'Ariadna');
+
+    assert.equal(Save.deleteSlot(first), true);
+    assert.equal(Save.list().length, 1);
+    assert.equal(Save.load().character.name, 'Darian');
+    assert.equal(localStorage.getItem(Save.slotPrefix + first), null);
+});
