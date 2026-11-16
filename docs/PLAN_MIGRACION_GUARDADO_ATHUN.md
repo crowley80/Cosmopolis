@@ -174,3 +174,7 @@ GitHub Actions, ejecución **169** (`43832594402`): comprobación de sintaxis Ja
 
 ### CI 174 — conexiones compartidas y aislamiento — 16/11/2026
 GitHub Actions, ejecución **174**: comprobación de sintaxis JavaScript correcta y **21/21 pruebas aprobadas**. Se valida que una conexión recorrida por una partida permanece disponible en el atlas de otra, sin transferir el historial personal de visitas.
+
+
+### Auditoría de conexiones del atlas — 16/11/2026
+El registro de conexiones compartidas requiere ahora que la respuesta estructurada clasifique la acción como `movement`, además de confirmar un cambio entre dos ubicaciones distintas. Una modificación de ubicación por investigación, transición narrativa u otra categoría no crea por sí sola un camino. La posición, el conocimiento del lugar y la visita personal continúan sincronizándose normalmente. Se añade una prueba de regresión que impide generar conexiones por cambios no clasificados como desplazamiento. También se corrige el nombre del director narrativo en el prompt del modelo. Pendiente CI de esta revisión; la validación visual en Chrome/Android continúa pendiente.
