@@ -1458,3 +1458,12 @@ La revisión de la rama detectó que el sistema registraba una conexión compart
 
 ### CI 195 — rutas confirmadas y coherencia de Athun — 16/11/2026
 GitHub Actions, ejecución **195** (`43836494217`): comprobación de sintaxis JavaScript correcta y **22/22 pruebas aprobadas**. Incluye la regresión que impide crear conexiones del atlas cuando cambia la ubicación por una acción que no está clasificada como desplazamiento. También se valida la actualización del prompt del narrador y el resto de pruebas de guardado, prólogo, atlas y mundo compartido.
+
+
+### Protección de Athun como instancia única — 16/11/2026
+
+Durante una revisión adicional se detectó un caso límite: aunque el narrador no podía retirar Athun, podía proponer añadir una segunda entrada con un nombre distinto (por ejemplo, «Athun duplicado»). La normalización del guardado ahora elimina todas las entradas que contengan el identificador Athun y conserva una única pertenencia canónica: «Athun — grimorio consciente». El procesador narrativo también rechaza explícitamente cualquier alta de inventario que contenga Athun.
+
+Se añadieron respaldos previos de app/js/core/save.js, app/js/game/narrator.js, tests/storage.test.js, index.html y este documento maestro. Se incorporó una prueba de regresión para asegurar que las variantes duplicadas se normalizan a una sola instancia y se actualizó la versión de caché de save.js.
+
+**Estado de validación:** cambios guardados en la rama feat/athun-multisave-world. La prueba nueva y el conjunto completo deben pasar en una nueva ejecución de GitHub Actions antes de considerar cerrada esta corrección. La validación en Chrome/Android continúa pendiente; no se ha fusionado el pull request.
