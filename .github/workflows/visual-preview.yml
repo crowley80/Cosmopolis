@@ -148,6 +148,13 @@ jobs:
               const remoteOffer = Director.respond('Ofrezco ayuda a Elia.', player, eliaAway, []);
               if (remoteOffer.state.eliaTrust !== 3 || /Elia acepta tu gesto/i.test(remoteOffer.reply)) fail('se ofrece ayuda a Elia a distancia');
 
+              const wellWithoutElia = JSON.parse(JSON.stringify(magic.adventure));
+              wellWithoutElia.state.wellInspected = true;
+              wellWithoutElia.state.characters.Elia = { name: 'Elia', role: 'Cartógrafa', location: 'Calle Mayor', trust: 3 };
+              wellWithoutElia.state.eliaMet = true;
+              const openWithoutElia = Director.respond('Intento levantar la losa del pozo.', player, wellWithoutElia, []);
+              if (/Elia te observa/i.test(openWithoutElia.reply)) fail('Elia aparece junto al pozo aunque está en Calle Mayor');
+
               const originalFetch = window.fetch;
               const fakeNarrative = {
                 reply: 'Athun permanece contigo.',
