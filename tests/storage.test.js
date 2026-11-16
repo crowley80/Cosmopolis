@@ -456,12 +456,13 @@ test('el vínculo, recuerdos y revelaciones de Athun son independientes por prot
     assert.deepEqual(Save.load().adventure.state.athun.memories, ['El camino del norte']);
 
     assert.equal(Save.activate(first), true);
-    const ariathun = Save.load().adventure.state.athun;
+    const ariSlot = Save.load();
+    const ariathun = ariSlot.adventure.state.athun;
     assert.equal(ariathun.bond, 7);
     assert.deepEqual(ariathun.memories, ['La primera noche']);
     ariathun.bond = 9;
     ariathun.memories.push('El secreto del pozo');
-    assert.equal(Save.save(Save.load()), true);
+    assert.equal(Save.save(ariSlot), true);
 
     assert.equal(Save.activate(second), true);
     assert.equal(Save.load().adventure.state.athun.bond, 2);
