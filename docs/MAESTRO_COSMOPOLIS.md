@@ -1580,3 +1580,8 @@ Se crearon respaldos previos de `tests/storage.test.js` y este documento maestro
 Se prepara una rama de integración basada en el main vigente para evitar revertir las correcciones narrativas incorporadas después del punto común de las ramas. Se trasladan las partidas múltiples, el mundo persistente compartido, el atlas, el selector y las pruebas; se conservan las correcciones actuales de apertura de Valdebruma, descubrimiento gradual, estado de Elia y protección permanente de Athun. La normalización de la nueva capa de guardado sustituye la migración simple de una sola clave por una migración compatible a un registro individual, sin modificar la clave heredada original.
 
 La integración es selectiva y todavía no está validada. Las pruebas automatizadas y la comparación funcional con main deben completarse antes de proponer la fusión. No se ha ejecutado en Chrome/Android.
+
+
+### Corrección de prueba de aislamiento — 16/11/2026
+
+La primera ejecución CI de la rama de integración ejecutó 27 pruebas: 26 aprobadas y una fallida. El fallo estaba en la prueba añadida de aislamiento del vínculo de Athun: modificaba un objeto devuelto por una carga independiente y luego guardaba otra copia recién cargada. Se corrige el test para modificar y guardar la misma copia de la partida. No se ha cambiado la lógica de producción por este fallo de prueba. Se guardaron respaldos previos de los dos archivos. CI debe repetirse para validar la corrección.
