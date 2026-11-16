@@ -1718,3 +1718,11 @@ La revisión de `WorldMap.getAtlas()`, `Session` y el guardado por partidas conf
 - Esta separación está cubierta por pruebas de `tests/map.test.js` y `tests/storage.test.js`, incluidas las regresiones de conocimiento de ubicaciones, rutas compartidas, privacidad de Elia y recuerdos de Athun.
 
 No se cambia esta arquitectura: el mundo conserva continuidad común, mientras la experiencia, la niebla de guerra y la memoria del protagonista siguen siendo personales.
+
+
+### Memoria de Athun disponible para el narrador — 16/11/2026
+- La revisión detectó que el guardado ya conservaba vínculo, recuerdos y revelaciones de Athun por protagonista, pero `Narrator.buildMessages()` no los incluía en el contexto enviado al modelo.
+- El narrador recibe ahora, dentro de la aventura activa, el vínculo y hasta doce recuerdos y doce revelaciones de Athun, con límites de longitud. Las instrucciones dejan claro que esa memoria pertenece exclusivamente a la partida activa, que no debe transferirse entre protagonistas y que los secretos se revelan gradualmente.
+- Se añadió una regresión que construye el contexto de dos partidas distintas y verifica que cada una recibe únicamente los recuerdos y revelaciones de su propio Athun.
+- Copias previas: `app/js/game/narrator.js.bak-20261116-athun-memoria-contexto`, `tests/storage.test.js.bak-20261116-athun-memoria-contexto` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261116-athun-memoria-contexto`.
+- La nueva validación CI debe completarse antes de considerar cerrado este cambio. No se modifican los recuerdos guardados ni se inventan recuerdos nuevos; se corrige únicamente su disponibilidad para la narración.
