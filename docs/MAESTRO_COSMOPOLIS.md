@@ -1432,3 +1432,14 @@ Se amplió el workflow de regresión para comprobar también esa conversación y
 **Pendiente de verificación externa:** el workflow de Chrome/Playwright contiene ahora estas pruebas ampliadas y se activa con los cambios de `index.html` y del propio workflow. No se ha podido consultar desde esta sesión el resultado final de GitHub Actions ni realizar una prueba física en Chrome de Android; no se afirma que esa validación visual esté completada.
 
 **Últimos commits:** director `0a41be7`; pruebas `c5bb316`; caché `43fb158`. El documento maestro mantiene la arquitectura de múltiples partidas y mundo compartido como siguiente línea técnica, sin modificar todavía los guardados existentes.
+
+
+### Compatibilidad de partidas existentes: Athun permanente — 16 de noviembre de 2026
+
+Se ha actualizado `app/js/core/save.js` para que cualquier partida guardada que ya tenga una aventura incorpore a Athun al inventario si faltaba y complete su estado narrativo como grimorio consciente permanente. La migración conserva los demás datos de la partida, se escribe solo cuando detecta cambios y es idempotente: cargar otra vez una partida ya migrada no vuelve a escribirla. Si el navegador no permite persistir la migración, el objeto queda al menos presente en la sesión actual y se registra una advertencia.
+
+Se añadió una prueba al workflow para migrar una partida heredada sin Athun, comprobar que la protección queda persistida y volver a cargarla. La caché de `save.js` se ha renovado en `index.html`.
+
+**Prueba directa ejecutada:** migración de partida heredada, permanencia de Athun y carga idempotente (una sola escritura); también se volvieron a probar la sintaxis de los scripts y el diálogo inicial con un habitante. Todo pasó en el entorno de pruebas de esta sesión. Sigue pendiente el resultado del workflow remoto y la prueba visual en Android.
+
+**Límite del avance:** esto protege Athun en partidas existentes, pero no implementa todavía el índice de múltiples partidas ni la separación del mundo global. Esas fases continúan pendientes y no se ha reiniciado ni eliminado ningún guardado.
