@@ -70,7 +70,7 @@ test('mantiene independientes dos protagonistas y permite alternar entre partida
 test('las localizaciones descubiertas se comparten, pero las acciones siguen siendo personales', () => {
     const first = Save.createSlot({ name: 'Ariadna' }, {
         title: 'Historia A', location: 'Valdebruma',
-        state: { currentLocation: 'Valdebruma', inventory: [] }
+        state: { currentLocation: 'Valdebruma', inventory: [], characters: { Elia: { name: 'Elia', role: 'Cartógrafa', location: 'Valdebruma', trust: 8, memories: ['Recuerdo privado de Ariadna'] } } }
     });
     assert.equal(Session.addAction('Observo la plaza', 'La plaza está vacía.', {
         category: 'investigation',
@@ -81,6 +81,11 @@ test('las localizaciones descubiertas se comparten, pero las acciones siguen sie
         title: 'Historia B', state: { currentLocation: 'Bosque', inventory: [] }
     });
     assert.equal(Session.getWorld().locations.some(item => item.name === 'Valdebruma'), true);
+    const sharedElia = Session.getWorld().entities.elia;
+    assert.equal(sharedElia.name, 'Elia');
+    assert.equal(sharedElia.role, 'Cartógrafa');
+    assert.equal('trust' in sharedElia, false);
+    assert.equal('memories' in sharedElia, false);
     assert.deepEqual(Save.load().actions, []);
     assert.equal(Save.activate(first), true);
     assert.equal(Save.load().actions.length, 1);
