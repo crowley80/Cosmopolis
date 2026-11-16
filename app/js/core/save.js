@@ -220,7 +220,11 @@ const Save = {
                 localStorage.removeItem(this.slotPrefix + id);
                 return false;
             }
-            if (!this.writeVerified(this.activeKey, { id })) return false;
+            if (!this.writeVerified(this.activeKey, { id })) {
+                this.writeVerified(this.indexKey, index);
+                localStorage.removeItem(this.slotPrefix + id);
+                return false;
+            }
             return id;
         } catch (error) {
             console.error('No se pudo crear la partida:', error);
