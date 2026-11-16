@@ -182,7 +182,7 @@ const Narrator = {
                     'characterMemoriesToAdd: recuerdos concretos y duraderos de personajes que ya existen en el estado; no inventes personajes ni guardes detalles triviales.',
                     'athunMemoriesToAdd: hasta tres recuerdos duraderos y concretos que el protagonista y Athun hayan vivido juntos en esta partida; no conviertas acciones triviales en recuerdos ni inventes experiencias.',
                     'athunRevelationsToAdd: hasta tres descubrimientos nuevos y demostrados sobre la historia, naturaleza o motivos de Athun; no inventes secretos ni adelantes revelaciones que no hayan ocurrido en la escena. Usa una lista vacía si no procede.',
-                    'athunBondChange: delta entero entre -1 y 1 y motivo breve; solo cambia el vínculo si la acción del protagonista afecta de forma significativa a la confianza o relación con Athun. Usa delta 0 si no hay cambio.'
+                    'athunBondChange: delta entero entre -1 y 1 y motivo breve; solo cambia el vínculo si la acción del protagonista afecta de forma significativa a la confianza o relación con Athun. Usa delta 0 si no hay cambio.',
                     'time: momento del día dentro del mundo; no uses la hora real del teléfono y no avances el tiempo sin motivo narrativo.',
                     'day: número del día dentro de la aventura; solo aumenta cuando la historia cruza realmente al día siguiente. Nunca reduzcas el día ya alcanzado.'
                 ].join(' ')
