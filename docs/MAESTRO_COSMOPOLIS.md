@@ -1691,3 +1691,11 @@ La revisión de `Director.respond()` detectó que algunas interacciones podían 
 - Se conservaron copias previas de `director.js`, `visual-preview.yml` y este documento con el sufijo `.bak-20261116-presencia-escena`.
 
 **Validación pendiente:** las nuevas regresiones deben completar GitHub Actions en la rama de integración. La prueba táctil en Chrome/Android físico continúa pendiente.
+
+### Revisión adicional de presencia de Elia — 16/11/2026
+- La validación visual completa terminó correctamente en el commit `5212e12` (GitHub Actions, ejecución visual `43945612638`); las pruebas de almacenamiento también finalizaron correctamente (`43945612500`).
+- En una revisión posterior de `Director.respond()` se detectó una referencia residual: al intentar levantar la losa, el texto podía presentar a Elia observando aunque su ubicación registrada fuera otra. Se corrigió para usar la condición de presencia física `eliaPresent`, no solo el hecho de haberla conocido.
+- Se eliminó además una asignación duplicada de `wellInspected`.
+- Se añadió una regresión Playwright que sitúa a Elia en Calle Mayor y verifica que no aparezca narrativamente junto al pozo.
+- Copia previa de `director.js`: `app/js/game/director.js.bak-20261116-presencia-elia-pozo`.
+- La nueva tanda de CI correspondiente a este último cambio debe terminar antes de considerar cerrada la revisión.
