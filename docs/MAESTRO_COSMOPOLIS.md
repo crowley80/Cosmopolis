@@ -1466,4 +1466,4 @@ Durante una revisión adicional se detectó un caso límite: aunque el narrador 
 
 Se añadieron respaldos previos de app/js/core/save.js, app/js/game/narrator.js, tests/storage.test.js, index.html y este documento maestro. Se incorporó una prueba de regresión para asegurar que las variantes duplicadas se normalizan a una sola instancia y se actualizó la versión de caché de save.js.
 
-**Estado de validación:** cambios guardados en la rama feat/athun-multisave-world. La prueba nueva y el conjunto completo deben pasar en una nueva ejecución de GitHub Actions antes de considerar cerrada esta corrección. La validación en Chrome/Android continúa pendiente; no se ha fusionado el pull request.
+**Estado de validación:** cambios guardados en la rama feat/athun-multisave-world. GitHub Actions, ejecución 210, terminó correctamente: sintaxis JavaScript correcta y 23/23 pruebas aprobadas, incluida la nueva prueba de unicidad de Athun. La validación en Chrome/Android continúa pendiente; no se ha fusionado el pull request.
