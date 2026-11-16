@@ -1405,3 +1405,7 @@ El contexto del narrador mantiene separados el mundo global y el mundo personal 
 Se incorpora el prólogo literal aprobado por el usuario el 15/11/2026. En una instalación nueva se muestra antes de la creación del personaje; al pulsar «Continuar» se registra `athun_intro_seen_v1` y se abre el formulario de creación. En arranques posteriores, si ya existe una partida, se muestra directamente el selector de partidas y no se repite el prólogo. Si la migración del guardado heredado falla, la aplicación muestra un aviso y no inicia una ficha nueva que pueda confundir al jugador o poner en riesgo la recuperación.
 
 Se guardaron copias previas de `app/js/app.js`, `index.html` y este documento con el sufijo `.bak-20261116-prologo-unico`. La caché del script principal se renovó. Se añadieron pruebas automatizadas para comprobar el texto, el registro de primera presentación y la omisión del prólogo cuando ya existen partidas. Pendiente confirmar la ejecución de CI de esta nueva tanda y probar el flujo en Chrome/Android.
+
+
+### Validación posterior del prólogo y del guardado — 16/11/2026
+GitHub Actions, ejecución 76: comprobación de sintaxis JavaScript correcta y 10/10 pruebas aprobadas. Se incluyen dos pruebas nuevas del prólogo de primera ejecución y ocho pruebas de almacenamiento, migración, aislamiento, recuperación, permanencia de Athun e integridad ante fallos de escritura. La prueba visual y funcional en Chrome/Android continúa pendiente; la rama no se fusiona hasta completarla.
