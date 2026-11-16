@@ -36,6 +36,8 @@ const Narrator = {
     buildMessages(action, character, adventure, previousActions) {
         const state = adventure.state || {};
         const world = Session.getWorld();
+        const activeSave = Save.load() || {};
+        const personalWorld = activeSave.world || {};
         const history = previousActions.slice(-6).map(item => ({
             action: item.text || '',
             response: item.response || ''
@@ -86,6 +88,7 @@ const Narrator = {
             clues: shortList(state.clues, 25),
             inventory: shortList(state.inventory, 30, 120),
             visitedLocations: shortList(state.visitedLocations, 25, 120),
+            visibleLocations: shortList(state.visibleLocations, 12, 120),
             characters: compactCharacters
         };
 
@@ -107,9 +110,23 @@ const Narrator = {
                 state: compactState
             },
             persistentWorld: {
+                locations: shortList(world.locations, 30),
+                entities: Object.fromEntries(Object.entries(world.entities || {}).slice(-30).map(([key, entity]) => [
+                    key,
+                    {
+                        name: String(entity.name || key).slice(0, 80),
+                        role: String(entity.role || '').slice(0, 100),
+                        firstKnownLocation: String(entity.firstKnownLocation || '').slice(0, 120)
+                    }
+                ])),
                 facts: shortList(world.facts, 25),
                 events: shortList(world.events, 12),
                 relationships: Object.fromEntries(Object.entries(world.relationships || {}).slice(-20))
+            },
+            personalWorld: {
+                facts: shortList(personalWorld.facts, 25),
+                events: shortList(personalWorld.events, 12),
+                relationships: Object.fromEntries(Object.entries(personalWorld.relationships || {}).slice(-20))
             },
             recentHistory: history.slice(-6).map(item => ({
                 action: String(item.text || '').slice(0, 500),
@@ -132,6 +149,9 @@ const Narrator = {
                     'No reveles pensamientos privados, identidades ocultas, causas secretas ni sucesos ocurridos fuera de su percepción salvo que una fuente fiable ya se los haya comunicado o descubierto.',
                     'Cuando una información sea incierta, exprésala como indicio, hipótesis, rumor o sospecha; nunca conviertas una conjetura en un hecho confirmado.',
                     'Si el jugador examina algo, describe primero señales observables y permite que las conclusiones dependan de las pistas disponibles y de sus capacidades.',
+                    'El mundo persistente es compartido entre protagonistas: usa sus localizaciones y entidades como referencias comunes. No traslades recuerdos, confianza, objetivos ni relaciones personales de un protagonista a otro; esos datos pertenecen a cada partida.',
+                    'personalWorld contiene hechos, acontecimientos y relaciones exclusivos de la partida activa: consúltalos para mantener su continuidad, pero nunca los trates como hechos universales ni los transfieras a otro protagonista.',
+                    'Si una entidad ya figura en el registro compartido, conserva su identidad y función; no crees un duplicado con otro nombre salvo que la historia establezca claramente que se trata de otra persona.',
                     'Respeta estrictamente los hechos, lugares, personajes, capacidades y consecuencias ya establecidos.',
                     'No decidas las intenciones del jugador ni fuerces una misión. Resuelve la acción que ha escrito.',
                     'No inventes que una acción ha tenido éxito si el contexto no lo justifica. Si algo es imposible o arriesgado, narra el intento y sus límites.',
@@ -141,6 +161,7 @@ const Narrator = {
                     'reply: respuesta narrativa de 2 a 4 párrafos breves, con diálogos cuando proceda.',
                     'event: una frase factual que registre lo ocurrido.',
                     'location: ubicación actual; conserva la existente si no hay desplazamiento.',
+                    'visibleLocations: lugares que el personaje puede ver claramente desde su posición actual. Recalcula la lista en cada respuesta; incluye solo nombres explícitos del contexto o de la escena, nunca inventes lugares, rutas ni coordenadas. No incluyas destinos lejanos ni sitios solo conocidos por rumores. Usa una lista vacía si no hay otros lugares visibles.',
                     'factsToAdd y cluesToAdd: solo datos nuevos realmente descubiertos, sin duplicados.',
                     'relationshipChanges: cambios justificados de confianza hacia personajes registrados, con character, delta entre -1 y 1 y reason breve. Usa cambios pequeños y no alteres relaciones sin una interacción significativa.',
                     'itemsToAdd: objetos que el personaje obtiene realmente y puede llevar consigo; no incluyas objetos solo vistos o examinados.',
@@ -181,6 +202,7 @@ const Narrator = {
                     enum: ['dialogue', 'investigation', 'movement', 'combat', 'magic', 'stealth', 'offer', 'rest', 'object', 'other']
                 },
                 location: { type: 'string' },
+                visibleLocations: { type: 'array', items: { type: 'string' } },
                 factsToAdd: { type: 'array', items: { type: 'string' } },
                 cluesToAdd: { type: 'array', items: { type: 'string' } },
                 relationshipChanges: {
@@ -268,7 +290,7 @@ const Narrator = {
                     }
                 }
             },
-            required: ['reply', 'event', 'category', 'location', 'factsToAdd', 'cluesToAdd', 'relationshipChanges', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd', 'charactersToAdd', 'characterUpdates', 'characterActions', 'goalUpdates', 'time', 'day']
+            required: ['reply', 'event', 'category', 'location', 'visibleLocations', 'factsToAdd', 'cluesToAdd', 'relationshipChanges', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd', 'charactersToAdd', 'characterUpdates', 'characterActions', 'goalUpdates', 'time', 'day']
         };
 
         const controller = new AbortController();
@@ -302,6 +324,7 @@ const Narrator = {
             const result = JSON.parse(content);
             if (!result || typeof result.reply !== 'string' || !result.reply.trim() ||
                 typeof result.event !== 'string' || typeof result.location !== 'string' ||
+                !Array.isArray(result.visibleLocations) ||
                 !Array.isArray(result.factsToAdd) || !Array.isArray(result.cluesToAdd) ||
                 !Array.isArray(result.itemsToAdd) || !Array.isArray(result.itemsToRemove) ||
                 !Array.isArray(result.characterMemoriesToAdd) ||
@@ -324,6 +347,10 @@ const Narrator = {
             if (state.phase === 'arrival' && state.currentLocation !== 'Camino de entrada a Valdebruma') {
                 state.phase = 'exploration';
             }
+            state.visibleLocations = result.visibleLocations
+                .filter(name => typeof name === 'string' && name.trim())
+                .slice(0, 12)
+                .map(name => name.trim().slice(0, 120));
             state.knownFacts = Array.isArray(state.knownFacts) ? state.knownFacts : [];
             state.clues = Array.isArray(state.clues) ? state.clues : [];
             state.events = Array.isArray(state.events) ? state.events : [];
@@ -346,22 +373,25 @@ const Narrator = {
             state.inventory = Array.isArray(state.inventory) ? state.inventory : [];
             result.itemsToRemove.slice(0, 10).forEach(item => {
                 if (typeof item !== 'string' || !item.trim()) return;
-                // Athun es una pertenencia permanente: ninguna respuesta del modelo puede retirarlo.
+                // Athun es un elemento permanente: ninguna instrucción narrativa puede retirarlo.
                 if (item.trim().toLocaleLowerCase('es').includes('athun')) return;
                 const index = state.inventory.findIndex(existing =>
-                    String(existing).toLocaleLowerCase('es') === item.trim().toLocaleLowerCase('es') &&
-                    !String(existing).toLocaleLowerCase('es').includes('athun'));
-                if (index !== -1) state.inventory.splice(index, 1);
+                    String(existing).toLocaleLowerCase('es') === item.trim().toLocaleLowerCase('es'));
+                if (index !== -1 && !String(state.inventory[index]).toLocaleLowerCase('es').includes('athun')) {
+                    state.inventory.splice(index, 1);
+                }
             });
             result.itemsToAdd.slice(0, 10).forEach(item => {
                 if (typeof item !== 'string' || !item.trim()) return;
                 const clean = item.trim().slice(0, 120);
+                // El narrador no puede añadir una segunda instancia ni una copia de Athun.
+                if (clean.toLocaleLowerCase('es').includes('athun')) return;
                 if (!state.inventory.some(existing => String(existing).toLocaleLowerCase('es') === clean.toLocaleLowerCase('es')) && state.inventory.length < 50) {
                     state.inventory.push(clean);
                 }
             });
             if (!state.inventory.some(item => String(item).toLocaleLowerCase('es').includes('athun'))) {
-                state.inventory.unshift('Athun');
+                state.inventory.unshift('Athun — grimorio consciente');
             }
             if (!state.athun || typeof state.athun !== 'object') {
                 state.athun = { id: 'athun', name: 'Athun', kind: 'Grimorio consciente', permanent: true, bond: 0, memories: [], revelations: [] };
@@ -372,6 +402,10 @@ const Narrator = {
             result.charactersToAdd.slice(0, 5).forEach(entry => {
                 if (!entry || typeof entry.name !== 'string' || !entry.name.trim()) return;
                 const name = entry.name.trim().slice(0, 80);
+                if (name.toLocaleLowerCase('es') === 'elia') {
+                    state.eliaMet = true;
+                    state.eliaTrust = Number(state.eliaTrust) || 0;
+                }
                 const exists = Object.keys(state.characters).some(key =>
                     key.toLocaleLowerCase('es') === name.toLocaleLowerCase('es') ||
                     String(state.characters[key] && state.characters[key].name || '').toLocaleLowerCase('es') === name.toLocaleLowerCase('es')
@@ -390,10 +424,6 @@ const Narrator = {
                     trust: 0,
                     memories: memory ? [memory] : []
                 };
-                if (name.toLocaleLowerCase('es') === 'elia') {
-                    state.eliaMet = true;
-                    state.eliaTrust = Number(state.eliaTrust) || 0;
-                }
             });
             result.characterUpdates.slice(0, 10).forEach(entry => {
                 if (!entry || typeof entry.character !== 'string') return;
@@ -570,6 +600,7 @@ const Narrator = {
                 event: result.event.trim().slice(0, 300),
                 adventure: updated,
                 state,
+                visibleLocations: state.visibleLocations,
                 createdAt: new Date().toISOString(),
                 actionNumber: previousActions.length + 1,
                 aiUsed: true
