@@ -521,3 +521,25 @@ test('no publica descubrimientos ni caminos compartidos si falla el guardado de 
     assert.equal(Save.load().adventure.state.currentLocation, 'Plaza inicial');
     assert.equal(Save.load().actions.length, 0);
 });
+
+
+test('registra si cada acción usó IA sin inventar el dato cuando falta', () => {
+    Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Trazabilidad narrativa',
+        state: { currentLocation: 'Camino de entrada', visitedLocations: ['Camino de entrada'], inventory: [] }
+    });
+
+    assert.equal(Session.addAction('Observo el camino', 'La niebla cubre el valle.', {
+        aiUsed: true,
+        adventure: Save.load().adventure
+    }), true);
+    assert.equal(Session.addAction('Saludo al vecino', 'El vecino responde.', {
+        aiUsed: false,
+        adventure: Save.load().adventure
+    }), true);
+    assert.equal(Session.addAction('Espero un momento', 'El viento se calma.', {
+        adventure: Save.load().adventure
+    }), true);
+
+    assert.deepEqual(Session.getActions().map(item => item.aiUsed), [true, false, null]);
+});
