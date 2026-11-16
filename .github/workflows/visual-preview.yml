@@ -385,13 +385,24 @@ jobs:
             assert.deepEqual(contextProbe, { knowledgeBoundaryRules: true, eventCount: 20, memoryCount: 8, eliaGoal: 'Averiguar por qué suenan las campanas.', completedGoalCount: 8, lastCompletedGoal: 'Meta cumplida 9', historyCount: 6, savedMemoryCount: 12, savedCompletedGoalCount: 10 },
               'El contexto debe limitarse sin borrar recuerdos e incluir límites de conocimiento');
 
-            await page.waitForFunction(() => {
+            await page.waitForTimeout(1000);
+            const firstActionState = await page.evaluate(() => {
               const data = Save.load();
-              if (!data) return false;
-              return data.actions && data.actions.length === 1 &&
-                data.adventure.state.inventory.includes('Medallón de cobre') &&
-                data.adventure.state.visitedLocations.includes('Plaza del pozo');
+              return {
+                activeId: Save.getActiveId(),
+                hasData: Boolean(data),
+                actionCount: data && data.actions ? data.actions.length : null,
+                inventory: data && data.adventure && data.adventure.state ? data.adventure.state.inventory : null,
+                visited: data && data.adventure && data.adventure.state ? data.adventure.state.visitedLocations : null,
+                location: data && data.adventure && data.adventure.state ? data.adventure.state.currentLocation : null,
+                actionStatus: document.getElementById('actionStatus') && document.getElementById('actionStatus').textContent
+              };
             });
+            console.log('FIRST_ACTION_STATE', JSON.stringify(firstActionState));
+            assert.ok(firstActionState.hasData, 'La partida activa debe seguir disponible tras la primera acción');
+            assert.equal(firstActionState.actionCount, 1, 'La primera acción debe guardarse una sola vez');
+            assert.ok(firstActionState.inventory.includes('Medallón de cobre'), 'El objeto obtenido debe persistir en el inventario');
+            assert.ok(firstActionState.visited.includes('Plaza del pozo'), 'La ubicación actual debe figurar entre las visitadas');
             assert.equal(pageErrors.length, 0, 'No deben producirse errores JavaScript: ' + pageErrors.join('; '));
             await page.locator('#openInventory').click();
             await page.locator('#toolOverlay').getByText('Medallón de cobre').waitFor();
