@@ -234,3 +234,14 @@ Playwright, ejecución 180 (`43910478567`): éxito al crear dos protagonistas, m
 ## Recursos de plantilla y validación final — 16/11/2026
 
 Se eliminaron las referencias a dos WebP inexistentes y se reemplazaron por fondos CSS con gradientes/textura; se añadió favicon SVG. Playwright, ejecución 191 (`43911426574`): éxito en Chromium móvil 390 × 844 y escritorio 1024 × 900, con selector de dos partidas, regresión narrativa y sin respuestas HTTP 404. GitHub Actions, ejecución 380 (`43911426719`): 27/27 pruebas aprobadas. PR #4 integrable, basado en main sin divergencia. Pendiente la validación manual en Chrome para Android físico; no fusionar hasta completarla.
+
+
+## Corrección de consistencia entre guardado personal y mundo compartido — 16/11/2026
+
+Durante la auditoría de la integración se detectó que `Session.addAction()` publicaba localizaciones, entidades y conexiones en el mundo compartido antes de comprobar que la partida personal se hubiera guardado correctamente. Si el almacenamiento fallaba, el mundo global podía conservar descubrimientos de una acción que no llegó a registrarse en la historia del protagonista.
+
+**Corrección aplicada en la rama de integración:** la acción personal se guarda y verifica primero. Solo después de confirmar el guardado se publican la ruta recorrida, las localizaciones visibles y las identidades básicas de personajes. Si falla `Save.save()`, la operación devuelve `false` y no modifica el mundo compartido.
+
+**Prueba de regresión añadida:** simula el fallo del guardado y comprueba que no se filtren localizaciones, caminos ni entidades; también verifica que la posición y el historial de la partida permanezcan intactos. Se creó respaldo previo de `app/js/game/session.js` y `tests/storage.test.js`.
+
+La validación automatizada de este cambio está en curso en GitHub Actions (ejecución 397, 16/11/2026). No se ha fusionado la rama ni se han tocado las partidas locales del usuario.
