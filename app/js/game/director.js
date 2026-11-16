@@ -18,11 +18,12 @@ const Director = {
         const state = JSON.parse(JSON.stringify(adventure.state || {}));
 
         state.characters = state.characters || {};
-        state.characters.Elia = state.characters.Elia || { trust: 0 };
-        state.eliaTrust = Number.isFinite(state.eliaTrust)
-            ? state.eliaTrust
-            : (Number(state.characters.Elia.trust) || 0);
-        state.characters.Elia.trust = state.eliaTrust;
+        if (state.characters.Elia) {
+            state.eliaTrust = Number.isFinite(state.eliaTrust)
+                ? state.eliaTrust
+                : (Number(state.characters.Elia.trust) || 0);
+            state.characters.Elia.trust = state.eliaTrust;
+        }
 
         state.clues = Array.isArray(state.clues) ? state.clues : [];
         state.knownFacts = Array.isArray(state.knownFacts) ? state.knownFacts : [];
@@ -35,8 +36,12 @@ const Director = {
         let event = '';
         const clues = state.clues || [];
         const facts = state.knownFacts || [];
-        const atWell = this.has(text, ['pozo', 'losa', 'cadenas', 'campana']);
-        const aboutElia = this.has(text, ['elia', 'cartografa', 'mapa', 'hablar con ella']);
+        const knownFactsText = facts.join(' ').toLocaleLowerCase('es');
+        const eliaKnown = state.eliaMet === true && !!state.characters.Elia;
+        const wellKnown = state.wellDiscovered === true || knownFactsText.includes('pozo');
+        const bellKnown = state.bellDiscovered === true || knownFactsText.includes('campana');
+        const atWell = wellKnown && this.has(text, ['pozo', 'losa', 'cadenas', 'campana']);
+        const aboutElia = eliaKnown && this.has(text, ['elia', 'cartografa', 'mapa', 'hablar con ella']);
         const asks = this.has(text, ['pregunto', 'preguntar', 'quien', 'que sabes', 'cuentame', 'explica', 'dime']);
         const investigates = this.has(text, ['examino', 'observo', 'investigo', 'inspecciono', 'miro', 'escucho', 'analizo', 'busco', 'registro']);
         const moves = this.has(text, ['camino', 'voy', 'entro', 'salgo', 'me acerco', 'me alejo', 'exploro', 'subo', 'bajo', 'me dirijo']);
@@ -52,10 +57,38 @@ const Director = {
                 person.location === state.currentLocation && personName !== 'elia';
         });
 
-        if (combat) {
+        if (state.phase === 'arrival') {
+            if (moves || this.has(text, ['entrar', 'pueblo', 'alojamiento', 'habitantes', 'primeras calles'])) {
+                state.phase = 'exploration';
+                state.currentLocation = 'Primeras calles de Valdebruma';
+                category = 'movement';
+                reply = 'Sigues el camino principal hasta las primeras calles. Las casas se encuentran más cerca unas de otras y el sonido cotidiano del pueblo va sustituyendo al silencio de las montañas. Puedes recorrer las calles, buscar un lugar donde alojarte o acercarte a alguien que esté disponible para hablar.';
+                event = `${name} ha entrado en Valdebruma.`;
+            } else if (investigates) {
+                category = 'investigation';
+                reply = 'Te detienes a observar el valle y el camino. La carreta continúa hacia el pueblo, alguien termina de recoger leña junto a una casa y una conversación llega desde una ventana abierta. No percibes nada que exija tu atención inmediata.';
+                event = `${name} ha observado el camino de entrada a Valdebruma.`;
+            } else if (asks) {
+                category = 'dialogue';
+                reply = 'Todavía estás en el camino de entrada. No hay nadie lo bastante cerca para mantener una conversación, aunque el pueblo parece seguir con su actividad habitual. Puedes acercarte a las primeras casas.';
+                event = `${name} ha buscado información antes de entrar en Valdebruma.`;
+            } else if (rests) {
+                category = 'rest';
+                reply = 'Te tomas un momento para contemplar el valle. La mañana avanza con calma y el camino sigue abierto ante ti.';
+                event = `${name} ha descansado en el camino de entrada a Valdebruma.`;
+            } else {
+                category = magic ? 'magic' : (combat ? 'combat' : 'other');
+                reply = magic
+                    ? 'La magia responde a tu voluntad y se manifiesta brevemente en el aire frío de la montaña. El camino y el pueblo permanecen tranquilos.'
+                    : combat
+                        ? 'Tu movimiento brusco altera la calma del camino. La carreta se detiene un instante y quien recoge leña vuelve la cabeza, sorprendido.'
+                        : 'La mañana sigue su curso. El camino desciende hasta las primeras calles de Valdebruma y nada te obliga a apresurarte.';
+                event = `${name} ha actuado en el camino de entrada a Valdebruma.`;
+            }
+        } else if (combat) {
             category = 'combat';
-            reply = 'Tu acción rompe la quietud de la plaza. Los vecinos retroceden y Elia se aparta, alarmada. El pozo sigue cerrado; todavía no sabes qué hay debajo ni si tu acción ha conseguido algo.';
-            event = `${name} ha recurrido a la violencia en la plaza del pozo.`;
+            reply = 'Tu acción altera la actividad de quienes se encuentran cerca. Algunas personas se apartan con cautela, pendientes de lo que hagas a continuación.';
+            event = `${name} ha recurrido a la violencia en ${state.currentLocation}.`;
         } else if (magic) {
             category = 'magic';
             if (atWell) {
@@ -64,7 +97,7 @@ const Director = {
                 event = 'Una manifestación de poder ha provocado una respuesta desde el pozo.';
                 if (!clues.includes('El pozo responde a la magia')) clues.push('El pozo responde a la magia');
             } else {
-                reply = 'Tu poder se manifiesta en la plaza. La niebla se arremolina a tu alrededor, pero no parece afectar al pozo. Elia observa el fenómeno con una mezcla de curiosidad y preocupación.';
+                reply = 'Tu poder se manifiesta en el lugar. El aire se altera durante un instante y quienes se encuentran cerca reparan en el fenómeno.';
                 event = `${name} ha utilizado sus poderes en Valdebruma.`;
             }
         } else if (aboutElia && asks) {
@@ -119,11 +152,13 @@ const Director = {
             event = `${name} ha conversado con ${npcKey}.`;
         } else if (asks) {
             category = 'dialogue';
-            reply = 'Elia te escucha, pero no puede responder por todo el pueblo. Un vecino que barre la entrada de una tienda murmura que la campana empezó a sonar después de una tormenta, hace tres semanas. Cuando intentas preguntarle más, finge no haberte oído.';
-            if (!facts.includes('Un vecino relaciona el comienzo de las campanadas con una tormenta de hace tres semanas.')) {
-                facts.push('Un vecino relaciona el comienzo de las campanadas con una tormenta de hace tres semanas.');
+            if (bellKnown) {
+                reply = 'Preguntas a quienes se encuentran cerca. Las respuestas son imprecisas y no todos parecen dispuestos a hablar de lo ocurrido; por ahora solo puedes distinguir rumores de hechos comprobados.';
+                event = `${name} ha preguntado por los rumores de Valdebruma.`;
+            } else {
+                reply = 'Preguntas a quienes encuentras por asuntos cotidianos del pueblo. Te responden con naturalidad: algunos hablan del trabajo, otros de las tiendas y de cómo ha cambiado el tiempo. Todavía no surge ningún asunto que parezca preocupar especialmente a la gente.';
+                event = `${name} ha conversado con habitantes de Valdebruma.`;
             }
-            event = `${name} ha preguntado por los sucesos de Valdebruma.`;
         } else if (moves) {
             category = 'movement';
             if (this.has(text, ['posada', 'taberna', 'meson'])) {
@@ -132,9 +167,20 @@ const Director = {
             } else if (this.has(text, ['calle', 'mercado', 'tiendas'])) {
                 state.currentLocation = 'Calle Mayor';
                 reply = 'Te adentras en la Calle Mayor. Los comerciantes siguen atendiendo sus puestos, aunque todos parecen evitar mencionar el pozo. Una campanilla de tienda suena y tres personas se sobresaltan al mismo tiempo.';
-            } else if (this.has(text, ['elia', 'pozo', 'plaza'])) {
+            } else if (this.has(text, ['elia'])) {
+                if (eliaKnown) {
+                    state.currentLocation = state.characters.Elia.location || state.currentLocation;
+                    reply = 'Te diriges al lugar donde viste a Elia por última vez.';
+                } else {
+                    reply = 'No conoces a nadie llamado Elia. Si buscas a alguien, tendrás que preguntar por los habitantes que encuentres o recorrer el pueblo.';
+                }
+            } else if (this.has(text, ['pozo', 'plaza'])) {
                 state.currentLocation = 'Plaza del pozo';
-                reply = 'Regresas a la plaza. Elia sigue junto al pozo, revisando unas notas en un papel doblado. Al verte, levanta la mirada.';
+                state.wellDiscovered = true;
+                if (!facts.includes('Hay un viejo pozo de piedra en la plaza de Valdebruma.')) {
+                    facts.push('Hay un viejo pozo de piedra en la plaza de Valdebruma.');
+                }
+                reply = 'Llegas a la plaza de Valdebruma. Entre las construcciones que la rodean distingues un viejo pozo de piedra. No sabes nada especial sobre él; por ahora es solo un elemento más del pueblo.';
             } else {
                 reply = 'Te desplazas por Valdebruma y te alejas de la plaza. Las calles ascienden entre casas de piedra y pequeños comercios. La niebla hace difícil distinguir qué camino conduce a la parte alta del pueblo.';
                 state.currentLocation = 'Calles de Valdebruma';
@@ -142,25 +188,29 @@ const Director = {
             event = `${name} se ha desplazado a ${state.currentLocation}.`;
         } else if (stealth) {
             category = 'stealth';
-            reply = 'Te mueves con cuidado, procurando no llamar la atención. Desde tu posición puedes observar la plaza sin que los vecinos reparen demasiado en ti. Elia sigue pendiente del pozo.';
+            reply = 'Te mueves con cuidado, procurando no llamar la atención. Desde tu posición observas la actividad cercana sin que nadie parezca reparar demasiado en ti.';
             event = `${name} ha actuado con sigilo en ${state.currentLocation}.`;
         } else if (offers) {
             category = 'offer';
-            state.eliaTrust += 1;
-            state.characters.Elia.trust = state.eliaTrust;
-            reply = 'Elia acepta tu gesto con una pequeña sonrisa, sorprendida por la amabilidad en medio de aquella tensión.\n\n—Gracias. No abundan las personas que se ofrecen a ayudar sin pedir primero una explicación completa.';
+            if (eliaKnown) {
+                state.eliaTrust = (Number(state.eliaTrust) || 0) + 1;
+                state.characters.Elia.trust = state.eliaTrust;
+                reply = 'Elia acepta tu gesto con una pequeña sonrisa.\n\n—Gracias. No abundan las personas que se ofrecen a ayudar sin pedir primero una explicación completa.';
+            } else {
+                reply = 'Tu ofrecimiento es recibido con agradecimiento por quienes se encuentran cerca. La gente del pueblo parece valorar los gestos amables.';
+            }
             event = `${name} ha ofrecido ayuda en Valdebruma.`;
         } else if (rests) {
             category = 'rest';
-            reply = 'Te tomas un momento para descansar. La plaza continúa con su actividad contenida. Nadie parece dispuesto a hablar del pozo, pero Elia sigue allí, consultando sus notas.';
+            reply = 'Te tomas un momento para descansar. La actividad cotidiana continúa a tu alrededor.';
             event = `${name} ha descansado en ${state.currentLocation}.`;
         } else if (investigates) {
             category = 'investigation';
-            reply = 'Observas con atención lo que te rodea. En Valdebruma hay más de una cosa fuera de lugar: ventanas cerradas a plena mañana, conversaciones que se interrumpen al mencionar la campana y mapas que, según Elia, ya no representan el pueblo correctamente.';
+            reply = 'Observas con atención lo que te rodea. Reparas en los detalles de las casas, los comercios y las personas que siguen con sus tareas. Aún no tienes motivos para pensar que el pueblo esconda algo fuera de lo común.';
             event = `${name} ha investigado los alrededores.`;
         } else {
             category = 'other';
-            reply = 'Llevas a cabo tu acción. El mundo no se detiene para darte una respuesta automática: Elia sigue junto al pozo y los vecinos continúan con sus asuntos, aunque algunos te observan con curiosidad. Tendrás que ver qué efecto tiene tu decisión en esta situación.';
+            reply = 'Llevas a cabo tu acción. El mundo continúa a tu alrededor y las personas cercanas siguen con sus asuntos, aunque algunas reparan en ti con curiosidad.';
             event = `${name} ha realizado una acción en ${state.currentLocation}.`;
         }
 
