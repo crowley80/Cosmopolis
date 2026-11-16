@@ -127,6 +127,16 @@ const Athun = {
                 <p class="atlas-note">Estos lugares ya forman parte del conocimiento del mundo compartido, pero tu personaje todavía no los ha visitado ni los tiene a la vista.</p>
                 <ul class="atlas-list">${renderEntries(atlas.known)}</ul>
             </section>
+            <section class="atlas-section">
+                <h3>Caminos recorridos</h3>
+                ${atlas.connections.length
+                    ? '<ul class="atlas-list">' + atlas.connections.map(route =>
+                        '<li class="atlas-place atlas-route"><span class="atlas-place-name">' +
+                        this.escape(route.from) + ' → ' + this.escape(route.to) +
+                        '</span><span class="atlas-status">Recorrido</span></li>'
+                    ).join('') + '</ul>'
+                    : '<p class="atlas-note">Todavía no has recorrido ningún camino entre dos zonas registradas.</p>'}
+            </section>
             <p class="atlas-frontier"><span aria-hidden="true">✧</span> Más allá de estas páginas, la niebla todavía oculta el territorio.</p>
             <h3>Pistas reunidas</h3><ul class="tool-list">${clues}</ul>
         `;
