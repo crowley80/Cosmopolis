@@ -581,3 +581,29 @@ test('el narrador recibe los recuerdos y revelaciones de Athun solo desde la par
     });
     assert.equal(ariMessages[0].content.includes('exclusivos de esta partida'), true);
 });
+
+
+test('Athun conserva recuerdos compartidos, revelaciones justificadas y cambios pequeños de vínculo', () => {
+    const state = { athun: { id: 'athun', permanent: true, bond: 4, memories: ['La primera noche'], revelations: [] } };
+    Narrator.applyAthunUpdates(state, {
+        athunMemoriesToAdd: ['La primera noche', 'Ariadna confió en el grimorio', ''],
+        athunRevelationsToAdd: ['La tinta respira'],
+        athunBondChange: { delta: 1, reason: 'Ariadna confió en Athun' }
+    });
+    assert.deepEqual(state.athun.memories, ['La primera noche', 'Ariadna confió en el grimorio']);
+    assert.deepEqual(state.athun.revelations, ['La tinta respira']);
+    assert.equal(state.athun.bond, 5);
+    assert.equal(state.athun.permanent, true);
+});
+
+test('el registro de Athun limita tamaño, cantidad y variación del vínculo', () => {
+    const state = { athun: { bond: 100, memories: [], revelations: [] } };
+    Narrator.applyAthunUpdates(state, {
+        athunMemoriesToAdd: Array.from({ length: 8 }, (_, i) => 'Recuerdo ' + i),
+        athunRevelationsToAdd: ['Revelación válida'],
+        athunBondChange: { delta: 1, reason: 'No puede superar el límite' }
+    });
+    assert.equal(state.athun.memories.length, 3);
+    assert.equal(state.athun.bond, 100);
+    assert.equal(state.athun.revelations.length, 1);
+});
