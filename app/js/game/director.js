@@ -139,7 +139,6 @@ const Director = {
         } else if (atWell && investigates) {
             category = 'investigation';
             state.wellInspected = true;
-            state.wellInspected = true;
             reply = 'Te acercas al pozo y examinas la piedra con detenimiento. La superficie está desgastada por el tiempo y descubres tres símbolos casi borrados: una montaña, una puerta y una línea ondulada que podría representar agua. No encuentras todavía una explicación para ellos.';
             if (!clues.includes('Tres símbolos grabados en el pozo')) clues.push('Tres símbolos grabados en el pozo');
             if (!facts.includes('El pozo presenta tres símbolos casi borrados.')) facts.push('El pozo presenta tres símbolos casi borrados.');
@@ -149,7 +148,7 @@ const Director = {
             if (state.wellInspected) {
                 reply = 'Tiras de las cadenas y pruebas a mover la losa. El metal protesta con un chirrido, pero el cierre resiste. No parece una simple tapa: alguien la aseguró para que no pudiera abrirse fácilmente. Necesitarás encontrar otra manera.';
             } else {
-                reply = eliaKnown
+                reply = eliaPresent
                     ? 'Te dispones a mover la losa, pero las cadenas están tensas y el cierre no cede. Elia te observa con evidente inquietud.'
                     : 'Te dispones a mover la losa, pero las cadenas están tensas y el cierre no cede. Quizá convendría examinarlo antes de forzarlo.';
             }
