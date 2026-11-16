@@ -266,6 +266,7 @@ jobs:
             const goalFallbackProbe = await page.evaluate(() => {
               const probeAdventure = Adventure.createOpening({ name: 'Ariadna' });
               probeAdventure.state.currentLocation = 'Plaza del pozo';
+              probeAdventure.state.phase = 'exploration';
               probeAdventure.state.characters.Tomás = {
                 role: 'Vecino', location: 'Plaza del pozo', personalGoal: 'Proteger a los vecinos de los peligros del pozo.', trust: 0, memories: []
               };
