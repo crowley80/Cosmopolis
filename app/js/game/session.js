@@ -43,6 +43,7 @@ const Session = {
             text: action,
             response,
             category: details.category || 'other',
+            aiUsed: typeof details.aiUsed === 'boolean' ? details.aiUsed : null,
             createdAt: new Date().toISOString()
         });
 
