@@ -335,9 +335,13 @@ const Narrator = {
             state.inventory = Array.isArray(state.inventory) ? state.inventory : [];
             result.itemsToRemove.slice(0, 10).forEach(item => {
                 if (typeof item !== 'string' || !item.trim()) return;
+                // Athun es un elemento permanente: ninguna instrucción narrativa puede retirarlo.
+                if (item.trim().toLocaleLowerCase('es').includes('athun')) return;
                 const index = state.inventory.findIndex(existing =>
                     String(existing).toLocaleLowerCase('es') === item.trim().toLocaleLowerCase('es'));
-                if (index !== -1) state.inventory.splice(index, 1);
+                if (index !== -1 && !String(state.inventory[index]).toLocaleLowerCase('es').includes('athun')) {
+                    state.inventory.splice(index, 1);
+                }
             });
             result.itemsToAdd.slice(0, 10).forEach(item => {
                 if (typeof item !== 'string' || !item.trim()) return;
@@ -346,6 +350,9 @@ const Narrator = {
                     state.inventory.push(clean);
                 }
             });
+            if (!state.inventory.some(item => String(item).toLocaleLowerCase('es').includes('athun'))) {
+                state.inventory.unshift('Athun — grimorio consciente');
+            }
 
             state.characters = state.characters && typeof state.characters === 'object' ? state.characters : {};
             result.charactersToAdd.slice(0, 5).forEach(entry => {
