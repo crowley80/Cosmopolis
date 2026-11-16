@@ -149,3 +149,7 @@ La sesión compara la zona anterior con la nueva. Si el protagonista cambia de u
 El esquema estructurado del narrador incorpora `visibleLocations`, que se recalcula en cada respuesta y solo debe incluir lugares cercanos identificados explícitamente en la escena/contexto; no puede inventar topología ni destinos. La lista se limita a 12 nombres y se sincroniza al mundo compartido como descubrimiento, sin registrar visitas personales. Si el jugador cambia de zona y la respuesta arrastra sin cambios la visibilidad anterior, la sesión la limpia.
 
 GitHub Actions, ejecución **118**: sintaxis JavaScript correcta y **16/16 pruebas aprobadas** para el atlas, prólogo, guardado, migración y sesión. Esta ejecución corresponde a la primera versión completa del atlas con sincronización y limpieza de visibilidad; el cambio posterior de esquema del narrador requiere una nueva ejecución CI.
+
+
+### CI posterior a la integración del narrador — 16/11/2026
+GitHub Actions, ejecución **125**: comprobación de sintaxis JavaScript correcta y **16/16 pruebas aprobadas** tras incorporar `visibleLocations` al esquema estructurado del narrador. Se verifican el atlas, el prólogo, el guardado, la migración, el descubrimiento compartido y la limpieza de visibilidad al cambiar de zona.
