@@ -17,6 +17,7 @@ global.window = global;
 global.localStorage = new MemoryStorage();
 require('../app/js/core/save.js');
 require('../app/js/game/session.js');
+require('../app/js/game/narrator.js');
 
 const Save = global.Save;
 const Session = global.Session;
@@ -542,4 +543,41 @@ test('registra si cada acción usó IA sin inventar el dato cuando falta', () =>
     }), true);
 
     assert.deepEqual(Session.getActions().map(item => item.aiUsed), [true, false, null]);
+});
+
+
+test('el narrador recibe los recuerdos y revelaciones de Athun solo desde la partida activa', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia de Ariadna',
+        state: { currentLocation: 'Valdebruma', inventory: [], athun: {
+            bond: 7, memories: ['La primera noche juntas'], revelations: ['La tinta respira']
+        } }
+    });
+    const second = Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia de Darian',
+        state: { currentLocation: 'Puerto', inventory: [], athun: {
+            bond: 2, memories: ['El camino del norte'], revelations: ['Una voz lejana']
+        } }
+    });
+
+    assert.ok(first);
+    assert.ok(second);
+    const darianMessages = Narrator.buildMessages('Observo el puerto', Save.load().character, Save.load().adventure, []);
+    const darianContext = JSON.parse(darianMessages[1].content);
+    assert.deepEqual(darianContext.currentAdventure.athun, {
+        bond: 2,
+        memories: ['El camino del norte'],
+        revelations: ['Una voz lejana']
+    });
+
+    assert.equal(Save.activate(first), true);
+    const ariSlot = Save.load();
+    const ariMessages = Narrator.buildMessages('Recuerdo la noche', ariSlot.character, ariSlot.adventure, []);
+    const ariContext = JSON.parse(ariMessages[1].content);
+    assert.deepEqual(ariContext.currentAdventure.athun, {
+        bond: 7,
+        memories: ['La primera noche juntas'],
+        revelations: ['La tinta respira']
+    });
+    assert.equal(ariMessages[0].content.includes('exclusivos de esta partida'), true);
 });
