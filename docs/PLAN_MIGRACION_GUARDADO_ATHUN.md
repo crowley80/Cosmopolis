@@ -113,3 +113,10 @@ Antes de implementar, revisar cómo se representan las localizaciones y la posic
 
 ### Límite de validación
 La rama sigue aislada de main. La validación automatizada no acredita el funcionamiento visual, el flujo táctil ni la recuperación de partidas en Chrome para Android. No fusionar el pull request hasta completar esa comprobación en el dispositivo real.
+
+
+### Resultado de la revisión autónoma — 16/11/2026
+- La primera ejecución ampliada detectó un defecto real: una excepción al escribir la partida activa dejaba una entrada parcial en el índice.
+- Se corrigió `Save.createSlot()` para restaurar el índice anterior, retirar el registro incompleto y recuperar la clave activa anterior ante fallos de escritura.
+- Nueva ejecución de GitHub Actions **60**: comprobación de sintaxis correcta y **8/8 pruebas aprobadas**. La prueba añadida reproduce el fallo de almacenamiento y comprueba que la partida anterior permanece activa y sin registros huérfanos.
+- La validación en Chrome/Android sigue pendiente; no se ha realizado desde esta sesión.
