@@ -438,3 +438,50 @@ test('restaura una selección inicialmente vacía si la verificación del borrad
     assert.equal(Save.list().length, 2);
     assert.equal(Save.load().character.name, 'Ariadna');
 });
+
+
+test('el vínculo, recuerdos y revelaciones de Athun son independientes por protagonista', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia de Ariadna',
+        state: { inventory: [], athun: { bond: 7, memories: ['La primera noche'], revelations: ['La tinta respira'] } }
+    });
+    const second = Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia de Darian',
+        state: { inventory: [], athun: { bond: 2, memories: ['El camino del norte'], revelations: ['Una voz lejana'] } }
+    });
+
+    assert.ok(first);
+    assert.ok(second);
+    assert.equal(Save.load().adventure.state.athun.bond, 2);
+    assert.deepEqual(Save.load().adventure.state.athun.memories, ['El camino del norte']);
+
+    assert.equal(Save.activate(first), true);
+    const ariathun = Save.load().adventure.state.athun;
+    assert.equal(ariathun.bond, 7);
+    assert.deepEqual(ariathun.memories, ['La primera noche']);
+    ariathun.bond = 9;
+    ariathun.memories.push('El secreto del pozo');
+    assert.equal(Save.save(Save.load()), true);
+
+    assert.equal(Save.activate(second), true);
+    assert.equal(Save.load().adventure.state.athun.bond, 2);
+    assert.deepEqual(Save.load().adventure.state.athun.memories, ['El camino del norte']);
+    assert.deepEqual(Save.load().adventure.state.athun.revelations, ['Una voz lejana']);
+
+    assert.equal(Save.activate(first), true);
+    assert.equal(Save.load().adventure.state.athun.bond, 9);
+    assert.deepEqual(Save.load().adventure.state.athun.memories, ['La primera noche', 'El secreto del pozo']);
+});
+
+test('impide eliminar la última partida y conserva a Athun en ella', () => {
+    const id = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'La última historia', state: { inventory: ['Antorcha'] }
+    });
+    assert.ok(id);
+
+    assert.equal(Save.deleteSlot(id), false);
+    assert.equal(Save.list().length, 1);
+    assert.equal(Save.getActiveId(), id);
+    const inventory = Save.load().adventure.state.inventory;
+    assert.equal(inventory.filter(item => String(item).toLocaleLowerCase('es').includes('athun')).length, 1);
+});
