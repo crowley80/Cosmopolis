@@ -62,6 +62,7 @@ const Save = {
             saves.push({
                 id,
                 name: String(slot.character && slot.character.name || 'Partida recuperada').slice(0, 80),
+                title: String(slot.adventure && slot.adventure.title || 'Ficha sin aventura').slice(0, 120),
                 createdAt: slot.createdAt || slot.updatedAt || new Date().toISOString(),
                 updatedAt: slot.updatedAt || slot.createdAt || new Date().toISOString()
             });
@@ -110,6 +111,7 @@ const Save = {
         const entry = {
             id,
             name: String(slot.character && slot.character.name || 'Partida recuperada').slice(0, 80),
+            title: String(slot.adventure && slot.adventure.title || 'Ficha sin aventura').slice(0, 120),
             createdAt: slot.createdAt || legacy.updatedAt || new Date().toISOString(),
             updatedAt: slot.updatedAt || legacy.updatedAt || new Date().toISOString()
         };
@@ -229,6 +231,7 @@ const Save = {
         entries.push({
             id,
             name: String(slot.character && slot.character.name || 'Partida sin nombre').slice(0, 80),
+            title: String(slot.adventure && slot.adventure.title || 'Ficha sin aventura').slice(0, 120),
             createdAt: slot.createdAt || new Date().toISOString(),
             updatedAt: slot.updatedAt || new Date().toISOString()
         });
@@ -256,6 +259,7 @@ const Save = {
                 saves: [...index.saves, {
                     id,
                     name: String(character && character.name || 'Partida sin nombre').slice(0, 80),
+                    title: String(adventure && adventure.title || 'Ficha sin aventura').slice(0, 120),
                     createdAt: now,
                     updatedAt: now
                 }]
