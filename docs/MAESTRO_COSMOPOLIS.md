@@ -1422,3 +1422,7 @@ Se incorpora el módulo de cartografía `app/js/game/map.js` y se renueva el pan
 **Límite deliberado:** todavía no se representa una cuadrícula geográfica ni se inventan rutas, coordenadas o distancias. La aventura inicial no contiene datos espaciales suficientes para dibujar un mapa fiable. Esta fase implementa la clasificación y la niebla de información; la cartografía espacial real queda pendiente de datos explícitos de posición/conexión y de su integración narrativa.
 
 Se añadieron pruebas unitarias del atlas y una prueba de integración para comprobar que una ubicación visible se comparte como conocimiento, pero no como visita personal de otro protagonista. Pendiente: CI de esta tanda y prueba visual/táctil en Chrome para Android.
+
+
+### Control de niebla durante desplazamientos — 16/11/2026
+Al cambiar de ubicación, la sesión evita arrastrar la visibilidad de la zona anterior: si `visibleLocations` no cambia explícitamente en el nuevo estado, se limpia. Los lugares descubiertos permanecen como conocimiento compartido, pero dejan de figurar como entorno visible. Se añade una prueba de regresión para este comportamiento.
