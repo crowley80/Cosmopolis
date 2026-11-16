@@ -40,11 +40,22 @@ const WorldMap = {
             return { name, status };
         });
 
+        const knownNames = new Set(discovered.keys());
+        const connections = (Array.isArray(sharedWorld.connections) ? sharedWorld.connections : [])
+            .filter(item => item && typeof item.from === 'string' && typeof item.to === 'string')
+            .map(item => ({
+                from: this.cleanName(item.from),
+                to: this.cleanName(item.to)
+            }))
+            .filter(item => item.from && item.to &&
+                knownNames.has(item.from.toLocaleLowerCase('es')) &&
+                knownNames.has(item.to.toLocaleLowerCase('es')));
         const order = { current: 0, visible: 1, visited: 2, known: 3 };
         entries.sort((a, b) => order[a.status] - order[b.status] || a.name.localeCompare(b.name, 'es'));
         return {
             current,
             entries,
+            connections,
             currentAndVisible: entries.filter(item => item.status === 'current' || item.status === 'visible'),
             visited: entries.filter(item => item.status === 'visited'),
             known: entries.filter(item => item.status === 'known')
