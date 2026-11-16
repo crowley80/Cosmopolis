@@ -322,7 +322,23 @@ test('un camino descubierto por un protagonista queda disponible en el atlas de 
 });
 
 
-test('un cambio de ubicación que no es desplazamiento no crea un camino', () => {
+test('normaliza Athun como una única pertenencia canónica aunque lleguen copias narrativas', () => {
+    const id = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Protección del grimorio',
+        state: { inventory: ['Moneda', 'Athun', 'Athun duplicado', 'Athun — grimorio consciente'] }
+    });
+    assert.ok(id);
+    const slot = Save.load();
+    slot.adventure.state.inventory = ['Moneda', 'Athun', 'Athun duplicado', 'Athun — grimorio consciente'];
+
+    assert.equal(Save.save(slot), true);
+    const inventory = Save.load().adventure.state.inventory;
+    assert.equal(inventory.filter(item => String(item).toLocaleLowerCase('es').includes('athun')).length, 1);
+    assert.equal(inventory[0], 'Athun — grimorio consciente');
+    assert.ok(inventory.includes('Moneda'));
+});
+
+ test('un cambio de ubicación que no es desplazamiento no crea un camino', () => {
     Save.createSlot({ name: 'Ariadna' }, {
         title: 'Exploración',
         state: { currentLocation: 'Plaza del pozo', visitedLocations: ['Plaza del pozo'], inventory: [] }
