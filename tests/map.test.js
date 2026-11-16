@@ -88,3 +88,31 @@ test('el atlas muestra solo conexiones explícitas entre lugares conocidos', () 
         { from: 'Plaza del pozo', to: 'La Posada del Tejón' }
     ]);
 });
+
+
+test('el esquema visual solo contiene lugares conocidos y caminos registrados', () => {
+    const atlas = WorldMap.getAtlas(
+        { locations: ['Plaza', 'Posada', 'Puerto'], connections: [
+            { from: 'Plaza', to: 'Posada' },
+            { from: 'Posada', to: 'Puerto' },
+            { from: 'Puerto', to: 'Bosque oculto' }
+        ] },
+        { currentLocation: 'Plaza', visitedLocations: ['Plaza', 'Posada'], visibleLocations: ['Posada'] },
+        {}
+    );
+    const layout = WorldMap.getSchematicLayout(atlas);
+
+    assert.equal(layout.nodes.length, 3);
+    assert.equal(layout.nodes.find(node => node.status === 'current').x, 300);
+    assert.equal(layout.edges.length, 2);
+    assert.equal(layout.nodes.some(node => node.name === 'Bosque oculto'), false);
+    assert.ok(layout.nodes.every(node =>
+        node.x >= 0 && node.x <= layout.width && node.y >= 0 && node.y <= layout.height
+    ));
+});
+
+test('el esquema admite un atlas vacío sin inventar nodos ni caminos', () => {
+    assert.deepEqual(WorldMap.getSchematicLayout({ entries: [], connections: [] }), {
+        width: 600, height: 348, nodes: [], edges: []
+    });
+});
