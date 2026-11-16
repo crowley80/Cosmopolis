@@ -314,14 +314,38 @@ const Save = {
         const index = this.readJSON(this.indexKey);
         if (!index || !Array.isArray(index.saves) || !index.saves.some(entry => entry.id === id)) return false;
         if (index.saves.length <= 1) return false;
+
+        const slotKey = this.slotPrefix + id;
+        const originalIndex = localStorage.getItem(this.indexKey);
+        const originalSlot = localStorage.getItem(slotKey);
+        const originalActive = localStorage.getItem(this.activeKey);
+        const wasActive = this.getActiveId() === id;
+        const next = { version: 1, saves: index.saves.filter(entry => entry.id !== id) };
+
         try {
-            const wasActive = this.getActiveId() === id;
-            const next = { version: 1, saves: index.saves.filter(entry => entry.id !== id) };
-            if (!this.writeVerified(this.indexKey, next)) return false;
-            localStorage.removeItem(this.slotPrefix + id);
-            if (wasActive && !this.writeVerified(this.activeKey, { id: next.saves[0].id })) return false;
+            if (!this.writeVerified(this.indexKey, next)) {
+                throw new Error('No se pudo verificar el nuevo índice de partidas.');
+            }
+            localStorage.removeItem(slotKey);
+            if (wasActive && !this.writeVerified(this.activeKey, { id: next.saves[0].id })) {
+                throw new Error('No se pudo activar la partida que sustituye a la eliminada.');
+            }
             return true;
         } catch (error) {
+            // La eliminación es transaccional: si falla cualquier paso, se restaura el estado anterior.
+            try {
+                if (originalSlot !== null && localStorage.getItem(slotKey) !== originalSlot) {
+                    localStorage.setItem(slotKey, originalSlot);
+                }
+                if (originalIndex !== null && localStorage.getItem(this.indexKey) !== originalIndex) {
+                    localStorage.setItem(this.indexKey, originalIndex);
+                }
+                if (originalActive !== null && localStorage.getItem(this.activeKey) !== originalActive) {
+                    localStorage.setItem(this.activeKey, originalActive);
+                }
+            } catch (rollbackError) {
+                console.error('No se pudo restaurar completamente la partida tras el fallo:', rollbackError);
+            }
             console.error('No se pudo eliminar la partida:', error);
             return false;
         }
