@@ -1434,3 +1434,7 @@ El formato estructurado del narrador incluye `visibleLocations`, recalculado en 
 
 ### Validación de la integración narrativa del atlas — 16/11/2026
 GitHub Actions, ejecución **125**: sintaxis JavaScript correcta y **16/16 pruebas aprobadas** tras incorporar `visibleLocations` al esquema del narrador. La niebla del atlas y su sincronización con el mundo compartido quedan cubiertas por pruebas automatizadas; la validación visual y táctil en Chrome/Android continúa pendiente.
+
+
+### Refinamiento de visibilidad y estados del atlas — 16/11/2026
+El narrador entrega `visibleLocations` explícitamente a la sesión. Al desplazarse, esa lista sustituye la visión anterior; si el narrador no declara una nueva, la visión antigua se limpia. Las ubicaciones visitadas que vuelven a estar a la vista se clasifican como visibles mientras permanezcan en el campo de visión. Se añadió cobertura automatizada para ambos casos. La tanda actual contiene 18 pruebas; falta confirmar CI tras estos últimos ajustes.
