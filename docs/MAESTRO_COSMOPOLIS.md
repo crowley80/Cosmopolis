@@ -1572,7 +1572,7 @@ La migración de cada partida también conserva el vínculo, los recuerdos y las
 
 Se amplía la cobertura de partidas múltiples para verificar que el vínculo, los recuerdos y las revelaciones de Athun pertenecen a cada protagonista y no se mezclan al alternar entre partidas. La prueba modifica el vínculo y añade un recuerdo en una partida, cambia a otra y vuelve a la primera para comprobar que ambos estados se mantienen aislados y persistentes. También se cubre que la última partida no pueda eliminarse y que Athun siga presente en ella.
 
-Se crearon respaldos previos de `tests/storage.test.js` y este documento maestro con el sufijo `.bak-20261116-athun-state-isolation`. La validación CI de estas dos pruebas nuevas queda pendiente; no se ha realizado todavía validación manual en Android.
+Se crearon respaldos previos de `tests/storage.test.js` y este documento maestro con el sufijo `.bak-20261116-athun-state-isolation`. GitHub Actions, ejecución 317 (`43907207244`): sintaxis JavaScript correcta y 27/27 pruebas aprobadas, incluidas las dos nuevas pruebas de aislamiento del vínculo de Athun y protección de la última partida. No se ha realizado todavía validación manual en Android.
 
 
 ### Integración selectiva sobre main — 16/11/2026
