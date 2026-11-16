@@ -33,6 +33,7 @@ test('preguntar desde el camino permite hablar con quien recoge leña sin entrar
 
     assert.equal(result.category, 'dialogue');
     assert.equal(result.state.currentLocation, 'Camino de entrada a Valdebruma');
+    assert.equal(result.state.phase, 'arrival');
     assert.equal(result.state.characters.Vecino.location, 'Camino de entrada a Valdebruma');
     assert.match(result.reply, /recogiendo leña/i);
     assert.equal(result.state.eliaMet, false);
