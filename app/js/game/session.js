@@ -58,6 +58,11 @@ const Session = {
         }
 
         const currentLocation = state.currentLocation || saved.adventure.location;
+        if (previousLocation && currentLocation &&
+            previousLocation.toLocaleLowerCase('es') !== currentLocation.toLocaleLowerCase('es')) {
+            // Solo se registra el tramo que el protagonista acaba de recorrer, en ese sentido.
+            Save.addGlobalConnection(previousLocation, currentLocation, saved.character.name);
+        }
         if (previousLocation && currentLocation && currentLocation !== previousLocation) {
             // Solo una respuesta narrativa explícita puede definir la nueva visibilidad.
             state.visibleLocations = Array.isArray(details.visibleLocations)
