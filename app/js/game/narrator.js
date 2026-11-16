@@ -321,13 +321,20 @@ const Narrator = {
             state.day = Math.max(previousDay, Math.max(1, Math.min(9999, result.day)));
             state.currentLocation = result.location.trim().slice(0, 120) ||
                 state.currentLocation || updated.location || 'Lugar desconocido';
+            if (state.phase === 'arrival' && state.currentLocation !== 'Camino de entrada a Valdebruma') {
+                state.phase = 'exploration';
+            }
             state.knownFacts = Array.isArray(state.knownFacts) ? state.knownFacts : [];
             state.clues = Array.isArray(state.clues) ? state.clues : [];
             state.events = Array.isArray(state.events) ? state.events : [];
 
             result.factsToAdd.slice(0, 5).forEach(fact => {
                 if (typeof fact === 'string' && fact.trim() && !state.knownFacts.includes(fact.trim())) {
-                    state.knownFacts.push(fact.trim().slice(0, 300));
+                    const cleanFact = fact.trim().slice(0, 300);
+                    state.knownFacts.push(cleanFact);
+                    const normalizedFact = cleanFact.toLocaleLowerCase('es');
+                    if (normalizedFact.includes('pozo')) state.wellDiscovered = true;
+                    if (normalizedFact.includes('campana')) state.bellDiscovered = true;
                 }
             });
             result.cluesToAdd.slice(0, 5).forEach(clue => {
@@ -383,6 +390,10 @@ const Narrator = {
                     trust: 0,
                     memories: memory ? [memory] : []
                 };
+                if (name.toLocaleLowerCase('es') === 'elia') {
+                    state.eliaMet = true;
+                    state.eliaTrust = Number(state.eliaTrust) || 0;
+                }
             });
             result.characterUpdates.slice(0, 10).forEach(entry => {
                 if (!entry || typeof entry.character !== 'string') return;
