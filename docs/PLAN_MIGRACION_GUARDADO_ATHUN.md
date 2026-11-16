@@ -86,3 +86,10 @@ Las pruebas narrativas nuevas detectaron que la expresión «me acerco y pregunt
 Se añadieron regresiones automatizadas para: apertura en el camino sin conocer a Elia, pozo o campana; conversación junto al camino sin entrar; entrada al pueblo sin revelaciones prematuras; descubrimiento e inspección del pozo sin revelar la campana; y revelación de la campana solo al provocar una respuesta mágica. Se actualizó la versión de caché del director en `index.html`.
 
 **Validación:** GitHub Actions, ejecución 265: sintaxis JavaScript correcta y 30/30 pruebas aprobadas. La validación visual y táctil en Chrome/Android sigue pendiente.
+
+
+### Aislamiento del vínculo de Athun por protagonista — 16/11/2026
+
+Se añadió una prueba de regresión que crea dos protagonistas con vínculos, recuerdos y revelaciones distintos para Athun, modifica el estado de uno y alterna entre partidas. Confirma que el grimorio permanece en ambos inventarios, conserva `permanent: true` y que el vínculo y los recuerdos de una historia no se filtran a la otra.
+
+**Validación:** GitHub Actions, ejecución 276: sintaxis correcta y 31/31 pruebas aprobadas.
