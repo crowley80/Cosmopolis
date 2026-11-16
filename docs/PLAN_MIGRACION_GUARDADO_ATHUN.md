@@ -76,3 +76,10 @@ Se ha iniciado una primera fase ejecutable en una rama separada de `main`.
 - La migración conserva íntegro el JSON heredado y su mundo personal dentro de la partida antigua; no transforma automáticamente relaciones o hechos personales en datos globales.
 - La prueba visual y funcional final en Chrome/Android sigue pendiente. No se declara validado en el teléfono.
 - La integración debe revisarse mediante pull request antes de incorporarse a `main`.
+
+
+### Ampliación de la capa compartida
+- Las identidades básicas de los NPC descubiertos se registran en `world.entities`: nombre, función y primera localización conocida.
+- Se excluyen deliberadamente de esa ficha global la confianza, los recuerdos, los objetivos y las relaciones; permanecen en la partida de cada protagonista.
+- El contexto del narrador recibe las localizaciones y entidades compartidas, con una instrucción explícita para no trasladar estados personales entre protagonistas.
+- La migración de partidas antiguas incorpora localizaciones visitadas y la identidad básica de NPC ya conocidos, sin importar recuerdos privados.
