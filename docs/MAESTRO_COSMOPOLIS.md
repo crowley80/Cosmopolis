@@ -1409,3 +1409,16 @@ Se guardaron copias previas de `app/js/app.js`, `index.html` y este documento co
 
 ### Validación posterior del prólogo y del guardado — 16/11/2026
 GitHub Actions, ejecución 76: comprobación de sintaxis JavaScript correcta y 10/10 pruebas aprobadas. Se incluyen dos pruebas nuevas del prólogo de primera ejecución y ocho pruebas de almacenamiento, migración, aislamiento, recuperación, permanencia de Athun e integridad ante fallos de escritura. La prueba visual y funcional en Chrome/Android continúa pendiente; la rama no se fusiona hasta completarla.
+
+
+## PRIMERA FASE DEL ATLAS DE EXPLORACIÓN — 16/11/2026
+
+Se incorpora el módulo de cartografía `app/js/game/map.js` y se renueva el panel de mapa:
+- Distingue la zona actual y otras zonas explícitamente visibles, lugares visitados por el protagonista y lugares conocidos por descubrimientos compartidos.
+- El conocimiento geográfico se comparte entre protagonistas; la lista de visitas y la visibilidad actual permanecen ligadas a cada aventura.
+- La sesión registra la ubicación actual y las zonas que el estado declare visibles.
+- El terreno nunca descubierto no se enumera ni revela nombres.
+
+**Límite deliberado:** todavía no se representa una cuadrícula geográfica ni se inventan rutas, coordenadas o distancias. La aventura inicial no contiene datos espaciales suficientes para dibujar un mapa fiable. Esta fase implementa la clasificación y la niebla de información; la cartografía espacial real queda pendiente de datos explícitos de posición/conexión y de su integración narrativa.
+
+Se añadieron pruebas unitarias del atlas y una prueba de integración para comprobar que una ubicación visible se comparte como conocimiento, pero no como visita personal de otro protagonista. Pendiente: CI de esta tanda y prueba visual/táctil en Chrome para Android.
