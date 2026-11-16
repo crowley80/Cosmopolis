@@ -52,3 +52,27 @@ El índice de partidas debe contener identificador estable, nombre del protagoni
 ## Alcance de esta sesión
 
 Solo lectura del código y documentación de la arquitectura. No se ha cambiado ningún archivo de ejecución ni se ha ejecutado la aplicación en Android. La implementación debe hacerse por etapas pequeñas, con copia previa de cada archivo, pruebas automatizadas de almacenamiento y revisión de las llamadas existentes antes de sustituir la API.
+
+
+## Avance de implementación — rama `feat/athun-multisave-world`
+
+Se ha iniciado una primera fase ejecutable en una rama separada de `main`.
+
+### Implementado en esta fase
+- Índice de partidas, clave activa y almacenamiento independiente por protagonista.
+- Migración inicial de `cosmopolis_save` a una partida heredada. La clave original se conserva sin modificar como respaldo.
+- Creación, listado y activación de partidas; actualización de ficha sin crear duplicados.
+- Creación de una partida nueva sin sobrescribir la aventura anterior.
+- Almacenamiento global separado para el mundo y registro compartido de localizaciones descubiertas.
+- Selector inicial de partidas, acceso para cambiar de partida y creación de nuevos protagonistas.
+- Protección de Athun en la normalización del inventario y en el procesamiento de objetos retirados por el narrador.
+- Copias de seguridad de los seis archivos de ejecución modificados.
+- Pruebas automatizadas de migración, aislamiento, alternancia, mundo compartido y permanencia de Athun.
+- Flujo de GitHub Actions para ejecutar pruebas y comprobación de sintaxis JavaScript.
+
+### Límites pendientes de validar
+- El flujo de pruebas se ha añadido, pero debe confirmarse su ejecución satisfactoria en GitHub Actions.
+- El mundo global registra localizaciones; la clasificación y persistencia de entidades, hechos y acontecimientos globales requiere reglas narrativas explícitas para no convertir acciones personales en hechos universales.
+- La migración conserva íntegro el JSON heredado y su mundo personal dentro de la partida antigua; no transforma automáticamente relaciones o hechos personales en datos globales.
+- La prueba visual y funcional final en Chrome/Android sigue pendiente. No se declara validado en el teléfono.
+- La integración debe revisarse mediante pull request antes de incorporarse a `main`.
