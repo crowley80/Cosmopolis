@@ -98,14 +98,14 @@ jobs:
                 reply: 'Athun permanece contigo.',
                 event: 'El grimorio ha permanecido en el inventario.',
                 category: 'other',
-                location: opening.location,
-                factsToAdd: [],
+                location: 'Plaza del pozo',
+                factsToAdd: ['Hay un pozo antiguo en la plaza.', 'Una campana ha sonado desde el pozo.'],
                 cluesToAdd: [],
                 relationshipChanges: [],
                 itemsToAdd: [],
                 itemsToRemove: ['Athun'],
                 characterMemoriesToAdd: [],
-                charactersToAdd: [],
+                charactersToAdd: [{ name: 'Elia', role: 'Cartógrafa', location: 'Plaza del pozo', attitude: 'Cautelosa', goal: 'Investigar los mapas', memory: 'Ha conocido al protagonista.' }],
                 characterUpdates: [],
                 characterActions: [],
                 goalUpdates: [],
@@ -124,6 +124,9 @@ jobs:
                 const narrated = await Narrator.respond('Observo el grimorio.', player, opening, []);
                 if (!narrated.state.inventory.some(item => String(item).toLowerCase().includes('athun'))) fail('el narrador ha retirado Athun del inventario');
                 if (!narrated.state.athun || narrated.state.athun.permanent !== true) fail('se ha perdido la protección permanente de Athun');
+                if (narrated.state.phase !== 'exploration') fail('la fase no avanza al cambiar de ubicación');
+                if (!narrated.state.wellDiscovered || !narrated.state.bellDiscovered) fail('los hechos descubiertos no actualizan las marcas de exploración');
+                if (!narrated.state.eliaMet || !narrated.state.characters.Elia) fail('el primer encuentro con Elia no queda registrado');
               } finally {
                 window.fetch = originalFetch;
                 Narrator.healthCheckedAt = 0;
