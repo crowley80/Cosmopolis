@@ -74,6 +74,7 @@ test('la campana solo se revela cuando el jugador provoca una respuesta mágica 
     const adventure = Adventure.createOpening(character);
     adventure.state.currentLocation = 'Plaza del pozo';
     adventure.location = 'Plaza del pozo';
+    adventure.state.phase = 'exploration';
     adventure.state.wellDiscovered = true;
 
     const result = Director.respond('Uso magia cerca del pozo', character, adventure, []);
