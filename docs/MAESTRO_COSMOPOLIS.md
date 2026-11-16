@@ -1456,3 +1456,12 @@ Se implementó también una migración idempotente en `Save.load()` para partida
 **Pruebas automatizadas añadidas al workflow:** la misma batería narrativa, protección de Athun frente a la IA y migración de una partida antigua. El workflow se activa con los cambios de `index.html` y del propio archivo de workflow. No se ha podido consultar su resultado remoto en esta sesión y no se afirma que la prueba visual en Android esté completada.
 
 **Commits recientes:** guardado `99d7a19` y `db7d4a3`; prueba de migración `7eb287f`; caché `b9c37b1`; documentación `3a28313` y `3f2d582`. Se conservaron respaldos antes de las modificaciones. No se ha eliminado ni sobrescrito deliberadamente ninguna partida guardada.
+
+
+## Integración de partidas múltiples con la narrativa principal — 16/11/2026
+
+Se creó la rama `integracion/athun-multisave-main-20261116` desde el `main` actual para reconciliar el trabajo de guardado sin arrastrar los 50 commits que habían avanzado en paralelo en `main` ni reemplazar las correcciones narrativas recientes. Se integraron el selector de partidas, almacenamiento por protagonista, mundo global, sesión, atlas, estilos, pruebas automatizadas y workflow.
+
+La integración conserva los `adventure.js` y `director.js` actuales de `main`, incluida la apertura gradual de Valdebruma. El `narrator.js` de `main` se mantuvo como base y solo se añadió el rechazo de altas de inventario que contengan Athun; `save.js` incorpora la migración por partida y conserva el vínculo, recuerdos, revelaciones y `permanent: true` del grimorio. `index.html` conserva los scripts narrativos de `main` y carga el nuevo módulo del atlas y las versiones de caché de la integración.
+
+Se crearon respaldos previos de los nueve archivos existentes que se iban a actualizar. No se ha fusionado esta rama con `main` ni se ha cerrado el PR anterior. La ejecución CI de esta rama de integración y la validación visual en Chrome/Android están pendientes.
