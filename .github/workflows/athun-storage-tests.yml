@@ -22,4 +22,4 @@ jobs:
       - name: Check JavaScript syntax
         run: find app/js -name '*.js' -print0 | xargs -0 -n1 node --check
       - name: Test storage and shared world
-        run: node --test tests/storage.test.js
+        run: node --test tests/*.test.js
