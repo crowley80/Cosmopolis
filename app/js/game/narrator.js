@@ -36,6 +36,8 @@ const Narrator = {
     buildMessages(action, character, adventure, previousActions) {
         const state = adventure.state || {};
         const world = Session.getWorld();
+        const activeSave = Save.load() || {};
+        const personalWorld = activeSave.world || {};
         const history = previousActions.slice(-6).map(item => ({
             action: item.text || '',
             response: item.response || ''
@@ -120,6 +122,11 @@ const Narrator = {
                 events: shortList(world.events, 12),
                 relationships: Object.fromEntries(Object.entries(world.relationships || {}).slice(-20))
             },
+            personalWorld: {
+                facts: shortList(personalWorld.facts, 25),
+                events: shortList(personalWorld.events, 12),
+                relationships: Object.fromEntries(Object.entries(personalWorld.relationships || {}).slice(-20))
+            },
             recentHistory: history.slice(-6).map(item => ({
                 action: String(item.text || '').slice(0, 500),
                 response: String(item.response || '').slice(0, 900)
@@ -138,6 +145,7 @@ const Narrator = {
                     'Cuando una información sea incierta, exprésala como indicio, hipótesis, rumor o sospecha; nunca conviertas una conjetura en un hecho confirmado.',
                     'Si el jugador examina algo, describe primero señales observables y permite que las conclusiones dependan de las pistas disponibles y de sus capacidades.',
                     'El mundo persistente es compartido entre protagonistas: usa sus localizaciones y entidades como referencias comunes. No traslades recuerdos, confianza, objetivos ni relaciones personales de un protagonista a otro; esos datos pertenecen a cada partida.',
+                    'personalWorld contiene hechos, acontecimientos y relaciones exclusivos de la partida activa: consúltalos para mantener su continuidad, pero nunca los trates como hechos universales ni los transfieras a otro protagonista.',
                     'Si una entidad ya figura en el registro compartido, conserva su identidad y función; no crees un duplicado con otro nombre salvo que la historia establezca claramente que se trata de otra persona.',
                     'Respeta estrictamente los hechos, lugares, personajes, capacidades y consecuencias ya establecidos.',
                     'No decidas las intenciones del jugador ni fuerces una misión. Resuelve la acción que ha escrito.',
