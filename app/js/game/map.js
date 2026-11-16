@@ -35,8 +35,8 @@ const WorldMap = {
         const entries = Array.from(discovered.entries()).map(([key, name]) => {
             let status = 'known';
             if (key === current.toLocaleLowerCase('es') && current) status = 'current';
-            else if (visited.has(key)) status = 'visited';
             else if (visible.has(key)) status = 'visible';
+            else if (visited.has(key)) status = 'visited';
             return { name, status };
         });
 
