@@ -1383,7 +1383,7 @@ Se ha iniciado la implementación en la rama independiente `feat/athun-multisave
 - Se añadieron pruebas automatizadas y un flujo de GitHub Actions para comprobar sintaxis y almacenamiento.
 - Se guardaron copias de seguridad de los archivos de ejecución modificados y de este documento.
 
-**Estado de validación:** implementación en rama de trabajo; GitHub Actions ha superado la comprobación de sintaxis y las 6 pruebas automatizadas de almacenamiento (ejecución 45, 16/11/2026); todavía no probada en Chrome/Android. No se incorpora a `main` hasta completar la revisión funcional en móvil. El mundo global comparte localizaciones en esta fase. No se migran automáticamente hechos, relaciones ni acontecimientos personales al mundo global. La incorporación a `main` queda supeditada a las pruebas y revisión del pull request.
+**Estado de validación:** implementación en rama de trabajo; GitHub Actions ha superado la comprobación de sintaxis y las 6 pruebas automatizadas de almacenamiento (ejecución 48, 16/11/2026); todavía no probada en Chrome/Android. No se incorpora a `main` hasta completar la revisión funcional en móvil. El mundo global comparte localizaciones en esta fase. No se migran automáticamente hechos, relaciones ni acontecimientos personales al mundo global. La incorporación a `main` queda supeditada a las pruebas y revisión del pull request.
 
 Plan técnico y alcance pendiente: `docs/PLAN_MIGRACION_GUARDADO_ATHUN.md`.
 
