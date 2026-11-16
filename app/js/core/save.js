@@ -47,6 +47,20 @@ const Save = {
                 !String(item).toLocaleLowerCase('es').includes('athun')
             );
             slot.adventure.state.inventory = ['Athun — grimorio consciente', ...withoutAthun];
+
+            // La migración de partidas múltiples conserva también el vínculo y los recuerdos del grimorio.
+            const previousAthun = slot.adventure.state.athun && typeof slot.adventure.state.athun === 'object'
+                ? slot.adventure.state.athun : {};
+            slot.adventure.state.athun = {
+                ...previousAthun,
+                id: 'athun',
+                name: 'Athun',
+                kind: 'Grimorio consciente',
+                bond: Number.isFinite(Number(previousAthun.bond)) ? Number(previousAthun.bond) : 0,
+                memories: Array.isArray(previousAthun.memories) ? previousAthun.memories : [],
+                revelations: Array.isArray(previousAthun.revelations) ? previousAthun.revelations : [],
+                permanent: true
+            };
         }
         return slot;
     },
