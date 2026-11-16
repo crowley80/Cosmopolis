@@ -54,3 +54,21 @@ test('el descubrimiento compartido no convierte lugares en visitas personales', 
     assert.equal(atlas.known.some(item => item.name === 'Valdebruma'), true);
     assert.equal(atlas.visited.some(item => item.name === 'Valdebruma'), false);
 });
+
+
+test('una zona visitada vuelve a mostrarse como visible cuando está a la vista ahora', () => {
+    const atlas = WorldMap.getAtlas(
+        { locations: ['Plaza del pozo', 'Calle del molino'] },
+        {
+            currentLocation: 'Plaza del pozo',
+            visitedLocations: ['Plaza del pozo', 'Calle del molino'],
+            visibleLocations: ['Calle del molino']
+        },
+        {}
+    );
+
+    assert.equal(atlas.currentAndVisible.some(item =>
+        item.name === 'Calle del molino' && item.status === 'visible'
+    ), true);
+    assert.equal(atlas.visited.some(item => item.name === 'Calle del molino'), false);
+});
