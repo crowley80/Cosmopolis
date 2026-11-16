@@ -1699,3 +1699,10 @@ La revisión de `Director.respond()` detectó que algunas interacciones podían 
 - Se añadió una regresión Playwright que sitúa a Elia en Calle Mayor y verifica que no aparezca narrativamente junto al pozo.
 - Copia previa de `director.js`: `app/js/game/director.js.bak-20261116-presencia-elia-pozo`.
 - La nueva tanda de CI correspondiente a este último cambio debe terminar antes de considerar cerrada la revisión.
+
+### Atlas con muchos descubrimientos — 16/11/2026
+- La distribución esquemática anterior aumentaba el radio del anillo en bloques de ocho lugares sin limitarlo al lienzo de 600 × 348. Una exploración prolongada podía colocar nodos fuera del área visible.
+- Se ajustó el cálculo para distribuir los lugares en anillos de hasta ocho posiciones, con radios horizontales y verticales acotados al lienzo. Se mantienen el centro de la ubicación actual, los estados de niebla de guerra y las conexiones explícitas; no se inventan rutas ni coordenadas geográficas.
+- Se añadió una prueba con 40 lugares para comprobar que no se pierden nodos, no aparecen duplicados y todas las posiciones quedan dentro del lienzo.
+- Copias previas: `app/js/game/map.js.bak-20261116-atlas-muchos-lugares` y `tests/map.test.js.bak-20261116-atlas-limites`.
+- La validación CI de esta ampliación queda pendiente.
