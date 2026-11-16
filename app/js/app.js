@@ -106,8 +106,29 @@ const Athun = {
             ? state.clues.map(clue => `<li>${this.escape(clue)}</li>`).join('')
             : '<li>Todavía no has descubierto pistas.</li>';
         const visible = atlas.currentAndVisible;
+        const layout = WorldMap.getSchematicLayout(atlas);
+        const nodeMarkup = layout.nodes.map(node => `
+            <g class="atlas-map-node atlas-map-node-${node.status}" transform="translate(${node.x} ${node.y})">
+                <circle r="${node.status === 'current' ? 12 : 8}"></circle>
+                <text y="23" text-anchor="middle">${this.escape(node.name.length > 22 ? node.name.slice(0, 20) + '…' : node.name)}</text>
+            </g>
+        `).join('');
+        const edgeMarkup = layout.edges.map(edge => `
+            <path class="atlas-map-route" d="M ${edge.from.x} ${edge.from.y} L ${edge.to.x} ${edge.to.y}"></path>
+        `).join('');
         const content = `
-            <p class="tool-intro">La cartografía se amplía cuando exploras. El grimorio distingue lo que tienes a la vista, lo que ya recorriste y lo que otros viajeros descubrieron. Los territorios sin descubrir permanecen ocultos.</p>
+            <p class="tool-intro">La cartografía se amplía cuando exploras. Este esquema no está a escala: muestra únicamente lugares descubiertos y caminos que alguien ha recorrido. El grimorio distingue lo que tienes a la vista, lo que ya recorriste y lo que otros viajeros descubrieron. Los territorios sin descubrir permanecen ocultos.</p>
+            <div class="atlas-map-frame" role="img" aria-label="Esquema de lugares conocidos y caminos recorridos">
+                <svg class="atlas-map" viewBox="0 0 ${layout.width} ${layout.height}" aria-hidden="true">
+                    <defs>
+                        <radialGradient id="atlasFog"><stop offset="0" stop-color="#756044" stop-opacity=".03"></stop><stop offset="1" stop-color="#3c3025" stop-opacity=".26"></stop></radialGradient>
+                    </defs>
+                    <rect x="0" y="0" width="600" height="348" rx="12" fill="url(#atlasFog)"></rect>
+                    <path class="atlas-map-fog" d="M0 30 Q95 0 165 42 T300 26 T455 40 T600 20 M0 315 Q110 280 180 322 T340 310 T480 326 T600 300"></path>
+                    ${edgeMarkup}${nodeMarkup}
+                </svg>
+                <p class="atlas-map-caption">Esquema de exploración · sin escala ni orientación geográfica</p>
+            </div>
             <div class="atlas-legend" aria-label="Leyenda del mapa">
                 <span><i class="atlas-dot atlas-dot-visible"></i>A la vista</span>
                 <span><i class="atlas-dot atlas-dot-visited"></i>Visitado</span>
