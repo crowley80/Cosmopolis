@@ -181,10 +181,58 @@ const Athun = {
         });
     },
 
+    showPrologue() {
+        const app = document.getElementById('app');
+        const paragraphs = [
+            'Athun no fue hallado en una torre de alta hechicería ni en la cripta de un rey olvidado. Apareció una madrugada en la costa, varado entre algas y con un penetrante y sospechoso tufo a sardina rancia. Un grupo de pescadores locales, poco impresionados por las runas doradas de su lomo, decidió que era el papel perfecto para envolver las raciones de pescado frito del puesto de la playa. De milagro, y antes de que terminara empapado en aceite y adobo, el libro fue rescatado.',
+            'Ahora, Athun se abre ante ti. Sus páginas, que aún conservan un potente e indómito aroma a marisma (al que solo puedes acceder con una pinza en la nariz) contienen un mundo vivo, obstinado y persistente. Un mundo que no espera a nadie... y al que le da exactamente igual cuántas veces mueras en el intento.'
+        ];
+
+        app.innerHTML = `
+            <header class="main-header">
+                <p class="eyebrow">UNA HISTORIA QUE COMIENZA</p>
+                <h1>Athun: el grimorio oscuro</h1>
+                <p>Antes de abrir sus páginas, debes conocer su historia.</p>
+            </header>
+            <section class="welcome">
+                <h2>El origen de Athun</h2>
+                ${paragraphs.map(paragraph => `<p>${this.escape(paragraph)}</p>`).join('')}
+            </section>
+            <section class="character-creation">
+                <button type="button" id="continueFromPrologue">Continuar</button>
+            </section>
+            <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
+        `;
+
+        document.getElementById('continueFromPrologue').addEventListener('click', () => {
+            try {
+                localStorage.setItem('athun_intro_seen_v1', '1');
+            } catch (error) {
+                console.warn('No se pudo registrar la presentación inicial:', error);
+            }
+            this.showForm();
+        });
+    },
+
     init() {
         const saves = Save.list();
         if (saves.length) {
             this.showSaveSelection();
+            return;
+        }
+        const index = Save.getIndex();
+        if (index && index.migrationFailed) {
+            document.getElementById('app').innerHTML = `
+                <section class="welcome" role="alert">
+                    <h2>No se ha podido recuperar la partida</h2>
+                    <p>Los datos anteriores siguen conservados. No se ha creado ni sobrescrito ninguna partida.</p>
+                    <p>Vuelve a intentarlo cuando el almacenamiento esté disponible.</p>
+                </section>
+            `;
+            return;
+        }
+        if (localStorage.getItem('athun_intro_seen_v1') !== '1') {
+            this.showPrologue();
             return;
         }
         this.showForm();
