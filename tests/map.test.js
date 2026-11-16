@@ -116,3 +116,24 @@ test('el esquema admite un atlas vacío sin inventar nodos ni caminos', () => {
         width: 600, height: 348, nodes: [], edges: []
     });
 });
+
+test('el atlas mantiene todos los nodos dentro del lienzo cuando se descubren muchos lugares', () => {
+    const locations = Array.from({ length:  40 }, (_, index) => `Lugar ${index + 1}`);
+    const atlas = WorldMap.getAtlas(
+        { locations },
+        {
+            currentLocation: 'Lugar 1',
+            visitedLocations: locations.slice(0, 12),
+            visibleLocations: locations.slice(12, 20)
+        },
+        {}
+    );
+    const layout = WorldMap.getSchematicLayout(atlas);
+
+    assert.equal(layout.nodes.length, locations.length);
+    assert.ok(layout.nodes.every(node =>
+        node.x >= 0 && node.x <= layout.width &&
+        node.y >= 0 && node.y <= layout.height
+    ));
+    assert.equal(new Set(layout.nodes.map(node => node.name)).size, locations.length);
+});
