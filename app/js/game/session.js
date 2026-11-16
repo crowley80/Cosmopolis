@@ -49,7 +49,6 @@ const Session = {
         const previousAdventure = saved.adventure;
         const previousState = previousAdventure.state || {};
         const previousLocation = previousState.currentLocation || previousAdventure.location || '';
-        const previousVisible = JSON.stringify(Array.isArray(previousState.visibleLocations) ? previousState.visibleLocations : []);
         saved.adventure = details.adventure || saved.adventure;
         saved.adventure.state = saved.adventure.state || {};
         const state = saved.adventure.state;
@@ -60,9 +59,10 @@ const Session = {
 
         const currentLocation = state.currentLocation || saved.adventure.location;
         if (previousLocation && currentLocation && currentLocation !== previousLocation) {
-            const nextVisible = JSON.stringify(Array.isArray(state.visibleLocations) ? state.visibleLocations : []);
-            // No arrastrar a la nueva zona la visibilidad del lugar anterior.
-            if (nextVisible === previousVisible) state.visibleLocations = [];
+            // Solo una respuesta narrativa explícita puede definir la nueva visibilidad.
+            state.visibleLocations = Array.isArray(details.visibleLocations)
+                ? details.visibleLocations.filter(name => typeof name === 'string' && name.trim()).slice(0, 12)
+                : [];
         }
         state.visitedLocations = Array.isArray(state.visitedLocations) ? state.visitedLocations : [];
         if (currentLocation && !state.visitedLocations.includes(currentLocation)) {
