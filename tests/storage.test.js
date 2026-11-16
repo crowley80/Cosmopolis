@@ -393,3 +393,43 @@ test('si falla la activación al eliminar una partida, restaura índice, datos y
     assert.equal(Save.load().character.name, 'Darian');
     assert.equal(localStorage.getItem(Save.slotPrefix + first), null);
 });
+
+
+test('restaura una selección inicialmente vacía si la verificación del borrado falla', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Partida principal', state: { inventory: ['Llave'] }
+    });
+    Save.createSlot({ name: 'Darian' }, {
+        title: 'Partida secundaria', state: { inventory: ['Mapa'] }
+    });
+    assert.ok(first);
+    localStorage.removeItem(Save.activeKey);
+
+    const originalIndex = localStorage.getItem(Save.indexKey);
+    const originalSlot = localStorage.getItem(Save.slotPrefix + first);
+    const getItem = localStorage.getItem.bind(localStorage);
+    const setItem = localStorage.setItem.bind(localStorage);
+    let failActiveReadOnce = false;
+
+    localStorage.setItem = (key, value) => {
+        setItem(key, value);
+        if (key === Save.activeKey) failActiveReadOnce = true;
+    };
+    localStorage.getItem = key => {
+        if (key === Save.activeKey && failActiveReadOnce) {
+            failActiveReadOnce = false;
+            return null;
+        }
+        return getItem(key);
+    };
+
+    assert.equal(Save.deleteSlot(first), false);
+    localStorage.setItem = setItem;
+    localStorage.getItem = getItem;
+
+    assert.equal(localStorage.getItem(Save.activeKey), null);
+    assert.equal(localStorage.getItem(Save.indexKey), originalIndex);
+    assert.equal(localStorage.getItem(Save.slotPrefix + first), originalSlot);
+    assert.equal(Save.list().length, 2);
+    assert.equal(Save.load().character.name, 'Ariadna');
+});
