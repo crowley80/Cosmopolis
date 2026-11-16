@@ -1594,3 +1594,10 @@ La ejecución 173 de GitHub Actions (`43909804808`) completó correctamente el f
 La vista móvil simulada de 390 × 844 px no presenta desbordamiento horizontal: documento 390 × 844 px; narración, panel de escritura y barra inferior quedan dentro de sus límites y en el orden correcto. La vista de escritorio de 1024 × 900 px también pasó sin desbordamiento ni errores JavaScript. La ejecución 348 de la suite de almacenamiento, en el mismo commit, aprobó 27/27 pruebas (0 fallos).
 
 Se observaron solicitudes de recursos con respuesta HTTP 404 en la consola del navegador; no produjeron errores JavaScript ni impidieron las pruebas funcionales o de disposición. Conviene identificar y corregir esos recursos en una limpieza posterior. Esta prueba usa Chromium emulado y no sustituye la validación táctil en un dispositivo Android físico.
+
+
+### Selector visual y alternancia entre protagonistas — 16/11/2026
+
+La ejecución 180 de Playwright (`43910478567`) también pasó la prueba de interfaz con dos partidas reales de prueba: crea a Darian además de Ariadna, verifica que el selector muestra ambas, abre Ariadna, cambia desde Opciones a Darian y comprueba que cada protagonista conserva su inventario y sus hechos personales sin filtraciones. Se comprueba además que una localización descubierta por Ariadna sigue en el mundo compartido y que Athun aparece como pertenencia canónica en ambas partidas. La suite de almacenamiento en la ejecución 361 (`43910479940`) volvió a aprobar 27/27 pruebas, 0 fallos.
+
+La rama de integración sigue basada directamente en main, con 57 commits por delante y ninguno por detrás; el pull request 4 es integrable y permanece en borrador. No se ha fusionado. La única validación funcional pendiente es en un dispositivo Android físico con Chrome. Persisten algunas solicitudes HTTP 404 no bloqueantes en la consola de Playwright, pendientes de identificar.
