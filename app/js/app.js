@@ -172,17 +172,56 @@ const Athun = {
     },
 
     init() {
-        const saved = Save.load();
-
-        if (saved && saved.character) {
-            if (saved.adventure) {
-                this.showAdventure(saved.character, saved.adventure);
-            } else {
-                this.showProfile(saved.character);
-            }
-        } else {
-            this.showForm();
+        const saves = Save.list();
+        if (saves.length) {
+            this.showSaveSelection();
+            return;
         }
+        this.showForm();
+    },
+
+    showSaveSelection() {
+        const app = document.getElementById('app');
+        const saves = Save.list();
+        const entries = saves.map(entry => {
+            const date = entry.updatedAt ? new Date(entry.updatedAt).toLocaleString('es-ES') : 'Fecha desconocida';
+            return `
+                <article class="profile-section">
+                    <h3>${this.escape(entry.name || 'Partida sin nombre')}</h3>
+                    <p>${this.escape(date)}${entry.active ? ' · Activa' : ''}</p>
+                    <button type="button" data-load-save="${this.escape(entry.id)}">Continuar esta historia</button>
+                </article>
+            `;
+        }).join('');
+        app.innerHTML = `
+            <header class="main-header">
+                <p class="eyebrow">EL GRIMORIO TE RECUERDA</p>
+                <h1>Athun: el grimorio oscuro</h1>
+                <p>Un mundo compartido. Historias que pertenecen a cada protagonista.</p>
+            </header>
+            <section class="character-creation">
+                <div class="section-heading">
+                    <h2>Tus partidas</h2>
+                    <p>Elige qué historia deseas continuar o crea un nuevo protagonista.</p>
+                </div>
+                ${entries || '<p>Aún no hay partidas guardadas.</p>'}
+                <button type="button" id="createNewCharacter">Crear un personaje nuevo</button>
+            </section>
+            <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
+        `;
+        app.querySelectorAll('[data-load-save]').forEach(button => {
+            button.addEventListener('click', () => {
+                if (!Save.activate(button.dataset.loadSave)) {
+                    alert('No se ha podido abrir esa partida. Tus datos permanecen intactos.');
+                    return;
+                }
+                const saved = Save.load();
+                if (saved && saved.adventure) this.showAdventure(saved.character, saved.adventure);
+                else if (saved && saved.character) this.showProfile(saved.character);
+                else this.showForm();
+            });
+        });
+        document.getElementById('createNewCharacter').addEventListener('click', () => this.showForm());
     },
 
     showForm(character = {}) {
@@ -247,7 +286,17 @@ const Athun = {
         form.addEventListener('submit', event => {
             event.preventDefault();
             const data = Object.fromEntries(new FormData(form));
-            const created = Character.create(data);
+            const editing = Boolean(character && character.name);
+            let created;
+            try {
+                created = Character.create(data, {
+                    update: editing,
+                    previousCreatedAt: character.createdAt
+                });
+            } catch (error) {
+                alert('No se ha podido guardar el personaje. No se han eliminado partidas existentes.');
+                return;
+            }
             this.showProfile(created);
         });
     },
@@ -279,6 +328,7 @@ const Athun = {
                 <button id="startAdventure">${saved && saved.adventure ? 'Continuar aventura guardada' : 'Comenzar aventura'}</button>
                 <button id="newAdventure">Comenzar una aventura nueva</button>
                 <button id="editCharacter">Editar mi personaje</button>
+                <button id="changeSave">Cambiar de personaje o partida</button>
             </section>
             <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
         `;
@@ -293,6 +343,10 @@ const Athun = {
 
         document.getElementById('editCharacter').addEventListener('click', () => {
             this.showForm(character);
+        });
+
+        document.getElementById('changeSave').addEventListener('click', () => {
+            this.showSaveSelection();
         });
     },
 
