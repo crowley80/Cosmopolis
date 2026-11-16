@@ -1299,9 +1299,15 @@ La identidad vigente del proyecto es **Athun: el grimorio oscuro**. El nombre Co
 - El prólogo no debe confundirse con la narración recurrente de la aventura ni aparecer como escena inicial cada vez que se carga una partida.
 - La implementación debe guardar de forma persistente que la presentación inicial ya se mostró y manejar con cuidado instalaciones antiguas/partidas existentes: nunca reiniciar ni sobrescribir una partida guardada para mostrar el prólogo.
 
-### Estado de implementación de este flujo
-- La ruta actual de `Athun.init()` carga directamente la aventura si encuentra personaje y aventura guardados; si solo encuentra personaje, muestra su ficha; si no encuentra personaje, abre el formulario de creación.
-- Todavía no existe la presentación única del prólogo ni el registro persistente de que ya se mostró. El comportamiento solicitado está aprobado como requisito, pero **no está implementado ni probado**.
+### Estado de implementación de este flujo — verificado el 16/11/2026
+- `Athun.showPrologue()` presenta el texto aprobado íntegramente, dividido en dos párrafos, y ofrece el botón «Continuar».
+- Al continuar, registra `athun_intro_seen_v1=1` en el almacenamiento local y pasa a la creación del personaje.
+- `Athun.init()` comprueba primero las partidas existentes: si hay alguna, abre el selector de partidas y omite el prólogo, incluso en instalaciones antiguas que todavía no tengan la marca de presentación. Así se evita reiniciar o sobrescribir partidas previas.
+- En una instalación sin partidas, muestra el prólogo solo cuando la marca aún no existe; en siguientes arranques abre directamente la creación del personaje.
+- `tests/prologue.test.js` comprueba el texto aprobado, el registro al continuar, la presentación en una instalación nueva y la omisión para instalaciones con marca o con partidas existentes.
+- GitHub Actions, ejecución 447 (`43941850589`): suite completa `node --test tests/*.test.js` y comprobación de sintaxis JavaScript, correctas sobre el commit `82a3c38`.
+- Playwright, ejecución 233 (`43941850563`): validación visual móvil simulada y escritorio, correcta sobre el mismo commit.
+- La prueba en un Chrome de Android físico sigue pendiente; las pruebas automatizadas no la sustituyen.
 ## DECISIONES NARRATIVAS Y DE ARQUITECTURA — 15 DE NOVIEMBRE DE 2026
 
 ### Athun, el grimorio consciente
