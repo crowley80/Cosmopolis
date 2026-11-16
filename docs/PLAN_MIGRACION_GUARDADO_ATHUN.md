@@ -52,3 +52,12 @@ El índice de partidas debe contener identificador estable, nombre del protagoni
 ## Alcance de esta sesión
 
 Solo lectura del código y documentación de la arquitectura. No se ha cambiado ningún archivo de ejecución ni se ha ejecutado la aplicación en Android. La implementación debe hacerse por etapas pequeñas, con copia previa de cada archivo, pruebas automatizadas de almacenamiento y revisión de las llamadas existentes antes de sustituir la API.
+
+
+## Avance 16 de noviembre de 2026 — protección de Athun en partidas heredadas
+
+**Implementado:** `Save.load()` realiza una migración idempotente cuando encuentra una partida con aventura: asegura el objeto `Athun` en el inventario y completa `state.athun` con `permanent: true`, conservando los recuerdos, revelaciones y vínculo que ya existan. Solo persiste cuando detecta una diferencia; no sustituye ni reinicia la partida.
+
+**Validación directa:** se probó una partida heredada sin inventario ni estado de Athun; la carga añadió ambos y persistió el resultado. Una segunda carga no volvió a escribir. Resultado: correcto.
+
+**Aún pendiente:** índice de partidas múltiples, mundo global compartido, selección de protagonista/partida y pruebas de aislamiento entre partidas. La migración de Athun no debe confundirse con la migración completa de guardado.
