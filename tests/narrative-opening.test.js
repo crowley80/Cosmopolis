@@ -36,6 +36,11 @@ test('preguntar desde el camino permite hablar con quien recoge leña sin entrar
     assert.equal(result.state.phase, 'arrival');
     assert.equal(result.state.characters.Vecino.location, 'Camino de entrada a Valdebruma');
     assert.match(result.reply, /recogiendo leña/i);
+    const followUp = Director.respond('Hablo con el vecino.', character, result.adventure, [result]);
+    assert.match(followUp.reply, /El vecino deja el haz de ramas/i);
+    assert.doesNotMatch(followUp.reply, /campana|pozo|Elia/i);
+    assert.equal(followUp.state.currentLocation, 'Camino de entrada a Valdebruma');
+    assert.equal(followUp.state.phase, 'arrival');
     assert.equal(result.state.eliaMet, false);
     assert.equal(result.state.wellDiscovered, false);
     assert.equal(result.state.bellDiscovered, false);
