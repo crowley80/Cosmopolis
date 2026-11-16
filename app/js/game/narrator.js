@@ -579,6 +579,7 @@ const Narrator = {
                 event: result.event.trim().slice(0, 300),
                 adventure: updated,
                 state,
+                visibleLocations: state.visibleLocations,
                 createdAt: new Date().toISOString(),
                 actionNumber: previousActions.length + 1,
                 aiUsed: true
