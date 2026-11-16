@@ -58,11 +58,10 @@ const Session = {
         }
 
         const currentLocation = state.currentLocation || saved.adventure.location;
-        if (details.category === 'movement' && previousLocation && currentLocation &&
-            previousLocation.toLocaleLowerCase('es') !== currentLocation.toLocaleLowerCase('es')) {
-            // Solo una respuesta clasificada como desplazamiento confirma un tramo recorrido.
-            Save.addGlobalConnection(previousLocation, currentLocation, saved.character.name);
-        }
+        const traversedRoute = details.category === 'movement' && previousLocation && currentLocation &&
+            previousLocation.toLocaleLowerCase('es') !== currentLocation.toLocaleLowerCase('es')
+            ? { from: previousLocation, to: currentLocation }
+            : null;
         if (previousLocation && currentLocation && currentLocation !== previousLocation) {
             // Solo una respuesta narrativa explícita puede definir la nueva visibilidad.
             state.visibleLocations = Array.isArray(details.visibleLocations)
@@ -103,9 +102,17 @@ const Session = {
         });
         if (saved.world.facts.length > 50) saved.world.facts = saved.world.facts.slice(-50);
 
+        // Primero se confirma la partida personal. El mundo compartido no debe
+        // registrar descubrimientos de una acción cuyo guardado haya fallado.
+        if (!Save.save(saved)) return false;
+
+        if (traversedRoute) {
+            // Solo una respuesta clasificada como desplazamiento confirma un tramo recorrido.
+            Save.addGlobalConnection(traversedRoute.from, traversedRoute.to, saved.character.name);
+        }
         this.syncMapKnowledge(state, saved.character);
         this.syncSharedEntities(saved.adventure, saved.character);
-        return Save.save(saved);
+        return true;
     },
 
     syncMapKnowledge(state, character) {
