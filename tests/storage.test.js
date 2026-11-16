@@ -279,6 +279,7 @@ test('comparte el tramo realmente recorrido sin inventar el camino inverso', () 
     nextAdventure.state.currentLocation = 'La Posada del Tejón';
 
     assert.equal(Session.addAction('Camino hasta la posada', 'Llegas a la posada.', {
+        category: 'movement',
         adventure: nextAdventure
     }), true);
 
@@ -300,6 +301,7 @@ test('un camino descubierto por un protagonista queda disponible en el atlas de 
     const nextAdventure = JSON.parse(JSON.stringify(Save.load().adventure));
     nextAdventure.state.currentLocation = 'La Posada del Tejón';
     assert.equal(Session.addAction('Voy a la posada', 'Llegas a la posada.', {
+        category: 'movement',
         adventure: nextAdventure
     }), true);
 
@@ -317,4 +319,23 @@ test('un camino descubierto por un protagonista queda disponible en el atlas de 
         route.from === 'Plaza del pozo' && route.to === 'La Posada del Tejón'
     ), true);
     assert.equal(atlas.visited.some(place => place.name === 'La Posada del Tejón'), false);
+});
+
+
+test('un cambio de ubicación que no es desplazamiento no crea un camino', () => {
+    Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Exploración',
+        state: { currentLocation: 'Plaza del pozo', visitedLocations: ['Plaza del pozo'], inventory: [] }
+    });
+    const nextAdventure = JSON.parse(JSON.stringify(Save.load().adventure));
+    nextAdventure.state.currentLocation = 'La Posada del Tejón';
+
+    assert.equal(Session.addAction('Investigo un suceso', 'La escena cambia de ubicación.', {
+        category: 'investigation',
+        adventure: nextAdventure
+    }), true);
+
+    const world = Save.getGlobalWorld();
+    assert.equal(world.connections.length, 0);
+    assert.ok(world.locations.some(item => item.name === 'La Posada del Tejón'));
 });
