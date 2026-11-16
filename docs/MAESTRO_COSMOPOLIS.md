@@ -1386,3 +1386,7 @@ Se ha iniciado la implementación en la rama independiente `feat/athun-multisave
 **Estado de validación:** implementación en rama de trabajo; pruebas automáticas pendientes de resultado confirmado; no probada todavía en Chrome/Android. El mundo global comparte localizaciones en esta fase. No se migran automáticamente hechos, relaciones ni acontecimientos personales al mundo global. La incorporación a `main` queda supeditada a las pruebas y revisión del pull request.
 
 Plan técnico y alcance pendiente: `docs/PLAN_MIGRACION_GUARDADO_ATHUN.md`.
+
+
+### Ampliación del mundo compartido — 16/11/2026
+Además de las localizaciones, el mundo global conserva la identidad básica de los NPC descubiertos (nombre, función y primera localización conocida). La confianza, los recuerdos, los objetivos y las relaciones continúan aislados en la partida de cada protagonista. La migración antigua importa lugares visitados y NPC conocidos sin convertir memorias personales en información global. El narrador recibe el contexto global con instrucciones explícitas de respetar esa separación.
