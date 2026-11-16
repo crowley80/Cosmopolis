@@ -1,7 +1,7 @@
 name: Visual preview
 on:
   push:
-    branches: [main]
+    branches: [main, integracion/athun-multisave-main-20261116]
     paths:
       - 'app/**'
       - 'index.html'
@@ -64,6 +64,7 @@ jobs:
             const page = await context.newPage();
             page.on('pageerror', error => console.error('PAGE ERROR:', error.message));
             await page.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
+            await page.locator('[data-load-save]').first().click();
             await page.locator('.adventure-screen').waitFor();
 
             // Regresión narrativa: apertura aprobada, descubrimientos graduales y Athun permanente.
@@ -96,7 +97,7 @@ jobs:
 
               const question = Director.respond('Pregunto si ocurre algo importante en el pueblo.', player, opening, []);
               if (/elia|campana|pozo/i.test(question.reply)) fail('una pregunta inicial revela el misterio');
-              if (!question.state.characters.Vecino || question.state.phase !== 'exploration') fail('no se habilita el primer diálogo con un habitante');
+              if (!question.state.characters.Vecino || question.state.phase !== 'arrival' || question.state.currentLocation !== 'Camino de entrada a Valdebruma') fail('hablar desde el camino debe mantener la fase y ubicación de llegada');
               const neighborTalk = Director.respond('Hablo con el vecino.', player, question.adventure, [{ text: 'Pregunto por el pueblo' }]);
               if (!/vecino/i.test(neighborTalk.reply) || /elia|campana|pozo/i.test(neighborTalk.reply)) fail('el primer habitante no conversa de forma coherente');
               const entered = Director.respond('Entro en el pueblo por el camino principal.', player, opening, []);
@@ -113,6 +114,7 @@ jobs:
               const originalFetch = window.fetch;
               const fakeNarrative = {
                 reply: 'Athun permanece contigo.',
+                visibleLocations: [],
                 event: 'El grimorio ha permanecido en el inventario.',
                 category: 'other',
                 location: 'Plaza del pozo',
@@ -173,6 +175,7 @@ jobs:
               } else {
                 const result = narrativeCall++ === 0 ? {
                   reply: 'La observación revela una pequeña marca de cobre entre las piedras.',
+                  visibleLocations: [],
                   event: 'Ariadna ha encontrado un medallón de cobre junto al pozo.',
                   category: 'investigation',
                   location: 'Plaza del pozo',
@@ -190,6 +193,7 @@ jobs:
                   day: 2
                 } : {
                   reply: 'Entregas el medallón a Elia. Ella lo guarda con cuidado en su tubo de mapas.',
+                  visibleLocations: [],
                   event: 'Ariadna ha entregado el medallón de cobre a Elia.',
                   category: 'offer',
                   location: 'Plaza del pozo',
@@ -262,6 +266,7 @@ jobs:
               const originalAvailability = Narrator.isAvailable;
               const responseFor = goalUpdate => ({
                 reply: 'La historia deja claro el siguiente paso.',
+                visibleLocations: [],
                 event: 'Un objetivo personal ha cambiado con fundamento.',
                 category: 'dialogue',
                 location: 'Plaza del pozo',
