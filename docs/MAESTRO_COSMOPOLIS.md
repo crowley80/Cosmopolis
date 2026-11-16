@@ -1442,3 +1442,7 @@ El narrador entrega `visibleLocations` explícitamente a la sesión. Al desplaza
 
 ### CI 142 — atlas y visibilidad — 16/11/2026
 Comprobación de sintaxis JavaScript correcta y **18/18 pruebas aprobadas**. Quedan cubiertas la niebla, la clasificación actual/visible/visitado/conocido, el descubrimiento compartido, la limpieza de visión al desplazarse y la conservación de una nueva visibilidad explícita del narrador.
+
+
+### Primera red de caminos descubiertos — 16/11/2026
+Se añade al mundo compartido un registro de conexiones direccionales únicamente cuando una partida confirma un desplazamiento entre dos localizaciones distintas. El atlas puede mostrar esos tramos como caminos recorridos. No se deduce el trayecto inverso, la distancia, la orientación ni la posición geográfica; tampoco se enlazan lugares solo porque aparezcan juntos en una narración. Las conexiones se conservan al cambiar de protagonista y se filtran para no mostrar extremos que no estén registrados como lugares conocidos. Se crean copias previas de los archivos modificados con el sufijo `.bak-20261116-rutas`. Validación automatizada pendiente.
