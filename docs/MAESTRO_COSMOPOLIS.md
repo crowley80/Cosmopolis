@@ -1426,3 +1426,7 @@ Se añadieron pruebas unitarias del atlas y una prueba de integración para comp
 
 ### Control de niebla durante desplazamientos — 16/11/2026
 Al cambiar de ubicación, la sesión evita arrastrar la visibilidad de la zona anterior: si `visibleLocations` no cambia explícitamente en el nuevo estado, se limpia. Los lugares descubiertos permanecen como conocimiento compartido, pero dejan de figurar como entorno visible. Se añade una prueba de regresión para este comportamiento.
+
+
+### Visibilidad cercana calculada por el narrador — 16/11/2026
+El formato estructurado del narrador incluye `visibleLocations`, recalculado en cada respuesta. Solo debe contener lugares próximos que estén identificados explícitamente; no puede inventar rutas, coordenadas ni destinos. La sesión comparte esos descubrimientos con el mundo, mientras las visitas siguen siendo personales. Si se cambia de zona y el narrador arrastra la lista anterior sin cambios, la sesión la limpia para evitar que la zona previa siga apareciendo como visible. La CI 118 aprobó 16/16 pruebas antes de esta ampliación del esquema; falta confirmar la nueva ejecución.
