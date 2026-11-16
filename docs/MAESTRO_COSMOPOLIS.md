@@ -1601,3 +1601,10 @@ Se observaron solicitudes de recursos con respuesta HTTP 404 en la consola del n
 La ejecución 180 de Playwright (`43910478567`) también pasó la prueba de interfaz con dos partidas reales de prueba: crea a Darian además de Ariadna, verifica que el selector muestra ambas, abre Ariadna, cambia desde Opciones a Darian y comprueba que cada protagonista conserva su inventario y sus hechos personales sin filtraciones. Se comprueba además que una localización descubierta por Ariadna sigue en el mundo compartido y que Athun aparece como pertenencia canónica en ambas partidas. La suite de almacenamiento en la ejecución 361 (`43910479940`) volvió a aprobar 27/27 pruebas, 0 fallos.
 
 La rama de integración sigue basada directamente en main, con 57 commits por delante y ninguno por detrás; el pull request 4 es integrable y permanece en borrador. No se ha fusionado. La única validación funcional pendiente es en un dispositivo Android físico con Chrome. Persisten algunas solicitudes HTTP 404 no bloqueantes en la consola de Playwright, pendientes de identificar.
+
+
+### Corrección de recursos de plantilla ausentes — 16/11/2026
+
+La instrumentación de Playwright identificó que los cuatro avisos HTTP 404 procedían de dos fondos WebP inexistentes: `app/assets/templates/athun-papiro-limpio.webp` y `app/assets/templates/athun-aventura.webp`. En vez de introducir imágenes no disponibles, se sustituyeron las referencias rotas por fondos CSS de pergamino y aventura en capas de gradientes y textura, y se añadió `favicon.svg` para la identidad del juego. Se guardó respaldo previo de `app/css/style.css` e `index.html`.
+
+La ejecución 191 de Playwright (`43911426574`) pasó de nuevo en móvil y escritorio, con selector de dos protagonistas, regresión narrativa e interacciones completas. El registro de respuestas 404 quedó vacío: no se registraron recursos HTTP 404. La ejecución 380 de almacenamiento (`43911426719`) pasó 27/27 pruebas, 0 fallos. La rama está 69 commits por delante y 0 por detrás de main; PR #4 sigue abierto, en borrador e integrable. No se ha fusionado. La única validación pendiente es Chrome en un dispositivo Android físico.
