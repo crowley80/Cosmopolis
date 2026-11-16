@@ -89,6 +89,12 @@ const Save = {
                 return { version: 1, saves: [], migrationFailed: true };
             }
             this.writeVerified(this.activeKey, { id });
+            const legacyState = slot.adventure && slot.adventure.state || {};
+            const discovered = [
+                ...(Array.isArray(legacyState.visitedLocations) ? legacyState.visitedLocations : []),
+                legacyState.currentLocation || (slot.adventure && slot.adventure.location) || ''
+            ];
+            discovered.forEach(location => this.addGlobalLocation(location, slot.character && slot.character.name));
             return migratedIndex;
         } catch (error) {
             console.error('La migración de la partida heredada no se completó:', error);
