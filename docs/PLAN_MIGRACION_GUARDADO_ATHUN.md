@@ -170,3 +170,7 @@ La siguiente fase registra una conexión direccional cuando el estado de una par
 
 ### Validación de la red inicial de caminos — 16/11/2026
 GitHub Actions, ejecución **169** (`43832594402`): comprobación de sintaxis JavaScript correcta y **20/20 pruebas aprobadas**. Se verifica que un desplazamiento confirmado registra un tramo direccional en el mundo compartido, que los extremos se registran como localizaciones y que no se crea automáticamente el camino inverso. También se comprueba que el atlas no muestra conexiones cuyos extremos no estén registrados. La prueba en Chrome/Android y la cartografía geográfica con posiciones reales siguen pendientes.
+
+
+### CI 174 — conexiones compartidas y aislamiento — 16/11/2026
+GitHub Actions, ejecución **174**: comprobación de sintaxis JavaScript correcta y **21/21 pruebas aprobadas**. Se valida que una conexión recorrida por una partida permanece disponible en el atlas de otra, sin transferir el historial personal de visitas.
