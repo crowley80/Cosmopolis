@@ -486,3 +486,38 @@ test('impide eliminar la última partida y conserva a Athun en ella', () => {
     const inventory = Save.load().adventure.state.inventory;
     assert.equal(inventory.filter(item => String(item).toLocaleLowerCase('es').includes('athun')).length, 1);
 });
+
+
+test('no publica descubrimientos ni caminos compartidos si falla el guardado de la acción', () => {
+    Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Exploración',
+        state: { currentLocation: 'Plaza inicial', visitedLocations: ['Plaza inicial'], inventory: [] }
+    });
+    Save.addGlobalLocation('Plaza inicial', 'Ariadna');
+
+    const nextAdventure = JSON.parse(JSON.stringify(Save.load().adventure));
+    nextAdventure.state.currentLocation = 'Puerto desconocido';
+    nextAdventure.state.characters = {
+        Elia: { name: 'Elia', role: 'Cartógrafa', location: 'Puerto desconocido', trust: 5, memories: ['Recuerdo privado'] }
+    };
+
+    const originalSave = Save.save;
+    Save.save = () => false;
+    try {
+        assert.equal(Session.addAction('Camino hacia el puerto', 'Llegas al puerto.', {
+            category: 'movement',
+            adventure: nextAdventure,
+            visibleLocations: ['Puerto desconocido', 'Faro']
+        }), false);
+    } finally {
+        Save.save = originalSave;
+    }
+
+    const world = Save.getGlobalWorld();
+    assert.equal(world.locations.some(item => item.name === 'Puerto desconocido'), false);
+    assert.equal(world.locations.some(item => item.name === 'Faro'), false);
+    assert.equal(world.connections.length, 0);
+    assert.equal(world.entities.elia, undefined);
+    assert.equal(Save.load().adventure.state.currentLocation, 'Plaza inicial');
+    assert.equal(Save.load().actions.length, 0);
+});
