@@ -1446,3 +1446,7 @@ Comprobación de sintaxis JavaScript correcta y **18/18 pruebas aprobadas**. Que
 
 ### Primera red de caminos descubiertos — 16/11/2026
 Se añade al mundo compartido un registro de conexiones direccionales únicamente cuando una partida confirma un desplazamiento entre dos localizaciones distintas. El atlas puede mostrar esos tramos como caminos recorridos. No se deduce el trayecto inverso, la distancia, la orientación ni la posición geográfica; tampoco se enlazan lugares solo porque aparezcan juntos en una narración. Las conexiones se conservan al cambiar de protagonista y se filtran para no mostrar extremos que no estén registrados como lugares conocidos. Se crean copias previas de los archivos modificados con el sufijo `.bak-20261116-rutas`. GitHub Actions, ejecución **169**, completó la comprobación de sintaxis y **20/20 pruebas aprobadas**; incluye el registro de tramos y la protección frente a conexiones inversas inventadas.
+
+
+### Validación de caminos compartidos entre protagonistas — 16/11/2026
+GitHub Actions, ejecución **174** (`43832755166`): sintaxis JavaScript correcta y **21/21 pruebas aprobadas**. La nueva prueba confirma que una ruta descubierta por un protagonista aparece en el atlas de otro, pero no convierte el destino en una visita personal de ese segundo protagonista.
