@@ -158,3 +158,7 @@ GitHub Actions, ejecución **125**: comprobación de sintaxis JavaScript correct
 ### Refinamiento de visibilidad al cambiar de zona — 16/11/2026
 El narrador devuelve también `visibleLocations` como campo explícito de la respuesta. Cuando hay desplazamiento, la sesión usa esa lista nueva; si no existe, limpia la visibilidad anterior. Así se evita borrar por error una lista nueva legítima que coincida con la anterior y también se evita conservar una visión obsoleta. La prioridad de estados es: ubicación actual, otras ubicaciones visibles, visitadas no visibles y conocidas no visitadas. Se añade una prueba para asegurar que una zona visitada vuelve a mostrarse como visible cuando entra en el campo de visión.
 La tanda ampliada pasa a **18 pruebas previstas**; CI de esta última corrección pendiente.
+
+
+### Validación final del refinamiento de visibilidad — 16/11/2026
+GitHub Actions, ejecución **142**: comprobación de sintaxis JavaScript correcta y **18/18 pruebas aprobadas**. Incluye la prioridad de zonas actualmente visibles sobre visitas antiguas y la conservación de una nueva lista `visibleLocations` declarada explícitamente por el narrador al desplazarse.
