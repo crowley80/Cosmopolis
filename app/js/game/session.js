@@ -58,9 +58,9 @@ const Session = {
         }
 
         const currentLocation = state.currentLocation || saved.adventure.location;
-        if (previousLocation && currentLocation &&
+        if (details.category === 'movement' && previousLocation && currentLocation &&
             previousLocation.toLocaleLowerCase('es') !== currentLocation.toLocaleLowerCase('es')) {
-            // Solo se registra el tramo que el protagonista acaba de recorrer, en ese sentido.
+            // Solo una respuesta clasificada como desplazamiento confirma un tramo recorrido.
             Save.addGlobalConnection(previousLocation, currentLocation, saved.character.name);
         }
         if (previousLocation && currentLocation && currentLocation !== previousLocation) {
