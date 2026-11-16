@@ -453,12 +453,13 @@ test('el vínculo, recuerdos y revelaciones de Athun son independientes por prot
     assert.ok(first);
     assert.ok(second);
     assert.equal(Save.activate(first), true);
-    const ariathun = Save.load().adventure.state.athun;
+    const firstSlot = Save.load();
+    const ariathun = firstSlot.adventure.state.athun;
     assert.equal(ariathun.permanent, true);
     assert.equal(ariathun.bond, 7);
     ariathun.bond = 8;
     ariathun.memories.push('Nuevo recuerdo de Ariadna');
-    assert.equal(Save.save(Save.load()), true);
+    assert.equal(Save.save(firstSlot), true);
 
     assert.equal(Save.activate(second), true);
     const dariathun = Save.load().adventure.state.athun;
