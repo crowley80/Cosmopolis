@@ -120,3 +120,7 @@ La rama sigue aislada de main. La validación automatizada no acredita el funcio
 - Se corrigió `Save.createSlot()` para restaurar el índice anterior, retirar el registro incompleto y recuperar la clave activa anterior ante fallos de escritura.
 - Nueva ejecución de GitHub Actions **60**: comprobación de sintaxis correcta y **8/8 pruebas aprobadas**. La prueba añadida reproduce el fallo de almacenamiento y comprueba que la partida anterior permanece activa y sin registros huérfanos.
 - La validación en Chrome/Android sigue pendiente; no se ha realizado desde esta sesión.
+
+
+### Validación ampliada con el prólogo — 16/11/2026
+GitHub Actions, ejecución **76**, sobre el estado de la rama que incorpora el prólogo y sus pruebas: comprobación de sintaxis JavaScript correcta y **10/10 pruebas aprobadas** (2 del prólogo y 8 de almacenamiento). La ejecución confirma que el prólogo literal se presenta y marca como visto al continuar, que no se repite en instalaciones ya inicializadas y que las partidas existentes conservan el acceso directo al selector.
