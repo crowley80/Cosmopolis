@@ -70,6 +70,12 @@ jobs:
             if (await continueSave.count()) await continueSave.click();
             await page.locator('.adventure-screen').waitFor();
 
+            // Prueba real del panel de mapa y su primer nodo (posición actual).
+            await page.locator('#openMap').click();
+            await page.locator('.atlas-map').waitFor();
+            if (await page.locator('.atlas-map-node').count() < 1) throw new Error('El mapa no representa la ubicación actual');
+            await page.locator('#closeToolPanel').click();
+
             // Regresión narrativa: apertura aprobada, descubrimientos graduales y Athun permanente.
             await page.evaluate(async () => {
               const player = { name: 'Ariadna' };
