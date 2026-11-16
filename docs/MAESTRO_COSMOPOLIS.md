@@ -1477,3 +1477,10 @@ Se añadieron respaldos previos de `app/js/core/save.js`, `tests/storage.test.js
 
 
 La migración de cada partida también conserva el vínculo, los recuerdos y las revelaciones de Athun y fuerza su identidad canónica y `permanent: true`. Se amplió la prueba de partida heredada para comprobarlo. Validación CI: ejecución 232, 25/25 pruebas aprobadas.
+
+
+### Aislamiento del vínculo personal de Athun — 16/11/2026
+
+Se amplía la cobertura de partidas múltiples para verificar que el vínculo, los recuerdos y las revelaciones de Athun pertenecen a cada protagonista y no se mezclan al alternar entre partidas. La prueba modifica el vínculo y añade un recuerdo en una partida, cambia a otra y vuelve a la primera para comprobar que ambos estados se mantienen aislados y persistentes. También se cubre que la última partida no pueda eliminarse y que Athun siga presente en ella.
+
+Se crearon respaldos previos de `tests/storage.test.js` y este documento maestro con el sufijo `.bak-20261116-athun-state-isolation`. La validación CI de estas dos pruebas nuevas queda pendiente; no se ha realizado todavía validación manual en Android.
