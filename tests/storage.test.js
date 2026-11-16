@@ -438,3 +438,36 @@ test('restaura una selección inicialmente vacía si la verificación del borrad
     assert.equal(Save.list().length, 2);
     assert.equal(Save.load().character.name, 'Ariadna');
 });
+
+
+test('el vínculo, recuerdos y revelaciones de Athun son independientes por protagonista', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia de Ariadna',
+        state: { inventory: [], athun: { bond: 7, memories: ['Recuerdo de Ariadna'], revelations: ['Secreto de Ariadna'] } }
+    });
+    const second = Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia de Darian',
+        state: { inventory: [], athun: { bond: 1, memories: ['Recuerdo de Darian'], revelations: [] } }
+    });
+
+    assert.ok(first);
+    assert.ok(second);
+    assert.equal(Save.activate(first), true);
+    const ariathun = Save.load().adventure.state.athun;
+    assert.equal(ariathun.permanent, true);
+    assert.equal(ariathun.bond, 7);
+    ariathun.bond = 8;
+    ariathun.memories.push('Nuevo recuerdo de Ariadna');
+    assert.equal(Save.save(Save.load()), true);
+
+    assert.equal(Save.activate(second), true);
+    const dariathun = Save.load().adventure.state.athun;
+    assert.equal(dariathun.permanent, true);
+    assert.equal(dariathun.bond, 1);
+    assert.deepEqual(dariathun.memories, ['Recuerdo de Darian']);
+    assert.equal(dariathun.revelations.includes('Secreto de Ariadna'), false);
+
+    assert.equal(Save.activate(first), true);
+    assert.equal(Save.load().adventure.state.athun.bond, 8);
+    assert.ok(Save.load().adventure.state.athun.memories.includes('Nuevo recuerdo de Ariadna'));
+});
