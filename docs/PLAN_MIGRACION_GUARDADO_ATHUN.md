@@ -188,4 +188,9 @@ GitHub Actions, ejecución **195** (`43836494217`): comprobación de sintaxis Ja
 
 La revisión del ciclo de borrado encontró un riesgo de pérdida parcial: el índice se actualizaba y el archivo de partida se eliminaba antes de confirmar el cambio de selección activa. Si fallaba esa última escritura, el método devolvía error aunque la partida ya hubiera desaparecido. Se ha endurecido `Save.deleteSlot()` para conservar los valores previos del índice, registro y partida activa, y restaurarlos ante cualquier fallo durante la operación. La última partida continúa protegida contra eliminación.
 
-Se añadieron respaldos previos de `app/js/core/save.js`, `tests/storage.test.js`, este documento y el plan de migración. Se incorporó una prueba que simula el fallo al cambiar la partida activa, comprueba la restauración íntegra y después verifica que el borrado normal funciona. La nueva validación CI queda pendiente de ejecución; no se ha probado todavía en Chrome/Android.
+Se añadieron respaldos previos de `app/js/core/save.js`, `tests/storage.test.js`, este documento y el plan de migración. Se incorporó una prueba que simula el fallo al cambiar la partida activa, comprueba la restauración íntegra y después verifica que el borrado normal funciona. GitHub Actions, ejecución 232, terminó correctamente: sintaxis JavaScript válida y 25/25 pruebas aprobadas. Incluye fallos simulados de eliminación y restauración de la partida activa, borrado correcto, migración del vínculo/recuerdos de Athun y las pruebas previas de partidas múltiples, mundo compartido y atlas. La validación visual en Chrome/Android sigue pendiente.
+
+
+### Conservación del estado de Athun al migrar partidas — 16/11/2026
+
+La normalización de cada partida ahora conserva el vínculo, el nivel de unión, los recuerdos y las revelaciones existentes de Athun, además de forzar `id: athun` y `permanent: true`. La migración de partidas múltiples ya no se limita a garantizar la entrada del inventario: mantiene también el estado narrativo persistente del grimorio por protagonista. La prueba de migración heredada comprueba estos campos. Validado en GitHub Actions, ejecución 232 (25/25 pruebas).
