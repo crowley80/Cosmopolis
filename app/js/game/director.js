@@ -58,7 +58,7 @@ const Director = {
         });
 
         if (state.phase === 'arrival') {
-            if (moves || this.has(text, ['entrar', 'pueblo', 'alojamiento', 'habitantes', 'primeras calles'])) {
+            if (moves || this.has(text, ['entrar', 'alojamiento', 'habitantes', 'primeras calles', 'camino principal'])) {
                 state.phase = 'exploration';
                 state.currentLocation = 'Primeras calles de Valdebruma';
                 category = 'movement';
