@@ -83,3 +83,7 @@ Se ha iniciado una primera fase ejecutable en una rama separada de `main`.
 - Se excluyen deliberadamente de esa ficha global la confianza, los recuerdos, los objetivos y las relaciones; permanecen en la partida de cada protagonista.
 - El contexto del narrador recibe las localizaciones y entidades compartidas, con una instrucción explícita para no trasladar estados personales entre protagonistas.
 - La migración de partidas antiguas incorpora localizaciones visitadas y la identidad básica de NPC ya conocidos, sin importar recuerdos privados.
+
+
+### Recuperación ante pérdida del índice
+El índice puede reconstruirse a partir de las claves de partidas individuales que sigan presentes en `localStorage`. La recuperación conserva el identificador activo si aún es válido y no depende de volver a migrar la clave heredada. Se ha añadido una prueba automatizada para comprobar que dos partidas siguen siendo accesibles tras eliminar el índice.
