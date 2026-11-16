@@ -219,3 +219,8 @@ La normalización de cada partida ahora conserva el vínculo, el nivel de unión
 La rama de integración parte del main actualizado y traslada el sistema de partidas múltiples, mundo compartido, atlas, selector y cobertura automatizada. Se conserva la narrativa actualizada del prólogo y Valdebruma. La migración de la clave heredada se realiza sin modificar su contenido original y normaliza Athun como objeto permanente, con vínculo, recuerdos y revelaciones por protagonista.
 
 GitHub Actions, ejecución 317 (`43907207244`): sintaxis JavaScript correcta y 27/27 pruebas aprobadas. La rama de integración está basada en el main actual y no presenta divergencia ni conflictos de fusión. Pendiente la validación visual/táctil en Chrome para Android; no fusionar hasta completarla.
+
+
+## Validación automatizada de navegador — 16/11/2026
+
+Playwright, ejecución 173 (`43909804808`): éxito en Chromium móvil simulado (390 × 844) y escritorio (1024 × 900). Pasaron la regresión narrativa, selector y recuperación tras recarga, interacciones, inventario, mapa, historial, guardado y persistencia. La suite de almacenamiento, ejecución 348 (`43909804692`), pasó 27/27 pruebas. Pendiente: prueba real en Chrome para Android físico y revisión de los recursos HTTP 404 no bloqueantes registrados en consola.
