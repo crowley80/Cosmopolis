@@ -80,6 +80,20 @@ jobs:
               if (!opening.state.inventory.some(item => String(item).toLowerCase().includes('athun'))) fail('Athun no está en el inventario inicial');
               if (!opening.state.athun || opening.state.athun.permanent !== true) fail('Athun no está protegido como pertenencia permanente');
 
+              const previousSave = localStorage.getItem(Save.key);
+              try {
+                localStorage.setItem(Save.key, JSON.stringify({ adventure: { state: { inventory: [] } }, actions: [] }));
+                const legacySave = Save.load();
+                const persistedLegacy = JSON.parse(localStorage.getItem(Save.key));
+                if (!legacySave.adventure.state.inventory.some(item => String(item).toLowerCase().includes('athun'))) fail('la partida antigua no recibe a Athun');
+                if (!persistedLegacy.adventure.state.athun || persistedLegacy.adventure.state.athun.permanent !== true) fail('la migración no persiste la protección de Athun');
+                const migratedAgain = Save.load();
+                if (!migratedAgain.adventure.state.inventory.some(item => String(item).toLowerCase().includes('athun'))) fail('la migración no es estable al cargar de nuevo');
+              } finally {
+                if (previousSave === null) localStorage.removeItem(Save.key);
+                else localStorage.setItem(Save.key, previousSave);
+              }
+
               const question = Director.respond('Pregunto si ocurre algo importante en el pueblo.', player, opening, []);
               if (/elia|campana|pozo/i.test(question.reply)) fail('una pregunta inicial revela el misterio');
               if (!question.state.characters.Vecino || question.state.phase !== 'exploration') fail('no se habilita el primer diálogo con un habitante');
