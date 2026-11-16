@@ -71,7 +71,7 @@ Se ha iniciado una primera fase ejecutable en una rama separada de `main`.
 - Flujo de GitHub Actions para ejecutar pruebas y comprobación de sintaxis JavaScript.
 
 ### Límites pendientes de validar
-- El flujo de pruebas se ha añadido, pero debe confirmarse su ejecución satisfactoria en GitHub Actions.
+- GitHub Actions ha completado correctamente la comprobación de sintaxis JavaScript y las seis pruebas automatizadas de almacenamiento (ejecución 45, 16/11/2026).
 - El mundo global registra localizaciones; la clasificación y persistencia de entidades, hechos y acontecimientos globales requiere reglas narrativas explícitas para no convertir acciones personales en hechos universales.
 - La migración conserva íntegro el JSON heredado y su mundo personal dentro de la partida antigua; no transforma automáticamente relaciones o hechos personales en datos globales.
 - La prueba visual y funcional final en Chrome/Android sigue pendiente. No se declara validado en el teléfono.
