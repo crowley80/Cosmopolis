@@ -1450,3 +1450,7 @@ Se añade al mundo compartido un registro de conexiones direccionales únicament
 
 ### Validación de caminos compartidos entre protagonistas — 16/11/2026
 GitHub Actions, ejecución **174** (`43832755166`): sintaxis JavaScript correcta y **21/21 pruebas aprobadas**. La nueva prueba confirma que una ruta descubierta por un protagonista aparece en el atlas de otro, pero no convierte el destino en una visita personal de ese segundo protagonista.
+
+
+### Auditoría de rutas y coherencia de identidad — 16/11/2026
+La revisión de la rama detectó que el sistema registraba una conexión compartida ante cualquier cambio de ubicación, aunque la respuesta narrativa no estuviera clasificada como desplazamiento. Se ha limitado el registro de caminos a respuestas con categoría `movement`; los cambios de ubicación por otras causas siguen actualizando la posición y la visita personal, pero no fabrican un tramo transitable. También se ha actualizado la identidad del prompt del narrador al nombre vigente «Athun: el grimorio oscuro». Se añade una prueba de regresión para el caso no-movimiento. La validación automatizada de estos cambios queda pendiente de la ejecución CI posterior al commit.
