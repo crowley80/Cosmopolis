@@ -93,12 +93,12 @@ const Athun = {
         const adventure = saved.adventure || {};
         const state = adventure.state || {};
         const atlas = WorldMap.getAtlas(Save.getGlobalWorld(), state, adventure);
-        const renderEntries = (entries, status) => entries.length
+        const renderEntries = entries => entries.length
             ? entries.map(item => `
-                <li class="atlas-place atlas-place-${status}">
+                <li class="atlas-place atlas-place-${item.status}">
                     <span class="atlas-marker" aria-hidden="true"></span>
                     <span class="atlas-place-name">${this.escape(item.name)}</span>
-                    <span class="atlas-status">${status === 'current' ? 'Aquí' : status === 'visible' ? 'A la vista' : status === 'visited' ? 'Visitado' : 'Conocido'}</span>
+                    <span class="atlas-status">${item.status === 'current' ? 'Aquí' : item.status === 'visible' ? 'A la vista' : item.status === 'visited' ? 'Visitado' : 'Conocido'}</span>
                 </li>
             `).join('')
             : '<li class="atlas-empty">Todavía no hay lugares en esta categoría.</li>';
@@ -116,16 +116,16 @@ const Athun = {
             </div>
             <section class="atlas-section">
                 <h3>Entorno inmediato</h3>
-                <ul class="atlas-list">${renderEntries(visible, 'visible')}</ul>
+                <ul class="atlas-list">${renderEntries(visible)}</ul>
             </section>
             <section class="atlas-section">
                 <h3>Lugares que ya recorriste</h3>
-                <ul class="atlas-list">${renderEntries(atlas.visited, 'visited')}</ul>
+                <ul class="atlas-list">${renderEntries(atlas.visited)}</ul>
             </section>
             <section class="atlas-section">
                 <h3>Conocidos en el mundo compartido</h3>
                 <p class="atlas-note">Estos lugares fueron descubiertos por otros protagonistas, pero tu personaje todavía no los ha visitado.</p>
-                <ul class="atlas-list">${renderEntries(atlas.known, 'known')}</ul>
+                <ul class="atlas-list">${renderEntries(atlas.known)}</ul>
             </section>
             <p class="atlas-frontier"><span aria-hidden="true">✧</span> Más allá de estas páginas, la niebla todavía oculta el territorio.</p>
             <h3>Pistas reunidas</h3><ul class="tool-list">${clues}</ul>
