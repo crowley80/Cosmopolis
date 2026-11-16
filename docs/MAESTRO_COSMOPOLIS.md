@@ -1643,3 +1643,8 @@ Se añadieron pruebas unitarias para verificar que el esquema no introduce lugar
 Respaldos previos: app/js/game/map.js.bak-20261116-mapa-jugable, app/js/app.js.bak-20261116-mapa-jugable, app/css/style.css.bak-20261116-mapa-jugable, tests/map.test.js.bak-20261116-mapa-jugable, index.html.bak-20261116-mapa-jugable y .github/workflows/visual-preview.yml.bak-20261116-mapa-jugable, además del respaldo de este documento creado antes de iniciar esta tanda.
 
 Estado: cambios en la rama integration/athun-multisave-main-20261116, PR #4 abierto y sin fusionar. Las ejecuciones de almacenamiento 420, 421, 424, 426 y 427 han completado correctamente; queda confirmar la ejecución Playwright 222, que ya incluye la nueva comprobación visual del mapa. La prueba táctil en Chrome/Android físico sigue pendiente. Próximo paso: convertir la representación esquemática en un recorrido que se pueda probar desde la interfaz y hacer que los descubrimientos se produzcan mediante acciones reales de la aventura.
+
+
+### Ajuste de la prueba visual del mapa — 16/11/2026
+
+La primera ejecución Playwright con el mapa mostró que una comprobación previa buscaba el nombre de una ubicación sin distinguir entre el rótulo del SVG y la entrada de la lista. Como ambos deben mostrar el mismo lugar, el selector se acotó a `.atlas-place-name`; no se cambió la interfaz ni los datos de la aventura por este fallo. Se guardó el respaldo `.github/workflows/visual-preview.yml.bak-20261116-mapa-selector` antes del ajuste. GitHub Actions, ejecución de almacenamiento **435**, completada correctamente. Las ejecuciones Playwright 225 y 226, sobre el commit del ajuste, siguen en curso; no se declara validado el navegador hasta conocer su resultado.
