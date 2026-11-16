@@ -992,3 +992,59 @@ fieldset { background:rgba(255,242,211,.42); }
   .atlas-place { min-height:39px; padding:6px 7px; gap:7px; }
   .atlas-status { font-size:.7rem; }
 }
+
+
+/* Mapa esquemático interactivo de exploración: solo datos descubiertos. */
+.atlas-map-frame {
+  position:relative;
+  overflow:hidden;
+  margin:12px 0 18px;
+  padding:8px 5px 4px;
+  border:1px solid rgba(105,68,31,.42);
+  border-radius:7px;
+  background:
+    radial-gradient(ellipse at 50% 45%,rgba(239,219,176,.88),rgba(205,177,128,.72) 72%,rgba(111,79,48,.18)),
+    repeating-linear-gradient(23deg,rgba(95,65,34,.045) 0 1px,transparent 1px 5px);
+  box-shadow:inset 0 0 24px rgba(75,48,22,.16);
+}
+.atlas-map { display:block; width:100%; height:auto; min-height:210px; }
+.atlas-map-route {
+  fill:none;
+  stroke:#80562e;
+  stroke-width:3;
+  stroke-linecap:round;
+  stroke-dasharray:5 5;
+  opacity:.78;
+}
+.atlas-map-node circle { stroke-width:2.5; filter:drop-shadow(0 1px 1px rgba(43,25,10,.28)); }
+.atlas-map-node text {
+  fill:#432b17;
+  font-family:Georgia,serif;
+  font-size:12px;
+  paint-order:stroke;
+  stroke:#ead9b5;
+  stroke-width:3px;
+  stroke-linejoin:round;
+}
+.atlas-map-node-current circle { fill:#477d78; stroke:#285b55; }
+.atlas-map-node-visible circle { fill:#78a49a; stroke:#35675e; }
+.atlas-map-node-visited circle { fill:#b27a39; stroke:#75491d; }
+.atlas-map-node-known circle { fill:#e0cfaa; stroke:#80633c; }
+.atlas-map-fog {
+  fill:none;
+  stroke:rgba(55,45,34,.2);
+  stroke-width:22;
+  stroke-linecap:round;
+  stroke-dasharray:2 12;
+}
+.atlas-map-caption {
+  margin:0 0 4px;
+  color:#745b3d;
+  text-align:center;
+  font-size:.72rem;
+  font-style:italic;
+}
+@media (max-width:390px) {
+  .atlas-map { min-height:190px; }
+  .atlas-map-node text { font-size:11px; }
+}
