@@ -19,6 +19,31 @@ const Save = {
             data.world.facts = Array.isArray(data.world.facts) ? data.world.facts : [];
             data.world.relationships = data.world.relationships || {};
 
+            // Migración compatible: toda partida con aventura conserva a Athun como pertenencia permanente.
+            if (data.adventure && data.adventure.state && typeof data.adventure.state === 'object') {
+                const state = data.adventure.state;
+                state.inventory = Array.isArray(state.inventory) ? state.inventory : [];
+                if (!state.inventory.some(item => String(item).toLocaleLowerCase('es').includes('athun'))) {
+                    state.inventory.unshift('Athun');
+                }
+                const previousAthun = state.athun && typeof state.athun === 'object' ? state.athun : {};
+                state.athun = {
+                    id: 'athun',
+                    name: 'Athun',
+                    kind: 'Grimorio consciente',
+                    bond: Number.isFinite(Number(previousAthun.bond)) ? Number(previousAthun.bond) : 0,
+                    memories: Array.isArray(previousAthun.memories) ? previousAthun.memories : [],
+                    revelations: Array.isArray(previousAthun.revelations) ? previousAthun.revelations : [],
+                    ...previousAthun,
+                    permanent: true
+                };
+                try {
+                    localStorage.setItem(this.key, JSON.stringify(data));
+                } catch (migrationError) {
+                    console.warn('Athun se ha incorporado a la sesión actual, pero no se pudo persistir la migración:', migrationError);
+                }
+            }
+
             return data;
         } catch (error) {
             console.error('Error al recuperar la partida:', error);
