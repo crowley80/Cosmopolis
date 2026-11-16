@@ -77,15 +77,25 @@ const WorldMap = {
         const current = entries.find(item => item.status === 'current');
         if (current) nodes.push({ ...current, x: center.x, y: center.y });
 
-        const rings = { visible: 82, visited: 132, known: 184 };
+        const ringStarts = { visible: 82, visited: 132, known: 184 };
+        const maxRadiusX = 245;
+        const maxRadiusY = 132;
         Object.entries(groups).forEach(([status, items]) => {
+            const ringStart = ringStarts[status];
+            const ringCount = Math.ceil(items.length / 8);
+            const ringStep = ringCount > 1
+                ? Math.max(8, (maxRadiusX - ringStart) / (ringCount - 1))
+                : 0;
             items.forEach((item, index) => {
-                const angle = (-Math.PI / 2) + (Math.PI * 2 * index / Math.max(1, items.length));
-                const ring = rings[status] + Math.max(0, Math.ceil(items.length / 8) - 1) * 38;
+                const ringIndex = Math.floor(index / 8);
+                const positionInRing = index % 8;
+                const angle = (-Math.PI / 2) + (Math.PI * 2 * positionInRing / 8);
+                const radiusX = Math.min(maxRadiusX, ringStart + ringStep * ringIndex);
+                const radiusY = Math.min(maxRadiusY, radiusX * 0.72);
                 nodes.push({
                     ...item,
-                    x: Math.round(center.x + Math.cos(angle) * ring),
-                    y: Math.round(center.y + Math.sin(angle) * ring * 0.72)
+                    x: Math.round(center.x + Math.cos(angle) * radiusX),
+                    y: Math.round(center.y + Math.sin(angle) * radiusY)
                 });
             });
         });
