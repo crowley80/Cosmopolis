@@ -22,11 +22,21 @@ const Save = {
             // Migración compatible: toda partida con aventura conserva a Athun como pertenencia permanente.
             if (data.adventure && data.adventure.state && typeof data.adventure.state === 'object') {
                 const state = data.adventure.state;
-                state.inventory = Array.isArray(state.inventory) ? state.inventory : [];
+                let athunMigrationNeeded = false;
+                if (!Array.isArray(state.inventory)) {
+                    state.inventory = [];
+                    athunMigrationNeeded = true;
+                }
                 if (!state.inventory.some(item => String(item).toLocaleLowerCase('es').includes('athun'))) {
                     state.inventory.unshift('Athun');
+                    athunMigrationNeeded = true;
                 }
                 const previousAthun = state.athun && typeof state.athun === 'object' ? state.athun : {};
+                if (previousAthun.permanent !== true || previousAthun.id !== 'athun' ||
+                    !Array.isArray(previousAthun.memories) || !Array.isArray(previousAthun.revelations) ||
+                    !Number.isFinite(Number(previousAthun.bond))) {
+                    athunMigrationNeeded = true;
+                }
                 state.athun = {
                     id: 'athun',
                     name: 'Athun',
@@ -37,10 +47,12 @@ const Save = {
                     ...previousAthun,
                     permanent: true
                 };
-                try {
-                    localStorage.setItem(this.key, JSON.stringify(data));
-                } catch (migrationError) {
-                    console.warn('Athun se ha incorporado a la sesión actual, pero no se pudo persistir la migración:', migrationError);
+                if (athunMigrationNeeded) {
+                    try {
+                        localStorage.setItem(this.key, JSON.stringify(data));
+                    } catch (migrationError) {
+                        console.warn('Athun se ha incorporado a la sesión actual, pero no se pudo persistir la migración:', migrationError);
+                    }
                 }
             }
 
