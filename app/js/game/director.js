@@ -70,6 +70,7 @@ const Director = {
                 event = `${name} ha observado el camino de entrada a Valdebruma.`;
             } else if (asks || this.has(text, ['hablo', 'converso', 'saludo', 'carretero', 'recoge leña', 'persona que recoge', 'vecino'])) {
                 category = 'dialogue';
+                state.phase = 'exploration';
                 if (!state.characters.Vecino) {
                     state.characters.Vecino = {
                         name: 'Vecino',
