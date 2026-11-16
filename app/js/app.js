@@ -198,6 +198,7 @@ const Athun = {
             return `
                 <article class="profile-section">
                     <h3>${this.escape(entry.name || 'Partida sin nombre')}</h3>
+                    <p>${this.escape(entry.title || 'Ficha sin aventura')}</p>
                     <p>${this.escape(date)}${entry.active ? ' · Activa' : ''}</p>
                     <button type="button" data-load-save="${this.escape(entry.id)}">Continuar esta historia</button>
                 </article>
