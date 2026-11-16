@@ -166,3 +166,7 @@ GitHub Actions, ejecución **142**: comprobación de sintaxis JavaScript correct
 
 ## Red conservadora de caminos del atlas — 16/11/2026
 La siguiente fase registra una conexión direccional cuando el estado de una partida cambia de una localización A a una localización B tras una acción. Esa transición es evidencia de un tramo recorrido; no demuestra distancias, orientación, geometría ni que el regreso sea posible, por lo que no se genera automáticamente la conexión B → A. El registro se guarda en el mundo compartido, separado de visitas personales, y se muestra como lista de caminos recorridos. Las rutas antiguas no se reconstruyen a partir de simples listas de lugares visitados porque su orden no demuestra que existiera un trayecto directo entre cada par. Se mantiene pendiente la cartografía geográfica con posiciones verificadas.
+
+
+### Validación de la red inicial de caminos — 16/11/2026
+GitHub Actions, ejecución **169** (`43832594402`): comprobación de sintaxis JavaScript correcta y **20/20 pruebas aprobadas**. Se verifica que un desplazamiento confirmado registra un tramo direccional en el mundo compartido, que los extremos se registran como localizaciones y que no se crea automáticamente el camino inverso. También se comprueba que el atlas no muestra conexiones cuyos extremos no estén registrados. La prueba en Chrome/Android y la cartografía geográfica con posiciones reales siguen pendientes.
