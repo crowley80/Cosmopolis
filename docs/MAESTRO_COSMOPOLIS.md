@@ -1726,3 +1726,11 @@ No se cambia esta arquitectura: el mundo conserva continuidad común, mientras l
 - Se añadió una regresión que construye el contexto de dos partidas distintas y verifica que cada una recibe únicamente los recuerdos y revelaciones de su propio Athun.
 - Copias previas: `app/js/game/narrator.js.bak-20261116-athun-memoria-contexto`, `tests/storage.test.js.bak-20261116-athun-memoria-contexto` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261116-athun-memoria-contexto`.
 - La nueva validación CI debe completarse antes de considerar cerrado este cambio. No se modifican los recuerdos guardados ni se inventan recuerdos nuevos; se corrige únicamente su disponibilidad para la narración.
+
+
+### Registro activo de experiencias de Athun — 16/11/2026
+- El narrador puede proponer hasta tres recuerdos compartidos y tres revelaciones por respuesta, además de un cambio de vínculo de -1, 0 o +1.
+- Las instrucciones distinguen recuerdos vividos de revelaciones demostradas en escena; prohíben inventar experiencias y adelantar secretos.
+- La aplicación deduplica sin distinguir mayúsculas, limita cada lista a 40 entradas y cada texto a 300 caracteres, y mantiene el vínculo entre -100 y +100.
+- Se añadieron pruebas de deduplicación, límites de cantidad y estabilidad del vínculo. Todo queda dentro del guardado personal del protagonista; no se publica en el mundo compartido.
+- Copias previas: `app/js/game/narrator.js.bak-20261116-athun-memoria-activa`, `tests/storage.test.js.bak-20261116-athun-memoria-activa` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261116-athun-memoria-activa`.
