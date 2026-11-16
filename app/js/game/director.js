@@ -72,7 +72,8 @@ const Director = {
             } else if (asks || this.has(text, ['hablo', 'converso', 'saludo', 'carretero', 'recoge leña', 'persona que recoge', 'vecino', 'persona que está recogiendo'])) {
                 // Hablar o acercarse a alguien junto al camino no equivale a entrar en el pueblo.
                 category = 'dialogue';
-                if (!state.characters.Vecino) {
+                const firstMeeting = !state.characters.Vecino;
+                if (firstMeeting) {
                     state.characters.Vecino = {
                         name: 'Vecino',
                         role: 'Habitante de Valdebruma',
