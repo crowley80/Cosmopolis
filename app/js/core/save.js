@@ -300,6 +300,29 @@ const Save = {
         }
     },
 
+    addGlobalEntity(entity, discoveredBy) {
+        if (!entity || typeof entity !== 'object') return false;
+        const name = String(entity.name || '').trim().slice(0, 80);
+        if (!name) return false;
+        const world = this.getGlobalWorld();
+        const key = name.toLocaleLowerCase('es');
+        if (world.entities[key]) return true;
+        // Solo se comparte la identidad básica; recuerdos, confianza y objetivos son personales.
+        world.entities[key] = {
+            name,
+            role: String(entity.role || 'Personaje').trim().slice(0, 100),
+            firstKnownLocation: String(entity.location || '').trim().slice(0, 120),
+            discoveredBy: String(discoveredBy || '').slice(0, 80),
+            discoveredAt: new Date().toISOString()
+        };
+        try {
+            return this.writeVerified(this.worldKey, world);
+        } catch (error) {
+            console.error('No se pudo registrar la entidad compartida:', error);
+            return false;
+        }
+    },
+
     saveGlobalWorld(world) {
         const current = this.getGlobalWorld();
         const updated = {
