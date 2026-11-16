@@ -95,6 +95,11 @@ const Save = {
                 legacyState.currentLocation || (slot.adventure && slot.adventure.location) || ''
             ];
             discovered.forEach(location => this.addGlobalLocation(location, slot.character && slot.character.name));
+            Object.entries(legacyState.characters || {}).forEach(([key, entity]) => {
+                if (entity && typeof entity === 'object') {
+                    this.addGlobalEntity({ ...entity, name: entity.name || key }, slot.character && slot.character.name);
+                }
+            });
             return migratedIndex;
         } catch (error) {
             console.error('La migración de la partida heredada no se completó:', error);
