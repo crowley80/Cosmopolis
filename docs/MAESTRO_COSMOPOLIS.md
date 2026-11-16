@@ -1367,3 +1367,18 @@ Se ha revisado en GitHub el guardado, la sesión, la creación de personajes, el
 Estos límites contradicen los requisitos aprobados el 15/11/2026 de múltiples partidas independientes, mundo compartido persistente y Athun inseparable del protagonista. Antes de tocar código se ha creado el respaldo `docs/MAESTRO_COSMOPOLIS.md.bak-20261116-guardado` y el plan detallado `docs/PLAN_MIGRACION_GUARDADO_ATHUN.md`.
 
 **Estado:** auditoría estática completada y plan de migración documentado. No se ha modificado código ejecutable ni se ha probado el juego en Android. La implementación queda dividida en migración compatible de partidas, separación del mundo global, protección de Athun y, finalmente, selector de partidas. No se debe reiniciar, sobrescribir ni eliminar el guardado heredado. Cada fase deberá contar con pruebas de recuperación, aislamiento entre protagonistas e idempotencia antes de continuar.
+
+
+## REVISIÓN AUTÓNOMA — 16 DE NOVIEMBRE DE 2026 — CONTINUIDAD DEL PRÓLOGO
+
+Se ha vuelto a inspeccionar el código remoto de `app/js/game/adventure.js`, `director.js`, `narrator.js`, `session.js`, `save.js` y `app.js`. Esta revisión confirma que la corrección narrativa aprobada el 15/11 aún no está reflejada de forma coherente en la versión ejecutable:
+
+- `Adventure.createOpening()` sigue comenzando directamente en la Plaza del pozo, presenta a Elia y revela la campana y el pozo antes de que el protagonista pueda descubrirlos.
+- El estado inicial registra `eliaMet: true`, añade a Elia al conjunto de personajes y guarda como hechos conocidos detalles que el prólogo aprobado reserva para el descubrimiento gradual.
+- `Director.respond()` crea a Elia automáticamente aunque no exista en el estado, y varias respuestas genéricas presuponen que está presente o que el protagonista conoce el pozo y la campana.
+- `Narrator.buildMessages()` todavía describe el juego como «Cosmópolis» y necesita reforzar el límite de conocimiento inicial, además de la identidad vigente de Athun.
+- La documentación de continuidad y los respaldos históricos confirman que este trabajo debe conservar los cambios previos de director/narrador; no se debe sustituirlos por una versión simplificada.
+
+**Prioridad de ejecución:** recuperar el texto íntegro del prólogo aprobado y reconciliarlo con el estado inicial de aventura; después adaptar el director para que solo incluya personajes y hechos ya descubiertos, y ajustar el contexto/instrucciones del narrador. Añadir pruebas automatizadas de acciones iniciales, preguntas neutrales, exploración del camino y primer encuentro con Elia. Mantener pendiente la validación final en Chrome/Android.
+
+**Estado de esta revisión:** solo lectura y diagnóstico. No se ha modificado código ejecutable ni se ha alterado ninguna partida. Se ha creado el respaldo previo `docs/MAESTRO_COSMOPOLIS.md.bak-20261116-revision-inicial` antes de actualizar esta documentación. No se ha recuperado aún el texto íntegro del prólogo, por lo que no se debe reconstruir de memoria ni reemplazarlo por una paráfrasis.
