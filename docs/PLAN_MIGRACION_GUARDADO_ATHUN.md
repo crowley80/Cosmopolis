@@ -70,3 +70,10 @@ La primera fase de protección de Athun ya está implementada también para part
 La apertura de Valdebruma y la primera conversación están corregidas y cuentan con pruebas directas. Las pruebas de Chrome/Playwright se añadieron al workflow, pero el resultado remoto todavía no se ha podido consultar.
 
 La migración completa de guardado sigue pendiente: índice de múltiples partidas, mundo global compartido, selección de protagonista y aislamiento de progreso individual. No confundir la protección de Athun con la finalización de esas fases.
+
+
+## Integración preparatoria basada en main — 16/11/2026
+
+Para evitar integrar una rama desfasada, se abrió `integracion/athun-multisave-main-20261116` directamente desde el `main` actual y se trasladaron a ella los módulos de partidas múltiples, atlas, pruebas y workflow. Se conservaron las versiones narrativas más recientes de `adventure.js` y `director.js`; el narrador principal recibió únicamente el guardado de protección contra copias de Athun. La capa de guardado incorpora el estado permanente del grimorio y preserva sus recuerdos y revelaciones por partida.
+
+Respaldos previos creados en la propia rama para CSS, aplicación, guardado, personaje, sesión, narrador, HTML y ambos documentos. Pendiente: CI de integración, revisión de diferencias y pruebas manuales en Chrome/Android. No se ha fusionado en `main` ni se han tocado datos de partidas del dispositivo.
