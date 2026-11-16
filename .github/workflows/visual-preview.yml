@@ -66,6 +66,8 @@ jobs:
             const page = await context.newPage();
             page.on('pageerror', error => console.error('PAGE ERROR:', error.message));
             await page.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
+            const continueSave = page.locator('[data-load-save]').first();
+            if (await continueSave.count()) await continueSave.click();
             await page.locator('.adventure-screen').waitFor();
 
             // Regresión narrativa: apertura aprobada, descubrimientos graduales y Athun permanente.
@@ -465,6 +467,8 @@ jobs:
             const desktopErrors = [];
             desktopPage.on('pageerror', error => desktopErrors.push(error.message));
             await desktopPage.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
+            const desktopContinue = desktopPage.locator('[data-load-save]').first();
+            if (await desktopContinue.count()) await desktopContinue.click();
             await desktopPage.locator('.adventure-screen').waitFor();
             const desktopWidth = await desktopPage.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth }));
             assert.ok(desktopWidth.document <= desktopWidth.viewport, 'La interfaz de escritorio no debe desbordarse horizontalmente');
