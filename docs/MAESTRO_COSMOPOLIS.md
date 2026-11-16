@@ -1608,3 +1608,16 @@ La rama de integración sigue basada directamente en main, con 57 commits por de
 La instrumentación de Playwright identificó que los cuatro avisos HTTP 404 procedían de dos fondos WebP inexistentes: `app/assets/templates/athun-papiro-limpio.webp` y `app/assets/templates/athun-aventura.webp`. En vez de introducir imágenes no disponibles, se sustituyeron las referencias rotas por fondos CSS de pergamino y aventura en capas de gradientes y textura, y se añadió `favicon.svg` para la identidad del juego. Se guardó respaldo previo de `app/css/style.css` e `index.html`.
 
 La ejecución 191 de Playwright (`43911426574`) pasó de nuevo en móvil y escritorio, con selector de dos protagonistas, regresión narrativa e interacciones completas. El registro de respuestas 404 quedó vacío: no se registraron recursos HTTP 404. La ejecución 380 de almacenamiento (`43911426719`) pasó 27/27 pruebas, 0 fallos. La rama está 69 commits por delante y 0 por detrás de main; PR #4 sigue abierto, en borrador e integrable. No se ha fusionado. La única validación pendiente es Chrome en un dispositivo Android físico.
+
+
+### Revalidación autónoma y estado de integración — 16/11/2026
+
+Se ha revisado el estado real de GitHub antes de continuar. El pull request #4 («Integrar partidas múltiples de Athun sin perder la narrativa actual») sigue abierto, en borrador y marcado como integrable, con destino `main`. La rama de integración conserva la apertura narrativa y reúne selector de partidas, registros independientes, mundo compartido, atlas, protección canónica de Athun y pruebas. No se ha fusionado ni se ha alterado `main`.
+
+Se consultaron las ejecuciones remotas asociadas al último commit de la rama:
+- GitHub Actions «Athun storage tests», ejecución **388** (ID `43911693394`): finalizada correctamente. Pasaron tanto la comprobación de sintaxis JavaScript como el paso de pruebas de almacenamiento y mundo compartido.
+- GitHub Actions «Visual preview», ejecución **195** (ID `43911693467`): finalizada correctamente. Pasaron la instalación de Playwright, el servidor local, la renderización/prueba en Chromium móvil y escritorio y la carga de vistas previas.
+
+Estas ejecuciones confirman CI y navegador Chromium simulado; no equivalen a una prueba táctil en un teléfono Android físico. Esa comprobación sigue pendiente y es el único requisito manual indicado antes de considerar la fusión. Se mantiene el PR en borrador y no se fusiona automáticamente.
+
+Se creó antes de esta actualización el respaldo íntegro `docs/MAESTRO_COSMOPOLIS.md.bak-20261116-validacion-final-ci`. Las partidas locales del usuario no son accesibles desde esta revisión remota y no se han modificado.
