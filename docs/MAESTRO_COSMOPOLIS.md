@@ -1398,3 +1398,10 @@ Si el índice de partidas se elimina o queda ilegible, el almacenamiento reconst
 
 ### Continuidad narrativa por protagonista — 16/11/2026
 El contexto del narrador mantiene separados el mundo global y el mundo personal de la partida activa. Los hechos, eventos y relaciones históricos de la partida heredada siguen disponibles para su protagonista; no se convierten en verdades universales. El selector también muestra el título de cada aventura para distinguir varias historias del mismo personaje.
+
+
+## PRESENTACIÓN ÚNICA DEL PRÓLOGO — 16/11/2026
+
+Se incorpora el prólogo literal aprobado por el usuario el 15/11/2026. En una instalación nueva se muestra antes de la creación del personaje; al pulsar «Continuar» se registra `athun_intro_seen_v1` y se abre el formulario de creación. En arranques posteriores, si ya existe una partida, se muestra directamente el selector de partidas y no se repite el prólogo. Si la migración del guardado heredado falla, la aplicación muestra un aviso y no inicia una ficha nueva que pueda confundir al jugador o poner en riesgo la recuperación.
+
+Se guardaron copias previas de `app/js/app.js`, `index.html` y este documento con el sufijo `.bak-20261116-prologo-unico`. La caché del script principal se renovó. Se añadieron pruebas automatizadas para comprobar el texto, el registro de primera presentación y la omisión del prólogo cuando ya existen partidas. Pendiente confirmar la ejecución de CI de esta nueva tanda y probar el flujo en Chrome/Android.
