@@ -124,7 +124,7 @@ const Athun = {
             </section>
             <section class="atlas-section">
                 <h3>Conocidos en el mundo compartido</h3>
-                <p class="atlas-note">Estos lugares fueron descubiertos por otros protagonistas, pero tu personaje todavía no los ha visitado.</p>
+                <p class="atlas-note">Estos lugares ya forman parte del conocimiento del mundo compartido, pero tu personaje todavía no los ha visitado ni los tiene a la vista.</p>
                 <ul class="atlas-list">${renderEntries(atlas.known)}</ul>
             </section>
             <p class="atlas-frontier"><span aria-hidden="true">✧</span> Más allá de estas páginas, la niebla todavía oculta el territorio.</p>
