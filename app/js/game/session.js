@@ -25,7 +25,7 @@ const Session = {
             }
             if (saved) {
                 const state = adventure && adventure.state || {};
-                Save.addGlobalLocation(state.currentLocation || (adventure && adventure.location), character && character.name);
+                this.syncMapKnowledge(state, character);
                 this.syncSharedEntities(adventure, character);
             }
             return saved;
@@ -89,9 +89,20 @@ const Session = {
         });
         if (saved.world.facts.length > 50) saved.world.facts = saved.world.facts.slice(-50);
 
-        if (currentLocation) Save.addGlobalLocation(currentLocation, saved.character.name);
+        this.syncMapKnowledge(state, saved.character);
         this.syncSharedEntities(saved.adventure, saved.character);
         return Save.save(saved);
+    },
+
+    syncMapKnowledge(state, character) {
+        if (!state || typeof state !== 'object') return;
+        const discovered = new Set([
+            state.currentLocation,
+            ...(Array.isArray(state.visibleLocations) ? state.visibleLocations : [])
+        ]);
+        discovered.forEach(location => {
+            if (location) Save.addGlobalLocation(location, character && character.name);
+        });
     },
 
     syncSharedEntities(adventure, character) {
