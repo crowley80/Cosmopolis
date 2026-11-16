@@ -1443,3 +1443,16 @@ Se añadió una prueba al workflow para migrar una partida heredada sin Athun, c
 **Prueba directa ejecutada:** migración de partida heredada, permanencia de Athun y carga idempotente (una sola escritura); también se volvieron a probar la sintaxis de los scripts y el diálogo inicial con un habitante. Todo pasó en el entorno de pruebas de esta sesión. Sigue pendiente el resultado del workflow remoto y la prueba visual en Android.
 
 **Límite del avance:** esto protege Athun en partidas existentes, pero no implementa todavía el índice de múltiples partidas ni la separación del mundo global. Esas fases continúan pendientes y no se ha reiniciado ni eliminado ningún guardado.
+
+
+### Cierre de la tanda autónoma — 16 de noviembre de 2026
+
+Se completó además el ajuste de la primera conversación: preguntar desde el camino ya no se interpreta erróneamente como entrar en el pueblo. El protagonista puede hablar con la persona que recoge leña; el habitante se registra solo cuando se produce esa interacción y conserva ubicación y recuerdos. La fase pasa entonces a exploración.
+
+Se implementó también una migración idempotente en `Save.load()` para partidas existentes: si ya hay una aventura, se incorpora Athun al inventario y se crea/normaliza su estado permanente sin reiniciar la partida. La migración solo escribe si detecta cambios. La versión de caché de `save.js` se actualizó en `index.html`.
+
+**Validación directa completada:** sintaxis de los scripts; apertura aprobada; conversación con el primer habitante; entrada al pueblo; preguntas sin revelaciones prematuras; descubrimiento del pozo; inspección sin revelar la campana; revelación mediante magia; protección de Athun frente a una respuesta de IA que intentaba retirarlo; sincronización de hechos descubiertos y encuentro con Elia; migración de una partida antigua y segunda carga sin escritura redundante. Todas estas pruebas directas pasaron.
+
+**Pruebas automatizadas añadidas al workflow:** la misma batería narrativa, protección de Athun frente a la IA y migración de una partida antigua. El workflow se activa con los cambios de `index.html` y del propio archivo de workflow. No se ha podido consultar su resultado remoto en esta sesión y no se afirma que la prueba visual en Android esté completada.
+
+**Commits recientes:** guardado `99d7a19` y `db7d4a3`; prueba de migración `7eb287f`; caché `b9c37b1`; documentación `3a28313` y `3f2d582`. Se conservaron respaldos antes de las modificaciones. No se ha eliminado ni sobrescrito deliberadamente ninguna partida guardada.
