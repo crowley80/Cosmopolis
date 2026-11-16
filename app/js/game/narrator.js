@@ -122,8 +122,12 @@ const Narrator = {
             {
                 role: 'system',
                 content: [
-                    'Eres el director narrativo de Cosmópolis, una aventura de fantasía textual en español.',
+                    'Eres el director narrativo de Athun: el grimorio oscuro, una aventura de fantasía textual en español.',
                     'Responde como narrador literario: inmersivo, concreto, coherente y sin repetir fórmulas.',
+                    'Athun es un grimorio consciente que acompaña al protagonista desde el comienzo y figura siempre en su inventario. Puede tener voluntad, personalidad y reaccionar de forma sutil cuando sea narrativamente apropiado, pero no debe hablar ni intervenir en cada acción.',
+                    'Athun contiene un conocimiento extraordinario, pero su historia, sus motivos, sus recuerdos y la naturaleza de su vínculo con este protagonista se descubren gradualmente. No reveles esos secretos por iniciativa propia ni confundas el conocimiento del grimorio con lo que sabe el personaje.',
+                    'La apertura de Valdebruma comienza en el Camino de entrada a Valdebruma, durante una mañana tranquila. Al principio el personaje solo sabe que ha llegado a un pueblo situado en un valle entre montañas. No conoce todavía a Elia, no sabe nada de una campana ni de un pozo y no debe recibir pistas sobre ellos hasta descubrirlos mediante sus acciones.',
+                    'Respeta el estado phase y los descubrimientos registrados. No adelantes acontecimientos, personajes, lugares ni misterios que no hayan aparecido en escena o sido descubiertos.',
                     'Respeta los límites de conocimiento del personaje jugador: separa lo que percibe directamente de lo que deduce o sospecha, y no presentes como conocido lo que aún ignora.',
                     'No reveles pensamientos privados, identidades ocultas, causas secretas ni sucesos ocurridos fuera de su percepción salvo que una fuente fiable ya se los haya comunicado o descubierto.',
                     'Cuando una información sea incierta, exprésala como indicio, hipótesis, rumor o sospecha; nunca conviertas una conjetura en un hecho confirmado.',
@@ -335,8 +339,11 @@ const Narrator = {
             state.inventory = Array.isArray(state.inventory) ? state.inventory : [];
             result.itemsToRemove.slice(0, 10).forEach(item => {
                 if (typeof item !== 'string' || !item.trim()) return;
+                // Athun es una pertenencia permanente: ninguna respuesta del modelo puede retirarlo.
+                if (item.trim().toLocaleLowerCase('es').includes('athun')) return;
                 const index = state.inventory.findIndex(existing =>
-                    String(existing).toLocaleLowerCase('es') === item.trim().toLocaleLowerCase('es'));
+                    String(existing).toLocaleLowerCase('es') === item.trim().toLocaleLowerCase('es') &&
+                    !String(existing).toLocaleLowerCase('es').includes('athun'));
                 if (index !== -1) state.inventory.splice(index, 1);
             });
             result.itemsToAdd.slice(0, 10).forEach(item => {
@@ -346,6 +353,13 @@ const Narrator = {
                     state.inventory.push(clean);
                 }
             });
+            if (!state.inventory.some(item => String(item).toLocaleLowerCase('es').includes('athun'))) {
+                state.inventory.unshift('Athun');
+            }
+            if (!state.athun || typeof state.athun !== 'object') {
+                state.athun = { id: 'athun', name: 'Athun', kind: 'Grimorio consciente', permanent: true, bond: 0, memories: [], revelations: [] };
+            }
+            state.athun.permanent = true;
 
             state.characters = state.characters && typeof state.characters === 'object' ? state.characters : {};
             result.charactersToAdd.slice(0, 5).forEach(entry => {
