@@ -28,7 +28,7 @@ test.beforeEach(() => {
 test('migra la partida antigua sin borrar ni modificar su clave original', () => {
     const legacy = {
         character: { name: 'Ariadna' },
-        adventure: { title: 'La campana', state: { inventory: ['Antorcha'], currentLocation: 'Valdebruma', visitedLocations: ['Valdebruma'], characters: { Elia: { role: 'Cartógrafa', location: 'Plaza del pozo', trust: 7, memories: ['Secreto de Ariadna'] } } } },
+        adventure: { title: 'La campana', state: { inventory: ['Antorcha'], athun: { bond: 4, memories: ['Recuerdo privado'], revelations: ['Primera revelación'] }, currentLocation: 'Valdebruma', visitedLocations: ['Valdebruma'], characters: { Elia: { role: 'Cartógrafa', location: 'Plaza del pozo', trust: 7, memories: ['Secreto de Ariadna'] } } } },
         actions: [{ text: 'Observo el pozo' }],
         world: { facts: ['Dato antiguo'], events: [], relationships: {} },
         createdAt: '2026-01-01T00:00:00.000Z'
@@ -41,6 +41,11 @@ test('migra la partida antigua sin borrar ni modificar su clave original', () =>
     assert.equal(Save.load().character.name, 'Ariadna');
     assert.deepEqual(Save.load().actions, legacy.actions);
     assert.ok(Save.load().adventure.state.inventory.some(item => item.includes('Athun')));
+    assert.equal(Save.load().adventure.state.athun.permanent, true);
+    assert.equal(Save.load().adventure.state.athun.id, 'athun');
+    assert.equal(Save.load().adventure.state.athun.bond, 4);
+    assert.deepEqual(Save.load().adventure.state.athun.memories, ['Recuerdo privado']);
+    assert.deepEqual(Save.load().adventure.state.athun.revelations, ['Primera revelación']);
     assert.equal(localStorage.getItem(Save.key), original);
     assert.ok(localStorage.getItem(Save.slotPrefix + entries[0].id));
     assert.ok(Save.getGlobalWorld().locations.some(item => item.name === 'Valdebruma'));
