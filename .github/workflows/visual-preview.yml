@@ -82,6 +82,9 @@ jobs:
 
               const question = Director.respond('Pregunto si ocurre algo importante en el pueblo.', player, opening, []);
               if (/elia|campana|pozo/i.test(question.reply)) fail('una pregunta inicial revela el misterio');
+              if (!question.state.characters.Vecino || question.state.phase !== 'exploration') fail('no se habilita el primer diálogo con un habitante');
+              const neighborTalk = Director.respond('Hablo con el vecino.', player, question.adventure, [{ text: 'Pregunto por el pueblo' }]);
+              if (!/vecino/i.test(neighborTalk.reply) || /elia|campana|pozo/i.test(neighborTalk.reply)) fail('el primer habitante no conversa de forma coherente');
               const entered = Director.respond('Entro en el pueblo por el camino principal.', player, opening, []);
               if (entered.state.phase !== 'exploration' || entered.state.currentLocation !== 'Primeras calles de Valdebruma') fail('no se puede entrar al pueblo');
               const localQuestion = Director.respond('Pregunto a los vecinos qué sucede.', player, entered.adventure, [{ text: 'Entro en el pueblo' }]);
