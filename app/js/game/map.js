@@ -61,6 +61,44 @@ const WorldMap = {
             known: entries.filter(item => item.status === 'known')
         };
     }
+    ,
+
+    // Distribución esquemática: organiza solo lugares conocidos y enlaces registrados.
+    // Las posiciones son visuales, no coordenadas geográficas ni distancias reales.
+    getSchematicLayout(atlas = {}) {
+        const entries = Array.isArray(atlas.entries) ? atlas.entries : [];
+        const groups = {
+            visible: entries.filter(item => item.status === 'visible'),
+            visited: entries.filter(item => item.status === 'visited'),
+            known: entries.filter(item => item.status === 'known')
+        };
+        const center = { x: 300, y: 174 };
+        const nodes = [];
+        const current = entries.find(item => item.status === 'current');
+        if (current) nodes.push({ ...current, x: center.x, y: center.y });
+
+        const rings = { visible: 82, visited: 132, known: 184 };
+        Object.entries(groups).forEach(([status, items]) => {
+            items.forEach((item, index) => {
+                const angle = (-Math.PI / 2) + (Math.PI * 2 * index / Math.max(1, items.length));
+                const ring = rings[status] + Math.max(0, Math.ceil(items.length / 8) - 1) * 38;
+                nodes.push({
+                    ...item,
+                    x: Math.round(center.x + Math.cos(angle) * ring),
+                    y: Math.round(center.y + Math.sin(angle) * ring * 0.72)
+                });
+            });
+        });
+
+        const byName = new Map(nodes.map(node => [node.name.toLocaleLowerCase('es'), node]));
+        const edges = (Array.isArray(atlas.connections) ? atlas.connections : [])
+            .map(route => ({
+                from: byName.get(String(route.from).toLocaleLowerCase('es')),
+                to: byName.get(String(route.to).toLocaleLowerCase('es'))
+            }))
+            .filter(edge => edge.from && edge.to);
+        return { width: 600, height: 348, nodes, edges };
+    }
 };
 
 if (typeof window !== 'undefined') window.WorldMap = WorldMap;
