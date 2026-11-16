@@ -38,10 +38,12 @@ const Director = {
         const facts = state.knownFacts || [];
         const knownFactsText = facts.join(' ').toLocaleLowerCase('es');
         const eliaKnown = state.eliaMet === true && !!state.characters.Elia;
+        const eliaPresent = eliaKnown && state.characters.Elia.location === state.currentLocation;
         const wellKnown = state.wellDiscovered === true || knownFactsText.includes('pozo');
         const bellKnown = state.bellDiscovered === true || knownFactsText.includes('campana');
-        const atWell = wellKnown && this.has(text, ['pozo', 'losa', 'cadenas', 'campana']);
-        const aboutElia = eliaKnown && this.has(text, ['elia', 'cartografa', 'mapa', 'hablar con ella']);
+        const atWell = this.normalize(state.currentLocation) === 'plaza del pozo' &&
+            wellKnown && this.has(text, ['pozo', 'losa', 'cadenas', 'campana']);
+        const aboutElia = eliaPresent && this.has(text, ['elia', 'cartografa', 'mapa', 'hablar con ella']);
         const asks = this.has(text, ['pregunto', 'preguntar', 'quien', 'que sabes', 'cuentame', 'explica', 'dime']);
         const investigates = this.has(text, ['examino', 'observo', 'investigo', 'inspecciono', 'miro', 'escucho', 'analizo', 'busco', 'registro']);
         const moves = this.has(text, ['camino', 'voy', 'entro', 'salgo', 'me acerco', 'me alejo', 'exploro', 'subo', 'bajo', 'me dirijo']);
@@ -215,7 +217,7 @@ const Director = {
             event = `${name} ha actuado con sigilo en ${state.currentLocation}.`;
         } else if (offers) {
             category = 'offer';
-            if (eliaKnown) {
+            if (eliaPresent) {
                 state.eliaTrust = (Number(state.eliaTrust) || 0) + 1;
                 state.characters.Elia.trust = state.eliaTrust;
                 reply = 'Elia acepta tu gesto con una pequeña sonrisa.\n\n—Gracias. No abundan las personas que se ofrecen a ayudar sin pedir primero una explicación completa.';
