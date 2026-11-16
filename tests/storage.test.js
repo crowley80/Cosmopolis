@@ -103,7 +103,7 @@ test('una aventura nueva no elimina la anterior ni reinicia el mundo compartido'
     Save.addGlobalLocation('Valdebruma', 'Ariadna');
 
     assert.equal(Session.startNewAdventure({ name: 'Ariadna' }, {
-        title: 'Segunda aventura', state: { currentLocation: 'Puerto', inventory: [] }
+        title: 'Segunda aventura', state: { currentLocation: 'Puerto', inventory: [], characters: { Elia: { role: 'Cartógrafa', location: 'Valdebruma', trust: 0, memories: ['Recuerdo de Darian'] } } }
     }), true);
 
     const second = Save.getActiveId();
@@ -111,6 +111,8 @@ test('una aventura nueva no elimina la anterior ni reinicia el mundo compartido'
     assert.equal(Save.list().length, 2);
     assert.equal(Save.load().adventure.title, 'Segunda aventura');
     assert.ok(Save.getGlobalWorld().locations.some(item => item.name === 'Valdebruma'));
+    assert.ok(Save.getGlobalWorld().locations.some(item => item.name === 'Puerto'));
+    assert.ok(Save.getGlobalWorld().entities.elia);
     assert.equal(Save.activate(first), true);
     assert.equal(Save.load().adventure.title, 'Primera aventura');
 });
