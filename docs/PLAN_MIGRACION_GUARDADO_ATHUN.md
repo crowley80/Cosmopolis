@@ -182,3 +182,10 @@ El registro de conexiones compartidas requiere ahora que la respuesta estructura
 
 ### CI 195 — rutas confirmadas y coherencia de Athun — 16/11/2026
 GitHub Actions, ejecución **195** (`43836494217`): comprobación de sintaxis JavaScript correcta y **22/22 pruebas aprobadas**. Incluye la regresión que impide crear conexiones del atlas cuando cambia la ubicación por una acción que no está clasificada como desplazamiento. También se valida la actualización del prompt del narrador y el resto de pruebas de guardado, prólogo, atlas y mundo compartido.
+
+
+### Eliminación transaccional de partidas — 16/11/2026
+
+La revisión del ciclo de borrado encontró un riesgo de pérdida parcial: el índice se actualizaba y el archivo de partida se eliminaba antes de confirmar el cambio de selección activa. Si fallaba esa última escritura, el método devolvía error aunque la partida ya hubiera desaparecido. Se ha endurecido `Save.deleteSlot()` para conservar los valores previos del índice, registro y partida activa, y restaurarlos ante cualquier fallo durante la operación. La última partida continúa protegida contra eliminación.
+
+Se añadieron respaldos previos de `app/js/core/save.js`, `tests/storage.test.js`, este documento y el plan de migración. Se incorporó una prueba que simula el fallo al cambiar la partida activa, comprueba la restauración íntegra y después verifica que el borrado normal funciona. La nueva validación CI queda pendiente de ejecución; no se ha probado todavía en Chrome/Android.
