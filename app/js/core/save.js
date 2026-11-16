@@ -50,6 +50,25 @@ const Save = {
         return slot;
     },
 
+    rebuildIndexFromSlots() {
+        const saves = [];
+        if (typeof localStorage.length !== 'number' || typeof localStorage.key !== 'function') return saves;
+        for (let i = 0; i < localStorage.length; i += 1) {
+            const key = localStorage.key(i);
+            if (!key || !key.startsWith(this.slotPrefix)) continue;
+            const id = key.slice(this.slotPrefix.length);
+            const slot = this.readJSON(key);
+            if (!slot) continue;
+            saves.push({
+                id,
+                name: String(slot.character && slot.character.name || 'Partida recuperada').slice(0, 80),
+                createdAt: slot.createdAt || slot.updatedAt || new Date().toISOString(),
+                updatedAt: slot.updatedAt || slot.createdAt || new Date().toISOString()
+            });
+        }
+        return saves;
+    },
+
     ensureReady() {
         let index = this.readJSON(this.indexKey);
         if (index && Array.isArray(index.saves)) {
@@ -57,6 +76,20 @@ const Save = {
                 this.activate(index.saves[0].id);
             }
             return index;
+        }
+
+        // Si el índice se daña o se elimina, reconstruirlo desde los registros existentes.
+        const recovered = this.rebuildIndexFromSlots();
+        if (recovered.length) {
+            const rebuilt = { version: 1, saves: recovered };
+            try {
+                this.writeVerified(this.indexKey, rebuilt);
+                if (!localStorage.getItem(this.activeKey)) this.writeVerified(this.activeKey, { id: recovered[0].id });
+                return rebuilt;
+            } catch (error) {
+                console.error('No se pudo reconstruir el índice de partidas:', error);
+                return { version: 1, saves: recovered };
+            }
         }
 
         const legacy = this.readJSON(this.key);
