@@ -8,7 +8,7 @@ const Save = {
     worldKey: 'athun_shared_world_v1',
 
     emptyWorld() {
-        return { locations: [], entities: {}, facts: [], events: [], changes: [], relationships: {} };
+        return { locations: [], connections: [], entities: {}, facts: [], events: [], changes: [], relationships: {} };
     },
 
     readJSON(key) {
@@ -335,6 +335,7 @@ const Save = {
     getGlobalWorld() {
         const world = this.readJSON(this.worldKey) || this.emptyWorld();
         world.locations = Array.isArray(world.locations) ? world.locations : [];
+        world.connections = Array.isArray(world.connections) ? world.connections : [];
         world.entities = world.entities && typeof world.entities === 'object' ? world.entities : {};
         world.facts = Array.isArray(world.facts) ? world.facts : [];
         world.events = Array.isArray(world.events) ? world.events : [];
@@ -355,6 +356,43 @@ const Save = {
             return this.writeVerified(this.worldKey, world);
         } catch (error) {
             console.error('No se pudo registrar la localización compartida:', error);
+            return false;
+        }
+    },
+
+    addGlobalConnection(from, to, discoveredBy) {
+        const start = String(from || '').trim().slice(0, 120);
+        const end = String(to || '').trim().slice(0, 120);
+        if (!start || !end || start.toLocaleLowerCase('es') === end.toLocaleLowerCase('es')) return false;
+        const world = this.getGlobalWorld();
+        const addEndpoint = name => {
+            const key = name.toLocaleLowerCase('es');
+            if (!world.locations.some(item =>
+                String(typeof item === 'string' ? item : item.name || '').trim().toLocaleLowerCase('es') === key
+            )) {
+                world.locations.push({
+                    name,
+                    discoveredBy: String(discoveredBy || '').slice(0, 80),
+                    discoveredAt: new Date().toISOString()
+                });
+            }
+        };
+        addEndpoint(start);
+        addEndpoint(end);
+        const exists = world.connections.some(item =>
+            item && String(item.from || '').toLocaleLowerCase('es') === start.toLocaleLowerCase('es') &&
+            String(item.to || '').toLocaleLowerCase('es') === end.toLocaleLowerCase('es')
+        );
+        if (!exists) world.connections.push({
+            from: start,
+            to: end,
+            discoveredBy: String(discoveredBy || '').slice(0, 80),
+            discoveredAt: new Date().toISOString()
+        });
+        try {
+            return this.writeVerified(this.worldKey, world);
+        } catch (error) {
+            console.error('No se pudo registrar el tramo recorrido:', error);
             return false;
         }
     },
@@ -388,6 +426,7 @@ const Save = {
             ...current,
             ...(world || {}),
             locations: Array.isArray(world && world.locations) ? world.locations : current.locations,
+            connections: Array.isArray(world && world.connections) ? world.connections : current.connections,
             entities: { ...current.entities, ...((world && world.entities) || {}) },
             facts: Array.isArray(world && world.facts) ? world.facts : current.facts,
             events: Array.isArray(world && world.events) ? world.events : current.events,
