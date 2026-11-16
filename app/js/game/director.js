@@ -72,7 +72,6 @@ const Director = {
             } else if (asks || this.has(text, ['hablo', 'converso', 'saludo', 'carretero', 'recoge leña', 'persona que recoge', 'vecino', 'persona que está recogiendo'])) {
                 // Hablar o acercarse a alguien junto al camino no equivale a entrar en el pueblo.
                 category = 'dialogue';
-                state.phase = 'exploration';
                 if (!state.characters.Vecino) {
                     state.characters.Vecino = {
                         name: 'Vecino',
