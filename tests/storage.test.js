@@ -244,3 +244,27 @@ test('al desplazarse, la visión anterior no permanece iluminada en la nueva zon
     assert.deepEqual(atlas.currentAndVisible.map(item => item.name), ['Puerto']);
     assert.equal(atlas.known.some(item => item.name === 'Calle del molino'), true);
 });
+
+
+test('conserva la nueva visibilidad cuando el narrador la declara explícitamente al desplazarse', () => {
+    const WorldMap = require('../app/js/game/map.js');
+    Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Exploración',
+        state: {
+            currentLocation: 'Plaza del pozo',
+            visitedLocations: ['Plaza del pozo'],
+            visibleLocations: ['Calle del molino'],
+            inventory: []
+        }
+    });
+    const nextAdventure = JSON.parse(JSON.stringify(Save.load().adventure));
+    nextAdventure.state.currentLocation = 'Calle del molino';
+
+    assert.equal(Session.addAction('Camino hasta el molino', 'Llegas al molino.', {
+        adventure: nextAdventure,
+        visibleLocations: ['Calle del molino', 'Puente viejo']
+    }), true);
+
+    const atlas = WorldMap.getAtlas(Save.getGlobalWorld(), Save.load().adventure.state, Save.load().adventure);
+    assert.deepEqual(atlas.currentAndVisible.map(item => item.name), ['Calle del molino', 'Puente viejo']);
+});
