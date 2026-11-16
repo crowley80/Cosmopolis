@@ -190,3 +190,32 @@ test('si falla la activación de una partida nueva, conserva la partida anterior
     assert.equal(Save.load().character.name, 'Ariadna');
     assert.equal(Save.list().length, 1);
 });
+
+
+test('sincroniza al mundo compartido solo las zonas declaradas visibles', () => {
+    const WorldMap = require('../app/js/game/map.js');
+    Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia A',
+        state: {
+            currentLocation: 'Plaza del pozo',
+            visitedLocations: ['Plaza del pozo'],
+            visibleLocations: ['Calle del molino'],
+            inventory: []
+        }
+    });
+    assert.equal(Session.addAction('Observo el entorno', 'Ves la calle cercana.', {
+        adventure: Save.load().adventure
+    }), true);
+
+    const shared = Save.getGlobalWorld();
+    assert.ok(shared.locations.some(item => item.name === 'Plaza del pozo'));
+    assert.ok(shared.locations.some(item => item.name === 'Calle del molino'));
+
+    Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia B',
+        state: { currentLocation: 'Puerto', visitedLocations: ['Puerto'], inventory: [] }
+    });
+    const atlas = WorldMap.getAtlas(Save.getGlobalWorld(), Save.load().adventure.state, Save.load().adventure);
+    assert.equal(atlas.known.some(item => item.name === 'Calle del molino'), true);
+    assert.equal(atlas.visited.some(item => item.name === 'Calle del molino'), false);
+});
