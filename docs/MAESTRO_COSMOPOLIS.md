@@ -1585,3 +1585,12 @@ La integración es selectiva y todavía no está validada. Las pruebas automatiz
 ### Corrección de prueba de aislamiento — 16/11/2026
 
 La primera ejecución CI de la rama de integración ejecutó 27 pruebas: 26 aprobadas y una fallida. El fallo estaba en la prueba añadida de aislamiento del vínculo de Athun: modificaba un objeto devuelto por una carga independiente y luego guardaba otra copia recién cargada. Se corrige el test para modificar y guardar la misma copia de la partida. No se ha cambiado la lógica de producción por este fallo de prueba. Se guardaron respaldos previos de los dos archivos. CI debe repetirse para validar la corrección.
+
+
+### Validación de navegador en integración — 16/11/2026
+
+La ejecución 173 de GitHub Actions (`43909804808`) completó correctamente el flujo Playwright en Chromium. Se validó el selector de partidas tras la migración y tras recargar, la apertura aprobada de Valdebruma, los límites de descubrimiento gradual, la permanencia de Athun, el inventario, atlas/mapa, historial, paneles, acciones narrativas, guardado y recuperación tras recarga. El informe del flujo confirma `INTERACTION_TESTS_OK` y `NARRATIVE REGRESSION: ... OK`.
+
+La vista móvil simulada de 390 × 844 px no presenta desbordamiento horizontal: documento 390 × 844 px; narración, panel de escritura y barra inferior quedan dentro de sus límites y en el orden correcto. La vista de escritorio de 1024 × 900 px también pasó sin desbordamiento ni errores JavaScript. La ejecución 348 de la suite de almacenamiento, en el mismo commit, aprobó 27/27 pruebas (0 fallos).
+
+Se observaron solicitudes de recursos con respuesta HTTP 404 en la consola del navegador; no produjeron errores JavaScript ni impidieron las pruebas funcionales o de disposición. Conviene identificar y corregir esos recursos en una limpieza posterior. Esta prueba usa Chromium emulado y no sustituye la validación táctil en un dispositivo Android físico.
