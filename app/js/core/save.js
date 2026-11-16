@@ -319,6 +319,7 @@ const Save = {
         const originalIndex = localStorage.getItem(this.indexKey);
         const originalSlot = localStorage.getItem(slotKey);
         const originalActive = localStorage.getItem(this.activeKey);
+        if (originalSlot === null) return false;
         const wasActive = this.getActiveId() === id;
         const next = { version: 1, saves: index.saves.filter(entry => entry.id !== id) };
 
@@ -327,6 +328,9 @@ const Save = {
                 throw new Error('No se pudo verificar el nuevo índice de partidas.');
             }
             localStorage.removeItem(slotKey);
+            if (localStorage.getItem(slotKey) !== null) {
+                throw new Error('No se pudo verificar la eliminación de los datos de la partida.');
+            }
             if (wasActive && !this.writeVerified(this.activeKey, { id: next.saves[0].id })) {
                 throw new Error('No se pudo activar la partida que sustituye a la eliminada.');
             }
@@ -340,7 +344,10 @@ const Save = {
                 if (originalIndex !== null && localStorage.getItem(this.indexKey) !== originalIndex) {
                     localStorage.setItem(this.indexKey, originalIndex);
                 }
-                if (originalActive !== null && localStorage.getItem(this.activeKey) !== originalActive) {
+                const currentActive = localStorage.getItem(this.activeKey);
+                if (originalActive === null && currentActive !== null) {
+                    localStorage.removeItem(this.activeKey);
+                } else if (originalActive !== null && currentActive !== originalActive) {
                     localStorage.setItem(this.activeKey, originalActive);
                 }
             } catch (rollbackError) {
