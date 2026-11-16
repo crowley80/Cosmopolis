@@ -107,6 +107,15 @@ const Narrator = {
                 state: compactState
             },
             persistentWorld: {
+                locations: shortList(world.locations, 30),
+                entities: Object.fromEntries(Object.entries(world.entities || {}).slice(-30).map(([key, entity]) => [
+                    key,
+                    {
+                        name: String(entity.name || key).slice(0, 80),
+                        role: String(entity.role || '').slice(0, 100),
+                        firstKnownLocation: String(entity.firstKnownLocation || '').slice(0, 120)
+                    }
+                ])),
                 facts: shortList(world.facts, 25),
                 events: shortList(world.events, 12),
                 relationships: Object.fromEntries(Object.entries(world.relationships || {}).slice(-20))
@@ -128,6 +137,7 @@ const Narrator = {
                     'No reveles pensamientos privados, identidades ocultas, causas secretas ni sucesos ocurridos fuera de su percepción salvo que una fuente fiable ya se los haya comunicado o descubierto.',
                     'Cuando una información sea incierta, exprésala como indicio, hipótesis, rumor o sospecha; nunca conviertas una conjetura en un hecho confirmado.',
                     'Si el jugador examina algo, describe primero señales observables y permite que las conclusiones dependan de las pistas disponibles y de sus capacidades.',
+                    'El mundo persistente es compartido entre protagonistas: usa sus localizaciones y entidades como referencias comunes. No traslades recuerdos, confianza, objetivos ni relaciones personales de un protagonista a otro; esos datos pertenecen a cada partida.',
                     'Respeta estrictamente los hechos, lugares, personajes, capacidades y consecuencias ya establecidos.',
                     'No decidas las intenciones del jugador ni fuerces una misión. Resuelve la acción que ha escrito.',
                     'No inventes que una acción ha tenido éxito si el contexto no lo justifica. Si algo es imposible o arriesgado, narra el intento y sus límites.',
