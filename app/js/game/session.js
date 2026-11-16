@@ -6,22 +6,28 @@ const Session = {
             const current = Save.load();
             // Una aventura nueva obtiene su propio registro si ya existía una aventura.
             // Si es la primera aventura de una ficha recién creada, completa ese mismo registro.
+            let saved = false;
             if (current && current.adventure) {
-                return Boolean(Save.createSlot(character, adventure, {
+                saved = Boolean(Save.createSlot(character, adventure, {
                     actions: [],
                     world: { events: [], facts: [], relationships: {} }
                 }));
-            }
-            if (current) {
-                return Save.replace({
+            } else if (current) {
+                saved = Save.replace({
                     ...current,
                     character,
                     adventure,
                     actions: [],
                     world: current.world || { events: [], facts: [], relationships: {} }
                 });
+            } else {
+                saved = Boolean(Save.createSlot(character, adventure));
             }
-            return Boolean(Save.createSlot(character, adventure));
+            if (saved) {
+                const state = adventure && adventure.state || {};
+                Save.addGlobalLocation(state.currentLocation || (adventure && adventure.location), character && character.name);
+            }
+            return saved;
         } catch (error) {
             console.error('No se pudo crear la nueva aventura:', error);
             return false;
