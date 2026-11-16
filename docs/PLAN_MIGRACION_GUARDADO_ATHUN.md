@@ -61,3 +61,12 @@ Solo lectura del código y documentación de la arquitectura. No se ha cambiado 
 **Validación directa:** se probó una partida heredada sin inventario ni estado de Athun; la carga añadió ambos y persistió el resultado. Una segunda carga no volvió a escribir. Resultado: correcto.
 
 **Aún pendiente:** índice de partidas múltiples, mundo global compartido, selección de protagonista/partida y pruebas de aislamiento entre partidas. La migración de Athun no debe confundirse con la migración completa de guardado.
+
+
+## Estado actualizado — 16 de noviembre de 2026
+
+La primera fase de protección de Athun ya está implementada también para partidas heredadas. `Save.load()` incorpora el grimorio al inventario y normaliza `state.athun.permanent` sin reiniciar el registro; la escritura es condicional e idempotente. La prueba directa confirma una sola escritura en la primera migración y ninguna en la segunda carga.
+
+La apertura de Valdebruma y la primera conversación están corregidas y cuentan con pruebas directas. Las pruebas de Chrome/Playwright se añadieron al workflow, pero el resultado remoto todavía no se ha podido consultar.
+
+La migración completa de guardado sigue pendiente: índice de múltiples partidas, mundo global compartido, selección de protagonista y aislamiento de progreso individual. No confundir la protección de Athun con la finalización de esas fases.
