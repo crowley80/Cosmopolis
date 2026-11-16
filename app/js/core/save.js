@@ -252,8 +252,11 @@ const Save = {
             updatedAt: now
         });
         const index = this.readJSON(this.indexKey) || { version: 1, saves: [] };
+        const previousActive = localStorage.getItem(this.activeKey);
         try {
-            if (!this.writeVerified(this.slotPrefix + id, slot)) return false;
+            if (!this.writeVerified(this.slotPrefix + id, slot)) {
+                throw new Error('No se pudo verificar el registro de la partida.');
+            }
             const next = {
                 version: 1,
                 saves: [...index.saves, {
@@ -265,16 +268,30 @@ const Save = {
                 }]
             };
             if (!this.writeVerified(this.indexKey, next)) {
-                localStorage.removeItem(this.slotPrefix + id);
-                return false;
+                throw new Error('No se pudo verificar el índice de partidas.');
             }
             if (!this.writeVerified(this.activeKey, { id })) {
-                this.writeVerified(this.indexKey, index);
-                localStorage.removeItem(this.slotPrefix + id);
-                return false;
+                throw new Error('No se pudo activar la nueva partida.');
             }
             return id;
         } catch (error) {
+            // Una creación fallida debe revertir cualquier escritura parcial.
+            try {
+                this.writeVerified(this.indexKey, index);
+            } catch (rollbackError) {
+                console.error('No se pudo restaurar el índice tras el fallo:', rollbackError);
+            }
+            try {
+                localStorage.removeItem(this.slotPrefix + id);
+            } catch (rollbackError) {
+                console.error('No se pudo retirar la partida incompleta:', rollbackError);
+            }
+            try {
+                if (previousActive === null) localStorage.removeItem(this.activeKey);
+                else localStorage.setItem(this.activeKey, previousActive);
+            } catch (rollbackError) {
+                console.error('No se pudo restaurar la partida activa anterior:', rollbackError);
+            }
             console.error('No se pudo crear la partida:', error);
             return false;
         }
