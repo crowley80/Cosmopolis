@@ -1438,3 +1438,7 @@ GitHub Actions, ejecución **125**: sintaxis JavaScript correcta y **16/16 prueb
 
 ### Refinamiento de visibilidad y estados del atlas — 16/11/2026
 El narrador entrega `visibleLocations` explícitamente a la sesión. Al desplazarse, esa lista sustituye la visión anterior; si el narrador no declara una nueva, la visión antigua se limpia. Las ubicaciones visitadas que vuelven a estar a la vista se clasifican como visibles mientras permanezcan en el campo de visión. Se añadió cobertura automatizada para ambos casos. La tanda actual contiene 18 pruebas; falta confirmar CI tras estos últimos ajustes.
+
+
+### CI 142 — atlas y visibilidad — 16/11/2026
+Comprobación de sintaxis JavaScript correcta y **18/18 pruebas aprobadas**. Quedan cubiertas la niebla, la clasificación actual/visible/visitado/conocido, el descubrimiento compartido, la limpieza de visión al desplazarse y la conservación de una nueva visibilidad explícita del narrador.
