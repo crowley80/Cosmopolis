@@ -1630,3 +1630,16 @@ En la auditoría se detectó que una acción podía publicar localizaciones, per
 Se añadió una prueba de regresión que simula un fallo de almacenamiento y comprueba que no se filtren lugares, rutas ni entidades, y que la posición y el historial personales permanezcan intactos. Se guardaron respaldos previos de los dos archivos de ejecución modificados.
 
 GitHub Actions, ejecución **397** (ID `43924727789`): comprobación de sintaxis JavaScript y suite de almacenamiento/mundo compartido completadas correctamente. La corrección está validada en CI. No se ha fusionado el PR #4 ni se ha modificado `main`. La validación táctil en Chrome sobre Android físico sigue pendiente.
+
+
+### Primer mapa visual para probar la exploración — 16/11/2026
+
+Se pasa del atlas textual a una primera representación visual dentro del panel «Mapa». El esquema coloca la ubicación actual en el centro y distribuye alrededor los lugares visibles, visitados y conocidos. Dibuja únicamente las conexiones direccionales que ya están registradas en el mundo compartido y cuyos dos extremos son conocidos. Los lugares desconocidos no se enumeran ni se convierten en nodos.
+
+Las posiciones del esquema son una distribución visual, no coordenadas, orientación ni distancias geográficas. Se mantiene esta limitación explícita para no presentar una topología provisional como cartografía real. La lista detallada del atlas y sus categorías sigue disponible debajo del dibujo.
+
+Se añadieron pruebas unitarias para verificar que el esquema no introduce lugares ni caminos no registrados, que la ubicación actual ocupa el centro y que un atlas vacío no genera contenido ficticio. Playwright incorpora una comprobación de interfaz que abre el panel del mapa y exige que represente al menos la ubicación actual. Se renovaron las referencias de caché de index.html.
+
+Respaldos previos: app/js/game/map.js.bak-20261116-mapa-jugable, app/js/app.js.bak-20261116-mapa-jugable, app/css/style.css.bak-20261116-mapa-jugable, tests/map.test.js.bak-20261116-mapa-jugable, index.html.bak-20261116-mapa-jugable y .github/workflows/visual-preview.yml.bak-20261116-mapa-jugable, además del respaldo de este documento creado antes de iniciar esta tanda.
+
+Estado: cambios en la rama integration/athun-multisave-main-20261116, PR #4 abierto y sin fusionar. Las ejecuciones de almacenamiento 420, 421, 424, 426 y 427 han completado correctamente; queda confirmar la ejecución Playwright 222, que ya incluye la nueva comprobación visual del mapa. La prueba táctil en Chrome/Android físico sigue pendiente. Próximo paso: convertir la representación esquemática en un recorrido que se pueda probar desde la interfaz y hacer que los descubrimientos se produzcan mediante acciones reales de la aventura.
