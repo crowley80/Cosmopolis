@@ -1390,3 +1390,7 @@ Plan técnico y alcance pendiente: `docs/PLAN_MIGRACION_GUARDADO_ATHUN.md`.
 
 ### Ampliación del mundo compartido — 16/11/2026
 Además de las localizaciones, el mundo global conserva la identidad básica de los NPC descubiertos (nombre, función y primera localización conocida). La confianza, los recuerdos, los objetivos y las relaciones continúan aislados en la partida de cada protagonista. La migración antigua importa lugares visitados y NPC conocidos sin convertir memorias personales en información global. El narrador recibe el contexto global con instrucciones explícitas de respetar esa separación.
+
+
+### Recuperación del índice de partidas — 16/11/2026
+Si el índice de partidas se elimina o queda ilegible, el almacenamiento reconstruye su listado a partir de las claves de las partidas individuales. Esta recuperación evita que una incidencia del índice haga invisibles registros que siguen almacenados. Se añadieron pruebas para este caso.
