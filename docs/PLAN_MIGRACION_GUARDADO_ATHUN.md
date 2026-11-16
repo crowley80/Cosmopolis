@@ -143,3 +143,9 @@ Pruebas nuevas: clasificación de estados, revelado explícito de ubicaciones vi
 
 ### Ajuste de visibilidad al desplazarse — 16/11/2026
 La sesión compara la zona anterior con la nueva. Si el protagonista cambia de ubicación y el estado narrativo arrastra sin cambios la lista `visibleLocations`, esa visibilidad antigua se limpia para que no permanezca iluminada en la nueva zona. Una lista visible nueva y explícita se conserva. Se añadió una prueba de regresión: la zona anterior pasa a conocimiento conocido, no a visión actual. La tanda actual contiene 16 pruebas previstas en total (2 de prólogo, 4 del atlas y 10 de almacenamiento/sesión); su ejecución CI aún debe confirmarse.
+
+
+### Integración narrativa de visibilidad — 16/11/2026
+El esquema estructurado del narrador incorpora `visibleLocations`, que se recalcula en cada respuesta y solo debe incluir lugares cercanos identificados explícitamente en la escena/contexto; no puede inventar topología ni destinos. La lista se limita a 12 nombres y se sincroniza al mundo compartido como descubrimiento, sin registrar visitas personales. Si el jugador cambia de zona y la respuesta arrastra sin cambios la visibilidad anterior, la sesión la limpia.
+
+GitHub Actions, ejecución **118**: sintaxis JavaScript correcta y **16/16 pruebas aprobadas** para el atlas, prólogo, guardado, migración y sesión. Esta ejecución corresponde a la primera versión completa del atlas con sincronización y limpieza de visibilidad; el cambio posterior de esquema del narrador requiere una nueva ejecución CI.
