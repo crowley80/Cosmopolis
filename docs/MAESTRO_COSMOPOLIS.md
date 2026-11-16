@@ -1465,3 +1465,12 @@ Se creó la rama `integracion/athun-multisave-main-20261116` desde el `main` act
 La integración conserva los `adventure.js` y `director.js` actuales de `main`, incluida la apertura gradual de Valdebruma. El `narrator.js` de `main` se mantuvo como base y solo se añadió el rechazo de altas de inventario que contengan Athun; `save.js` incorpora la migración por partida y conserva el vínculo, recuerdos, revelaciones y `permanent: true` del grimorio. `index.html` conserva los scripts narrativos de `main` y carga el nuevo módulo del atlas y las versiones de caché de la integración.
 
 Se crearon respaldos previos de los nueve archivos existentes que se iban a actualizar. No se ha fusionado esta rama con `main` ni se ha cerrado el PR anterior. GitHub Actions, ejecución 237: comprobación de sintaxis correcta y 25/25 pruebas aprobadas (atlas, prólogo, migración, aislamiento, mundo compartido y fallos de almacenamiento). La validación visual en Chrome/Android continúa pendiente.
+
+
+### Regresión de diálogo desde el camino y descubrimiento gradual — 16/11/2026
+
+Las pruebas narrativas nuevas detectaron que la expresión «me acerco y pregunto a la persona que recoge leña» se clasificaba como movimiento por contener «me acerco», y adelantaba al protagonista a las primeras calles. Se corrigió `Director.respond()` para priorizar las entradas explícitas al pueblo y resolver el diálogo con el habitante antes de los movimientos genéricos. Hablar con quien recoge leña mantiene ubicación y fase de llegada; solo una orden explícita de entrar o seguir hacia las primeras calles cambia de zona.
+
+Se añadieron regresiones automatizadas para: apertura en el camino sin conocer a Elia, pozo o campana; conversación junto al camino sin entrar; entrada al pueblo sin revelaciones prematuras; descubrimiento e inspección del pozo sin revelar la campana; y revelación de la campana solo al provocar una respuesta mágica. Se actualizó la versión de caché del director en `index.html`.
+
+**Validación:** GitHub Actions, ejecución 265: sintaxis JavaScript correcta y 30/30 pruebas aprobadas. La validación visual y táctil en Chrome/Android sigue pendiente.
