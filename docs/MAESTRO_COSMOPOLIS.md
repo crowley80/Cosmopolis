@@ -1680,3 +1680,14 @@ La recuperación selectiva de los avances narrativos y del agente local quedó v
 - GitHub Actions «Visual preview», ejecución 230 (ID `43939916229`): completada correctamente; Playwright renderizó y comprobó la interfaz móvil y de escritorio.
 
 Estas ejecuciones sustituyen el estado de validación pendiente indicado en la sección de recuperación anterior. Son pruebas automatizadas en Chromium simulado; no equivalen a una prueba táctil en un dispositivo Android físico. El PR #4 sigue abierto en borrador, sin fusionar, y `main` permanece intacta.
+
+### Coherencia espacial de las interacciones narrativas — 16/11/2026
+La revisión de `Director.respond()` detectó que algunas interacciones podían resolverse a distancia: bastaba con mencionar el pozo aunque el protagonista estuviera en otra ubicación, y Elia podía responder o recibir ofrecimientos aunque su ubicación registrada fuera distinta de la del protagonista.
+
+- El pozo solo admite inspección, manipulación o interacción mágica contextual cuando la ubicación actual es `Plaza del pozo` y el lugar ya ha sido descubierto.
+- Elia solo participa en diálogos específicos y recibe aumentos de confianza u ofrecimientos cuando su ubicación coincide con la ubicación actual del protagonista.
+- Si Elia es conocida pero está en otro lugar, preguntar por ella no simula una conversación presencial ni modifica su confianza.
+- Se añadieron regresiones Playwright para comprobar la inspección remota del pozo, las preguntas a Elia fuera de escena y los ofrecimientos a distancia.
+- Se conservaron copias previas de `director.js`, `visual-preview.yml` y este documento con el sufijo `.bak-20261116-presencia-escena`.
+
+**Validación pendiente:** las nuevas regresiones deben completar GitHub Actions en la rama de integración. La prueba táctil en Chrome/Android físico continúa pendiente.
