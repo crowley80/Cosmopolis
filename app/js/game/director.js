@@ -94,6 +94,10 @@ const Director = {
             if (atWell) {
                 reply = 'Concentras tu poder hacia el viejo pozo. La cadena más cercana vibra durante un instante. Desde el fondo llega una respuesta: una campanada apagada, como si algo hubiera notado tu presencia. La losa no se mueve.';
                 state.bellInvestigated = true;
+                state.bellDiscovered = true;
+                state.bellRings = Math.max(1, Number(state.bellRings) || 0);
+                const bellFact = 'El pozo ha respondido a la magia con un sonido parecido a una campanada.';
+                if (!facts.includes(bellFact)) facts.push(bellFact);
                 event = 'Una manifestación de poder ha provocado una respuesta desde el pozo.';
                 if (!clues.includes('El pozo responde a la magia')) clues.push('El pozo responde a la magia');
             } else {
@@ -118,22 +122,26 @@ const Director = {
         } else if (atWell && investigates) {
             category = 'investigation';
             state.wellInspected = true;
-            state.bellInvestigated = true;
-            reply = 'Te acercas al pozo y examinas la losa. Las cadenas están oxidadas, pero algunos eslabones presentan arañazos recientes. En la piedra descubres tres símbolos casi borrados: una montaña, una puerta y una línea ondulada que podría representar agua... o sonido.\n\nElia se agacha a tu lado.\n\n—Eso no estaba ahí ayer —murmura.';
-            if (!clues.includes('Tres símbolos grabados en la losa')) clues.push('Tres símbolos grabados en la losa');
-            if (!facts.includes('La losa presenta arañazos recientes y tres símbolos.')) facts.push('La losa presenta arañazos recientes y tres símbolos.');
-            event = 'Se han descubierto tres símbolos y arañazos recientes en la losa.';
+            state.wellInspected = true;
+            reply = 'Te acercas al pozo y examinas la piedra con detenimiento. La superficie está desgastada por el tiempo y descubres tres símbolos casi borrados: una montaña, una puerta y una línea ondulada que podría representar agua. No encuentras todavía una explicación para ellos.';
+            if (!clues.includes('Tres símbolos grabados en el pozo')) clues.push('Tres símbolos grabados en el pozo');
+            if (!facts.includes('El pozo presenta tres símbolos casi borrados.')) facts.push('El pozo presenta tres símbolos casi borrados.');
+            event = 'Se han descubierto tres símbolos casi borrados en el pozo.';
         } else if (atWell && opens) {
             category = 'object';
             if (state.wellInspected) {
                 reply = 'Tiras de las cadenas y pruebas a mover la losa. El metal protesta con un chirrido, pero el cierre resiste. No parece una simple tapa: alguien la aseguró para que no pudiera abrirse fácilmente. Necesitarás encontrar otra manera.';
             } else {
-                reply = 'Te dispones a mover la losa, pero las cadenas están tensas y el cierre no cede. Antes de forzarlo quizá convendría examinarlo. Elia te observa con evidente inquietud.';
+                reply = eliaKnown
+                    ? 'Te dispones a mover la losa, pero las cadenas están tensas y el cierre no cede. Elia te observa con evidente inquietud.'
+                    : 'Te dispones a mover la losa, pero las cadenas están tensas y el cierre no cede. Quizá convendría examinarlo antes de forzarlo.';
             }
             event = `${name} ha intentado abrir el pozo.`;
         } else if (atWell) {
             category = 'investigation';
-            reply = 'El viejo pozo ocupa el centro de la plaza. La losa está sellada con cadenas y la piedra del brocal está húmeda, aunque no ha llovido. Desde el fondo llega un silencio extraño, como si el pozo estuviera esperando.';
+            reply = bellKnown
+                ? 'El viejo pozo ocupa el centro de la plaza. La losa está sellada y desde el fondo llega aquel sonido apagado que ya has oído.'
+                : 'El viejo pozo ocupa el centro de la plaza. La piedra del brocal está desgastada por el uso y la intemperie. No adviertes nada más fuera de lo corriente.';
             event = `${name} ha prestado atención al pozo.`;
         } else if (addressedCharacter) {
             category = 'dialogue';
@@ -166,7 +174,7 @@ const Director = {
                 reply = 'Dejas atrás la plaza y llegas a la Posada del Tejón, un edificio bajo con ventanas empañadas. Dentro huele a sopa, madera húmeda y conversaciones interrumpidas. La posadera te mira como si estuviera intentando recordar si ya te ha visto.';
             } else if (this.has(text, ['calle', 'mercado', 'tiendas'])) {
                 state.currentLocation = 'Calle Mayor';
-                reply = 'Te adentras en la Calle Mayor. Los comerciantes siguen atendiendo sus puestos, aunque todos parecen evitar mencionar el pozo. Una campanilla de tienda suena y tres personas se sobresaltan al mismo tiempo.';
+                reply = 'Te adentras en la Calle Mayor. Los comerciantes atienden sus puestos, los vecinos hacen sus compras y varias conversaciones se mezclan con el ruido habitual de la actividad diaria.';
             } else if (this.has(text, ['elia'])) {
                 if (eliaKnown) {
                     state.currentLocation = state.characters.Elia.location || state.currentLocation;
