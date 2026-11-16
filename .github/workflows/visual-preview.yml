@@ -134,8 +134,10 @@ jobs:
               const awayState = JSON.parse(JSON.stringify(magic.adventure));
               awayState.state.currentLocation = 'Calle Mayor';
               awayState.location = 'Calle Mayor';
+              awayState.state.wellInspected = false;
               const remoteWell = Director.respond('Examino el pozo con cuidado.', player, awayState, []);
               if (remoteWell.state.wellInspected) fail('se puede inspeccionar el pozo desde otra ubicación');
+              if (/tres simbolos|piedra con detenimiento/i.test(remoteWell.reply)) fail('se narra una inspección presencial del pozo a distancia');
 
               const eliaAway = JSON.parse(JSON.stringify(awayState));
               eliaAway.state.eliaMet = true;
