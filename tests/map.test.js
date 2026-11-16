@@ -72,3 +72,19 @@ test('una zona visitada vuelve a mostrarse como visible cuando está a la vista 
     ), true);
     assert.equal(atlas.visited.some(item => item.name === 'Calle del molino'), false);
 });
+
+
+test('el atlas muestra solo conexiones explícitas entre lugares conocidos', () => {
+    const atlas = WorldMap.getAtlas(
+        { locations: ['Plaza del pozo', 'La Posada del Tejón', 'Puerto'], connections: [
+            { from: 'Plaza del pozo', to: 'La Posada del Tejón' },
+            { from: 'Puerto', to: 'Lugar no registrado' }
+        ] },
+        { currentLocation: 'La Posada del Tejón', visitedLocations: ['Plaza del pozo', 'La Posada del Tejón'] },
+        {}
+    );
+
+    assert.deepEqual(atlas.connections, [
+        { from: 'Plaza del pozo', to: 'La Posada del Tejón' }
+    ]);
+});
