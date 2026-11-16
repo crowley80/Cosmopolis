@@ -1456,3 +1456,127 @@ Se implementó también una migración idempotente en `Save.load()` para partida
 **Pruebas automatizadas añadidas al workflow:** la misma batería narrativa, protección de Athun frente a la IA y migración de una partida antigua. El workflow se activa con los cambios de `index.html` y del propio archivo de workflow. No se ha podido consultar su resultado remoto en esta sesión y no se afirma que la prueba visual en Android esté completada.
 
 **Commits recientes:** guardado `99d7a19` y `db7d4a3`; prueba de migración `7eb287f`; caché `b9c37b1`; documentación `3a28313` y `3f2d582`. Se conservaron respaldos antes de las modificaciones. No se ha eliminado ni sobrescrito deliberadamente ninguna partida guardada.
+
+
+## IMPLEMENTACIÓN INICIAL DE PARTIDAS MÚLTIPLES — 16 DE NOVIEMBRE DE 2026
+
+Se ha iniciado la implementación en la rama independiente `feat/athun-multisave-world`, sin modificar `main`.
+
+- Se creó un índice de partidas, un identificador de partida activa y un registro independiente por protagonista.
+- La partida antigua `cosmopolis_save` se migra como partida heredada y su clave original se conserva intacta.
+- Se incorporaron creación, listado y activación de partidas; la ficha puede editarse sin crear otra partida.
+- Una aventura nueva crea un registro independiente cuando ya existe una aventura, evitando archivar y reemplazar la anterior.
+- Se separó el almacenamiento del mundo compartido. Las localizaciones descubiertas se registran globalmente y aparecen en el mapa de los protagonistas.
+- Se añadió el selector inicial de partidas y accesos para cambiar de historia o crear otro protagonista.
+- Athun se repone en la normalización del inventario y el narrador no puede retirarlo mediante `itemsToRemove`.
+- Se añadieron pruebas automatizadas y un flujo de GitHub Actions para comprobar sintaxis y almacenamiento.
+- Se guardaron copias de seguridad de los archivos de ejecución modificados y de este documento.
+
+**Estado de validación:** implementación en rama de trabajo; GitHub Actions ha superado la comprobación de sintaxis y las 6 pruebas automatizadas de almacenamiento (ejecución 48, 16/11/2026); todavía no probada en Chrome/Android. No se incorpora a `main` hasta completar la revisión funcional en móvil. El mundo global comparte localizaciones en esta fase. No se migran automáticamente hechos, relaciones ni acontecimientos personales al mundo global. La incorporación a `main` queda supeditada a las pruebas y revisión del pull request.
+
+Plan técnico y alcance pendiente: `docs/PLAN_MIGRACION_GUARDADO_ATHUN.md`.
+
+
+### Ampliación del mundo compartido — 16/11/2026
+Además de las localizaciones, el mundo global conserva la identidad básica de los NPC descubiertos (nombre, función y primera localización conocida). La confianza, los recuerdos, los objetivos y las relaciones continúan aislados en la partida de cada protagonista. La migración antigua importa lugares visitados y NPC conocidos sin convertir memorias personales en información global. El narrador recibe el contexto global con instrucciones explícitas de respetar esa separación.
+
+
+### Recuperación del índice de partidas — 16/11/2026
+Si el índice de partidas se elimina o queda ilegible, el almacenamiento reconstruye su listado a partir de las claves de las partidas individuales. Esta recuperación evita que una incidencia del índice haga invisibles registros que siguen almacenados. Se añadieron pruebas para este caso.
+
+
+### Continuidad narrativa por protagonista — 16/11/2026
+El contexto del narrador mantiene separados el mundo global y el mundo personal de la partida activa. Los hechos, eventos y relaciones históricos de la partida heredada siguen disponibles para su protagonista; no se convierten en verdades universales. El selector también muestra el título de cada aventura para distinguir varias historias del mismo personaje.
+
+
+## PRESENTACIÓN ÚNICA DEL PRÓLOGO — 16/11/2026
+
+Se incorpora el prólogo literal aprobado por el usuario el 15/11/2026. En una instalación nueva se muestra antes de la creación del personaje; al pulsar «Continuar» se registra `athun_intro_seen_v1` y se abre el formulario de creación. En arranques posteriores, si ya existe una partida, se muestra directamente el selector de partidas y no se repite el prólogo. Si la migración del guardado heredado falla, la aplicación muestra un aviso y no inicia una ficha nueva que pueda confundir al jugador o poner en riesgo la recuperación.
+
+Se guardaron copias previas de `app/js/app.js`, `index.html` y este documento con el sufijo `.bak-20261116-prologo-unico`. La caché del script principal se renovó. Se añadieron pruebas automatizadas para comprobar el texto, el registro de primera presentación y la omisión del prólogo cuando ya existen partidas. Pendiente confirmar la ejecución de CI de esta nueva tanda y probar el flujo en Chrome/Android.
+
+
+### Validación posterior del prólogo y del guardado — 16/11/2026
+GitHub Actions, ejecución 76: comprobación de sintaxis JavaScript correcta y 10/10 pruebas aprobadas. Se incluyen dos pruebas nuevas del prólogo de primera ejecución y ocho pruebas de almacenamiento, migración, aislamiento, recuperación, permanencia de Athun e integridad ante fallos de escritura. La prueba visual y funcional en Chrome/Android continúa pendiente; la rama no se fusiona hasta completarla.
+
+
+## PRIMERA FASE DEL ATLAS DE EXPLORACIÓN — 16/11/2026
+
+Se incorpora el módulo de cartografía `app/js/game/map.js` y se renueva el panel de mapa:
+- Distingue la zona actual y otras zonas explícitamente visibles, lugares visitados por el protagonista y lugares conocidos por descubrimientos compartidos.
+- El conocimiento geográfico se comparte entre protagonistas; la lista de visitas y la visibilidad actual permanecen ligadas a cada aventura.
+- La sesión registra la ubicación actual y las zonas que el estado declare visibles.
+- El terreno nunca descubierto no se enumera ni revela nombres.
+
+**Límite deliberado:** todavía no se representa una cuadrícula geográfica ni se inventan rutas, coordenadas o distancias. La aventura inicial no contiene datos espaciales suficientes para dibujar un mapa fiable. Esta fase implementa la clasificación y la niebla de información; la cartografía espacial real queda pendiente de datos explícitos de posición/conexión y de su integración narrativa.
+
+Se añadieron pruebas unitarias del atlas y una prueba de integración para comprobar que una ubicación visible se comparte como conocimiento, pero no como visita personal de otro protagonista. Pendiente: CI de esta tanda y prueba visual/táctil en Chrome para Android.
+
+
+### Control de niebla durante desplazamientos — 16/11/2026
+Al cambiar de ubicación, la sesión evita arrastrar la visibilidad de la zona anterior: si `visibleLocations` no cambia explícitamente en el nuevo estado, se limpia. Los lugares descubiertos permanecen como conocimiento compartido, pero dejan de figurar como entorno visible. Se añade una prueba de regresión para este comportamiento.
+
+
+### Visibilidad cercana calculada por el narrador — 16/11/2026
+El formato estructurado del narrador incluye `visibleLocations`, recalculado en cada respuesta. Solo debe contener lugares próximos que estén identificados explícitamente; no puede inventar rutas, coordenadas ni destinos. La sesión comparte esos descubrimientos con el mundo, mientras las visitas siguen siendo personales. Si se cambia de zona y el narrador arrastra la lista anterior sin cambios, la sesión la limpia para evitar que la zona previa siga apareciendo como visible. La CI 118 aprobó 16/16 pruebas antes de esta ampliación del esquema; falta confirmar la nueva ejecución.
+
+
+### Validación de la integración narrativa del atlas — 16/11/2026
+GitHub Actions, ejecución **125**: sintaxis JavaScript correcta y **16/16 pruebas aprobadas** tras incorporar `visibleLocations` al esquema del narrador. La niebla del atlas y su sincronización con el mundo compartido quedan cubiertas por pruebas automatizadas; la validación visual y táctil en Chrome/Android continúa pendiente.
+
+
+### Refinamiento de visibilidad y estados del atlas — 16/11/2026
+El narrador entrega `visibleLocations` explícitamente a la sesión. Al desplazarse, esa lista sustituye la visión anterior; si el narrador no declara una nueva, la visión antigua se limpia. Las ubicaciones visitadas que vuelven a estar a la vista se clasifican como visibles mientras permanezcan en el campo de visión. Se añadió cobertura automatizada para ambos casos. La tanda actual contiene 18 pruebas; falta confirmar CI tras estos últimos ajustes.
+
+
+### CI 142 — atlas y visibilidad — 16/11/2026
+Comprobación de sintaxis JavaScript correcta y **18/18 pruebas aprobadas**. Quedan cubiertas la niebla, la clasificación actual/visible/visitado/conocido, el descubrimiento compartido, la limpieza de visión al desplazarse y la conservación de una nueva visibilidad explícita del narrador.
+
+
+### Primera red de caminos descubiertos — 16/11/2026
+Se añade al mundo compartido un registro de conexiones direccionales únicamente cuando una partida confirma un desplazamiento entre dos localizaciones distintas. El atlas puede mostrar esos tramos como caminos recorridos. No se deduce el trayecto inverso, la distancia, la orientación ni la posición geográfica; tampoco se enlazan lugares solo porque aparezcan juntos en una narración. Las conexiones se conservan al cambiar de protagonista y se filtran para no mostrar extremos que no estén registrados como lugares conocidos. Se crean copias previas de los archivos modificados con el sufijo `.bak-20261116-rutas`. GitHub Actions, ejecución **169**, completó la comprobación de sintaxis y **20/20 pruebas aprobadas**; incluye el registro de tramos y la protección frente a conexiones inversas inventadas.
+
+
+### Validación de caminos compartidos entre protagonistas — 16/11/2026
+GitHub Actions, ejecución **174** (`43832755166`): sintaxis JavaScript correcta y **21/21 pruebas aprobadas**. La nueva prueba confirma que una ruta descubierta por un protagonista aparece en el atlas de otro, pero no convierte el destino en una visita personal de ese segundo protagonista.
+
+
+### Auditoría de rutas y coherencia de identidad — 16/11/2026
+La revisión de la rama detectó que el sistema registraba una conexión compartida ante cualquier cambio de ubicación, aunque la respuesta narrativa no estuviera clasificada como desplazamiento. Se ha limitado el registro de caminos a respuestas con categoría `movement`; los cambios de ubicación por otras causas siguen actualizando la posición y la visita personal, pero no fabrican un tramo transitable. También se ha actualizado la identidad del prompt del narrador al nombre vigente «Athun: el grimorio oscuro». Se añade una prueba de regresión para el caso no-movimiento. La validación automatizada de estos cambios queda pendiente de la ejecución CI posterior al commit.
+
+
+### CI 195 — rutas confirmadas y coherencia de Athun — 16/11/2026
+GitHub Actions, ejecución **195** (`43836494217`): comprobación de sintaxis JavaScript correcta y **22/22 pruebas aprobadas**. Incluye la regresión que impide crear conexiones del atlas cuando cambia la ubicación por una acción que no está clasificada como desplazamiento. También se valida la actualización del prompt del narrador y el resto de pruebas de guardado, prólogo, atlas y mundo compartido.
+
+
+### Protección de Athun como instancia única — 16/11/2026
+
+Durante una revisión adicional se detectó un caso límite: aunque el narrador no podía retirar Athun, podía proponer añadir una segunda entrada con un nombre distinto (por ejemplo, «Athun duplicado»). La normalización del guardado ahora elimina todas las entradas que contengan el identificador Athun y conserva una única pertenencia canónica: «Athun — grimorio consciente». El procesador narrativo también rechaza explícitamente cualquier alta de inventario que contenga Athun.
+
+Se añadieron respaldos previos de app/js/core/save.js, app/js/game/narrator.js, tests/storage.test.js, index.html y este documento maestro. Se incorporó una prueba de regresión para asegurar que las variantes duplicadas se normalizan a una sola instancia y se actualizó la versión de caché de save.js.
+
+**Estado de validación:** cambios guardados en la rama feat/athun-multisave-world. GitHub Actions, ejecución 210, terminó correctamente: sintaxis JavaScript correcta y 23/23 pruebas aprobadas, incluida la nueva prueba de unicidad de Athun. La validación en Chrome/Android continúa pendiente; no se ha fusionado el pull request.
+
+
+### Eliminación transaccional de partidas — 16/11/2026
+
+La revisión del ciclo de borrado encontró un riesgo de pérdida parcial: el índice se actualizaba y el archivo de partida se eliminaba antes de confirmar el cambio de selección activa. Si fallaba esa última escritura, el método devolvía error aunque la partida ya hubiera desaparecido. Se ha endurecido `Save.deleteSlot()` para conservar los valores previos del índice, registro y partida activa, y restaurarlos ante cualquier fallo durante la operación. La última partida continúa protegida contra eliminación.
+
+Se añadieron respaldos previos de `app/js/core/save.js`, `tests/storage.test.js`, este documento y el plan de migración. Se incorporó una prueba que simula el fallo al cambiar la partida activa, comprueba la restauración íntegra y después verifica que el borrado normal funciona. GitHub Actions, ejecución 232, terminó correctamente: sintaxis JavaScript válida y 25/25 pruebas aprobadas. Incluye fallos simulados de eliminación y restauración de la partida activa, borrado correcto, migración del vínculo/recuerdos de Athun y las pruebas previas de partidas múltiples, mundo compartido y atlas. La validación visual en Chrome/Android sigue pendiente.
+
+
+La migración de cada partida también conserva el vínculo, los recuerdos y las revelaciones de Athun y fuerza su identidad canónica y `permanent: true`. Se amplió la prueba de partida heredada para comprobarlo. Validación CI: ejecución 232, 25/25 pruebas aprobadas.
+
+
+### Aislamiento del vínculo personal de Athun — 16/11/2026
+
+Se amplía la cobertura de partidas múltiples para verificar que el vínculo, los recuerdos y las revelaciones de Athun pertenecen a cada protagonista y no se mezclan al alternar entre partidas. La prueba modifica el vínculo y añade un recuerdo en una partida, cambia a otra y vuelve a la primera para comprobar que ambos estados se mantienen aislados y persistentes. También se cubre que la última partida no pueda eliminarse y que Athun siga presente en ella.
+
+Se crearon respaldos previos de `tests/storage.test.js` y este documento maestro con el sufijo `.bak-20261116-athun-state-isolation`. La validación CI de estas dos pruebas nuevas queda pendiente; no se ha realizado todavía validación manual en Android.
+
+
+### Integración selectiva sobre main — 16/11/2026
+
+Se prepara una rama de integración basada en el main vigente para evitar revertir las correcciones narrativas incorporadas después del punto común de las ramas. Se trasladan las partidas múltiples, el mundo persistente compartido, el atlas, el selector y las pruebas; se conservan las correcciones actuales de apertura de Valdebruma, descubrimiento gradual, estado de Elia y protección permanente de Athun. La normalización de la nueva capa de guardado sustituye la migración simple de una sola clave por una migración compatible a un registro individual, sin modificar la clave heredada original.
+
+La integración es selectiva y todavía no está validada. Las pruebas automatizadas y la comparación funcional con main deben completarse antes de proponer la fusión. No se ha ejecutado en Chrome/Android.
