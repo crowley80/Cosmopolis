@@ -1,0 +1,488 @@
+name: Visual preview
+on:
+  push:
+    branches: [main, integration/athun-multisave-main-20261116]
+    paths:
+      - 'app/**'
+      - 'index.html'
+      - '.github/workflows/visual-preview.yml'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mobile-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start local server
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 > /tmp/cosmopolis-http.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8080/index.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/cosmopolis-http.log
+          exit 1
+      - name: Render adventure on mobile and desktop
+        run: |
+          mkdir -p artifacts
+          node <<'NODE'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const character = {
+              name: 'Ariadna',
+              nature: 'Humana',
+              appearance: 'Viajera de cabello oscuro y ojos atentos.',
+              history: 'Cartógrafa en busca de lugares olvidados.',
+              abilities: 'Observación y orientación.',
+              personality: 'Curiosa y prudente.'
+            };
+            const adventure = {
+              id: 'preview',
+              title: 'La campana bajo la montaña',
+              location: 'Valdebruma',
+              text: 'El camino desciende entre montañas cubiertas de niebla. Al final aparece Valdebruma, un pueblo de tejados oscuros, chimeneas humeantes y calles empedradas.\n\nAriadna, llevas poco tiempo en el pueblo cuando escuchas una campanada. Es profunda, lenta y parece subir desde debajo de tus pies.\n\nLa gente se detiene. Nadie mira hacia el campanario de la plaza. Todos miran hacia el viejo pozo de piedra, cerrado con una losa y varias cadenas oxidadas.\n\nUna mujer se abre paso entre los vecinos. Lleva un tubo de mapas colgado al hombro y tiene barro hasta las rodillas.\n\n—Me llamo Elia. Soy cartógrafa —dice, sin apartar los ojos del pozo—. Esa campana lleva treinta años sin existir. Y, sin embargo, acaba de sonar por tercera vez esta semana.\n\nSe vuelve hacia ti.\n\n—No te conozco, pero pareces alguien capaz de escuchar antes de salir corriendo. Necesito ayuda.\n\nElia espera tu respuesta.',
+              state: { currentLocation: 'Plaza del pozo', time: 'Mañana', characters: { Elia: { role: 'Cartógrafa', location: 'Plaza del pozo', attitude: 'Cautelosa', personalGoal: 'Averiguar por qué suenan las campanas.', goalHistory: [], trust: 0 } } },
+              createdAt: new Date().toISOString()
+            };
+            const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+            await context.addInitScript(({ character, adventure }) => {
+              if (!localStorage.getItem('cosmopolis_save')) { localStorage.setItem('cosmopolis_save', JSON.stringify({ character, adventure, actions: [], world: { events: [], facts: [], relationships: {} } })); }
+            }, { character, adventure });
+            const page = await context.newPage();
+            page.on('pageerror', error => console.error('PAGE ERROR:', error.message));
+            await page.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
+            const continueSave = page.locator('[data-load-save]').first();
+            if (await continueSave.count()) await continueSave.click();
+            await page.locator('.adventure-screen').waitFor();
+
+            // Regresión narrativa: apertura aprobada, descubrimientos graduales y Athun permanente.
+            await page.evaluate(async () => {
+              const player = { name: 'Ariadna' };
+              const opening = Adventure.createOpening(player);
+              const fail = message => { throw new Error('NARRATIVE REGRESSION: ' + message); };
+              if (opening.location !== 'Camino de entrada a Valdebruma') fail('ubicación inicial incorrecta');
+              if (opening.state.phase !== 'arrival') fail('fase inicial incorrecta');
+              if (!opening.text.startsWith('El camino lleva un buen rato descendiendo entre las montañas.')) fail('texto de apertura incorrecto');
+              if (!opening.text.endsWith('Tu historia en Valdebruma comienza aquí.')) fail('cierre de apertura incorrecto');
+              if (opening.state.eliaMet !== false || opening.state.characters.Elia) fail('Elia aparece antes de ser conocida');
+              if (opening.state.wellDiscovered || opening.state.bellDiscovered || opening.state.bellRings !== 0) fail('el pozo o la campana se revelan prematuramente');
+              if (!opening.state.inventory.some(item => String(item).toLowerCase().includes('athun'))) fail('Athun no está en el inventario inicial');
+              if (!opening.state.athun || opening.state.athun.permanent !== true) fail('Athun no está protegido como pertenencia permanente');
+
+              const previousStorage = Array.from({ length: localStorage.length }, (_, index) => {
+                const key = localStorage.key(index);
+                return [key, localStorage.getItem(key)];
+              });
+              try {
+                localStorage.clear();
+                const legacyRaw = JSON.stringify({ adventure: { state: { inventory: [] } }, actions: [] });
+                localStorage.setItem(Save.key, legacyRaw);
+                const legacySave = Save.load();
+                if (!legacySave.adventure.state.inventory.some(item => String(item).toLowerCase().includes('athun'))) fail('la partida antigua no recibe a Athun');
+                const activeId = Save.getActiveId();
+                const migratedKey = Save.slotPrefix + activeId;
+                const persistedSlot = JSON.parse(localStorage.getItem(migratedKey));
+                if (!persistedSlot.adventure.state.athun || persistedSlot.adventure.state.athun.permanent !== true) fail('la migración no persiste la protección de Athun');
+                if (localStorage.getItem(Save.key) !== legacyRaw) fail('la migración modifica la clave heredada original');
+                const beforeSecondLoad = localStorage.getItem(migratedKey);
+                const migratedAgain = Save.load();
+                if (!migratedAgain.adventure.state.inventory.some(item => String(item).toLowerCase().includes('athun'))) fail('la migración no es estable al cargar de nuevo');
+                if (localStorage.getItem(migratedKey) !== beforeSecondLoad) fail('la segunda carga vuelve a escribir la partida migrada');
+              } finally {
+                localStorage.clear();
+                previousStorage.forEach(([key, value]) => { if (key !== null) localStorage.setItem(key, value); });
+              }
+
+              const question = Director.respond('Pregunto si ocurre algo importante en el pueblo.', player, opening, []);
+              if (/elia|campana|pozo/i.test(question.reply)) fail('una pregunta inicial revela el misterio');
+              if (!question.state.characters.Vecino || question.state.phase !== 'exploration') fail('no se habilita el primer diálogo con un habitante');
+              const neighborTalk = Director.respond('Hablo con el vecino.', player, question.adventure, [{ text: 'Pregunto por el pueblo' }]);
+              if (!/vecino/i.test(neighborTalk.reply) || /elia|campana|pozo/i.test(neighborTalk.reply)) fail('el primer habitante no conversa de forma coherente');
+              const entered = Director.respond('Entro en el pueblo por el camino principal.', player, opening, []);
+              if (entered.state.phase !== 'exploration' || entered.state.currentLocation !== 'Primeras calles de Valdebruma') fail('no se puede entrar al pueblo');
+              const localQuestion = Director.respond('Pregunto a los vecinos qué sucede.', player, entered.adventure, [{ text: 'Entro en el pueblo' }]);
+              if (/elia|campana|pozo/i.test(localQuestion.reply)) fail('los habitantes revelan el misterio antes de tiempo');
+              const plaza = Director.respond('Camino hacia la plaza.', player, localQuestion.adventure, [{ text: 'Entro en el pueblo' }, { text: 'Pregunto a los vecinos' }]);
+              if (!plaza.state.wellDiscovered || !/pozo/i.test(plaza.reply)) fail('la exploración de la plaza no descubre el pozo');
+              const inspect = Director.respond('Examino el pozo con cuidado.', player, plaza.adventure, [{ text: 'Entro en el pueblo' }, { text: 'Camino hacia la plaza' }]);
+              if (/elia|campana/i.test(inspect.reply) || inspect.state.bellDiscovered) fail('examinar el pozo revela a Elia o la campana prematuramente');
+              const magic = Director.respond('Invoco magia sobre el pozo.', player, inspect.adventure, [{ text: 'Entro en el pueblo' }, { text: 'Camino hacia la plaza' }, { text: 'Examino el pozo' }]);
+              if (!magic.state.bellDiscovered || !/campanada|campana/i.test(magic.reply)) fail('la magia no descubre la respuesta de la campana');
+
+              const originalFetch = window.fetch;
+              const fakeNarrative = {
+                reply: 'Athun permanece contigo.',
+                event: 'El grimorio ha permanecido en el inventario.',
+                category: 'other',
+                location: 'Plaza del pozo',
+                visibleLocations: [],
+                factsToAdd: ['Hay un pozo antiguo en la plaza.', 'Una campana ha sonado desde el pozo.'],
+                cluesToAdd: [],
+                relationshipChanges: [],
+                itemsToAdd: [],
+                itemsToRemove: ['Athun'],
+                characterMemoriesToAdd: [],
+                charactersToAdd: [{ name: 'Elia', role: 'Cartógrafa', location: 'Plaza del pozo', attitude: 'Cautelosa', goal: 'Investigar los mapas', memory: 'Ha conocido al protagonista.' }],
+                characterUpdates: [],
+                characterActions: [],
+                goalUpdates: [],
+                time: 'Mañana',
+                day: 1
+              };
+              window.fetch = async (url, options) => {
+                if (String(url).endsWith('/health')) return { ok: true };
+                return {
+                  ok: true,
+                  json: async () => ({ choices: [{ message: { content: JSON.stringify(fakeNarrative) } }] })
+                };
+              };
+              try {
+                Narrator.healthCheckedAt = 0;
+                const narrated = await Narrator.respond('Observo el grimorio.', player, opening, []);
+                if (!narrated.state.inventory.some(item => String(item).toLowerCase().includes('athun'))) fail('el narrador ha retirado Athun del inventario');
+                if (!narrated.state.athun || narrated.state.athun.permanent !== true) fail('se ha perdido la protección permanente de Athun');
+                if (narrated.state.phase !== 'exploration') fail('la fase no avanza al cambiar de ubicación');
+                if (!narrated.state.wellDiscovered || !narrated.state.bellDiscovered) fail('los hechos descubiertos no actualizan las marcas de exploración');
+                if (!narrated.state.eliaMet || !narrated.state.characters.Elia) fail('el primer encuentro con Elia no queda registrado');
+              } finally {
+                window.fetch = originalFetch;
+                Narrator.healthCheckedAt = 0;
+              }
+              return 'Apertura, descubrimientos graduales y protección de Athun: OK';
+            }).then(result => console.log('NARRATIVE REGRESSION:', result));
+
+            await page.screenshot({ path: 'artifacts/cosmopolis-mobile.png', fullPage: true });
+
+            // Prueba de interacción: los cuatro paneles y las ayudas de exploración.
+            const assert = require('node:assert/strict');
+            const pageErrors = [];
+            page.on('pageerror', error => pageErrors.push(error.message));
+            page.on('console', message => { if (message.type() === 'error') console.error('BROWSER_CONSOLE_ERROR:', message.text()); });
+            let narrativeCall = 0;
+            await page.route('http://127.0.0.1:8081/**', async route => {
+              const request = route.request();
+              const headers = {
+                'Access-Control-Allow-Origin': 'http://127.0.0.1:8080',
+                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type'
+              };
+              if (request.method() === 'OPTIONS') {
+                await route.fulfill({ status: 204, headers });
+              } else if (request.url().endsWith('/health')) {
+                await route.fulfill({ status: 200, headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'ok' }) });
+              } else {
+                const result = narrativeCall++ === 0 ? {
+                  reply: 'La observación revela una pequeña marca de cobre entre las piedras.',
+                  event: 'Ariadna ha encontrado un medallón de cobre junto al pozo.',
+                  category: 'investigation',
+                  location: 'Plaza del pozo',
+                visibleLocations: [],
+                  factsToAdd: ['Hay una marca reciente entre las piedras.'],
+                  cluesToAdd: ['Un medallón de cobre estaba junto al pozo.'],
+                  relationshipChanges: [],
+                  goalUpdates: [{ character: 'Elia', goal: 'Averiguar por qué suenan las campanas.', status: 'progress', reason: 'La marca recién descubierta aporta una pista nueva.' }],
+                  itemsToAdd: ['Medallón de cobre'],
+                  itemsToRemove: [],
+                  charactersToAdd: [{ name: 'Tomás', role: 'Vecino', location: 'Plaza del pozo', attitude: 'Desconfiado', memory: 'Tomás vio a Ariadna encontrar el medallón.', goal: 'Proteger a los vecinos de los peligros que salgan del pozo.' }],
+                  characterUpdates: [{ character: 'Elia', location: 'Plaza del pozo', attitude: 'Más confiada' }],
+                  characterActions: [{ character: 'Elia', action: 'Elia se inclina para examinar la marca de cobre junto a Ariadna.' }],
+                  characterMemoriesToAdd: [{ character: 'Elia', memory: 'Ariadna encontró un medallón de cobre junto al pozo.' }],
+                  time: 'Media mañana',
+                  day: 2
+                } : {
+                  reply: 'Entregas el medallón a Elia. Ella lo guarda con cuidado en su tubo de mapas.',
+                  event: 'Ariadna ha entregado el medallón de cobre a Elia.',
+                  category: 'offer',
+                  location: 'Plaza del pozo',
+                visibleLocations: [],
+                  factsToAdd: ['Elia ha recibido el medallón de cobre.'],
+                  cluesToAdd: [],
+                  goalUpdates: [
+                    { character: 'Tomás', goal: 'Proteger a los vecinos de los peligros que salgan del pozo.', status: 'blocked', reason: 'La generosidad de Ariadna le anima a implicarse en la seguridad del pueblo.' },
+                    { character: 'Personaje inexistente', goal: 'Objetivo que no debe guardarse.', status: 'active', reason: 'Prueba de validación.' }
+                  ],
+                  relationshipChanges: [
+                    { character: 'Elia', delta: 1, reason: 'Elia aprecia que Ariadna le haya entregado el medallón.' },
+                    { character: 'Tomás', delta: 1, reason: 'Tomás ha visto que Ariadna ha actuado con generosidad.' }
+                  ],
+                  itemsToAdd: [],
+                  itemsToRemove: ['Medallón de cobre'],
+                  charactersToAdd: [],
+                  characterUpdates: [{ character: 'Tomás', location: 'Entrada de la posada', attitude: 'Atento' }],
+                  characterActions: [{ character: 'Tomás', action: 'Tomás observa desde la entrada y decide no interrumpir.' }],
+                  characterMemoriesToAdd: [
+                    { character: 'Elia', memory: 'Ariadna le entregó el medallón de cobre.' },
+                    { character: 'Tomás', memory: 'Tomás vio a Ariadna entregar el medallón a Elia.' }
+                  ],
+                  time: 'Mediodía',
+                  day: 1
+                };
+                await route.fulfill({
+                  status: 200,
+                  headers: { ...headers, 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ choices: [{ message: { content: JSON.stringify(result) } }] })
+                });
+              }
+            });
+
+            await page.locator('#openHistory').click();
+            await page.locator('#toolOverlay').getByText('Crónica de tus decisiones').waitFor();
+            await page.locator('#closeToolPanel').click();
+
+            await page.locator('#openMap').click();
+            await page.locator('#toolOverlay').getByText('Plaza del pozo').waitFor();
+            await page.locator('#closeToolPanel').click();
+
+            await page.locator('#openInventory').click();
+            await page.locator('#toolOverlay').getByText('Athun — grimorio consciente').waitFor();
+            await page.locator('#closeToolPanel').click();
+
+            await page.locator('#openOptions').click();
+            await page.locator('#saveNow').click();
+            await page.locator('#toolFeedback').getByText('La partida se ha guardado correctamente.').waitFor();
+            await page.locator('#closeToolPanel').click();
+
+            await page.locator('#openExplore').click();
+            await page.locator('[data-explore-index="0"]').click();
+            await page.locator('#storyContent .current-action').waitFor();
+            const firstNarrative = await page.locator('#storyContent').textContent();
+            assert.ok(firstNarrative.includes('Elia se inclina para examinar la marca de cobre junto a Ariadna.'), 'La iniciativa autónoma debe aparecer integrada en la narración de la acción que la genera: ' + firstNarrative);
+            assert.ok(!firstNarrative.includes('Elia: Elia se inclina') && !firstNarrative.includes(String.fromCharCode(92) + 'n'), 'La iniciativa no debe mostrarse como ficha ni con escapes visibles: ' + firstNarrative);
+            const goalFallbackProbe = await page.evaluate(() => {
+              const probeAdventure = Adventure.createOpening({ name: 'Ariadna' });
+              probeAdventure.state.currentLocation = 'Plaza del pozo';
+              probeAdventure.state.phase = 'exploration';
+              probeAdventure.state.characters.Tomás = {
+                role: 'Vecino', location: 'Plaza del pozo', personalGoal: 'Proteger a los vecinos de los peligros del pozo.', trust: 0, memories: []
+              };
+              const result = Director.respond('Pregunto a Tomás qué intenta conseguir.', { name: 'Ariadna' }, probeAdventure, []);
+              return result.reply;
+            });
+            assert(goalFallbackProbe.includes('Proteger a los vecinos de los peligros del pozo.'),
+              'El narrador alternativo debe tener en cuenta el objetivo personal al conversar con un NPC');
+
+            const goalLifecycleProbe = await page.evaluate(async () => {
+              const originalFetch = window.fetch;
+              const originalAvailability = Narrator.isAvailable;
+              const responseFor = goalUpdate => ({
+                reply: 'La historia deja claro el siguiente paso.',
+                event: 'Un objetivo personal ha cambiado con fundamento.',
+                category: 'dialogue',
+                location: 'Plaza del pozo',
+                visibleLocations: [],
+                factsToAdd: [], cluesToAdd: [], relationshipChanges: [],
+                itemsToAdd: [], itemsToRemove: [], charactersToAdd: [],
+                characterUpdates: [], characterActions: [], characterMemoriesToAdd: [],
+                goalUpdates: [goalUpdate], time: 'Tarde', day: 2
+              });
+              const run = async (person, goalUpdate) => {
+                const probe = Adventure.createOpening({ name: 'Ariadna' });
+                probe.state.characters.Elia = { ...probe.state.characters.Elia, ...person };
+                window.fetch = async () => ({
+                  ok: true,
+                  json: async () => ({ choices: [{ message: { content: JSON.stringify(responseFor(goalUpdate)) } }] })
+                });
+                const result = await Narrator.respond('Continúo hablando con Elia.', { name: 'Ariadna' }, probe, []);
+                return result.adventure.state.characters.Elia;
+              };
+              Narrator.isAvailable = async () => true;
+              try {
+                const completed = await run({
+                  personalGoal: 'Descubrir el origen de la campana.',
+                  goalStatus: 'completed',
+                  goalHistory: [{ goal: 'Descubrir el origen de la campana.', status: 'completed', reason: 'La campana ha sido localizada.', changedAtAction: 4 }],
+                  completedGoals: [], memories: []
+                }, {
+                  character: 'Elia',
+                  goal: 'Investigar quién construyó la cámara bajo el pozo.',
+                  status: 'active',
+                  reason: 'Al localizar la campana descubre una cámara que plantea una nueva pregunta.'
+                });
+                const pending = await run({
+                  personalGoal: 'Encontrar la cámara secreta.',
+                  goalStatus: 'progress',
+                  goalHistory: [], completedGoals: [], memories: []
+                }, {
+                  character: 'Elia',
+                  goal: 'Convertirse en alcaldesa.',
+                  status: 'active',
+                  reason: 'Cambio sin relación con los hechos.'
+                });
+                const regression = await run({
+                  personalGoal: 'Salvar los mapas.',
+                  goalStatus: 'completed',
+                  goalHistory: [{ goal: 'Salvar los mapas.', status: 'completed', reason: 'Mapas recuperados.', changedAtAction: 2 }],
+                  completedGoals: [], memories: []
+                }, {
+                  character: 'Elia',
+                  goal: 'Salvar los mapas.',
+                  status: 'active',
+                  reason: 'No debe reabrirse una meta cumplida.'
+                });
+                return {
+                  newGoal: completed.personalGoal,
+                  newStatus: completed.goalStatus,
+                  archivedGoal: completed.completedGoals[0] && completed.completedGoals[0].goal,
+                  pendingGoal: pending.personalGoal,
+                  pendingStatus: pending.goalStatus,
+                  completedStatus: regression.goalStatus
+                };
+              } finally {
+                window.fetch = originalFetch;
+                Narrator.isAvailable = originalAvailability;
+              }
+            });
+            assert.deepEqual(goalLifecycleProbe, {
+              newGoal: 'Investigar quién construyó la cámara bajo el pozo.',
+              newStatus: 'active',
+              archivedGoal: 'Descubrir el origen de la campana.',
+              pendingGoal: 'Encontrar la cámara secreta.',
+              pendingStatus: 'progress',
+              completedStatus: 'completed'
+            }, 'Una meta nueva solo puede abrirse tras completar la anterior, que debe quedar archivada');
+
+            const contextProbe = await page.evaluate(() => {
+              const saved = Save.load();
+              const probe = JSON.parse(JSON.stringify(saved.adventure));
+              probe.state.events = Array.from({ length: 30 }, (_, i) => 'Evento de prueba ' + i);
+              probe.state.characters.Elia.memories = Array.from({ length: 12 }, (_, i) => 'Recuerdo de prueba ' + i);
+              probe.state.characters.Elia.completedGoals = Array.from({ length: 10 }, (_, i) => ({ goal: 'Meta cumplida ' + i, reason: 'Motivo archivado ' + i }));
+              const history = Array.from({ length: 10 }, (_, i) => ({ text: 'Acción ' + i, response: 'Respuesta ' + i }));
+              const messages = Narrator.buildMessages('Sigo investigando.', saved.character, probe, history);
+              const context = JSON.parse(messages[1].content);
+              const systemPrompt = messages[0].content;
+              return {
+                knowledgeBoundaryRules: [
+                  'Respeta los límites de conocimiento del personaje jugador',
+                  'no presentes como conocido lo que aún ignora',
+                  'nunca conviertas una conjetura en un hecho confirmado'
+                ].every(rule => systemPrompt.includes(rule)),
+                eventCount: context.currentAdventure.state.events.length,
+                memoryCount: context.currentAdventure.state.characters.Elia.memories.length,
+                eliaGoal: context.currentAdventure.state.characters.Elia.personalGoal,
+                completedGoalCount: context.currentAdventure.state.characters.Elia.completedGoals.length,
+                lastCompletedGoal: context.currentAdventure.state.characters.Elia.completedGoals.at(-1).goal,
+                historyCount: context.recentHistory.length,
+                savedMemoryCount: probe.state.characters.Elia.memories.length,
+                savedCompletedGoalCount: probe.state.characters.Elia.completedGoals.length
+              };
+            });
+            assert.deepEqual(contextProbe, { knowledgeBoundaryRules: true, eventCount: 20, memoryCount: 8, eliaGoal: 'Averiguar por qué suenan las campanas.', completedGoalCount: 8, lastCompletedGoal: 'Meta cumplida 9', historyCount: 6, savedMemoryCount: 12, savedCompletedGoalCount: 10 },
+              'El contexto debe limitarse sin borrar recuerdos e incluir límites de conocimiento');
+
+            await page.waitForFunction(() => {
+              const data = Save.load();
+              if (!data) return false;
+              return data.actions && data.actions.length === 1 &&
+                data.adventure.state.inventory.includes('Medallón de cobre') &&
+                data.adventure.state.visitedLocations.includes('Plaza del pozo');
+            });
+            assert.equal(pageErrors.length, 0, 'No deben producirse errores JavaScript: ' + pageErrors.join('; '));
+            await page.locator('#openInventory').click();
+            await page.locator('#toolOverlay').getByText('Medallón de cobre').waitFor();
+            await page.locator('#closeToolPanel').click();
+
+            await page.locator('#playerAction').fill('Entrego el medallón de cobre a Elia.');
+            await page.locator('#actionForm button[type="submit"]').click();
+            await page.waitForFunction(() => {
+              const data = Save.load();
+              if (!data) return false;
+              return data.actions && data.actions.length === 2 &&
+                !data.adventure.state.inventory.includes('Medallón de cobre') &&
+                data.adventure.state.characters.Elia.trust === 1 &&
+                data.adventure.state.characters.Elia.personalGoal === 'Averiguar por qué suenan las campanas.' &&
+                data.adventure.state.characters.Elia.goalStatus === 'progress' &&
+                data.adventure.state.characters.Elia.goalHistory[0].status === 'progress' &&
+                data.adventure.state.characters.Elia.goalHistory.length === 1 &&
+                data.adventure.state.characters.Elia.memories.some(memory => memory.includes('La marca recién descubierta aporta una pista nueva.')) &&
+                data.adventure.state.characters.Tomás.personalGoal === 'Proteger a los vecinos de los peligros que salgan del pozo.' &&
+                data.adventure.state.characters.Tomás.goalStatus === 'blocked' &&
+                data.adventure.state.characters.Tomás.goalHistory.length === 1 &&
+                !Object.prototype.hasOwnProperty.call(data.adventure.state.characters, 'Personaje inexistente') &&
+                data.adventure.state.characters.Tomás.trust === 1 &&
+                data.adventure.state.characters.Tomás.memories.includes('Tomás ha visto que Ariadna ha actuado con generosidad.') &&
+                data.adventure.state.characters.Elia.memories.includes('Ariadna encontró un medallón de cobre junto al pozo.') &&
+                data.adventure.state.characters.Elia.memories.includes('Elia se inclina para examinar la marca de cobre junto a Ariadna.') &&
+                data.adventure.state.characters.Elia.lastAutonomousAction === 'Elia se inclina para examinar la marca de cobre junto a Ariadna.' &&
+                data.adventure.state.characters.Elia.memories.includes('Ariadna le entregó el medallón de cobre.') &&
+                data.adventure.state.characters.Tomás.memories.includes('Tomás vio a Ariadna entregar el medallón a Elia.') &&
+                data.adventure.state.characters.Elia.attitude === 'Más confiada' &&
+                data.adventure.state.characters.Tomás.location === 'Entrada de la posada' &&
+                !data.adventure.state.characters.Tomás.lastAutonomousAction &&
+                data.adventure.state.time === 'Mediodía' && data.adventure.state.day === 2;
+            });
+            const liveMeta = await page.locator('.manuscript-meta').textContent();
+            assert.ok(liveMeta.includes('Momento: Mediodía'), 'La cabecera debe actualizarse sin recargar: ' + liveMeta);
+            await page.reload({ waitUntil: 'networkidle' });
+            await page.waitForFunction(() => {
+              const story = document.querySelector('#storyContent');
+              return story && story.textContent.trim().length > 0;
+            });
+            const restoredAction = await page.locator('#storyContent').textContent();
+            const restoredMeta = await page.locator('.manuscript-meta').textContent();
+            assert.ok(restoredAction.includes('Entrego el medallón de cobre a Elia.'), 'La última acción debe recuperarse tras recargar: ' + restoredAction);
+            assert.ok(restoredMeta.includes('Momento: Mediodía'), 'El reloj interno debe recuperarse tras recargar: ' + restoredMeta);
+            await page.locator('#openInventory').click();
+            await page.locator('#toolOverlay').getByText('Athun — grimorio consciente').waitFor();
+            await page.locator('#closeToolPanel').click();
+            await page.locator('#openHistory').click();
+            await page.locator('#toolOverlay').getByText('Entregas el medallón a Elia. Ella lo guarda con cuidado en su tubo de mapas.').waitFor();
+            await page.locator('#closeToolPanel').click();
+
+            console.log('INTERACTION_TESTS_OK: history, map, inventory add/remove, options, exploration, AI response, save and reload');
+
+            const mobile = await page.evaluate(() => ({
+              viewport: { width: innerWidth, height: innerHeight },
+              document: { width: document.documentElement.scrollWidth, height: document.documentElement.scrollHeight },
+              paper: (() => { const r = document.querySelector('.adventure-screen').getBoundingClientRect(); return { x:r.x,y:r.y,width:r.width,height:r.height }; })(),
+              header: (() => { const r = document.querySelector('.manuscript-header').getBoundingClientRect(); return { x:r.x,y:r.y,width:r.width,height:r.height }; })(),
+              story: (() => { const r = document.querySelector('.story-panel').getBoundingClientRect(); return { x:r.x,y:r.y,width:r.width,height:r.height }; })(),
+              player: (() => { const r = document.querySelector('.player-panel').getBoundingClientRect(); return { x:r.x,y:r.y,width:r.width,height:r.height }; })(),
+              toolbar: (() => { const r = document.querySelector('.manuscript-toolbar').getBoundingClientRect(); return { x:r.x,y:r.y,width:r.width,height:r.height }; })()
+            }));
+            assert.ok(mobile.document.width <= mobile.viewport.width, 'La interfaz móvil no debe desbordarse horizontalmente');
+            assert.ok(mobile.story.y + mobile.story.height <= mobile.player.y + 1, 'La narración no debe invadir el panel de escritura');
+            assert.ok(mobile.player.y + mobile.player.height <= mobile.toolbar.y + 1, 'La escritura no debe invadir la barra inferior');
+            assert.ok(mobile.toolbar.y + mobile.toolbar.height <= mobile.viewport.height + 1, 'La barra inferior debe quedar dentro de la pantalla');
+            console.log('MOBILE_LAYOUT', JSON.stringify(mobile));
+            await context.close();
+            const desktop = await browser.newContext({ viewport: { width: 1024, height: 900 }, deviceScaleFactor: 1 });
+            await desktop.addInitScript(({ character, adventure }) => {
+              if (!localStorage.getItem('cosmopolis_save')) { localStorage.setItem('cosmopolis_save', JSON.stringify({ character, adventure, actions: [], world: { events: [], facts: [], relationships: {} } })); }
+            }, { character, adventure });
+            const desktopPage = await desktop.newPage();
+            const desktopErrors = [];
+            desktopPage.on('pageerror', error => desktopErrors.push(error.message));
+            await desktopPage.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
+            const desktopContinue = desktopPage.locator('[data-load-save]').first();
+            if (await desktopContinue.count()) await desktopContinue.click();
+            await desktopPage.locator('.adventure-screen').waitFor();
+            const desktopWidth = await desktopPage.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth }));
+            assert.ok(desktopWidth.document <= desktopWidth.viewport, 'La interfaz de escritorio no debe desbordarse horizontalmente');
+            assert.equal(desktopErrors.length, 0, 'No deben producirse errores JavaScript en escritorio: ' + desktopErrors.join('; '));
+            await desktopPage.screenshot({ path: 'artifacts/cosmopolis-desktop.png', fullPage: true });
+            await browser.close();
+          })().catch(error => { console.error(error); process.exit(1); });
+          NODE
+      - name: Upload rendered previews
+        uses: actions/upload-artifact@v4
+        with:
+          name: cosmopolis-visual-preview
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 7
