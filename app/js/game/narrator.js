@@ -180,6 +180,9 @@ const Narrator = {
                     'personalGoal: cada personaje puede tener un objetivo propio, breve y concreto, que refleje deseos, problemas o motivaciones. Ten en cuenta su objetivo actual al decidir cómo habla y actúa.',
                     'goalUpdates: actualiza como máximo dos objetivos de personajes registrados solo cuando los hechos justifiquen un cambio, avance, bloqueo o resolución. Incluye character, goal, status y reason. status debe ser active, progress, blocked o completed; conserva el objetivo si solo cambia su estado. Consulta también completedGoals: no propongas como nuevo un objetivo ya archivado ni repitas una meta cumplida, salvo que un hecho nuevo aporte una motivación o consecuencia concreta que cambie su sentido. Un objetivo completed queda cerrado: no lo reactives ni lo sustituyas salvo que exista una nueva motivación o consecuencia concreta en los hechos, eventos o recuerdos. Solo entonces propone un objetivo distinto con status active, explica en reason qué hecho demuestra que el anterior se cumplió y por qué nace el nuevo. Nunca sustituyas un objetivo todavía activo, en progreso o bloqueado por otro; primero debe resolverse. No inventes avances ni cambies objetivos sin causa; usa una lista vacía si no hay cambios.',
                     'characterMemoriesToAdd: recuerdos concretos y duraderos de personajes que ya existen en el estado; no inventes personajes ni guardes detalles triviales.',
+                    'athunMemoriesToAdd: hasta tres recuerdos duraderos y concretos que el protagonista y Athun hayan vivido juntos en esta partida; no conviertas acciones triviales en recuerdos ni inventes experiencias.',
+                    'athunRevelationsToAdd: hasta tres descubrimientos nuevos y demostrados sobre la historia, naturaleza o motivos de Athun; no inventes secretos ni adelantes revelaciones que no hayan ocurrido en la escena. Usa una lista vacía si no procede.',
+                    'athunBondChange: delta entero entre -1 y 1 y motivo breve; solo cambia el vínculo si la acción del protagonista afecta de forma significativa a la confianza o relación con Athun. Usa delta 0 si no hay cambio.'
                     'time: momento del día dentro del mundo; no uses la hora real del teléfono y no avances el tiempo sin motivo narrativo.',
                     'day: número del día dentro de la aventura; solo aumenta cuando la historia cruza realmente al día siguiente. Nunca reduzcas el día ya alcanzado.'
                 ].join(' ')
@@ -189,6 +192,33 @@ const Narrator = {
                 content: JSON.stringify(context)
             }
         ];
+    },
+
+    applyAthunUpdates(state, result) {
+        if (!state || typeof state !== 'object' || !result || typeof result !== 'object') return;
+        if (!state.athun || typeof state.athun !== 'object') {
+            state.athun = { id: 'athun', name: 'Athun', kind: 'Grimorio consciente', permanent: true, bond: 0, memories: [], revelations: [] };
+        }
+        const athun = state.athun;
+        athun.permanent = true;
+        athun.memories = Array.isArray(athun.memories) ? athun.memories : [];
+        athun.revelations = Array.isArray(athun.revelations) ? athun.revelations : [];
+        const appendUnique = (target, entries) => {
+            (Array.isArray(entries) ? entries : []).slice(0, 3).forEach(entry => {
+                if (typeof entry !== 'string') return;
+                const clean = entry.trim().slice(0, 300);
+                if (!clean || target.some(item => String(item).toLocaleLowerCase('es') === clean.toLocaleLowerCase('es'))) return;
+                target.push(clean);
+            });
+            if (target.length > 40) target.splice(0, target.length - 40);
+        };
+        appendUnique(athun.memories, result.athunMemoriesToAdd);
+        appendUnique(athun.revelations, result.athunRevelationsToAdd);
+        const change = result.athunBondChange;
+        if (change && Number.isInteger(change.delta) && change.delta >= -1 && change.delta <= 1) {
+            const current = Number.isFinite(Number(athun.bond)) ? Number(athun.bond) : 0;
+            athun.bond = Math.max(-100, Math.min(100, current + change.delta));
+        }
     },
 
     async respond(action, character, adventure, previousActions = []) {
@@ -228,6 +258,13 @@ const Narrator = {
                 },
                 itemsToAdd: { type: 'array', items: { type: 'string' } },
                 itemsToRemove: { type: 'array', items: { type: 'string' } },
+                athunMemoriesToAdd: { type: 'array', items: { type: 'string' } },
+                athunRevelationsToAdd: { type: 'array', items: { type: 'string' } },
+                athunBondChange: {
+                    type: 'object', additionalProperties: false,
+                    properties: { delta: { type: 'integer', minimum: -1, maximum: 1 }, reason: { type: 'string' } },
+                    required: ['delta', 'reason']
+                },
                 time: { type: 'string' },
                 day: { type: 'integer', minimum: 1, maximum: 9999 },
                 charactersToAdd: {
@@ -298,7 +335,7 @@ const Narrator = {
                     }
                 }
             },
-            required: ['reply', 'event', 'category', 'location', 'visibleLocations', 'factsToAdd', 'cluesToAdd', 'relationshipChanges', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd', 'charactersToAdd', 'characterUpdates', 'characterActions', 'goalUpdates', 'time', 'day']
+            required: ['reply', 'event', 'category', 'location', 'visibleLocations', 'factsToAdd', 'cluesToAdd', 'relationshipChanges', 'itemsToAdd', 'itemsToRemove', 'athunMemoriesToAdd', 'athunRevelationsToAdd', 'athunBondChange', 'characterMemoriesToAdd', 'charactersToAdd', 'characterUpdates', 'characterActions', 'goalUpdates', 'time', 'day']
         };
 
         const controller = new AbortController();
@@ -335,6 +372,9 @@ const Narrator = {
                 !Array.isArray(result.visibleLocations) ||
                 !Array.isArray(result.factsToAdd) || !Array.isArray(result.cluesToAdd) ||
                 !Array.isArray(result.itemsToAdd) || !Array.isArray(result.itemsToRemove) ||
+                !Array.isArray(result.athunMemoriesToAdd) || !Array.isArray(result.athunRevelationsToAdd) ||
+                !result.athunBondChange || typeof result.athunBondChange !== 'object' ||
+                !Number.isInteger(result.athunBondChange.delta) || result.athunBondChange.delta < -1 || result.athunBondChange.delta > 1 ||
                 !Array.isArray(result.characterMemoriesToAdd) ||
                 !Array.isArray(result.charactersToAdd) ||
                 !Array.isArray(result.characterUpdates) || !Array.isArray(result.characterActions) ||
@@ -405,6 +445,7 @@ const Narrator = {
                 state.athun = { id: 'athun', name: 'Athun', kind: 'Grimorio consciente', permanent: true, bond: 0, memories: [], revelations: [] };
             }
             state.athun.permanent = true;
+            this.applyAthunUpdates(state, result);
 
             state.characters = state.characters && typeof state.characters === 'object' ? state.characters : {};
             result.charactersToAdd.slice(0, 5).forEach(entry => {
