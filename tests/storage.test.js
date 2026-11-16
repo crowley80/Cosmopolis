@@ -219,3 +219,28 @@ test('sincroniza al mundo compartido solo las zonas declaradas visibles', () => 
     assert.equal(atlas.known.some(item => item.name === 'Calle del molino'), true);
     assert.equal(atlas.visited.some(item => item.name === 'Calle del molino'), false);
 });
+
+
+test('al desplazarse, la visión anterior no permanece iluminada en la nueva zona', () => {
+    const WorldMap = require('../app/js/game/map.js');
+    Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Exploración',
+        state: {
+            currentLocation: 'Plaza del pozo',
+            visitedLocations: ['Plaza del pozo'],
+            visibleLocations: ['Calle del molino'],
+            inventory: []
+        }
+    });
+    Save.addGlobalLocation('Calle del molino', 'Ariadna');
+
+    const nextAdventure = JSON.parse(JSON.stringify(Save.load().adventure));
+    nextAdventure.state.currentLocation = 'Puerto';
+    assert.equal(Session.addAction('Me dirijo al puerto', 'Llegas al puerto.', {
+        adventure: nextAdventure
+    }), true);
+
+    const atlas = WorldMap.getAtlas(Save.getGlobalWorld(), Save.load().adventure.state, Save.load().adventure);
+    assert.deepEqual(atlas.currentAndVisible.map(item => item.name), ['Puerto']);
+    assert.equal(atlas.known.some(item => item.name === 'Calle del molino'), true);
+});
