@@ -178,3 +178,7 @@ GitHub Actions, ejecución **174**: comprobación de sintaxis JavaScript correct
 
 ### Auditoría de conexiones del atlas — 16/11/2026
 El registro de conexiones compartidas requiere ahora que la respuesta estructurada clasifique la acción como `movement`, además de confirmar un cambio entre dos ubicaciones distintas. Una modificación de ubicación por investigación, transición narrativa u otra categoría no crea por sí sola un camino. La posición, el conocimiento del lugar y la visita personal continúan sincronizándose normalmente. Se añade una prueba de regresión que impide generar conexiones por cambios no clasificados como desplazamiento. También se corrige el nombre del director narrativo en el prompt del modelo. Pendiente CI de esta revisión; la validación visual en Chrome/Android continúa pendiente.
+
+
+### CI 195 — rutas confirmadas y coherencia de Athun — 16/11/2026
+GitHub Actions, ejecución **195** (`43836494217`): comprobación de sintaxis JavaScript correcta y **22/22 pruebas aprobadas**. Incluye la regresión que impide crear conexiones del atlas cuando cambia la ubicación por una acción que no está clasificada como desplazamiento. También se valida la actualización del prompt del narrador y el resto de pruebas de guardado, prólogo, atlas y mundo compartido.
