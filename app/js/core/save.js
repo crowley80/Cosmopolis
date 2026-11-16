@@ -42,10 +42,11 @@ const Save = {
                 ? slot.adventure.state : {};
             const inventory = Array.isArray(slot.adventure.state.inventory)
                 ? slot.adventure.state.inventory : [];
-            if (!inventory.some(item => String(item).toLocaleLowerCase('es').includes('athun'))) {
-                inventory.unshift('Athun — grimorio consciente');
-            }
-            slot.adventure.state.inventory = inventory;
+            // Athun tiene una única representación canónica: el narrador no puede retirarlo ni crear copias.
+            const withoutAthun = inventory.filter(item =>
+                !String(item).toLocaleLowerCase('es').includes('athun')
+            );
+            slot.adventure.state.inventory = ['Athun — grimorio consciente', ...withoutAthun];
         }
         return slot;
     },
