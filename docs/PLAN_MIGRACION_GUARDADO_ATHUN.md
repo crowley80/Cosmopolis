@@ -87,3 +87,29 @@ Se ha iniciado una primera fase ejecutable en una rama separada de `main`.
 
 ### Recuperación ante pérdida del índice
 El índice puede reconstruirse a partir de las claves de partidas individuales que sigan presentes en `localStorage`. La recuperación conserva el identificador activo si aún es válido y no depende de volver a migrar la clave heredada. Se ha añadido una prueba automatizada para comprobar que dos partidas siguen siendo accesibles tras eliminar el índice.
+
+
+## Revisión autónoma adicional — 16 de noviembre de 2026
+
+### Cobertura de seguridad añadida
+Se amplían las pruebas automatizadas para cubrir dos condiciones que no estaban verificadas explícitamente:
+- Repetir la inicialización/migración de una partida heredada no debe duplicar partidas, localizaciones ni alterar el contenido original.
+- Si falla la escritura de la clave de partida activa al crear una partida nueva, debe revertirse el registro parcial y conservarse intacta la partida que ya estaba activa.
+
+Estas pruebas se ejecutan en el mismo flujo de GitHub Actions que comprueba sintaxis y almacenamiento. No sustituyen una prueba real en Chrome/Android.
+
+### Requisito pendiente: mapa con niebla de guerra
+La implementación actual comparte un catálogo de localizaciones y la pantalla de mapa muestra una lista; todavía no constituye un mapa espacial ni implementa visión/niebla de guerra. No debe darse por completado este requisito.
+
+Diseño que debe respetarse en una fase independiente:
+- Al iniciar, mostrar únicamente el entorno inmediato del protagonista (barrio, sector o zona equivalente).
+- Ampliar el territorio revelado progresivamente al explorar y desplazarse.
+- Diferenciar tres estados: nunca descubierto (oculto), descubierto pero no visible en este momento (conocido) y visitado/recorrido.
+- Mantener el descubrimiento geográfico en el mundo compartido para que otro protagonista pueda disponer de la información ya descubierta, sin compartir posiciones actuales, recuerdos ni relaciones personales.
+- No inventar coordenadas, conexiones ni distancias a partir de nombres de lugares. El mapa necesitará datos espaciales y relaciones entre zonas proporcionados por el mundo/narración o generados con reglas consistentes.
+- La interfaz debe seguir siendo legible y táctil en móvil y respetar la plantilla visual aprobada. La niebla debe ocultar información no descubierta, no limitarse a etiquetar una lista.
+
+Antes de implementar, revisar cómo se representan las localizaciones y la posición actual en adventure.state, definir un formato de celdas/zonas compatible y añadir pruebas de aislamiento entre protagonistas, expansión por exploración y persistencia de los tres estados.
+
+### Límite de validación
+La rama sigue aislada de main. La validación automatizada no acredita el funcionamiento visual, el flujo táctil ni la recuperación de partidas en Chrome para Android. No fusionar el pull request hasta completar esa comprobación en el dispositivo real.
