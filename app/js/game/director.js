@@ -68,10 +68,24 @@ const Director = {
                 category = 'investigation';
                 reply = 'Te detienes a observar el valle y el camino. La carreta continúa hacia el pueblo, alguien termina de recoger leña junto a una casa y una conversación llega desde una ventana abierta. No percibes nada que exija tu atención inmediata.';
                 event = `${name} ha observado el camino de entrada a Valdebruma.`;
-            } else if (asks) {
+            } else if (asks || this.has(text, ['hablo', 'converso', 'saludo', 'carretero', 'recoge leña', 'persona que recoge', 'vecino'])) {
                 category = 'dialogue';
-                reply = 'Todavía estás en el camino de entrada. No hay nadie lo bastante cerca para mantener una conversación, aunque el pueblo parece seguir con su actividad habitual. Puedes acercarte a las primeras casas.';
-                event = `${name} ha buscado información antes de entrar en Valdebruma.`;
+                if (!state.characters.Vecino) {
+                    state.characters.Vecino = {
+                        name: 'Vecino',
+                        role: 'Habitante de Valdebruma',
+                        location: state.currentLocation,
+                        attitude: 'Cordial',
+                        personalGoal: '',
+                        goalStatus: 'active',
+                        goalHistory: [],
+                        completedGoals: [],
+                        trust: 0,
+                        memories: ['Ha visto llegar al viajero por el camino de entrada.']
+                    };
+                }
+                reply = 'Te acercas a la persona que está recogiendo leña junto a una de las casas. Al verte, deja el haz de ramas en el suelo y te saluda con naturalidad.\n\n—Buenos días. ¿Acabas de llegar? Si buscas algo en el pueblo, quizá pueda orientarte.';
+                event = `${name} ha hablado con un habitante en el camino de entrada a Valdebruma.`;
             } else if (rests) {
                 category = 'rest';
                 reply = 'Te tomas un momento para contemplar el valle. La mañana avanza con calma y el camino sigue abierto ante ti.';
