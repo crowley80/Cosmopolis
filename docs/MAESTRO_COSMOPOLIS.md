@@ -1382,3 +1382,40 @@ Se ha vuelto a inspeccionar el código remoto de `app/js/game/adventure.js`, `di
 **Prioridad de ejecución:** recuperar el texto íntegro del prólogo aprobado y reconciliarlo con el estado inicial de aventura; después adaptar el director para que solo incluya personajes y hechos ya descubiertos, y ajustar el contexto/instrucciones del narrador. Añadir pruebas automatizadas de acciones iniciales, preguntas neutrales, exploración del camino y primer encuentro con Elia. Mantener pendiente la validación final en Chrome/Android.
 
 **Estado de esta revisión:** solo lectura y diagnóstico. No se ha modificado código ejecutable ni se ha alterado ninguna partida. Se ha creado el respaldo previo `docs/MAESTRO_COSMOPOLIS.md.bak-20261116-revision-inicial` antes de actualizar esta documentación. No se ha recuperado aún el texto íntegro del prólogo, por lo que no se debe reconstruir de memoria ni reemplazarlo por una paráfrasis.
+
+
+## CORRECCIÓN DE APERTURA Y PRESENCIA PERMANENTE DE ATHUN — 16 DE NOVIEMBRE DE 2026
+
+Se recuperó el texto íntegro aprobado para el comienzo de Valdebruma y se aplicó a `app/js/game/adventure.js`. La apertura queda así:
+
+- Ubicación inicial: `Camino de entrada a Valdebruma`.
+- Fase inicial: `arrival`.
+- El protagonista llega durante una mañana tranquila, sin urgencia ni nadie esperándolo.
+- Puede observar el valle, entrar en el pueblo, buscar alojamiento o acercarse a sus habitantes.
+- El texto aprobado comienza «El camino lleva un buen rato descendiendo entre las montañas...» y termina «La mañana sigue su curso. Tu historia en Valdebruma comienza aquí.»
+- El estado inicial solo registra que el protagonista ha llegado a Valdebruma y que el pueblo está en un valle entre montañas. Elia, el pozo y la campana no se conocen ni se han descubierto.
+
+### Athun desde el inicio
+- El inventario inicial contiene `Athun`.
+- El estado narrativo de Athun se registra por partida, con vínculo, recuerdos y revelaciones.
+- Se marca como pertenencia permanente.
+- El narrador recibe instrucciones explícitas para no confundir el conocimiento de Athun con el del protagonista ni revelar de golpe su historia.
+- La aplicación de respuestas de IA impide retirar Athun del inventario y lo repone si una respuesta del modelo lo omite.
+
+### Descubrimiento gradual
+- `app/js/game/director.js` deja de crear a Elia automáticamente.
+- La entrada inicial se resuelve sin introducir a Elia, la campana ni el pozo.
+- Entrar en el pueblo cambia la fase a exploración.
+- Preguntar a los habitantes antes de descubrir el misterio produce respuestas cotidianas, no rumores sobre la campana.
+- La plaza permite descubrir el pozo; examinarlo no revela automáticamente a Elia ni la campana.
+- Una manifestación mágica dirigida al pozo puede provocar y registrar el descubrimiento de la campana.
+- Se han neutralizado varias respuestas de respaldo que presuponían que Elia o el misterio ya estaban presentes.
+
+### Pruebas y caché
+- Se añadieron pruebas de regresión al workflow `.github/workflows/visual-preview.yml` para comprobar la apertura, la entrada al pueblo, las preguntas iniciales, el descubrimiento del pozo, la investigación y la revelación mágica.
+- Se renovaron las versiones de consulta de `adventure.js`, `director.js` y `narrator.js` en `index.html`.
+- Se crearon respaldos de los tres scripts, del workflow y de `index.html` antes de sus cambios.
+
+**Commits de implementación:** aventura `7077bc7`; director `ba34e20` y `39c7942`; narrador `a421511`; pruebas `d0206a0`; renovación de caché `4c91999`.
+
+**Estado de validación:** las pruebas de regresión quedaron incorporadas al workflow de GitHub Actions, que se activa al actualizar `index.html`. No se declara todavía una validación visual en Chrome/Android ni un resultado verde del workflow hasta consultar su ejecución. Las partidas guardadas existentes no se han modificado ni migrado.
