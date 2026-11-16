@@ -1648,3 +1648,20 @@ Estado: cambios en la rama integration/athun-multisave-main-20261116, PR #4 abie
 ### Ajuste de la prueba visual del mapa — 16/11/2026
 
 La primera ejecución Playwright con el mapa mostró que una comprobación previa buscaba el nombre de una ubicación sin distinguir entre el rótulo del SVG y la entrada de la lista. Como ambos deben mostrar el mismo lugar, el selector se acotó a `.atlas-place-name`; no se cambió la interfaz ni los datos de la aventura por este fallo. Se guardó el respaldo `.github/workflows/visual-preview.yml.bak-20261116-mapa-selector` antes del ajuste. GitHub Actions, ejecución de almacenamiento **435**, completada correctamente. GitHub Actions, ejecución Playwright **225** (`43930341843`), completada correctamente en Chromium para la interfaz móvil y de escritorio, incluida la apertura del mapa y la comprobación de su nodo actual. La prueba es emulada y no sustituye la validación táctil en un Android físico.
+
+
+## Recuperación de avances narrativos y agente local — 16/11/2026
+
+Se recupera sobre la rama de integración de Athun el trabajo narrativo rescatado del commit `0022127`, conservando las mejoras posteriores ya presentes en esta rama.
+
+- Se mantiene la apertura de Valdebruma en el camino de entrada, sin encuentro prematuro con Elia ni revelación anticipada del pozo o la campana. Se conserva el estado ampliado de Athun: grimorio consciente, permanente y presente en el inventario, junto con la memoria y las revelaciones propias de la partida.
+- Se conserva la implementación más avanzada de `director.js` y `adventure.js` que ya existía en la rama de integración; no se sustituye por versiones anteriores del commit rescatado.
+- El historial de acciones registra `aiUsed`: `true` para respuestas de IA, `false` para respuestas alternativas y `null` cuando no hay información verificable.
+- El timeout de generación del narrador local se amplía de 90 a 180 segundos.
+- El lanzador de llama-server incorpora `--reasoning off`.
+- Se recupera `scripts/agente_cosmopolis.js`, que limita cada tarea a un archivo autorizado, comprueba los parches antes de aplicarlos, crea copias de seguridad y valida sintaxis e integridad del diff.
+- La eliminación de los adornos residuales de pliegues se mantiene sin tocar la composición del mapa ni el diseño actual de Athun.
+
+Esta recuperación se realiza en `integration/athun-narrative-recovery-fixed`, creada a partir de `integration/athun-multisave-main-20261116`. No se modifica `main`, no se fusiona el PR #4 y no se descarta la rama de rescate.
+
+Validación pendiente: ejecutar las pruebas automatizadas y la vista previa visual sobre esta rama; la prueba física en Android sigue pendiente.
