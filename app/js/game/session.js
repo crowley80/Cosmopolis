@@ -26,6 +26,7 @@ const Session = {
             if (saved) {
                 const state = adventure && adventure.state || {};
                 Save.addGlobalLocation(state.currentLocation || (adventure && adventure.location), character && character.name);
+                this.syncSharedEntities(adventure, character);
             }
             return saved;
         } catch (error) {
@@ -89,7 +90,21 @@ const Session = {
         if (saved.world.facts.length > 50) saved.world.facts = saved.world.facts.slice(-50);
 
         if (currentLocation) Save.addGlobalLocation(currentLocation, saved.character.name);
+        this.syncSharedEntities(saved.adventure, saved.character);
         return Save.save(saved);
+    },
+
+    syncSharedEntities(adventure, character) {
+        const people = adventure && adventure.state && adventure.state.characters;
+        if (!people || typeof people !== 'object') return;
+        Object.entries(people).forEach(([key, person]) => {
+            if (!person || typeof person !== 'object') return;
+            Save.addGlobalEntity({
+                name: person.name || key,
+                role: person.role,
+                location: person.location
+            }, character && character.name);
+        });
     },
 
     getActions() {
