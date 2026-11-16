@@ -1,7 +1,7 @@
 # Plan técnico — guardado, partidas múltiples y mundo compartido de Athun
 
 Fecha: 16 de noviembre de 2026
-Estado: auditoría estática y propuesta; todavía no se ha modificado el código de guardado.
+Estado: plan inicial histórico. La arquitectura de partidas múltiples, el mundo compartido, el selector y las pruebas ya están implementados en la rama de integración; consulta los apartados de avances y validaciones al final de este documento. La rama aún no se ha fusionado en main.
 
 ## Hallazgos confirmados en GitHub
 
