@@ -90,26 +90,47 @@ const Athun = {
 
     showMap() {
         const saved = Save.load() || {};
-        const state = saved.adventure && saved.adventure.state ? saved.adventure.state : {};
-        const personalPlaces = Array.isArray(state.visitedLocations) ? state.visitedLocations.slice() : [];
-        const sharedWorld = Save.getGlobalWorld();
-        const sharedPlaces = Array.isArray(sharedWorld.locations)
-            ? sharedWorld.locations.map(item => typeof item === 'string' ? item : item.name).filter(Boolean)
-            : [];
-        const places = [...new Set([...sharedPlaces, ...personalPlaces])];
-        const current = state.currentLocation || (saved.adventure && saved.adventure.location) || '';
-        if (current && !places.includes(current)) places.push(current);
-        const placeList = places.length
-            ? places.map((place, index) => `<li><span>${index + 1}.</span> ${this.escape(place)}${place === current ? ' <strong>· Aquí</strong>' : ''}</li>`).join('')
-            : '<li>El personaje aún no ha registrado lugares.</li>';
+        const adventure = saved.adventure || {};
+        const state = adventure.state || {};
+        const atlas = WorldMap.getAtlas(Save.getGlobalWorld(), state, adventure);
+        const renderEntries = (entries, status) => entries.length
+            ? entries.map(item => `
+                <li class="atlas-place atlas-place-${status}">
+                    <span class="atlas-marker" aria-hidden="true"></span>
+                    <span class="atlas-place-name">${this.escape(item.name)}</span>
+                    <span class="atlas-status">${status === 'current' ? 'Aquí' : status === 'visible' ? 'A la vista' : status === 'visited' ? 'Visitado' : 'Conocido'}</span>
+                </li>
+            `).join('')
+            : '<li class="atlas-empty">Todavía no hay lugares en esta categoría.</li>';
         const clues = Array.isArray(state.clues) && state.clues.length
             ? state.clues.map(clue => `<li>${this.escape(clue)}</li>`).join('')
             : '<li>Todavía no has descubierto pistas.</li>';
-        this.openPanel('Mapa de lugares conocidos', `
-            <p class="tool-intro">Este registro reúne los lugares descubiertos por cualquiera de tus protagonistas y los que conoce esta partida. Las zonas desconocidas permanecen en blanco.</p>
-            <h3>Lugares del mundo compartido y de esta historia</h3><ol class="tool-list">${placeList}</ol>
+        const visible = atlas.currentAndVisible;
+        const content = `
+            <p class="tool-intro">La cartografía se amplía cuando exploras. El grimorio distingue lo que tienes a la vista, lo que ya recorriste y lo que otros viajeros descubrieron. Los territorios sin descubrir permanecen ocultos.</p>
+            <div class="atlas-legend" aria-label="Leyenda del mapa">
+                <span><i class="atlas-dot atlas-dot-visible"></i>A la vista</span>
+                <span><i class="atlas-dot atlas-dot-visited"></i>Visitado</span>
+                <span><i class="atlas-dot atlas-dot-known"></i>Conocido</span>
+                <span><i class="atlas-dot atlas-dot-hidden"></i>Sin descubrir</span>
+            </div>
+            <section class="atlas-section">
+                <h3>Entorno inmediato</h3>
+                <ul class="atlas-list">${renderEntries(visible, 'visible')}</ul>
+            </section>
+            <section class="atlas-section">
+                <h3>Lugares que ya recorriste</h3>
+                <ul class="atlas-list">${renderEntries(atlas.visited, 'visited')}</ul>
+            </section>
+            <section class="atlas-section">
+                <h3>Conocidos en el mundo compartido</h3>
+                <p class="atlas-note">Estos lugares fueron descubiertos por otros protagonistas, pero tu personaje todavía no los ha visitado.</p>
+                <ul class="atlas-list">${renderEntries(atlas.known, 'known')}</ul>
+            </section>
+            <p class="atlas-frontier"><span aria-hidden="true">✧</span> Más allá de estas páginas, la niebla todavía oculta el territorio.</p>
             <h3>Pistas reunidas</h3><ul class="tool-list">${clues}</ul>
-        `);
+        `;
+        this.openPanel('Atlas y niebla de exploración', content);
     },
 
     showInventory() {
