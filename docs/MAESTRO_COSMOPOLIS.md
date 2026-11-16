@@ -1467,3 +1467,10 @@ Durante una revisión adicional se detectó un caso límite: aunque el narrador 
 Se añadieron respaldos previos de app/js/core/save.js, app/js/game/narrator.js, tests/storage.test.js, index.html y este documento maestro. Se incorporó una prueba de regresión para asegurar que las variantes duplicadas se normalizan a una sola instancia y se actualizó la versión de caché de save.js.
 
 **Estado de validación:** cambios guardados en la rama feat/athun-multisave-world. GitHub Actions, ejecución 210, terminó correctamente: sintaxis JavaScript correcta y 23/23 pruebas aprobadas, incluida la nueva prueba de unicidad de Athun. La validación en Chrome/Android continúa pendiente; no se ha fusionado el pull request.
+
+
+### Eliminación transaccional de partidas — 16/11/2026
+
+La revisión del ciclo de borrado encontró un riesgo de pérdida parcial: el índice se actualizaba y el archivo de partida se eliminaba antes de confirmar el cambio de selección activa. Si fallaba esa última escritura, el método devolvía error aunque la partida ya hubiera desaparecido. Se ha endurecido `Save.deleteSlot()` para conservar los valores previos del índice, registro y partida activa, y restaurarlos ante cualquier fallo durante la operación. La última partida continúa protegida contra eliminación.
+
+Se añadieron respaldos previos de `app/js/core/save.js`, `tests/storage.test.js`, este documento y el plan de migración. Se incorporó una prueba que simula el fallo al cambiar la partida activa, comprueba la restauración íntegra y después verifica que el borrado normal funciona. La nueva validación CI queda pendiente de ejecución; no se ha probado todavía en Chrome/Android.
