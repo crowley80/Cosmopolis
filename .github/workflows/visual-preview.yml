@@ -498,7 +498,7 @@ jobs:
               }, {
                 world: { facts: ['Recuerdo privado de Darian'], events: [], relationships: {} }
               });
-              return { ari: ari && ari.id, darian, globalLocations: Save.getGlobalWorld().locations };
+              return { ari: ari && ari.id, darian, globalLocations: Save.getGlobalWorld().locations.map(entry => typeof entry === 'string' ? entry : entry.name) };
             });
             assert.ok(slotIds.ari && slotIds.darian, 'Deben existir dos partidas independientes');
             assert.ok(slotIds.globalLocations.includes('Plaza del pozo'), 'El mundo común debe conservar el lugar descubierto por Ariadna');
