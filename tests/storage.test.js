@@ -290,3 +290,31 @@ test('comparte el tramo realmente recorrido sin inventar el camino inverso', () 
     assert.equal(Save.addGlobalConnection('La Posada del Tejón', 'Plaza del pozo', 'Ariadna'), true);
     assert.equal(Save.getGlobalWorld().connections.length, 2);
 });
+
+
+test('un camino descubierto por un protagonista queda disponible en el atlas de otro', () => {
+    Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia A',
+        state: { currentLocation: 'Plaza del pozo', visitedLocations: ['Plaza del pozo'], inventory: [] }
+    });
+    const nextAdventure = JSON.parse(JSON.stringify(Save.load().adventure));
+    nextAdventure.state.currentLocation = 'La Posada del Tejón';
+    assert.equal(Session.addAction('Voy a la posada', 'Llegas a la posada.', {
+        adventure: nextAdventure
+    }), true);
+
+    Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia B',
+        state: { currentLocation: 'Puerto', visitedLocations: ['Puerto'], inventory: [] }
+    });
+    const atlas = require('../app/js/game/map.js').getAtlas(
+        Save.getGlobalWorld(),
+        Save.load().adventure.state,
+        Save.load().adventure
+    );
+
+    assert.equal(atlas.connections.some(route =>
+        route.from === 'Plaza del pozo' && route.to === 'La Posada del Tejón'
+    ), true);
+    assert.equal(atlas.visited.some(place => place.name === 'La Posada del Tejón'), false);
+});
