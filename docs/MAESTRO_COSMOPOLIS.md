@@ -1394,3 +1394,7 @@ Además de las localizaciones, el mundo global conserva la identidad básica de 
 
 ### Recuperación del índice de partidas — 16/11/2026
 Si el índice de partidas se elimina o queda ilegible, el almacenamiento reconstruye su listado a partir de las claves de las partidas individuales. Esta recuperación evita que una incidencia del índice haga invisibles registros que siguen almacenados. Se añadieron pruebas para este caso.
+
+
+### Continuidad narrativa por protagonista — 16/11/2026
+El contexto del narrador mantiene separados el mundo global y el mundo personal de la partida activa. Los hechos, eventos y relaciones históricos de la partida heredada siguen disponibles para su protagonista; no se convierten en verdades universales. El selector también muestra el título de cada aventura para distinguir varias historias del mismo personaje.
