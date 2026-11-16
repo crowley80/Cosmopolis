@@ -124,3 +124,18 @@ La rama sigue aislada de main. La validación automatizada no acredita el funcio
 
 ### Validación ampliada con el prólogo — 16/11/2026
 GitHub Actions, ejecución **76**, sobre el estado de la rama que incorpora el prólogo y sus pruebas: comprobación de sintaxis JavaScript correcta y **10/10 pruebas aprobadas** (2 del prólogo y 8 de almacenamiento). La ejecución confirma que el prólogo literal se presenta y marca como visto al continuar, que no se repite en instalaciones ya inicializadas y que las partidas existentes conservan el acceso directo al selector.
+
+
+## Primera fase del atlas de exploración — 16/11/2026
+
+Se ha creado el módulo `app/js/game/map.js` con una separación estricta entre:
+- **A la vista:** ubicación actual y ubicaciones adicionales declaradas expresamente en `state.visibleLocations`.
+- **Visitado:** lugares incluidos en `state.visitedLocations` de este protagonista.
+- **Conocido:** lugares descubiertos y compartidos por el mundo, pero que este protagonista no ha visitado ni tiene a la vista.
+- **Sin descubrir:** territorio no enumerado ni nombrado en la interfaz; no se filtran nombres de lugares desconocidos.
+
+La sesión registra en el mundo compartido la ubicación actual y las ubicaciones que el estado narrativo declare visibles. La lista de visitas sigue siendo privada de cada protagonista. El atlas no deduce coordenadas, distancias ni conexiones a partir de nombres. Si el mundo/narrador no aporta información espacial explícita, solo muestra el entorno inmediato conocido; esto evita fabricar una geografía falsa.
+
+La interfaz del mapa ahora presenta leyenda y secciones diferenciadas para entorno inmediato, lugares visitados y conocimiento compartido. Es una primera fase funcional de niebla de exploración y clasificación, no todavía un mapa geográfico con cuadrícula o rutas. Para completar esa fase se necesita incorporar datos de posición y conexiones espaciales explícitos, validar su coherencia narrativa y probar la expansión por desplazamiento.
+
+Pruebas nuevas: clasificación de estados, revelado explícito de ubicaciones visibles, separación entre descubrimiento compartido y visita personal. Se añadió también una prueba de integración de sesión para comprobar que el descubrimiento visible se comparte sin convertirlo en visita del segundo protagonista. Pendiente confirmar CI y validar visualmente en Chrome/Android.
