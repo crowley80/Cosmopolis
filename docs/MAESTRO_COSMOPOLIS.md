@@ -1621,3 +1621,12 @@ Se consultaron las ejecuciones remotas asociadas al último commit de la rama:
 Estas ejecuciones confirman CI y navegador Chromium simulado; no equivalen a una prueba táctil en un teléfono Android físico. Esa comprobación sigue pendiente y es el único requisito manual indicado antes de considerar la fusión. Se mantiene el PR en borrador y no se fusiona automáticamente.
 
 Se creó antes de esta actualización el respaldo íntegro `docs/MAESTRO_COSMOPOLIS.md.bak-20261116-validacion-final-ci`. Las partidas locales del usuario no son accesibles desde esta revisión remota y no se han modificado.
+
+
+### Corrección de consistencia del mundo compartido — 16/11/2026
+
+En la auditoría se detectó que una acción podía publicar localizaciones, personajes y caminos en el mundo compartido antes de que el guardado personal estuviera confirmado. Se corrigió `Session.addAction()`: primero guarda la acción del protagonista y, únicamente si la escritura se verifica, sincroniza después el conocimiento compartido. Si el guardado falla, devuelve `false` y no publica esos descubrimientos.
+
+Se añadió una prueba de regresión que simula un fallo de almacenamiento y comprueba que no se filtren lugares, rutas ni entidades, y que la posición y el historial personales permanezcan intactos. Se guardaron respaldos previos de los dos archivos de ejecución modificados.
+
+GitHub Actions, ejecución **397** (ID `43924727789`): comprobación de sintaxis JavaScript y suite de almacenamiento/mundo compartido completadas correctamente. La corrección está validada en CI. No se ha fusionado el PR #4 ni se ha modificado `main`. La validación táctil en Chrome sobre Android físico sigue pendiente.
