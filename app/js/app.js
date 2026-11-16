@@ -91,7 +91,12 @@ const Athun = {
     showMap() {
         const saved = Save.load() || {};
         const state = saved.adventure && saved.adventure.state ? saved.adventure.state : {};
-        const places = Array.isArray(state.visitedLocations) ? state.visitedLocations.slice() : [];
+        const personalPlaces = Array.isArray(state.visitedLocations) ? state.visitedLocations.slice() : [];
+        const sharedWorld = Save.getGlobalWorld();
+        const sharedPlaces = Array.isArray(sharedWorld.locations)
+            ? sharedWorld.locations.map(item => typeof item === 'string' ? item : item.name).filter(Boolean)
+            : [];
+        const places = [...new Set([...sharedPlaces, ...personalPlaces])];
         const current = state.currentLocation || (saved.adventure && saved.adventure.location) || '';
         if (current && !places.includes(current)) places.push(current);
         const placeList = places.length
@@ -101,8 +106,8 @@ const Athun = {
             ? state.clues.map(clue => `<li>${this.escape(clue)}</li>`).join('')
             : '<li>Todavía no has descubierto pistas.</li>';
         this.openPanel('Mapa de lugares conocidos', `
-            <p class="tool-intro">Este registro solo muestra lugares que tu personaje ha visitado o conoce. Las zonas desconocidas permanecen en blanco.</p>
-            <h3>Lugares registrados</h3><ol class="tool-list">${placeList}</ol>
+            <p class="tool-intro">Este registro reúne los lugares descubiertos por cualquiera de tus protagonistas y los que conoce esta partida. Las zonas desconocidas permanecen en blanco.</p>
+            <h3>Lugares del mundo compartido y de esta historia</h3><ol class="tool-list">${placeList}</ol>
             <h3>Pistas reunidas</h3><ul class="tool-list">${clues}</ul>
         `);
     },
@@ -133,6 +138,7 @@ const Athun = {
             </dl>
             <button type="button" id="saveNow" class="tool-action">Guardar ahora</button>
             <button type="button" id="profileFromOptions" class="tool-action secondary">Consultar mi ficha</button>
+            <button type="button" id="switchSaveFromOptions" class="tool-action secondary">Cambiar de partida</button>
             <p id="toolFeedback" role="status" aria-live="polite"></p>
         `, overlay => {
             overlay.querySelector('#saveNow').addEventListener('click', () => {
@@ -145,6 +151,10 @@ const Athun = {
             overlay.querySelector('#profileFromOptions').addEventListener('click', () => {
                 overlay.remove();
                 this.showProfile(character);
+            });
+            overlay.querySelector('#switchSaveFromOptions').addEventListener('click', () => {
+                overlay.remove();
+                this.showSaveSelection();
             });
         });
     },
