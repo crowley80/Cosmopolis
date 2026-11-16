@@ -67,7 +67,7 @@ jobs:
             await page.locator('.adventure-screen').waitFor();
 
             // Regresión narrativa: apertura aprobada, descubrimientos graduales y Athun permanente.
-            await page.evaluate(() => {
+            await page.evaluate(async () => {
               const player = { name: 'Ariadna' };
               const opening = Adventure.createOpening(player);
               const fail = message => { throw new Error('NARRATIVE REGRESSION: ' + message); };
@@ -92,7 +92,43 @@ jobs:
               if (/elia|campana/i.test(inspect.reply) || inspect.state.bellDiscovered) fail('examinar el pozo revela a Elia o la campana prematuramente');
               const magic = Director.respond('Invoco magia sobre el pozo.', player, inspect.adventure, [{ text: 'Entro en el pueblo' }, { text: 'Camino hacia la plaza' }, { text: 'Examino el pozo' }]);
               if (!magic.state.bellDiscovered || !/campanada|campana/i.test(magic.reply)) fail('la magia no descubre la respuesta de la campana');
-              return 'Apertura, entrada, descubrimiento del pozo, investigación y revelación mágica: OK';
+
+              const originalFetch = window.fetch;
+              const fakeNarrative = {
+                reply: 'Athun permanece contigo.',
+                event: 'El grimorio ha permanecido en el inventario.',
+                category: 'other',
+                location: opening.location,
+                factsToAdd: [],
+                cluesToAdd: [],
+                relationshipChanges: [],
+                itemsToAdd: [],
+                itemsToRemove: ['Athun'],
+                characterMemoriesToAdd: [],
+                charactersToAdd: [],
+                characterUpdates: [],
+                characterActions: [],
+                goalUpdates: [],
+                time: 'Mañana',
+                day: 1
+              };
+              window.fetch = async (url, options) => {
+                if (String(url).endsWith('/health')) return { ok: true };
+                return {
+                  ok: true,
+                  json: async () => ({ choices: [{ message: { content: JSON.stringify(fakeNarrative) } }] })
+                };
+              };
+              try {
+                Narrator.healthCheckedAt = 0;
+                const narrated = await Narrator.respond('Observo el grimorio.', player, opening, []);
+                if (!narrated.state.inventory.some(item => String(item).toLowerCase().includes('athun'))) fail('el narrador ha retirado Athun del inventario');
+                if (!narrated.state.athun || narrated.state.athun.permanent !== true) fail('se ha perdido la protección permanente de Athun');
+              } finally {
+                window.fetch = originalFetch;
+                Narrator.healthCheckedAt = 0;
+              }
+              return 'Apertura, descubrimientos graduales y protección de Athun: OK';
             }).then(result => console.log('NARRATIVE REGRESSION:', result));
 
             await page.screenshot({ path: 'artifacts/cosmopolis-mobile.png', fullPage: true });
