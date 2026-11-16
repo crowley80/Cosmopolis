@@ -26,7 +26,7 @@ test.beforeEach(() => {
 test('migra la partida antigua sin borrar ni modificar su clave original', () => {
     const legacy = {
         character: { name: 'Ariadna' },
-        adventure: { title: 'La campana', state: { inventory: ['Antorcha'] } },
+        adventure: { title: 'La campana', state: { inventory: ['Antorcha'], currentLocation: 'Valdebruma', visitedLocations: ['Valdebruma'], characters: { Elia: { role: 'Cartógrafa', location: 'Plaza del pozo', trust: 7, memories: ['Secreto de Ariadna'] } } } },
         actions: [{ text: 'Observo el pozo' }],
         world: { facts: ['Dato antiguo'], events: [], relationships: {} },
         createdAt: '2026-01-01T00:00:00.000Z'
@@ -41,6 +41,9 @@ test('migra la partida antigua sin borrar ni modificar su clave original', () =>
     assert.ok(Save.load().adventure.state.inventory.some(item => item.includes('Athun')));
     assert.equal(localStorage.getItem(Save.key), original);
     assert.ok(localStorage.getItem(Save.slotPrefix + entries[0].id));
+    assert.ok(Save.getGlobalWorld().locations.some(item => item.name === 'Valdebruma'));
+    assert.equal(Save.getGlobalWorld().entities.elia.role, 'Cartógrafa');
+    assert.equal('memories' in Save.getGlobalWorld().entities.elia, false);
 });
 
 test('mantiene independientes dos protagonistas y permite alternar entre partidas', () => {
