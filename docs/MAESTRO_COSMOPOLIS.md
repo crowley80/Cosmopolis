@@ -2037,3 +2037,13 @@ Se ha detectado que el contexto del narrador podía incluir la ficha de Elia aun
 - Se crearon copias de seguridad previas de los tres archivos modificados.
 - No se altera la secuencia del prólogo ni el estado de ninguna partida guardada.
 - Pendiente de validación en CI.
+
+
+## Ajuste del escenario visual de memoria de personajes (17/11/2026)
+
+La nueva protección de conocimiento exige que Elia solo aparezca en el contexto del narrador cuando `eliaMet` sea verdadero. La prueba visual de compactación de recuerdos inspeccionaba la ficha de Elia sin declarar previamente que la protagonista la conocía, por lo que el escenario fallaba correctamente al no encontrarla. Se ha corregido el fixture para establecer explícitamente `probe.state.eliaMet = true` antes de comprobar límites de memoria y objetivos. No se ha debilitado la protección del juego.
+
+- La prueba automatizada de almacenamiento ya había pasado.
+- La vista previa falló por una precondición omitida en el fixture, no por un error de ejecución del juego.
+- Se creó backup previo del workflow y del documento maestro.
+- Pendiente nueva validación de CI.
