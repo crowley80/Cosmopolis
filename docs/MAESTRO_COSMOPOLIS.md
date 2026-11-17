@@ -2069,3 +2069,6 @@ El vínculo de Athun ya no depende únicamente de una cifra. Cada cambio efectiv
 - El contexto mantiene el aislamiento entre protagonistas: cada partida recibe únicamente su propia historia de vínculo.
 - La instrucción narrativa utiliza esos motivos para dar continuidad emocional sin convertir la puntuación en una personalidad rígida.
 - Se añadió una prueba que registra cambios en sentidos opuestos y verifica que ambos motivos llegan al contexto narrativo de la misma partida.
+
+
+La prueba de aislamiento de Athun también comprueba ahora que los motivos del vínculo de Ariadna y Darian no se mezclan al alternar partidas.
