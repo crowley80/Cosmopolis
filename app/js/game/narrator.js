@@ -116,13 +116,15 @@ const Narrator = {
         const athunState = state.athun && typeof state.athun === 'object' ? state.athun : {};
         const athunContext = {
             bond: Number.isFinite(Number(athunState.bond)) ? Math.max(-100, Math.min(100, Number(athunState.bond))) : 0,
-            memories: shortList(athunState.memories, 12, 240),
-            revelations: shortList(athunState.revelations, 12, 240),
+            memories: (Array.isArray(athunState.memories) ? athunState.memories : [])
+                .filter(item => typeof item === 'string' && item.trim()).slice(-12).map(item => item.trim().slice(0, 240)),
+            revelations: (Array.isArray(athunState.revelations) ? athunState.revelations : [])
+                .filter(item => typeof item === 'string' && item.trim()).slice(-12).map(item => item.trim().slice(0, 240)),
             bondHistory: (Array.isArray(athunState.bondHistory) ? athunState.bondHistory : [])
                 .slice(-12)
                 .map(entry => ({
                     delta: Number.isInteger(entry && entry.delta) ? Math.max(-1, Math.min(1, entry.delta)) : 0,
-                    reason: String(entry && entry.reason || '').slice(0, 240)
+                    reason: typeof (entry && entry.reason) === 'string' ? entry.reason.trim().slice(0, 240) : ''
                 }))
                 .filter(entry => entry.reason)
         };
@@ -185,6 +187,7 @@ const Narrator = {
 
         const compactState = {
             ...state,
+            athun: athunContext,
             events: shortList(state.events, 20),
             knownFacts: shortList(state.knownFacts, 25),
             clues: shortList(state.clues, 25),
