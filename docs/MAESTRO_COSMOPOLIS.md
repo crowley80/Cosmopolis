@@ -2009,3 +2009,13 @@ Commits funcionales:
 - `1efdf5d`: corrección de normalización Unicode en el validador.
 
 **Validación CI:** pendiente de consultar para la revisión actual. No se declara aprobada la nueva regresión hasta que GitHub Actions confirme el resultado. La prueba táctil real en Chrome Android sigue pendiente. PR #4 permanece abierto y en borrador; no se ha fusionado ni modificado `main`.
+
+### Revalidación visual y de almacenamiento — 17 de noviembre de 2026 (18:08 UTC)
+
+Se corrigió únicamente el escenario simulado de la prueba visual: la respuesta ficticia que representa el desplazamiento ahora declara la categoría `movement` y menciona explícitamente el destino «Plaza del pozo». Esto hace que el escenario respete la validación narrativa real de `Narrator.resolveCurrentLocation()`; no cambia el comportamiento del juego.
+
+- Commit: `21cdf2574c7263f61148f80db4e59c5fa02a2c7c`.
+- GitHub Actions «Athun storage tests», ejecución **44144525754**: completada correctamente.
+- GitHub Actions «Visual preview», ejecución **44144525744**: completada correctamente en Chromium móvil simulado y escritorio.
+- La prueba táctil en Chrome sobre Android físico continúa pendiente; las pruebas automatizadas no la sustituyen.
+- PR #4 permanece abierto, en borrador y sin fusionar. No se ha modificado `main` ni ningún guardado local.
