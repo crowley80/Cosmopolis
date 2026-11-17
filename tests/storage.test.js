@@ -663,7 +663,8 @@ test('el narrador recibe los recuerdos y revelaciones de Athun solo desde la par
     assert.deepEqual(darianContext.currentAdventure.athun, {
         bond: 2,
         memories: ['El camino del norte'],
-        revelations: ['Una voz lejana']
+        revelations: ['Una voz lejana'],
+        bondHistory: []
     });
 
     assert.equal(Save.activate(first), true);
@@ -673,7 +674,8 @@ test('el narrador recibe los recuerdos y revelaciones de Athun solo desde la par
     assert.deepEqual(ariContext.currentAdventure.athun, {
         bond: 7,
         memories: ['La primera noche juntas'],
-        revelations: ['La tinta respira']
+        revelations: ['La tinta respira'],
+        bondHistory: []
     });
     assert.equal(ariMessages[0].content.includes('exclusivos de esta partida'), true);
 });
@@ -690,6 +692,28 @@ test('Athun conserva recuerdos compartidos, revelaciones justificadas y cambios 
     assert.deepEqual(state.athun.revelations, ['La tinta respira']);
     assert.equal(state.athun.bond, 5);
     assert.equal(state.athun.permanent, true);
+});
+
+test('Athun conserva los motivos de cada cambio de vínculo dentro de la partida', () => {
+    const state = { athun: { bond: 4, memories: [], revelations: [], bondHistory: [] } };
+    Narrator.applyAthunUpdates(state, {
+        athunBondChange: { delta: 1, reason: 'Ariadna confió en el grimorio durante el peligro' }
+    });
+    Narrator.applyAthunUpdates(state, {
+        athunBondChange: { delta: -1, reason: 'Ariadna rechazó una advertencia de Athun' }
+    });
+    assert.equal(state.athun.bond, 4);
+    assert.deepEqual(state.athun.bondHistory, [
+        { delta: 1, reason: 'Ariadna confió en el grimorio durante el peligro' },
+        { delta: -1, reason: 'Ariadna rechazó una advertencia de Athun' }
+    ]);
+
+    const messages = Narrator.buildMessages('Recuerdo lo ocurrido', { name: 'Ariadna' }, {
+        title: 'Historia de Ariadna',
+        state: { currentLocation: 'Valdebruma', inventory: [], athun: state.athun }
+    }, []);
+    const context = JSON.parse(messages[1].content);
+    assert.deepEqual(context.currentAdventure.athun.bondHistory, state.athun.bondHistory);
 });
 
 test('el registro de Athun limita tamaño, cantidad y variación del vínculo', () => {
