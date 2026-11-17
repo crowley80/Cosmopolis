@@ -121,11 +121,19 @@ const Narrator = {
         };
         const currentLocation = state.currentLocation || adventure.location || '';
         const allCharacters = Object.entries(state.characters || {});
-        const nearby = allCharacters.filter(([, person]) =>
-            person && person.location && person.location === currentLocation
+        // Elia puede existir en los datos de la aventura antes de que el protagonista la conozca.
+        // No debe filtrarse al contexto del modelo hasta que el encuentro quede registrado.
+        const playerKnowsElia = state.eliaMet === true;
+        const isAvailableToNarrator = ([key]) =>
+            key.toLocaleLowerCase('es') !== 'elia' || playerKnowsElia;
+        const nearby = allCharacters.filter(entry =>
+            isAvailableToNarrator(entry) &&
+            entry[1] && entry[1].location && entry[1].location === currentLocation
         );
-        const elia = allCharacters.filter(([key]) => key.toLocaleLowerCase('es') === 'elia');
-        const recent = allCharacters.slice(-20).reverse();
+        const elia = allCharacters.filter(([key]) =>
+            playerKnowsElia && key.toLocaleLowerCase('es') === 'elia'
+        );
+        const recent = allCharacters.filter(isAvailableToNarrator).slice(-20).reverse();
         const selectedCharacters = [];
         [...nearby, ...elia, ...recent].forEach(entry => {
             if (!selectedCharacters.some(([key]) => key === entry[0]) && selectedCharacters.length < 20) {
