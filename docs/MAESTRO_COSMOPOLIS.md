@@ -2019,3 +2019,12 @@ Se corrigió únicamente el escenario simulado de la prueba visual: la respuesta
 - GitHub Actions «Visual preview», ejecución **44144525744**: completada correctamente en Chromium móvil simulado y escritorio.
 - La prueba táctil en Chrome sobre Android físico continúa pendiente; las pruebas automatizadas no la sustituyen.
 - PR #4 permanece abierto, en borrador y sin fusionar. No se ha modificado `main` ni ningún guardado local.
+
+
+## Corrección del contexto de memoria narrativa (17/11/2026)
+
+Se ha corregido un desajuste en `Narrator.buildMessages()`: el historial reciente se preparaba con la propiedad `action`, pero al serializar el contexto se intentaba leer `text`. Como resultado, el modelo recibía las respuestas anteriores, pero no las acciones que las habían provocado. Ahora se conserva cada acción junto con su respuesta, y una prueba automatizada verifica ambos elementos en el contexto enviado al narrador.
+
+- Se crearon copias de seguridad previas de `app/js/game/narrator.js`, `tests/storage.test.js` y este documento.
+- La corrección no modifica partidas ni datos guardados.
+- Debe validarse mediante las ejecuciones de CI de esta rama.
