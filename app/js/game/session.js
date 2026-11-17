@@ -69,6 +69,13 @@ const Session = {
                 ? details.visibleLocations.filter(name => typeof name === 'string' && name.trim()).slice(0, 12)
                 : [];
         }
+        const spatialRelations = typeof WorldMap !== 'undefined' &&
+            typeof WorldMap.normalizeSpatialRelations === 'function'
+            ? WorldMap.normalizeSpatialRelations(details.spatialRelations, response)
+            : [];
+        spatialRelations.forEach(relation =>
+            Save.addGlobalSpatialRelation(relation, saved.character.name)
+        );
         state.visitedLocations = Array.isArray(state.visitedLocations) ? state.visitedLocations : [];
         if (currentLocation && !state.visitedLocations.includes(currentLocation)) {
             state.visitedLocations.push(currentLocation);
