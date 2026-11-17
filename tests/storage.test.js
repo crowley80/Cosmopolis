@@ -1043,3 +1043,24 @@ test('las acciones autónomas solo se registran si están narradas en escena y n
     ], 'Elia continúa observando en silencio.', state), []);
     assert.deepEqual(Narrator.filterAutonomousActions('no es una lista', '', state), []);
 });
+
+
+test('las actualizaciones de objetivos exigen personaje conocido, estado válido y motivo concreto', () => {
+    const state = {
+        characters: {
+            Elia: { name: 'Elia' },
+            'Tomás': { name: 'Tomás' }
+        }
+    };
+    assert.deepEqual(Narrator.filterGoalUpdates([
+        { character: 'Elia', goal: 'Investigar las marcas', status: 'progress', reason: 'Ha encontrado una nueva señal' },
+        { character: 'Tomás', goal: 'Proteger el molino', status: 'blocked', reason: 'El acceso está cerrado' },
+        { character: 'Desconocido', goal: 'Abrir la puerta', status: 'active', reason: 'Quiere entrar' },
+        { character: 'Elia', goal: 'Cambiar de objetivo', status: 'inventado', reason: 'Motivo inválido' },
+        { character: 'Tomás', goal: 'Buscar ayuda', status: 'active', reason: '   ' }
+    ], state), [
+        { character: 'Elia', goal: 'Investigar las marcas', status: 'progress', reason: 'Ha encontrado una nueva señal' },
+        { character: 'Tomás', goal: 'Proteger el molino', status: 'blocked', reason: 'El acceso está cerrado' }
+    ]);
+    assert.deepEqual(Narrator.filterGoalUpdates('no es una lista', state), []);
+});
