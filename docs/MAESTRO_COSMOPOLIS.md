@@ -1882,3 +1882,23 @@ Se ha vuelto a comprobar el estado del repositorio antes de cerrar esta tanda:
 **Bloqueo restante:** la interacción táctil real en Chrome sobre un Android físico sigue sin poder verificarse desde GitHub Actions. Debe comprobarse en el teléfono antes de sacar el PR del borrador o fusionarlo. En esa prueba hay que confirmar apertura y alternancia de dos partidas, guardado/recarga, mundo conocido compartido frente a progreso personal aislado y permanencia de Athun en el inventario sin posibilidad de perderlo, venderlo, transferirlo o destruirlo.
 
 Hasta completar esa validación física, mantener el PR #4 en borrador y no fusionar. `main` y los guardados existentes permanecen intactos.
+
+
+
+### Protección narrativa y transaccional de Athun — 17 de noviembre de 2026
+
+La revisión confirmó que la capa de inventario ya impedía retirar o duplicar Athun, pero la instrucción literaria no enumeraba expresamente todas las formas de pérdida. Se reforzó el contrato entre narrador y estado del juego:
+
+- El prompt declara a Athun permanente e inseparable y prohíbe narrar como exitosos el robo, venta, intercambio, transferencia, regalo, abandono, destrucción, consumo o retirada del grimorio.
+- Se extrajo la aplicación de cambios de inventario a `Narrator.applyInventoryUpdates()`. El método ignora cualquier intento de retirar o añadir una entrada que contenga «Athun» y restaura la entrada canónica si faltara.
+- Se añadió una regresión que simula intentos de retirar, vender, transferir y destruir Athun, verifica que no desaparece ni se duplica, comprueba que los demás objetos sí se actualizan y confirma la regla del prompt.
+- Respaldos previos: `app/js/game/narrator.js.bak-20261117-athun-immutability`, `tests/storage.test.js.bak-20261117-athun-immutability` y este respaldo del documento maestro.
+
+**Validación automatizada sobre el commit funcional `43efbb730dbe8869fc59c575e07a584f35317660`:**
+- «Athun storage tests», ejecución **623** (push) y **624** (pull request): correctas; comprobación sintáctica y **41/41 pruebas aprobadas**, 0 fallos.
+- «Visual preview», ejecución **319**: correcta. Playwright completó la regresión narrativa y las interacciones; el diseño móvil simulado midió 390 × 844 sin desbordamiento horizontal y la prueba de escritorio utilizó 1024 × 900.
+- La nueva prueba específica de permanencia de Athun figura como subprueba **41** y pasó.
+
+**Estado de integración:** PR #4 sigue abierto y en borrador. En la comparación previa a esta anotación, la rama estaba 199 commits por delante de `main` y 0 por detrás, con base `ff292438bc60c391c2cc6f708ac12d02b166cb70`. No se ha fusionado ni modificado `main`.
+
+**Pendiente manual:** la interacción táctil real en Chrome sobre Android físico no puede certificarse desde Playwright/GitHub Actions. Debe comprobarse antes de retirar el borrador o fusionar: selector y alternancia de protagonistas, guardado y recarga, mundo común frente a progreso privado, e intentos de perder/vender/transferir/destruir Athun. No se han tocado partidas guardadas ni datos locales del teléfono.
