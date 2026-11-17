@@ -481,7 +481,7 @@ const Save = {
             adjacent_to: ['junto a', 'al lado de', 'contiguo a', 'colinda con']
         }[type];
         const normalize = value => String(value || '').normalize('NFD')
-            .replace(/[\\u0300-\\u036f]/g, '').toLocaleLowerCase('es');
+            .replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es');
         const text = normalize(evidence);
         const fromName = normalize(from);
         const toName = normalize(to);
