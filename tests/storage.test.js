@@ -147,6 +147,54 @@ test('Athun permanece en el inventario al guardar o normalizar una partida', () 
 });
 
 
+test('si falla la actualización del índice, revierte el guardado de la partida', () => {
+    const id = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia original', state: { inventory: ['Llave'] }
+    });
+    assert.ok(id);
+    const originalSlot = localStorage.getItem(Save.slotPrefix + id);
+    const originalIndex = localStorage.getItem(Save.indexKey);
+    const setItem = localStorage.setItem.bind(localStorage);
+    localStorage.setItem = (key, value) => {
+        if (key === Save.indexKey) throw new Error('Fallo simulado al actualizar el índice');
+        setItem(key, value);
+    };
+
+    const changed = Save.load();
+    changed.character.name = 'Ariadna modificada';
+    assert.equal(Save.save(changed), false);
+    localStorage.setItem = setItem;
+
+    assert.equal(localStorage.getItem(Save.slotPrefix + id), originalSlot);
+    assert.equal(localStorage.getItem(Save.indexKey), originalIndex);
+    assert.equal(Save.load().character.name, 'Ariadna');
+});
+
+test('si falla el índice al sustituir una partida, restaura el registro anterior', () => {
+    const id = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia original', state: { inventory: ['Llave'] }
+    });
+    assert.ok(id);
+    const originalSlot = localStorage.getItem(Save.slotPrefix + id);
+    const originalIndex = localStorage.getItem(Save.indexKey);
+    const setItem = localStorage.setItem.bind(localStorage);
+    localStorage.setItem = (key, value) => {
+        if (key === Save.indexKey) throw new Error('Fallo simulado al actualizar el índice');
+        setItem(key, value);
+    };
+
+    assert.equal(Save.replace({
+        character: { name: 'Darian' },
+        adventure: { title: 'Historia distinta', state: { inventory: [] } }
+    }), false);
+    localStorage.setItem = setItem;
+
+    assert.equal(localStorage.getItem(Save.slotPrefix + id), originalSlot);
+    assert.equal(localStorage.getItem(Save.indexKey), originalIndex);
+    assert.equal(Save.load().character.name, 'Ariadna');
+    assert.equal(Save.load().adventure.title, 'Historia original');
+});
+
 test('la migración heredada es idempotente y no duplica partidas ni lugares', () => {
     const legacy = {
         character: { name: 'Ariadna' },
