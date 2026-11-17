@@ -655,3 +655,51 @@ test('el registro de Athun limita tamaño, cantidad y variación del vínculo', 
     assert.equal(state.athun.bond, 100);
     assert.equal(state.athun.revelations.length, 1);
 });
+
+
+test('revela zonas cercanas al explorar sin cambiar de ubicación', () => {
+    const WorldMap = require('../app/js/game/map.js');
+    Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Exploración',
+        state: {
+            currentLocation: 'Plaza del pozo',
+            visitedLocations: ['Plaza del pozo'],
+            visibleLocations: [],
+            inventory: []
+        }
+    });
+    const sameAdventure = JSON.parse(JSON.stringify(Save.load().adventure));
+
+    assert.equal(Session.addAction('Examino los alrededores', 'Descubres una calle entre la niebla.', {
+        category: 'investigation',
+        adventure: sameAdventure,
+        visibleLocations: ['Calle del molino', 'Puente viejo']
+    }), true);
+
+    const saved = Save.load().adventure.state;
+    const atlas = WorldMap.getAtlas(Save.getGlobalWorld(), saved, Save.load().adventure);
+    assert.equal(saved.currentLocation, 'Plaza del pozo');
+    assert.deepEqual(atlas.currentAndVisible.map(item => item.name), [
+        'Plaza del pozo', 'Calle del molino', 'Puente viejo'
+    ]);
+    assert.equal(atlas.known.length, 0);
+});
+
+test('no conserva zonas visibles anteriores al desplazarse sin una nueva declaración', () => {
+    Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Exploración',
+        state: {
+            currentLocation: 'Plaza del pozo',
+            visitedLocations: ['Plaza del pozo'],
+            visibleLocations: ['Calle del molino'],
+            inventory: []
+        }
+    });
+    const nextAdventure = JSON.parse(JSON.stringify(Save.load().adventure));
+    nextAdventure.state.currentLocation = 'Puerto';
+
+    assert.equal(Session.addAction('Me dirijo al puerto', 'Llegas al puerto.', {
+        adventure: nextAdventure
+    }), true);
+    assert.deepEqual(Save.load().adventure.state.visibleLocations, []);
+});
