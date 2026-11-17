@@ -2087,3 +2087,10 @@ Respaldos previos creados en la rama:
 - `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-athun-state-sanitization`
 
 Se añadió una regresión que introduce entradas de tipos incorrectos, motivos inválidos, un delta fuera de rango y textos demasiado largos; comprueba la normalización y que la actualización continúa procesando datos válidos. La validación de CI queda pendiente; no se considera superada hasta consultar sus resultados.
+
+
+### Filtrado de memoria antes de construir el contexto del narrador — 17 de noviembre de 2026
+
+Se ha cerrado una segunda vía de entrada de datos defectuosos: `Narrator.buildMessages()` ya no copia objetos, valores vacíos ni motivos no textuales de recuerdos, revelaciones e historial de Athun al contexto enviado al modelo. Además, la representación compacta del estado sobrescribe cualquier copia sin filtrar de `state.athun` con el contexto normalizado, evitando que el mismo dato llegue por una ruta paralela. Se conserva el contenido textual válido y se limita cada recuerdo/revelación a 240 caracteres en el prompt.
+
+Se añadió una prueba que introduce deliberadamente objetos y valores de tipos incorrectos y verifica tanto el contexto específico de Athun como la copia anidada en el estado. Respaldo previo: `app/js/game/narrator.js.bak-20261117-athun-prompt-memory-filter`, `tests/storage.test.js.bak-20261117-athun-prompt-memory-filter` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-athun-prompt-memory-filter`.
