@@ -1,7 +1,7 @@
 name: Visual preview
 on:
   push:
-    branches: [main, integration/athun-multisave-main-20261116]
+    branches: [main]
     paths:
       - 'app/**'
       - 'index.html'
