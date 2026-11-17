@@ -1812,3 +1812,16 @@ Se añadieron dos regresiones: una confirma que la exploración estacionaria rev
 Respaldos previos: app/js/game/session.js.bak-20261117-stationary-visibility, tests/storage.test.js.bak-20261117-stationary-visibility y docs/MAESTRO_COSMOPOLIS.md.bak-20261117-stationary-visibility.
 
 Estado: cambio publicado en la rama integration/athun-multisave-main-20261116. Pendiente la validación de GitHub Actions. PR #4 permanece abierto y sin fusionar; main no se modifica.
+
+
+### Validación de zonas visibles declaradas por el narrador — 17 de noviembre de 2026
+
+La revisión del atlas encontró un punto débil: aunque el prompt prohíbe inventar lugares, el cliente aceptaba literalmente cualquier nombre devuelto por el modelo en `visibleLocations`. Una respuesta no conforme podía introducir topónimos sin respaldo en el mapa.
+
+- Se añadió un filtro en `Narrator.filterVisibleLocations()`: solo conserva nombres que aparecen explícitamente en la escena narrativa, en el texto de apertura o en el conocimiento ya registrado de la partida/mundo.
+- Se eliminan entradas vacías y duplicadas y se mantiene el límite de doce zonas.
+- El filtro no crea lugares ni conexiones y no convierte una zona conocida por otro protagonista en una visita personal.
+- Se añadió una prueba de regresión que combina una zona ya registrada, otra nombrada en la escena y una ubicación inventada que debe descartarse.
+- Respaldos previos: `app/js/game/narrator.js.bak-20261117-visible-location-guard`, `tests/storage.test.js.bak-20261117-visible-location-guard` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-visible-location-guard`.
+
+**Estado:** cambio publicado en la rama `integration/athun-multisave-main-20261116`. La validación de sintaxis y la suite de almacenamiento, junto con Playwright, quedan pendientes de la ejecución automática de GitHub Actions. No se ha modificado `main`, no se ha fusionado el PR #4 y no se han tocado partidas guardadas.
