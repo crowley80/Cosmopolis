@@ -2047,3 +2047,14 @@ La nueva protección de conocimiento exige que Elia solo aparezca en el contexto
 - La vista previa falló por una precondición omitida en el fixture, no por un error de ejecución del juego.
 - Se creó backup previo del workflow y del documento maestro.
 - Pendiente nueva validación de CI.
+
+
+## Cierre de filtración de entidades compartidas no conocidas (17/11/2026)
+
+Al ampliar la revisión del límite de conocimiento se detectó una segunda vía: el registro global compartido de entidades podía entregar al narrador la identidad y función de Elia aunque la partida activa todavía no la hubiera conocido. La ficha local ya estaba protegida, pero el registro global se incluía sin filtrar.
+
+- El contexto narrativo ahora incorpora entidades compartidas únicamente si su identidad también está presente entre los personajes conocidos de la partida activa.
+- Elia continúa excluida por completo hasta que `state.eliaMet === true`, incluso si otra partida ya la registró en el mundo compartido.
+- Al conocerla, su referencia global puede acompañar al contexto para mantener identidad y continuidad.
+- Se amplió la prueba automatizada para simular que otra partida ya había descubierto a Elia y verificar que no se filtra antes del encuentro, pero sí después.
+- Se preserva el registro compartido; el filtro afecta solo a la información entregada al narrador de la partida activa.
