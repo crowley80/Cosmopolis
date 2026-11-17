@@ -652,7 +652,7 @@ test('el narrador recibe los recuerdos y revelaciones de Athun solo desde la par
     const second = Save.createSlot({ name: 'Darian' }, {
         title: 'Historia de Darian',
         state: { currentLocation: 'Puerto', inventory: [], athun: {
-            bond: 2, memories: ['El camino del norte'], revelations: ['Una voz lejana']
+            bond: 2, memories: ['El camino del norte'], revelations: ['Una voz lejana'], bondHistory: [{ delta: -1, reason: 'Darian desconfió de una advertencia' }]
         } }
     });
 
