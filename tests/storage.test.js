@@ -868,10 +868,14 @@ test('el narrador no recibe datos de Elia antes de que el protagonista la conozc
     let saved = Save.load();
     let context = JSON.parse(Narrator.buildMessages('Observo el camino', saved.character, saved.adventure, [])[1].content);
     assert.equal(Object.hasOwn(context.currentAdventure.state.characters, 'Elia'), false);
+    Save.addGlobalEntity({ name: 'Elia', role: 'Cartógrafa', location: 'Camino de entrada a Valdebruma' }, 'Otro protagonista');
+    context = JSON.parse(Narrator.buildMessages('Observo el camino', saved.character, saved.adventure, [])[1].content);
+    assert.equal(Object.hasOwn(context.persistentWorld.entities, 'elia'), false);
 
     saved.adventure.state.eliaMet = true;
     assert.equal(Save.save(saved), true);
     saved = Save.load();
     context = JSON.parse(Narrator.buildMessages('Hablo con Elia', saved.character, saved.adventure, [])[1].content);
     assert.equal(context.currentAdventure.state.characters.Elia.name, 'Elia');
+    assert.equal(context.persistentWorld.entities.elia.name, 'Elia');
 });
