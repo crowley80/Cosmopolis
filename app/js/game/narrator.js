@@ -50,7 +50,7 @@ const Narrator = {
         const normalize = value => String(value || '')
             .toLocaleLowerCase('es')
             .normalize('NFD')
-            .replace(/[\\u0300-\\u036f]/g, '')
+            .replace(/[\u0300-\u036f]/g, '')
             .replace(/[^a-z0-9]+/g, ' ')
             .trim();
         const groundedText = ' ' + normalize([
