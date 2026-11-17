@@ -90,6 +90,11 @@ const Save = {
                 bond: Number.isFinite(Number(previousAthun.bond)) ? Number(previousAthun.bond) : 0,
                 memories: Array.isArray(previousAthun.memories) ? previousAthun.memories : [],
                 revelations: Array.isArray(previousAthun.revelations) ? previousAthun.revelations : [],
+                bondHistory: (Array.isArray(previousAthun.bondHistory) ? previousAthun.bondHistory : [])
+                    .slice(-30)
+                    .filter(entry => entry && Number.isInteger(entry.delta) && entry.delta >= -1 && entry.delta <= 1 && typeof entry.reason === 'string')
+                    .map(entry => ({ delta: entry.delta, reason: entry.reason.trim().slice(0, 240) }))
+                    .filter(entry => entry.reason),
                 permanent: true
             };
         }
