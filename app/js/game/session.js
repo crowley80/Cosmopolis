@@ -63,11 +63,18 @@ const Session = {
             previousLocation.toLocaleLowerCase('es') !== currentLocation.toLocaleLowerCase('es')
             ? { from: previousLocation, to: currentLocation }
             : null;
-        if (previousLocation && currentLocation && currentLocation !== previousLocation) {
-            // Solo una respuesta narrativa explícita puede definir la nueva visibilidad.
-            state.visibleLocations = Array.isArray(details.visibleLocations)
-                ? details.visibleLocations.filter(name => typeof name === 'string' && name.trim()).slice(0, 12)
-                : [];
+        const locationChanged = previousLocation && currentLocation &&
+            previousLocation.toLocaleLowerCase('es') !== currentLocation.toLocaleLowerCase('es');
+        if (Array.isArray(details.visibleLocations)) {
+            // Explorar desde el mismo sitio también puede revelar zonas cercanas.
+            // La visibilidad solo cambia si la respuesta narrativa la declara explícitamente.
+            state.visibleLocations = details.visibleLocations
+                .filter(name => typeof name === 'string' && name.trim())
+                .map(name => name.trim().slice(0, 120))
+                .slice(0, 12);
+        } else if (locationChanged) {
+            // Al desplazarse, la visión anterior deja de estar iluminada.
+            state.visibleLocations = [];
         }
         state.visitedLocations = Array.isArray(state.visitedLocations) ? state.visitedLocations : [];
         if (currentLocation && !state.visitedLocations.includes(currentLocation)) {
