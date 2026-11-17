@@ -33,6 +33,46 @@ const Narrator = {
         return this.healthAvailable;
     },
 
+    filterVisibleLocations(candidates, reply, adventure, world = Session.getWorld()) {
+        const state = adventure && adventure.state && typeof adventure.state === 'object'
+            ? adventure.state
+            : {};
+        const knownNames = [
+            adventure && adventure.title,
+            adventure && adventure.location,
+            state.currentLocation,
+            ...(Array.isArray(state.visitedLocations) ? state.visitedLocations : []),
+            ...(Array.isArray(state.visibleLocations) ? state.visibleLocations : []),
+            ...(Array.isArray(world && world.locations) ? world.locations.map(item =>
+                typeof item === 'string' ? item : item && item.name
+            ) : [])
+        ];
+        const normalize = value => String(value || '')
+            .toLocaleLowerCase('es')
+            .normalize('NFD')
+            .replace(/[\\u0300-\\u036f]/g, '')
+            .replace(/\\s+/g, ' ')
+            .trim();
+        const groundedText = normalize([
+            reply,
+            adventure && adventure.text,
+            ...knownNames
+        ].filter(Boolean).join(' '));
+        const accepted = [];
+        const seen = new Set();
+
+        (Array.isArray(candidates) ? candidates : []).slice(0, 24).forEach(candidate => {
+            if (typeof candidate !== 'string') return;
+            const name = candidate.trim().slice(0, 120);
+            const key = normalize(name);
+            if (!key || seen.has(key) || !groundedText.includes(key)) return;
+            seen.add(key);
+            accepted.push(name);
+        });
+
+        return accepted.slice(0, 12);
+    },
+
     buildMessages(action, character, adventure, previousActions) {
         const state = adventure.state || {};
         const world = Session.getWorld();
@@ -395,10 +435,14 @@ const Narrator = {
             if (state.phase === 'arrival' && state.currentLocation !== 'Camino de entrada a Valdebruma') {
                 state.phase = 'exploration';
             }
-            state.visibleLocations = result.visibleLocations
-                .filter(name => typeof name === 'string' && name.trim())
-                .slice(0, 12)
-                .map(name => name.trim().slice(0, 120));
+            // No se acepta una zona visible que no esté nombrada en la escena
+            // o respaldada por el conocimiento real de esta partida/mundo.
+            state.visibleLocations = this.filterVisibleLocations(
+                result.visibleLocations,
+                result.reply,
+                updated,
+                Session.getWorld()
+            );
             state.knownFacts = Array.isArray(state.knownFacts) ? state.knownFacts : [];
             state.clues = Array.isArray(state.clues) ? state.clues : [];
             state.events = Array.isArray(state.events) ? state.events : [];
