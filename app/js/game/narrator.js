@@ -160,6 +160,22 @@ const Narrator = {
             }
         ]));
 
+        const knownCharacterNames = new Set(selectedCharacters.map(([key]) => key.toLocaleLowerCase('es')));
+        const sharedEntities = Object.fromEntries(Object.entries(world.entities || {})
+            .filter(([key, entity]) => {
+                const name = String(entity && entity.name || key).toLocaleLowerCase('es');
+                return knownCharacterNames.has(name);
+            })
+            .slice(-30)
+            .map(([key, entity]) => [
+                key,
+                {
+                    name: String(entity.name || key).slice(0, 80),
+                    role: String(entity.role || '').slice(0, 100),
+                    firstKnownLocation: String(entity.firstKnownLocation || '').slice(0, 120)
+                }
+            ]));
+
         const compactState = {
             ...state,
             events: shortList(state.events, 20),
@@ -191,14 +207,7 @@ const Narrator = {
             },
             persistentWorld: {
                 locations: shortList(world.locations, 30),
-                entities: Object.fromEntries(Object.entries(world.entities || {}).slice(-30).map(([key, entity]) => [
-                    key,
-                    {
-                        name: String(entity.name || key).slice(0, 80),
-                        role: String(entity.role || '').slice(0, 100),
-                        firstKnownLocation: String(entity.firstKnownLocation || '').slice(0, 120)
-                    }
-                ])),
+                entities: sharedEntities,
                 facts: shortList(world.facts, 25),
                 events: shortList(world.events, 12),
                 relationships: Object.fromEntries(Object.entries(world.relationships || {}).slice(-20))
