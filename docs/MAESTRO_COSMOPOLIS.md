@@ -1902,3 +1902,29 @@ La revisión confirmó que la capa de inventario ya impedía retirar o duplicar 
 **Estado de integración:** PR #4 sigue abierto y en borrador. En la comparación previa a esta anotación, la rama estaba 199 commits por delante de `main` y 0 por detrás, con base `ff292438bc60c391c2cc6f708ac12d02b166cb70`. No se ha fusionado ni modificado `main`.
 
 **Pendiente manual:** la interacción táctil real en Chrome sobre Android físico no puede certificarse desde Playwright/GitHub Actions. Debe comprobarse antes de retirar el borrador o fusionar: selector y alternancia de protagonistas, guardado y recarga, mundo común frente a progreso privado, e intentos de perder/vender/transferir/destruir Athun. No se han tocado partidas guardadas ni datos locales del teléfono.
+
+
+### Protección del mundo compartido ante datos dañados — 17 de noviembre de 2026
+
+La revisión del almacenamiento global detectó que getGlobalWorld() devuelve un mundo vacío cuando el registro athun_shared_world_v1 no se puede interpretar como JSON. Las funciones de actualización podían escribir después ese mundo vacío sobre el registro original, destruyendo el contenido recuperable de una entrada dañada.
+
+Corrección aplicada en app/js/core/save.js:
+- Se centralizó la escritura del mundo compartido en writeGlobalWorldVerified().
+- Antes de escribir, comprueba que la clave global esté vacía o contenga un objeto JSON válido.
+- Si el registro existente está truncado, es JSON inválido o contiene un tipo no admitido, la actualización se rechaza y los bytes originales permanecen intactos.
+- La protección se aplica a localizaciones, conexiones, entidades y guardado completo del mundo.
+- No se modifica el registro heredado cosmopolis_save, los registros individuales ni el índice de partidas.
+
+Prueba añadida en tests/storage.test.js: simula un mundo global truncado e intenta actualizarlo mediante las cuatro vías; todas deben devolver false y conservar exactamente el valor original.
+
+Respaldos creados antes de modificar:
+- app/js/core/save.js.bak-20261117-world-corruption-guard
+- tests/storage.test.js.bak-20261117-world-corruption-guard
+- docs/MAESTRO_COSMOPOLIS.md.bak-20261117-world-corruption-guard
+
+Commits de esta tanda:
+- Respaldos: bd95840, a6727d8, a2c3afb.
+- Protección de escritura: 8deccdc.
+- Prueba automatizada: 0dfa605.
+
+Validación pendiente: las pruebas locales no se han ejecutado desde esta sesión. La nueva prueba y la comprobación sintáctica deben pasar en GitHub Actions antes de considerar validado el cambio. Mantener el PR #4 en borrador y sin fusionar. La prueba táctil real en Chrome sobre Android físico sigue pendiente. No se han tocado guardados locales ni la rama main.
