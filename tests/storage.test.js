@@ -844,3 +844,34 @@ test('el contexto narrativo conserva las acciones previas de la partida', () => 
         { action: 'Hablo con la posadera', response: 'La posadera me saluda.' }
     ]);
 });
+
+
+test('el narrador no recibe datos de Elia antes de que el protagonista la conozca', () => {
+    const id = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Llegada a Valdebruma',
+        state: {
+            currentLocation: 'Camino de entrada a Valdebruma',
+            eliaMet: false,
+            inventory: [],
+            characters: {
+                Elia: {
+                    name: 'Elia',
+                    role: 'Cartógrafa',
+                    location: 'Camino de entrada a Valdebruma',
+                    attitude: 'Preocupada',
+                    memories: ['Conoce el secreto de la campana']
+                }
+            }
+        }
+    });
+    assert.ok(id);
+    let saved = Save.load();
+    let context = JSON.parse(Narrator.buildMessages('Observo el camino', saved.character, saved.adventure, [])[1].content);
+    assert.equal(Object.hasOwn(context.currentAdventure.state.characters, 'Elia'), false);
+
+    saved.adventure.state.eliaMet = true;
+    assert.equal(Save.save(saved), true);
+    saved = Save.load();
+    context = JSON.parse(Narrator.buildMessages('Hablo con Elia', saved.character, saved.adventure, [])[1].content);
+    assert.equal(context.currentAdventure.state.characters.Elia.name, 'Elia');
+});
