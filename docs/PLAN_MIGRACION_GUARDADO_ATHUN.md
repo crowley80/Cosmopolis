@@ -210,3 +210,10 @@ La interfaz no dibuja una cuadrícula ni infiere distancias. Si la narración no
 Se añadieron pruebas unitarias de validación del fragmento, orden de la relación, rechazo de evidencia ausente o contradictoria, filtrado de extremos desconocidos y persistencia compartida sin crear caminos ni visitas personales. Los archivos modificados tienen copias previas con sufijo .bak-20261117-posiciones-relativas.
 
 **Estado:** cambios implementados en feat/athun-multisave-world; GitHub Actions pendiente de ejecutar/verificar. La comprobación visual en Chrome/Android sigue pendiente.
+
+
+### Validación de la cartografía relativa — 17/11/2026
+
+GitHub Actions, ejecución **44045159576**, terminó correctamente: sintaxis JavaScript válida y **32/32 pruebas aprobadas**. Se verifican las relaciones relativas solo con evidencia textual, el rechazo de relaciones contradictorias o no citadas, el filtrado de lugares no registrados y la persistencia compartida sin transferir visitas personales ni crear caminos. También se corrigió una prueba de persistencia de Athun que modificaba una copia separada del registro que se guardaba.
+
+La validación visual/táctil en Chrome para Android sigue pendiente; la CI no sustituye esa comprobación.
