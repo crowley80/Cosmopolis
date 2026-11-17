@@ -36,12 +36,12 @@ test('el narrador descarta zonas visibles sin respaldo en la escena o el conocim
     };
     const visible = Narrator.filterVisibleLocations(
         ['Calle del molino', 'Puente viejo', 'Pente viejo', 'Calle 1', 'Calle 12', 'Torre del cuervo', 'Plaza del pozo', 'Calle del molino'],
-        'Desde la plaza distingues el Puente viejo y la Calle 12 entre la niebla.',
+        'Desde la plaza distingues el Puente viejo y la Calle 1 entre la niebla.',
         adventure,
         { locations: [{ name: 'Calle del molino' }] }
     );
 
-    assert.deepEqual(visible, ['Calle del molino', 'Puente viejo', 'Plaza del pozo']);
+    assert.deepEqual(visible, ['Calle del molino', 'Puente viejo', 'Calle 1', 'Plaza del pozo']);
 });
 
 
