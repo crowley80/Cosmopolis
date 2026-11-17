@@ -953,3 +953,58 @@ test('el contexto del narrador filtra datos relacionales dañados de Athun antes
     assert.deepEqual(context.currentAdventure.state.athun, context.currentAdventure.athun);
     assert.equal(JSON.stringify(context).includes('objeto no válido'), false);
 });
+
+
+test('el contexto de personajes limita objetivos, recuerdos y campos no reconocidos', () => {
+    const adventure = {
+        title: 'Contexto de personaje',
+        state: {
+            currentLocation: 'Valdebruma',
+            characters: {
+                Elia: {
+                    name: 'Elia',
+                    role: 'Cartógrafa',
+                    location: 'Valdebruma',
+                    attitude: 'Cautelosa',
+                    personalGoal: '  Encontrar el origen de las marcas  ',
+                    goalStatus: 'progress',
+                    trust: 99,
+                    lastAutonomousAction: '  Revisa sus mapas  ',
+                    memories: [' Recuerdo válido ', { secreto: 'no debe filtrarse' }, '', 42],
+                    goalHistory: [
+                        { goal: 'Investigar las marcas', status: 'progress', reason: 'Ha encontrado una pista' },
+                        { goal: { secreto: 'no válido' }, status: 'completed', reason: 'No válido' }
+                    ],
+                    completedGoals: [
+                        { goal: 'Ayudar a su hermano', reason: 'Lo consiguió' },
+                        { goal: 42, reason: 'No válido' }
+                    ],
+                    privatePayload: 'NO DEBE APARECER'
+                }
+            }
+        }
+    };
+    const context = JSON.parse(Narrator.buildMessages(
+        'Hablo con Elia',
+        { name: 'Ariadna' },
+        adventure,
+        []
+    )[1].content);
+    const elia = context.currentAdventure.state.characters.Elia;
+    assert.equal(elia.personalGoal, 'Encontrar el origen de las marcas');
+    assert.equal(elia.goalStatus, 'progress');
+    assert.equal(elia.trust, 10);
+    assert.equal(elia.lastAutonomousAction, 'Revisa sus mapas');
+    assert.deepEqual(elia.memories, ['Recuerdo válido']);
+    assert.deepEqual(elia.goalHistory, [{
+        goal: 'Investigar las marcas',
+        status: 'progress',
+        reason: 'Ha encontrado una pista'
+    }]);
+    assert.deepEqual(elia.completedGoals, [{
+        goal: 'Ayudar a su hermano',
+        reason: 'Lo consiguió'
+    }]);
+    assert.equal(JSON.stringify(context).includes('NO DEBE APARECER'), false);
+    assert.equal(JSON.stringify(context).includes('no debe filtrarse'), false);
+});
