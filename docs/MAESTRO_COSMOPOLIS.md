@@ -2028,3 +2028,12 @@ Se ha corregido un desajuste en `Narrator.buildMessages()`: el historial recient
 - Se crearon copias de seguridad previas de `app/js/game/narrator.js`, `tests/storage.test.js` y este documento.
 - La corrección no modifica partidas ni datos guardados.
 - Debe validarse mediante las ejecuciones de CI de esta rama.
+
+
+## Protección del límite de conocimiento sobre personajes (17/11/2026)
+
+Se ha detectado que el contexto del narrador podía incluir la ficha de Elia aunque el protagonista todavía no la hubiera conocido. Aunque las instrucciones narrativas prohibían revelar ese conocimiento, enviar la ficha completa al modelo suponía una filtración innecesaria. Ahora Elia solo se incorpora al contexto cuando la partida registra `eliaMet: true), incluso si su ubicación coincide con la del protagonista. Se ha añadido una prueba que verifica la exclusión antes del encuentro y su inclusión después.
+
+- Se crearon copias de seguridad previas de los tres archivos modificados.
+- No se altera la secuencia del prólogo ni el estado de ninguna partida guardada.
+- Pendiente de validación en CI.
