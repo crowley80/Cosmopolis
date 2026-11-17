@@ -51,13 +51,13 @@ const Narrator = {
             .toLocaleLowerCase('es')
             .normalize('NFD')
             .replace(/[\\u0300-\\u036f]/g, '')
-            .replace(/\\s+/g, ' ')
+            .replace(/[^a-z0-9]+/g, ' ')
             .trim();
-        const groundedText = normalize([
+        const groundedText = ' ' + normalize([
             reply,
             adventure && adventure.text,
             ...knownNames
-        ].filter(Boolean).join(' '));
+        ].filter(Boolean).join(' ')) + ' ';
         const accepted = [];
         const seen = new Set();
 
@@ -65,7 +65,7 @@ const Narrator = {
             if (typeof candidate !== 'string') return;
             const name = candidate.trim().slice(0, 120);
             const key = normalize(name);
-            if (!key || seen.has(key) || !groundedText.includes(key)) return;
+            if (!key || seen.has(key) || !groundedText.includes(' ' + key + ' ')) return;
             seen.add(key);
             accepted.push(name);
         });
