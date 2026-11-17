@@ -817,3 +817,30 @@ test('rechaza esquemas globales incoherentes sin normalizarlos sobre el registro
         );
     }
 });
+
+
+test('el contexto narrativo conserva las acciones previas de la partida', () => {
+    const id = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia de prueba',
+        state: { currentLocation: 'Valdebruma', inventory: [] }
+    });
+    assert.ok(id);
+    const saved = Save.load();
+    saved.actions = [
+        { text: 'Observo la plaza', response: 'La plaza está tranquila.' },
+        { text: 'Hablo con la posadera', response: 'La posadera me saluda.' }
+    ];
+    assert.equal(Save.save(saved), true);
+
+    const messages = Narrator.buildMessages(
+        'Pregunto por el camino',
+        saved.character,
+        saved.adventure,
+        Save.load().actions
+    );
+    const context = JSON.parse(messages[1].content);
+    assert.deepEqual(context.recentHistory, [
+        { action: 'Observo la plaza', response: 'La plaza está tranquila.' },
+        { action: 'Hablo con la posadera', response: 'La posadera me saluda.' }
+    ]);
+});
