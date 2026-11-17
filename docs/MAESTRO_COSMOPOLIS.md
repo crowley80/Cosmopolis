@@ -2109,3 +2109,8 @@ Se añadió una prueba que introduce deliberadamente objetos y valores de tipos 
 - Se descartan acciones de personajes que no estén registrados, que estén en otra ubicación o que repitan exactamente su última iniciativa.
 - Se elimina la inserción automática de acciones al final del relato: el registro estructurado ya no puede introducir una acción que el narrador no haya contado.
 - Se añade una prueba de regresión para acciones narradas, omitidas, repetidas, de personajes fuera de escena y nombres desconocidos.
+
+
+### Ajuste del fixture visual de iniciativas autónomas — 17/11/2026
+- La escena simulada de la vista previa ahora incluye expresamente en el texto narrativo la iniciativa de Elia que registra el JSON.
+- La prueba conserva su propósito: verificar que la iniciativa aparece integrada en la narración, en vez de depender de que el juego añada una nota al final.
