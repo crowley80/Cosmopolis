@@ -960,6 +960,7 @@ test('el contexto de personajes limita objetivos, recuerdos y campos no reconoci
         title: 'Contexto de personaje',
         state: {
             currentLocation: 'Valdebruma',
+            eliaMet: true,
             characters: {
                 Elia: {
                     name: 'Elia',
