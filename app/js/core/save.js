@@ -188,6 +188,39 @@ const Save = {
         return { ...slot, id };
     },
 
+    writeSlotAndIndex(id, slot, operation = 'guardar') {
+        const slotKey = this.slotPrefix + id;
+        const originalSlot = localStorage.getItem(slotKey);
+        const originalIndex = localStorage.getItem(this.indexKey);
+        if (originalSlot === null) return false;
+
+        try {
+            if (!this.writeVerified(slotKey, slot)) {
+                throw new Error('No se pudo verificar el registro de la partida.');
+            }
+            this.updateIndexEntry(id, slot);
+            return true;
+        } catch (error) {
+            // El registro y su índice forman una única operación lógica.
+            // Si falla cualquiera de las escrituras, se restaura el estado anterior.
+            try {
+                if (localStorage.getItem(slotKey) !== originalSlot) {
+                    localStorage.setItem(slotKey, originalSlot);
+                }
+                const currentIndex = localStorage.getItem(this.indexKey);
+                if (originalIndex === null && currentIndex !== null) {
+                    localStorage.removeItem(this.indexKey);
+                } else if (originalIndex !== null && currentIndex !== originalIndex) {
+                    localStorage.setItem(this.indexKey, originalIndex);
+                }
+            } catch (rollbackError) {
+                console.error('No se pudo restaurar completamente la partida tras el fallo:', rollbackError);
+            }
+            console.error('No se pudo ' + operation + ' la partida:', error);
+            return false;
+        }
+    },
+
     save(data) {
         const id = this.getActiveId();
         if (!id || !data || typeof data !== 'object') return false;
@@ -210,14 +243,7 @@ const Save = {
             },
             updatedAt: new Date().toISOString()
         });
-        try {
-            if (!this.writeVerified(this.slotPrefix + id, updated)) return false;
-            this.updateIndexEntry(id, updated);
-            return true;
-        } catch (error) {
-            console.error('Error al guardar la partida:', error);
-            return false;
-        }
+        return this.writeSlotAndIndex(id, updated, 'guardar');
     },
 
     replace(data) {
@@ -230,14 +256,7 @@ const Save = {
             createdAt: current.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString()
         });
-        try {
-            if (!this.writeVerified(this.slotPrefix + id, updated)) return false;
-            this.updateIndexEntry(id, updated);
-            return true;
-        } catch (error) {
-            console.error('No se pudo sustituir la partida:', error);
-            return false;
-        }
+        return this.writeSlotAndIndex(id, updated, 'sustituir');
     },
 
     updateIndexEntry(id, slot) {
@@ -250,7 +269,9 @@ const Save = {
             createdAt: slot.createdAt || new Date().toISOString(),
             updatedAt: slot.updatedAt || new Date().toISOString()
         });
-        this.writeVerified(this.indexKey, { version: 1, saves: entries });
+        if (!this.writeVerified(this.indexKey, { version: 1, saves: entries })) {
+            throw new Error('No se pudo verificar el índice actualizado de partidas.');
+        }
     },
 
     createSlot(character, adventure = null, extra = {}) {
