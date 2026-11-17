@@ -1759,3 +1759,12 @@ Commit: `76fc9c4115fd7cd246f553c19ec3acfaaa0b03a2`.
 4. Mantener pendiente la prueba táctil física en Android y no fusionar el PR #4 hasta completarla.
 
 **Seguridad:** se creó antes de esta actualización una copia íntegra de este documento en `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-auditoria-autonoma`. No se eliminaron respaldos anteriores ni se realizaron operaciones sobre datos locales o partidas guardadas.
+
+
+### Diagnóstico y corrección de regresión Playwright — 17 de noviembre de 2026
+
+La ejecución visual 272 (commit `76fc9c4115fd7cd246f553c19ec3acfaaa0b03a2`) falló en una aserción que indicaba que la fase no avanzaba al cambiar de ubicación. El registro del job permitió localizar la causa real: el `fakeNarrative` del propio test no cumplía ya el contrato obligatorio de `Narrator.respond()`. El narrador exige `athunMemoriesToAdd`, `athunRevelationsToAdd` y `athunBondChange` (con `delta` y `reason`); al faltar esos campos, la respuesta simulada era rechazada y se ejecutaba el director de respaldo. La aserción posterior atribuía erróneamente el resultado a la fase de exploración.
+
+Se ha actualizado únicamente el fixture de prueba para incluir los tres campos obligatorios con valores neutros. No se han cambiado las reglas narrativas ni el comportamiento de producción. Se conserva una copia previa del workflow en `.github/workflows/visual-preview.yml.bak-20261117-narrative-fixture` y otra de este documento en `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-narrative-fixture`.
+
+**Estado:** corrección publicada en `integration/athun-multisave-main-20261116`. Pendiente la nueva ejecución de Playwright y la suite de almacenamiento. La prueba física en Android sigue pendiente; no fusionar PR #4 hasta completarla.
