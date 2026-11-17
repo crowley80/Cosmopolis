@@ -544,7 +544,7 @@ test('el vínculo, recuerdos y revelaciones de Athun son independientes por prot
     });
     const second = Save.createSlot({ name: 'Darian' }, {
         title: 'Historia de Darian',
-        state: { inventory: [], athun: { bond: 2, memories: ['El camino del norte'], revelations: ['Una voz lejana'] } }
+        state: { inventory: [], athun: { bond: 2, memories: ['El camino del norte'], revelations: ['Una voz lejana'], bondHistory: [{ delta: -1, reason: 'Darian desconfió de una advertencia' }] } }
     });
 
     assert.ok(first);
@@ -646,7 +646,7 @@ test('el narrador recibe los recuerdos y revelaciones de Athun solo desde la par
     const first = Save.createSlot({ name: 'Ariadna' }, {
         title: 'Historia de Ariadna',
         state: { currentLocation: 'Valdebruma', inventory: [], athun: {
-            bond: 7, memories: ['La primera noche juntas'], revelations: ['La tinta respira']
+            bond: 7, memories: ['La primera noche juntas'], revelations: ['La tinta respira'], bondHistory: [{ delta: 1, reason: 'Ariadna defendió a Athun' }]
         } }
     });
     const second = Save.createSlot({ name: 'Darian' }, {
@@ -664,7 +664,7 @@ test('el narrador recibe los recuerdos y revelaciones de Athun solo desde la par
         bond: 2,
         memories: ['El camino del norte'],
         revelations: ['Una voz lejana'],
-        bondHistory: []
+        bondHistory: [{ delta: -1, reason: 'Darian desconfió de una advertencia' }]
     });
 
     assert.equal(Save.activate(first), true);
@@ -675,7 +675,7 @@ test('el narrador recibe los recuerdos y revelaciones de Athun solo desde la par
         bond: 7,
         memories: ['La primera noche juntas'],
         revelations: ['La tinta respira'],
-        bondHistory: []
+        bondHistory: [{ delta: 1, reason: 'Ariadna defendió a Athun' }]
     });
     assert.equal(ariMessages[0].content.includes('exclusivos de esta partida'), true);
 });
