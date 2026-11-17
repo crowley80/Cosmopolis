@@ -2132,3 +2132,13 @@ Respaldos creados antes de los cambios:
 - `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-goal-update-validation`
 
 La validación automatizada queda pendiente de GitHub Actions; no se considera aprobada hasta confirmar el resultado de CI. El PR #4 continúa abierto, en borrador y sin fusionar. No se modifican `main` ni las partidas guardadas locales.
+
+
+### Reducción de ejecuciones y notificaciones redundantes — 17/11/2026
+
+Se ajustaron los disparadores de GitHub Actions para evitar que cada commit de la rama de integración ejecute dos veces las mismas comprobaciones:
+- Las pruebas de almacenamiento ya no se disparan por `push` en la rama de integración; siguen ejecutándose en las ramas principales configuradas y en cada PR hacia `main` cuando cambian `app/js/**`, `tests/**` o su propio workflow.
+- La vista previa visual ya no se dispara por `push` en la rama de integración; se conserva en PR hacia `main` y se limita a cambios de `app/**`, `index.html` o su workflow. También se mantiene la ejecución manual.
+- Se conservan ambas suites; no se desactivan las validaciones de código ni las pruebas de interfaz. Los cambios solo eliminan ejecuciones duplicadas y las activaciones por documentación u otros archivos no relacionados.
+
+Respaldo previo: `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-ci-notification-filter`, además de las copias previas de ambos workflows. Las nuevas reglas deben confirmarse mediante las ejecuciones que GitHub genere a partir de esta revisión. No se modifica `main`, no se fusiona el PR #4 y no se accede a partidas guardadas locales.
