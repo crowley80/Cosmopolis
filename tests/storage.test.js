@@ -45,6 +45,31 @@ test('el narrador descarta zonas visibles sin respaldo en la escena o el conocim
 });
 
 
+test('el narrador solo cambia de ubicación cuando narra un desplazamiento explícito', () => {
+    const adventure = {
+        location: 'Camino de entrada a Valdebruma',
+        state: { currentLocation: 'Camino de entrada a Valdebruma', phase: 'arrival' }
+    };
+
+    assert.equal(Narrator.resolveCurrentLocation({
+        category: 'dialogue',
+        location: 'Plaza del pozo',
+        reply: 'Elia te responde junto al camino.'
+    }, adventure), 'Camino de entrada a Valdebruma');
+
+    assert.equal(Narrator.resolveCurrentLocation({
+        category: 'movement',
+        location: 'Plaza del pozo',
+        reply: 'Sigues el sendero y llegas a la Plaza del pozo.'
+    }, adventure), 'Plaza del pozo');
+
+    assert.equal(Narrator.resolveCurrentLocation({
+        category: 'movement',
+        location: 'Torre del cuervo',
+        reply: 'Permaneces en el camino y observas las montañas.'
+    }, adventure), 'Camino de entrada a Valdebruma');
+});
+
 test.beforeEach(() => {
     global.localStorage = new MemoryStorage();
 });
