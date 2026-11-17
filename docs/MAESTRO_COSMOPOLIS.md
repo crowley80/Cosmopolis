@@ -2114,3 +2114,21 @@ Se añadió una prueba que introduce deliberadamente objetos y valores de tipos 
 ### Ajuste del fixture visual de iniciativas autónomas — 17/11/2026
 - La escena simulada de la vista previa ahora incluye expresamente en el texto narrativo la iniciativa de Elia que registra el JSON.
 - La prueba conserva su propósito: verificar que la iniciativa aparece integrada en la narración, en vez de depender de que el juego añada una nota al final.
+
+
+### Validación estructural de actualizaciones de objetivos de personajes — 17 de noviembre de 2026
+
+Se ha reforzado la frontera entre la respuesta del narrador y el estado persistente de los personajes. Antes, una entrada de objetivo con un estado desconocido podía convertirse silenciosamente en «active», y se aceptaban motivos vacíos. Ahora `Narrator.filterGoalUpdates()` solo permite hasta dos actualizaciones por turno cuando:
+- El personaje existe en la partida activa y su nombre coincide con una ficha registrada.
+- El objetivo es texto no vacío y está limitado a 240 caracteres.
+- El estado pertenece exactamente a `active`, `progress`, `blocked` o `completed`.
+- El motivo es texto no vacío y está limitado a 200 caracteres.
+
+Las reglas existentes de continuidad siguen impidiendo sustituir objetivos pendientes o reabrir objetivos cumplidos sin una nueva etapa válida. Se añade una prueba de regresión para nombres desconocidos, estados inválidos, motivos vacíos y entradas no listadas.
+
+Respaldos creados antes de los cambios:
+- `app/js/game/narrator.js.bak-20261117-goal-update-validation`
+- `tests/storage.test.js.bak-20261117-goal-update-validation`
+- `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-goal-update-validation`
+
+La validación automatizada queda pendiente de GitHub Actions; no se considera aprobada hasta confirmar el resultado de CI. El PR #4 continúa abierto, en borrador y sin fusionar. No se modifican `main` ni las partidas guardadas locales.
