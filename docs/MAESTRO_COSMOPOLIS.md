@@ -1940,3 +1940,30 @@ La protección frente a registros globales dañados ha superado la validación a
 - La rama de integración permanece 207 commits por delante y 0 por detrás de main. PR #4 sigue abierto, en borrador y sin fusionar.
 
 No se han ejecutado pruebas en Termux ni en un Android físico. La interacción táctil real en Chrome Android continúa pendiente; la simulación Playwright no la sustituye. No se han modificado main ni los guardados locales.
+
+
+### Validación del esquema del mundo compartido — 17 de noviembre de 2026
+
+La protección anterior ya rechazaba JSON truncado y valores raíz que no fueran objetos. La revisión adicional detectó otro caso: un objeto JSON válido podía contener campos conocidos con tipos incorrectos (por ejemplo, locations como texto o entities como array). getGlobalWorld() normaliza esos campos en memoria; sin una validación previa del esquema original, la siguiente escritura podía sustituir el contenido anómalo por arrays u objetos vacíos.
+
+Corrección en app/js/core/save.js:
+- writeGlobalWorldVerified() valida ahora, antes de escribir, los tipos de todos los campos conocidos que ya existan en el registro.
+- locations, connections, facts, events y changes deben ser arrays.
+- entities y relationships deben ser objetos no nulos y no arrays.
+- Los campos ausentes siguen permitidos para mantener compatibilidad con registros anteriores.
+- Si cualquier campo conocido tiene un tipo incompatible, la escritura se rechaza y el texto original del almacenamiento permanece intacto.
+
+Prueba nueva en tests/storage.test.js: siete escenarios de esquema incoherente (locations, connections, entities, facts, events, changes y relationships). Cada actualización debe devolver false y conservar exactamente el JSON original.
+
+Respaldos previos:
+- app/js/core/save.js.bak-20261117-world-schema-guard
+- tests/storage.test.js.bak-20261117-world-schema-guard
+- docs/MAESTRO_COSMOPOLIS.md.bak-20261117-world-schema-guard
+
+Commits:
+- Respaldos: db4102e, 898d5f9, 77cad0f.
+- Validación de esquema: d89a4c4.
+- Prueba de regresión: ccd259e.
+- Esta anotación documental se registra en un commit separado.
+
+Validación pendiente al documentar: GitHub Actions debe ejecutar la comprobación sintáctica y la suite completa. No se afirma todavía que esta nueva prueba haya pasado. El PR #4 sigue abierto en borrador y no se fusiona. No se han modificado main ni guardados locales. La validación táctil en Chrome Android físico continúa pendiente.
