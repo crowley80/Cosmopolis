@@ -88,3 +88,74 @@ test('el atlas muestra solo conexiones explícitas entre lugares conocidos', () 
         { from: 'Plaza del pozo', to: 'La Posada del Tejón' }
     ]);
 });
+
+
+test('acepta posiciones relativas solo si la frase exacta confirma nombres y relación', () => {
+    const reply = 'La Posada del Tejón se encuentra al norte de la Plaza del pozo.';
+    const relations = WorldMap.normalizeSpatialRelations([
+        {
+            from: 'La Posada del Tejón',
+            relation: 'north_of',
+            to: 'Plaza del pozo',
+            evidence: 'La Posada del Tejón se encuentra al norte de la Plaza del pozo.'
+        },
+        {
+            from: 'La Posada del Tejón',
+            relation: 'north_of',
+            to: 'Plaza del pozo',
+            evidence: 'La Posada del Tejón se encuentra al sur de la Plaza del pozo.'
+        },
+        {
+            from: 'Puerto',
+            relation: 'east_of',
+            to: 'Plaza del pozo',
+            evidence: 'Puerto está al este de la Plaza del pozo.'
+        },
+        {
+            from: 'Plaza del pozo',
+            relation: 'west_of',
+            to: 'Puerto',
+            evidence: 'Puerto está al oeste de la Plaza del pozo.'
+        }
+    ], reply);
+
+    assert.equal(relations.length, 1);
+    assert.deepEqual(relations[0], {
+        from: 'La Posada del Tejón',
+        relation: 'north_of',
+        label: 'al norte de',
+        to: 'Plaza del pozo',
+        evidence: reply
+    });
+});
+
+test('el atlas no deduce posiciones a partir de caminos ni revela extremos desconocidos', () => {
+    const atlas = WorldMap.getAtlas({
+        locations: ['Plaza del pozo', 'La Posada del Tejón'],
+        connections: [{ from: 'Plaza del pozo', to: 'La Posada del Tejón' }],
+        spatialRelations: [
+            {
+                from: 'La Posada del Tejón',
+                relation: 'north_of',
+                to: 'Plaza del pozo',
+                evidence: 'La Posada del Tejón está al norte de la Plaza del pozo.'
+            },
+            {
+                from: 'Bosque oculto',
+                relation: 'east_of',
+                to: 'Plaza del pozo',
+                evidence: 'Bosque oculto está al este de la Plaza del pozo.'
+            }
+        ]
+    }, { currentLocation: 'Plaza del pozo', visitedLocations: ['Plaza del pozo'] }, {});
+
+    assert.equal(atlas.connections.length, 1);
+    assert.deepEqual(atlas.spatialRelations.map(item => ({
+        from: item.from, relation: item.relation, to: item.to
+    })), [{
+        from: 'La Posada del Tejón',
+        relation: 'north_of',
+        to: 'Plaza del pozo'
+    }]);
+    assert.equal(atlas.entries.some(item => item.name === 'Bosque oculto'), false);
+});
