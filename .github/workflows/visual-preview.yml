@@ -233,6 +233,9 @@ jobs:
                   goalUpdates: [{ character: 'Elia', goal: 'Averiguar por qué suenan las campanas.', status: 'progress', reason: 'La marca recién descubierta aporta una pista nueva.' }],
                   itemsToAdd: ['Medallón de cobre'],
                   itemsToRemove: [],
+                  athunMemoriesToAdd: [],
+                  athunRevelationsToAdd: [],
+                  athunBondChange: { delta: 0, reason: 'La acción no modifica el vínculo.' },
                   charactersToAdd: [{ name: 'Tomás', role: 'Vecino', location: 'Plaza del pozo', attitude: 'Desconfiado', memory: 'Tomás vio a Ariadna encontrar el medallón.', goal: 'Proteger a los vecinos de los peligros que salgan del pozo.' }],
                   characterUpdates: [{ character: 'Elia', location: 'Plaza del pozo', attitude: 'Más confiada' }],
                   characterActions: [{ character: 'Elia', action: 'Elia se inclina para examinar la marca de cobre junto a Ariadna.' }],
@@ -257,6 +260,9 @@ jobs:
                   ],
                   itemsToAdd: [],
                   itemsToRemove: ['Medallón de cobre'],
+                  athunMemoriesToAdd: [],
+                  athunRevelationsToAdd: [],
+                  athunBondChange: { delta: 0, reason: 'La entrega no modifica el vínculo.' },
                   charactersToAdd: [],
                   characterUpdates: [{ character: 'Tomás', location: 'Entrada de la posada', attitude: 'Atento' }],
                   characterActions: [{ character: 'Tomás', action: 'Tomás observa desde la entrada y decide no interrumpir.' }],
@@ -321,8 +327,10 @@ jobs:
                 location: 'Plaza del pozo',
                 visibleLocations: [],
                 factsToAdd: [], cluesToAdd: [], relationshipChanges: [],
-                itemsToAdd: [], itemsToRemove: [], charactersToAdd: [],
-                characterUpdates: [], characterActions: [], characterMemoriesToAdd: [],
+                itemsToAdd: [], itemsToRemove: [],
+                athunMemoriesToAdd: [], athunRevelationsToAdd: [],
+                athunBondChange: { delta: 0, reason: 'La conversación no modifica el vínculo.' },
+                charactersToAdd: [], characterUpdates: [], characterActions: [], characterMemoriesToAdd: [],
                 goalUpdates: [goalUpdate], time: 'Tarde', day: 2
               });
               const run = async (person, goalUpdate) => {
