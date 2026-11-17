@@ -117,7 +117,14 @@ const Narrator = {
         const athunContext = {
             bond: Number.isFinite(Number(athunState.bond)) ? Math.max(-100, Math.min(100, Number(athunState.bond))) : 0,
             memories: shortList(athunState.memories, 12, 240),
-            revelations: shortList(athunState.revelations, 12, 240)
+            revelations: shortList(athunState.revelations, 12, 240),
+            bondHistory: (Array.isArray(athunState.bondHistory) ? athunState.bondHistory : [])
+                .slice(-12)
+                .map(entry => ({
+                    delta: Number.isInteger(entry && entry.delta) ? Math.max(-1, Math.min(1, entry.delta)) : 0,
+                    reason: String(entry && entry.reason || '').slice(0, 240)
+                }))
+                .filter(entry => entry.reason)
         };
         const currentLocation = state.currentLocation || adventure.location || '';
         const allCharacters = Object.entries(state.characters || {});
@@ -241,7 +248,7 @@ const Narrator = {
                     'Si el jugador examina algo, describe primero señales observables y permite que las conclusiones dependan de las pistas disponibles y de sus capacidades.',
                     'El mundo persistente es compartido entre protagonistas: usa sus localizaciones y entidades como referencias comunes. No traslades recuerdos, confianza, objetivos ni relaciones personales de un protagonista a otro; esos datos pertenecen a cada partida.',
                     'personalWorld contiene hechos, acontecimientos y relaciones exclusivos de la partida activa: consúltalos para mantener su continuidad, pero nunca los trates como hechos universales ni los transfieras a otro protagonista.',
-                    'athun contiene el vínculo, recuerdos y revelaciones del grimorio exclusivos de esta partida. Tenlos presentes para que Athun reconozca decisiones y experiencias compartidas con este protagonista, pero no inventes recuerdos, no los atribuyas a otro protagonista y no reveles sus secretos antes de tiempo. Su conocimiento extraordinario no significa que deba intervenir en cada acción.',
+                    'athun contiene el vínculo, recuerdos, revelaciones e historial de cambios del grimorio exclusivos de esta partida. Usa bondHistory para recordar por qué cambió vuestra relación y mantener una respuesta emocional coherente; no repitas ni contradigas esos motivos, y no conviertas un cambio numérico en una personalidad rígida.  Tenlos presentes para que Athun reconozca decisiones y experiencias compartidas con este protagonista, pero no inventes recuerdos, no los atribuyas a otro protagonista y no reveles sus secretos antes de tiempo. Su conocimiento extraordinario no significa que deba intervenir en cada acción.',
                     'Si una entidad ya figura en el registro compartido, conserva su identidad y función; no crees un duplicado con otro nombre salvo que la historia establezca claramente que se trata de otra persona.',
                     'Respeta estrictamente los hechos, lugares, personajes, capacidades y consecuencias ya establecidos.',
                     'No decidas las intenciones del jugador ni fuerces una misión. Resuelve la acción que ha escrito.',
@@ -280,12 +287,13 @@ const Narrator = {
     applyAthunUpdates(state, result) {
         if (!state || typeof state !== 'object' || !result || typeof result !== 'object') return;
         if (!state.athun || typeof state.athun !== 'object') {
-            state.athun = { id: 'athun', name: 'Athun', kind: 'Grimorio consciente', permanent: true, bond: 0, memories: [], revelations: [] };
+            state.athun = { id: 'athun', name: 'Athun', kind: 'Grimorio consciente', permanent: true, bond: 0, memories: [], revelations: [], bondHistory: [] };
         }
         const athun = state.athun;
         athun.permanent = true;
         athun.memories = Array.isArray(athun.memories) ? athun.memories : [];
         athun.revelations = Array.isArray(athun.revelations) ? athun.revelations : [];
+        athun.bondHistory = Array.isArray(athun.bondHistory) ? athun.bondHistory : [];
         const appendUnique = (target, entries) => {
             (Array.isArray(entries) ? entries : []).slice(0, 3).forEach(entry => {
                 if (typeof entry !== 'string') return;
@@ -300,7 +308,17 @@ const Narrator = {
         const change = result.athunBondChange;
         if (change && Number.isInteger(change.delta) && change.delta >= -1 && change.delta <= 1) {
             const current = Number.isFinite(Number(athun.bond)) ? Number(athun.bond) : 0;
-            athun.bond = Math.max(-100, Math.min(100, current + change.delta));
+            const next = Math.max(-100, Math.min(100, current + change.delta));
+            const appliedDelta = next - current;
+            athun.bond = next;
+            const reason = typeof change.reason === 'string' ? change.reason.trim().slice(0, 240) : '';
+            if (appliedDelta !== 0 && reason) {
+                const last = athun.bondHistory[athun.bondHistory.length - 1];
+                if (!last || last.delta !== appliedDelta || last.reason.toLocaleLowerCase('es') !== reason.toLocaleLowerCase('es')) {
+                    athun.bondHistory.push({ delta: appliedDelta, reason });
+                    if (athun.bondHistory.length > 30) athun.bondHistory.splice(0, athun.bondHistory.length - 30);
+                }
+            }
         }
     },
 
@@ -536,7 +554,7 @@ const Narrator = {
 
             this.applyInventoryUpdates(state, result);
             if (!state.athun || typeof state.athun !== 'object') {
-                state.athun = { id: 'athun', name: 'Athun', kind: 'Grimorio consciente', permanent: true, bond: 0, memories: [], revelations: [] };
+                state.athun = { id: 'athun', name: 'Athun', kind: 'Grimorio consciente', permanent: true, bond: 0, memories: [], revelations: [], bondHistory: [] };
             }
             state.athun.permanent = true;
             this.applyAthunUpdates(state, result);
