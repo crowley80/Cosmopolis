@@ -1484,3 +1484,14 @@ La migración de cada partida también conserva el vínculo, los recuerdos y las
 Se amplía la cobertura de partidas múltiples para verificar que el vínculo, los recuerdos y las revelaciones de Athun pertenecen a cada protagonista y no se mezclan al alternar entre partidas. La prueba modifica el vínculo y añade un recuerdo en una partida, cambia a otra y vuelve a la primera para comprobar que ambos estados se mantienen aislados y persistentes. También se cubre que la última partida no pueda eliminarse y que Athun siga presente en ella.
 
 Se crearon respaldos previos de `tests/storage.test.js` y este documento maestro con el sufijo `.bak-20261116-athun-state-isolation`. La validación CI de estas dos pruebas nuevas queda pendiente; no se ha realizado todavía validación manual en Android.
+
+
+### Guardado transaccional de partidas — 17 de noviembre de 2026
+
+Una revisión de la capa de persistencia detectó que Save.save() y Save.replace() escribían primero el registro de la partida y después actualizaban el índice. Si la segunda escritura fallaba, el método devolvía error pero el contenido de la partida ya podía haber cambiado, dejando desincronizados el registro y su índice.
+
+Se centraliza la operación en writeSlotAndIndex(): conserva las versiones previas del registro y del índice, verifica ambas escrituras y restaura el estado anterior si falla la actualización del índice. updateIndexEntry() ahora también propaga los fallos de verificación en lugar de ignorarlos.
+
+Se añaden dos pruebas de regresión que simulan un fallo de almacenamiento durante Save.save() y Save.replace(), y comprueban que el registro, el índice y la partida activa permanecen intactos.
+
+**Estado:** cambios preparados en feat/athun-multisave-world. Pendiente ejecutar GitHub Actions para validar sintaxis y toda la batería de pruebas. No se ha modificado main ni se ha fusionado el pull request. La validación en Chrome/Android sigue pendiente.
