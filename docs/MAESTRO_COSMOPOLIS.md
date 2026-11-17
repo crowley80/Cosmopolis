@@ -2072,3 +2072,6 @@ El vínculo de Athun ya no depende únicamente de una cifra. Cada cambio efectiv
 
 
 La prueba de aislamiento de Athun también comprueba ahora que los motivos del vínculo de Ariadna y Darian no se mezclan al alternar partidas.
+
+
+La capa de normalización de partidas en `app/js/core/save.js` también conserva y sanea este historial al cargar o migrar una ficha: mantiene los 30 registros válidos más recientes, limita cada motivo y descarta entradas mal formadas. Así la memoria relacional no desaparece al reabrir una partida.
