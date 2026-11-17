@@ -1863,3 +1863,22 @@ La corrección de la normalización Unicode y su regresión quedaron verificadas
 - GitHub Actions «Visual preview», ejecución **312**: completada correctamente; Playwright terminó renderización e interacciones en Chromium móvil simulado (390 × 844) y escritorio (1024 × 900), incluida la prueba del atlas.
 - La rama sigue basada en `main`, sin commits por detrás; PR #4 continúa abierto y en borrador.
 - La validación táctil real en Chrome sobre Android físico sigue pendiente. No se fusiona hasta completarla.
+
+
+
+### Verificación de continuidad y CI más reciente — 17 de noviembre de 2026
+
+Se ha vuelto a comprobar el estado del repositorio antes de cerrar esta tanda:
+
+- Rama de trabajo: `integration/athun-multisave-main-20261116`, cabecera funcional verificada en `2114652ab029ff6f7e1b008c265ec35f128ae1e2` antes de esta actualización documental.
+- PR #4: abierto, en borrador y sin fusionar; destino `main`.
+- Comparación con `main`: **193 commits por delante y 0 por detrás**; la base coincide con `ff292438bc60c391c2cc6f708ac12d02b166cb70`.
+- «Athun storage tests», ejecución **614** (ID `44063310467`): correcta. El registro de ejecución confirma comprobación sintáctica y **40/40 pruebas aprobadas**, 0 fallos.
+- «Visual preview», ejecución **313** (ID `44063310440`): correcta. Playwright terminó la regresión narrativa y las interacciones de historial, mapa, inventario, opciones, exploración, guardado/recarga y selector con dos protagonistas. La vista móvil simulada fue de 390 × 844 y la de escritorio de 1024 × 900; la interfaz quedó dentro del ancho y alto disponibles, sin errores JavaScript registrados.
+- La suite cubre migración heredada idempotente y conservación de la clave original, alternancia y aislamiento personal, persistencia del mundo compartido, publicación de descubrimientos solo tras guardar y presencia/protección de Athun.
+
+**Alcance de esta tanda:** no se ha modificado código de producción ni se han tocado partidas locales. Esta anotación solo registra la verificación remota. No se han ejecutado pruebas en Termux desde esta sesión.
+
+**Bloqueo restante:** la interacción táctil real en Chrome sobre un Android físico sigue sin poder verificarse desde GitHub Actions. Debe comprobarse en el teléfono antes de sacar el PR del borrador o fusionarlo. En esa prueba hay que confirmar apertura y alternancia de dos partidas, guardado/recarga, mundo conocido compartido frente a progreso personal aislado y permanencia de Athun en el inventario sin posibilidad de perderlo, venderlo, transferirlo o destruirlo.
+
+Hasta completar esa validación física, mantener el PR #4 en borrador y no fusionar. `main` y los guardados existentes permanecen intactos.
