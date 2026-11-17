@@ -132,6 +132,37 @@ const Narrator = {
         return accepted;
     },
 
+    filterGoalUpdates(entries, state) {
+        const characters = state && state.characters && typeof state.characters === 'object'
+            ? state.characters
+            : {};
+        const statuses = new Set(['active', 'progress', 'blocked', 'completed']);
+        const accepted = [];
+        const normalize = value => String(value || '')
+            .toLocaleLowerCase('es')
+            .normalize('NFD')
+            .replace(/[\\u0300-\\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, ' ')
+            .trim();
+
+        (Array.isArray(entries) ? entries : []).slice(0, 2).forEach(entry => {
+            if (!entry || typeof entry.character !== 'string' ||
+                typeof entry.goal !== 'string' || typeof entry.reason !== 'string' ||
+                !statuses.has(entry.status)) return;
+            const requestedName = normalize(entry.character);
+            const key = Object.keys(characters).find(name =>
+                normalize(name) === requestedName ||
+                normalize(characters[name] && characters[name].name) === requestedName
+            );
+            const goal = entry.goal.trim().slice(0, 240);
+            const reason = entry.reason.trim().slice(0, 200);
+            if (!key || !goal || !reason) return;
+            accepted.push({ character: key, goal, status: entry.status, reason });
+        });
+
+        return accepted;
+    },
+
     buildMessages(action, character, adventure, previousActions) {
         const state = adventure.state || {};
         const world = Session.getWorld();
@@ -667,7 +698,7 @@ const Narrator = {
                 if (typeof entry.attitude === 'string' && entry.attitude.trim()) person.attitude = entry.attitude.trim().slice(0, 100);
             });
 
-            result.goalUpdates.slice(0, 2).forEach(entry => {
+            this.filterGoalUpdates(result.goalUpdates, state).forEach(entry => {
                 if (!entry || typeof entry.character !== 'string' ||
                     typeof entry.goal !== 'string' || typeof entry.reason !== 'string') return;
                 const requestedName = entry.character.trim().toLocaleLowerCase('es');
@@ -676,8 +707,8 @@ const Narrator = {
                     String(state.characters[name] && state.characters[name].name || '').toLocaleLowerCase('es') === requestedName
                 );
                 const goal = entry.goal.trim().slice(0, 240);
-                const status = ['active', 'progress', 'blocked', 'completed'].includes(entry.status) ? entry.status : 'active';
-                const reason = entry.reason.trim().slice(0, 200);
+                const status = entry.status;
+                const reason = entry.reason;
                 if (!key || !goal) return;
                 const person = state.characters[key];
                 const previousGoal = typeof person.personalGoal === 'string' ? person.personalGoal.trim() : '';
