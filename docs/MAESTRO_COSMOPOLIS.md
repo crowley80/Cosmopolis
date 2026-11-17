@@ -2142,3 +2142,10 @@ Se ajustaron los disparadores de GitHub Actions para evitar que cada commit de l
 - Se conservan ambas suites; no se desactivan las validaciones de código ni las pruebas de interfaz. Los cambios solo eliminan ejecuciones duplicadas y las activaciones por documentación u otros archivos no relacionados.
 
 Respaldo previo: `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-ci-notification-filter`, además de las copias previas de ambos workflows. Las nuevas reglas deben confirmarse mediante las ejecuciones que GitHub genere a partir de esta revisión. No se modifica `main`, no se fusiona el PR #4 y no se accede a partidas guardadas locales.
+
+
+La revalidación posterior a los cambios de disparadores ha finalizado correctamente sobre la revisión `95f3d4df`:
+- «Athun storage tests», ejecución **797**: correcta.
+- «Visual preview», ejecución **418**: correcta en Chromium móvil simulado y escritorio.
+
+La eliminación del disparador `push` redundante en la rama de integración y los filtros de rutas quedan validados. Las notificaciones de las pruebas de PR se mantienen para proteger los cambios que afectan al código; ya no se genera además una segunda ejecución equivalente por cada `push` en esta rama.
