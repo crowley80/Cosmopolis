@@ -98,6 +98,40 @@ const Narrator = {
         return requested;
     },
 
+    filterAutonomousActions(entries, reply, state) {
+        const characters = state && state.characters && typeof state.characters === 'object'
+            ? state.characters
+            : {};
+        const currentLocation = String(state && state.currentLocation || '').trim();
+        const normalize = value => String(value || '')
+            .toLocaleLowerCase('es')
+            .normalize('NFD')
+            .replace(/[\\u0300-\\u036f]/g, '')
+            .replace(/\\s+/g, ' ')
+            .trim();
+        const narrated = normalize(reply);
+        const accepted = [];
+
+        (Array.isArray(entries) ? entries : []).slice(0, 2).forEach(entry => {
+            if (!entry || typeof entry.character !== 'string' || typeof entry.action !== 'string') return;
+            const requestedName = normalize(entry.character);
+            const key = Object.keys(characters).find(name =>
+                normalize(name) === requestedName ||
+                normalize(characters[name] && characters[name].name) === requestedName
+            );
+            if (!key) return;
+            const person = characters[key];
+            if (person.location && currentLocation && normalize(person.location) !== normalize(currentLocation)) return;
+            const action = entry.action.trim().slice(0, 220);
+            const normalizedAction = normalize(action);
+            if (!normalizedAction || !narrated.includes(normalizedAction)) return;
+            if (normalize(person.lastAutonomousAction) === normalizedAction) return;
+            accepted.push({ character: key, action });
+        });
+
+        return accepted;
+    },
+
     buildMessages(action, character, adventure, previousActions) {
         const state = adventure.state || {};
         const world = Session.getWorld();
@@ -719,36 +753,22 @@ const Narrator = {
                 }
             });
 
-            const autonomousNotes = [];
-            result.characterActions.slice(0, 2).forEach(entry => {
-                if (!entry || typeof entry.character !== 'string' || typeof entry.action !== 'string') return;
-                const requestedName = entry.character.trim().toLocaleLowerCase('es');
-                const key = Object.keys(state.characters).find(name =>
-                    name.toLocaleLowerCase('es') === requestedName ||
-                    String(state.characters[name] && state.characters[name].name || '').toLocaleLowerCase('es') === requestedName
-                );
-                if (!key) return;
+            const autonomousActions = this.filterAutonomousActions(
+                result.characterActions,
+                result.reply,
+                state
+            );
+            autonomousActions.forEach(({ character: key, action: actionText }) => {
                 const person = state.characters[key];
-                if (person.location && person.location !== state.currentLocation) return;
-                const actionText = entry.action.trim().slice(0, 220);
-                if (!actionText) return;
-                autonomousNotes.push(actionText);
                 person.lastAutonomousAction = actionText;
                 person.memories = Array.isArray(person.memories) ? person.memories : [];
-                if (!person.memories.some(memory => String(memory).toLocaleLowerCase('es') === actionText.toLocaleLowerCase('es'))) {
+                if (!person.memories.some(memory =>
+                    typeof memory === 'string' && memory.toLocaleLowerCase('es') === actionText.toLocaleLowerCase('es')
+                )) {
                     person.memories.push(actionText);
                     if (person.memories.length > 30) person.memories = person.memories.slice(-30);
                 }
             });
-
-            if (autonomousNotes.length) {
-                const missingActions = autonomousNotes.filter(actionText =>
-                    !result.reply.toLocaleLowerCase('es').includes(actionText.toLocaleLowerCase('es'))
-                );
-                if (missingActions.length) {
-                    result.reply = result.reply.trim() + '\n\n' + missingActions.join('\n');
-                }
-            }
 
             state.events.push(result.event.trim().slice(0, 300));
             if (state.events.length > 100) state.events = state.events.slice(-100);
