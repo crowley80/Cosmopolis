@@ -222,7 +222,7 @@ jobs:
                 await route.fulfill({ status: 200, headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'ok' }) });
               } else {
                 const result = narrativeCall++ === 0 ? {
-                  reply: 'La observación revela una pequeña marca de cobre entre las piedras.',
+                  reply: 'La observación revela una pequeña marca de cobre entre las piedras. Elia se inclina para examinar la marca de cobre junto a Ariadna.',
                   event: 'Ariadna ha encontrado un medallón de cobre junto al pozo.',
                   category: 'investigation',
                   location: 'Plaza del pozo',
