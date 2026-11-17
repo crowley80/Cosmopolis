@@ -1967,3 +1967,17 @@ Commits:
 - Esta anotación documental se registra en un commit separado.
 
 Validación pendiente al documentar: GitHub Actions debe ejecutar la comprobación sintáctica y la suite completa. No se afirma todavía que esta nueva prueba haya pasado. El PR #4 sigue abierto en borrador y no se fusiona. No se han modificado main ni guardados locales. La validación táctil en Chrome Android físico continúa pendiente.
+
+
+### Resultado CI de validación del esquema global — 17 de noviembre de 2026
+
+La validación automatizada ya se completó sobre el cambio funcional y sobre la revisión documental:
+- GitHub Actions «Athun storage tests», ejecución **653** (commit documental actual): correcta.
+- Comprobación sintáctica de todos los archivos JavaScript: correcta.
+- Suite Node.js: **43/43 pruebas aprobadas, 0 fallos**. La prueba 43 comprueba los siete campos de esquema global y la conservación exacta del registro original cuando sus tipos son incorrectos.
+- La ejecución 650, sobre el commit funcional de la prueba, también terminó correctamente con 43/43.
+- «Visual preview», ejecución **336**, sobre el commit documental, sigue en curso en el momento de esta anotación; no se afirma aún su resultado.
+
+Respaldos de esta actualización: docs/MAESTRO_COSMOPOLIS.md.bak-20261117-schema-ci653.
+
+El PR #4 permanece abierto, en borrador y sin fusionar. No se ha tocado main ni ningún guardado local. La prueba táctil en Android físico sigue pendiente.
