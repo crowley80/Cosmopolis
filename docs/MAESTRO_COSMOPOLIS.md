@@ -1768,3 +1768,12 @@ La ejecución visual 272 (commit `76fc9c4115fd7cd246f553c19ec3acfaaa0b03a2`) fal
 Se ha actualizado únicamente el fixture de prueba para incluir los tres campos obligatorios con valores neutros. No se han cambiado las reglas narrativas ni el comportamiento de producción. Se conserva una copia previa del workflow en `.github/workflows/visual-preview.yml.bak-20261117-narrative-fixture` y otra de este documento en `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-narrative-fixture`.
 
 **Estado:** corrección publicada en `integration/athun-multisave-main-20261116`. Pendiente la nueva ejecución de Playwright y la suite de almacenamiento. La prueba física en Android sigue pendiente; no fusionar PR #4 hasta completarla.
+
+
+### Segunda corrección de fixtures Playwright — 17 de noviembre de 2026
+
+La nueva ejecución visual 276 superó la regresión narrativa inicial y confirmó que la corrección anterior era válida. Después detectó un segundo fixture desactualizado en la prueba de interacciones: las respuestas simuladas usadas para las acciones de exploración y el ciclo de objetivos de personajes tampoco incluían los campos obligatorios de memoria/vínculo de Athun. El narrador rechazaba esas respuestas y activaba su alternativa determinista, por lo que la prueba de iniciativa autónoma de Elia no recibía la respuesta simulada prevista.
+
+Se han completado los campos `athunMemoriesToAdd`, `athunRevelationsToAdd` y `athunBondChange` en las dos respuestas de interacción y en la fábrica de respuestas del test de ciclo de objetivos. Los valores son neutros y no alteran la historia ni el vínculo. Se creó un segundo respaldo del workflow y del documento maestro antes de esta modificación: `.github/workflows/visual-preview.yml.bak-20261117-narrative-fixture2` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-narrative-fixture2`.
+
+**Estado:** suite de almacenamiento/sintaxis aprobada en la ejecución 521. La ejecución visual 276 reveló este segundo fixture incompleto; la corrección queda publicada y requiere una nueva ejecución completa. No se han modificado módulos de producción ni se ha fusionado PR #4.
