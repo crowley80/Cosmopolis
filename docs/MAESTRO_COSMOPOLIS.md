@@ -2075,3 +2075,15 @@ La prueba de aislamiento de Athun también comprueba ahora que los motivos del v
 
 
 La capa de normalización de partidas en `app/js/core/save.js` también conserva y sanea este historial al cargar o migrar una ficha: mantiene los 30 registros válidos más recientes, limita cada motivo y descarta entradas mal formadas. Así la memoria relacional no desaparece al reabrir una partida.
+
+
+### Saneamiento defensivo del estado relacional de Athun — 17 de noviembre de 2026
+
+La actualización de memoria relacional se ha endurecido para no confiar en que el estado cargado esté siempre limpio. Antes de aplicar novedades, `Narrator.applyAthunUpdates()` normaliza el vínculo al intervalo -100..100, filtra recuerdos y revelaciones a texto no vacío de hasta 300 caracteres (máximo 40 de cada tipo) y valida el historial de vínculo (delta -1..1, motivo textual de hasta 240 caracteres y máximo 30 entradas). Los datos mal formados se descartan sin impedir que se incorporen recuerdos nuevos válidos.
+
+Respaldos previos creados en la rama:
+- `app/js/game/narrator.js.bak-20261117-athun-state-sanitization`
+- `tests/storage.test.js.bak-20261117-athun-state-sanitization`
+- `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-athun-state-sanitization`
+
+Se añadió una regresión que introduce entradas de tipos incorrectos, motivos inválidos, un delta fuera de rango y textos demasiado largos; comprueba la normalización y que la actualización continúa procesando datos válidos. La validación de CI queda pendiente; no se considera superada hasta consultar sus resultados.
