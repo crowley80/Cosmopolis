@@ -149,23 +149,44 @@ const Narrator = {
                 selectedCharacters.push(entry);
             }
         });
+        const cleanText = (value, maxLength) =>
+            typeof value === 'string' ? value.trim().slice(0, maxLength) : '';
+        const cleanTextList = (value, count, maxLength) =>
+            (Array.isArray(value) ? value : [])
+                .filter(item => typeof item === 'string' && item.trim())
+                .slice(-count)
+                .map(item => item.trim().slice(0, maxLength));
         const compactCharacters = Object.fromEntries(selectedCharacters.map(([key, person]) => [
             key,
             {
-                ...person,
-                role: typeof person.role === 'string' ? person.role.slice(0, 100) : '',
-                location: typeof person.location === 'string' ? person.location.slice(0, 120) : '',
-                attitude: typeof person.attitude === 'string' ? person.attitude.slice(0, 120) : '',
-                memories: shortList(person.memories, 8, 180),
-                goalHistory: (Array.isArray(person.goalHistory) ? person.goalHistory : []).slice(-5).map(entry => ({
-                    goal: String(entry && entry.goal || '').slice(0, 240),
-                    status: ['active', 'progress', 'blocked', 'completed'].includes(entry && entry.status) ? entry.status : 'active',
-                    reason: String(entry && entry.reason || '').slice(0, 240)
-                })),
-                completedGoals: (Array.isArray(person.completedGoals) ? person.completedGoals : []).slice(-8).map(entry => ({
-                    goal: String(entry && entry.goal || '').slice(0, 240),
-                    reason: String(entry && entry.reason || '').slice(0, 240)
-                }))
+                name: cleanText(person.name, 80) || key.slice(0, 80),
+                role: cleanText(person.role, 100),
+                location: cleanText(person.location, 120),
+                attitude: cleanText(person.attitude, 120),
+                personalGoal: cleanText(person.personalGoal, 240),
+                goalStatus: ['active', 'progress', 'blocked', 'completed'].includes(person.goalStatus)
+                    ? person.goalStatus
+                    : 'active',
+                trust: Number.isFinite(Number(person.trust))
+                    ? Math.max(-5, Math.min(10, Number(person.trust)))
+                    : 0,
+                lastAutonomousAction: cleanText(person.lastAutonomousAction, 220),
+                memories: cleanTextList(person.memories, 8, 180),
+                goalHistory: (Array.isArray(person.goalHistory) ? person.goalHistory : [])
+                    .slice(-5)
+                    .filter(entry => entry && typeof entry.goal === 'string' && entry.goal.trim())
+                    .map(entry => ({
+                        goal: entry.goal.trim().slice(0, 240),
+                        status: ['active', 'progress', 'blocked', 'completed'].includes(entry.status) ? entry.status : 'active',
+                        reason: cleanText(entry.reason, 240)
+                    })),
+                completedGoals: (Array.isArray(person.completedGoals) ? person.completedGoals : [])
+                    .slice(-8)
+                    .filter(entry => entry && typeof entry.goal === 'string' && entry.goal.trim())
+                    .map(entry => ({
+                        goal: entry.goal.trim().slice(0, 240),
+                        reason: cleanText(entry.reason, 240)
+                    }))
             }
         ]));
 
