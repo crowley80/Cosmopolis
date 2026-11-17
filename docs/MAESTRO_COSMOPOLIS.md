@@ -2058,3 +2058,14 @@ Al ampliar la revisión del límite de conocimiento se detectó una segunda vía
 - Al conocerla, su referencia global puede acompañar al contexto para mantener identidad y continuidad.
 - Se amplió la prueba automatizada para simular que otra partida ya había descubierto a Elia y verificar que no se filtra antes del encuentro, pero sí después.
 - Se preserva el registro compartido; el filtro afecta solo a la información entregada al narrador de la partida activa.
+
+
+## Memoria relacional de Athun (17/11/2026)
+
+El vínculo de Athun ya no depende únicamente de una cifra. Cada cambio efectivo de afinidad conserva también un motivo breve en `state.athun.bondHistory`, dentro de la partida correspondiente.
+
+- El historial guarda solo cambios reales (no registra incrementos que hayan quedado bloqueados por los límites de -100/100).
+- Se conservan como máximo 30 motivos y se entregan al narrador los 12 más recientes.
+- El contexto mantiene el aislamiento entre protagonistas: cada partida recibe únicamente su propia historia de vínculo.
+- La instrucción narrativa utiliza esos motivos para dar continuidad emocional sin convertir la puntuación en una personalidad rígida.
+- Se añadió una prueba que registra cambios en sentidos opuestos y verifica que ambos motivos llegan al contexto narrativo de la misma partida.
