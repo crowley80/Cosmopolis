@@ -29,6 +29,26 @@ const Save = {
         return localStorage.getItem(key) === serialized;
     },
 
+    writeGlobalWorldVerified(world) {
+        try {
+            const raw = localStorage.getItem(this.worldKey);
+            if (raw !== null) {
+                let current;
+                try {
+                    current = JSON.parse(raw);
+                } catch (error) {
+                    // Un registro global ilegible no se sustituye por un mundo vacío.
+                    return false;
+                }
+                if (!current || typeof current !== 'object' || Array.isArray(current)) return false;
+            }
+            return this.writeVerified(this.worldKey, world);
+        } catch (error) {
+            console.error('No se pudo guardar el mundo compartido:', error);
+            return false;
+        }
+    },
+
     normalizeSlot(data) {
         const slot = { ...(data || {}) };
         slot.actions = Array.isArray(slot.actions) ? slot.actions : [];
@@ -419,12 +439,7 @@ const Save = {
             String(typeof item === 'string' ? item : item.name).toLocaleLowerCase('es') === clean.toLocaleLowerCase('es')
         );
         if (!exists) world.locations.push({ name: clean, discoveredBy: String(discoveredBy || '').slice(0, 80), discoveredAt: new Date().toISOString() });
-        try {
-            return this.writeVerified(this.worldKey, world);
-        } catch (error) {
-            console.error('No se pudo registrar la localización compartida:', error);
-            return false;
-        }
+        return this.writeGlobalWorldVerified(world);
     },
 
     addGlobalConnection(from, to, discoveredBy) {
@@ -456,12 +471,7 @@ const Save = {
             discoveredBy: String(discoveredBy || '').slice(0, 80),
             discoveredAt: new Date().toISOString()
         });
-        try {
-            return this.writeVerified(this.worldKey, world);
-        } catch (error) {
-            console.error('No se pudo registrar el tramo recorrido:', error);
-            return false;
-        }
+        return this.writeGlobalWorldVerified(world);
     },
 
     addGlobalEntity(entity, discoveredBy) {
@@ -479,12 +489,7 @@ const Save = {
             discoveredBy: String(discoveredBy || '').slice(0, 80),
             discoveredAt: new Date().toISOString()
         };
-        try {
-            return this.writeVerified(this.worldKey, world);
-        } catch (error) {
-            console.error('No se pudo registrar la entidad compartida:', error);
-            return false;
-        }
+        return this.writeGlobalWorldVerified(world);
     },
 
     saveGlobalWorld(world) {
@@ -500,12 +505,7 @@ const Save = {
             changes: Array.isArray(world && world.changes) ? world.changes : current.changes,
             relationships: { ...current.relationships, ...((world && world.relationships) || {}) }
         };
-        try {
-            return this.writeVerified(this.worldKey, updated);
-        } catch (error) {
-            console.error('No se pudo guardar el mundo compartido:', error);
-            return false;
-        }
+        return this.writeGlobalWorldVerified(updated);
     },
 
     exists() {
