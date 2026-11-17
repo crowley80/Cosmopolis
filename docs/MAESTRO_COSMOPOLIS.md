@@ -1838,3 +1838,15 @@ Se ha revisado de nuevo el PR #4 y las ejecuciones más recientes de GitHub Acti
 **Único bloqueo de validación pendiente:** probar la interfaz mediante interacción táctil real en Chrome sobre un dispositivo Android físico. La simulación de Playwright no sustituye esa comprobación. Hasta completarla, mantener el PR en borrador y no fusionar.
 
 No se han modificado partidas guardadas ni datos locales. Se creó el respaldo íntegro previo `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-ci-590-301` antes de añadir esta actualización.
+
+
+### Corrección de normalización de topónimos — 17 de noviembre de 2026
+
+La revisión del filtro antialucinaciones del atlas detectó que la expresión regular de normalización estaba escrita con barras invertidas duplicadas. En lugar de retirar únicamente las marcas diacríticas Unicode, eliminaba también letras (incluida la «u») y cifras. Esto podía hacer equivalentes nombres distintos, por ejemplo «Puente viejo» y «Pente viejo», o «Calle 1» y «Calle 12», permitiendo falsos positivos en la validación de lugares visibles.
+
+- Corregida la expresión para eliminar solo el rango Unicode de marcas combinantes tras normalizar a NFD.
+- Ampliada la regresión del filtro con topónimos casi idénticos y numeración distinta; los nombres no mencionados deben descartarse.
+- No se modifica el criterio de descubrimiento: los lugares deben estar respaldados por la escena o por el conocimiento registrado.
+- Respaldos previos: `app/js/game/narrator.js.bak-20261117-normalizacion-toponimos`, `tests/storage.test.js.bak-20261117-normalizacion-toponimos` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-normalizacion-toponimos`.
+
+**Validación:** pendiente de GitHub Actions sobre esta revisión. No se modifica `main`, no se fusiona el PR #4 y no se tocan partidas guardadas. La prueba táctil en Chrome para Android físico continúa pendiente.
