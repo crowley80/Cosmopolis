@@ -1981,3 +1981,31 @@ La validación automatizada ya se completó sobre el cambio funcional y sobre la
 Respaldos de esta actualización: docs/MAESTRO_COSMOPOLIS.md.bak-20261117-schema-ci653.
 
 El PR #4 permanece abierto, en borrador y sin fusionar. No se ha tocado main ni ningún guardado local. La prueba táctil en Android físico sigue pendiente.
+
+
+### Validación de cambios de ubicación del narrador — 17 de noviembre de 2026
+
+La revisión del flujo de respuestas de la IA local detectó que el modelo podía cambiar `state.currentLocation` mediante el campo estructurado `location`, incluso si la respuesta no describía un desplazamiento o no mencionaba el destino. Como la sesión publica después la ubicación guardada en el atlas compartido, una respuesta incoherente podía crear un teletransporte narrativo y registrar un lugar como descubierto.
+
+Corrección en `app/js/game/narrator.js`:
+- Se incorpora `resolveCurrentLocation()` como validación previa del destino propuesto.
+- Una ubicación distinta solo se acepta si la respuesta está clasificada como `movement` y el nombre del destino aparece explícitamente en el texto narrativo.
+- En diálogos, investigaciones, combates y demás categorías, el protagonista conserva su ubicación aunque el modelo proponga otra en el JSON.
+- Si el destino no aparece en la narración, se conserva la ubicación anterior; por tanto, no se activa falsamente la fase de exploración ni se publica ese destino en el mapa.
+
+Regresión añadida en `tests/storage.test.js`:
+- Rechaza un cambio de ubicación propuesto durante un diálogo.
+- Acepta un desplazamiento cuyo destino se narra explícitamente.
+- Rechaza un destino que no aparece en la respuesta, aunque la categoría sea movimiento.
+
+Respaldos previos:
+- `app/js/game/narrator.js.bak-20261117-location-guard`
+- `tests/storage.test.js.bak-20261117-location-guard`
+- `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-location-guard`
+
+Commits funcionales:
+- `10bc074`: validación inicial del desplazamiento.
+- `4c5b168`: pruebas de regresión.
+- `1efdf5d`: corrección de normalización Unicode en el validador.
+
+**Validación CI:** pendiente de consultar para la revisión actual. No se declara aprobada la nueva regresión hasta que GitHub Actions confirme el resultado. La prueba táctil real en Chrome Android sigue pendiente. PR #4 permanece abierto y en borrador; no se ha fusionado ni modificado `main`.
