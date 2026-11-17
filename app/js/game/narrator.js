@@ -291,9 +291,19 @@ const Narrator = {
         }
         const athun = state.athun;
         athun.permanent = true;
-        athun.memories = Array.isArray(athun.memories) ? athun.memories : [];
-        athun.revelations = Array.isArray(athun.revelations) ? athun.revelations : [];
-        athun.bondHistory = Array.isArray(athun.bondHistory) ? athun.bondHistory : [];
+        const numericBond = Number(athun.bond);
+        athun.bond = Number.isFinite(numericBond) ? Math.max(-100, Math.min(100, numericBond)) : 0;
+        const cleanEntries = entries => (Array.isArray(entries) ? entries : [])
+            .filter(entry => typeof entry === 'string' && entry.trim())
+            .map(entry => entry.trim().slice(0, 300))
+            .slice(-40);
+        athun.memories = cleanEntries(athun.memories);
+        athun.revelations = cleanEntries(athun.revelations);
+        athun.bondHistory = (Array.isArray(athun.bondHistory) ? athun.bondHistory : [])
+            .filter(entry => entry && Number.isInteger(entry.delta) && entry.delta >= -1 && entry.delta <= 1 &&
+                typeof entry.reason === 'string' && entry.reason.trim())
+            .slice(-30)
+            .map(entry => ({ delta: entry.delta, reason: entry.reason.trim().slice(0, 240) }));
         const appendUnique = (target, entries) => {
             (Array.isArray(entries) ? entries : []).slice(0, 3).forEach(entry => {
                 if (typeof entry !== 'string') return;
