@@ -157,9 +157,9 @@ jobs:
 
               const originalFetch = window.fetch;
               const fakeNarrative = {
-                reply: 'Athun permanece contigo.',
+                reply: 'Llegas a Plaza del pozo. Athun permanece contigo.',
                 event: 'El grimorio ha permanecido en el inventario.',
-                category: 'other',
+                category: 'movement',
                 location: 'Plaza del pozo',
                 visibleLocations: [],
                 factsToAdd: ['Hay un pozo antiguo en la plaza.', 'Una campana ha sonado desde el pozo.'],
