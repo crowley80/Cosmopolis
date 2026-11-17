@@ -1734,3 +1734,28 @@ No se cambia esta arquitectura: el mundo conserva continuidad común, mientras l
 - La aplicación deduplica sin distinguir mayúsculas, limita cada lista a 40 entradas y cada texto a 300 caracteres, y mantiene el vínculo entre -100 y +100.
 - Se añadieron pruebas de deduplicación, límites de cantidad y estabilidad del vínculo. Todo queda dentro del guardado personal del protagonista; no se publica en el mundo compartido.
 - Copias previas: `app/js/game/narrator.js.bak-20261116-athun-memoria-activa`, `tests/storage.test.js.bak-20261116-athun-memoria-activa` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261116-athun-memoria-activa`.
+
+
+## REVISIÓN AUTÓNOMA DE CONTINUIDAD — 17 DE NOVIEMBRE DE 2026
+
+Se ha revisado el estado remoto del repositorio y de la integración antes de continuar. No se ha modificado `main`, no se han fusionado ramas y no se ha tocado ningún guardado del usuario.
+
+### Estado de integración
+- El trabajo principal de partidas múltiples, mundo compartido, protección permanente de Athun, selector y atlas está en la rama `integration/athun-multisave-main-20261116`, que alimenta el PR #4 contra `main`.
+- PR #4 sigue abierto y en borrador; su revisión informa 146 commits por delante y 0 por detrás de `main` en el último estado consultado. No se debe fusionar todavía porque falta la validación táctil en Chrome sobre Android físico.
+- PR #5 («Recuperar avances narrativos y agente local…») consta como fusionado en la rama de integración, no en `main`. Sus cambios recuperados incluyen `aiUsed`, timeout local ampliado y el agente con validación de parches y respaldos.
+- La rama `integracion/athun-multisave-main-20261116` es una línea distinta y más antigua (68 commits por delante de `main`); no debe confundirse con la rama actual del PR #4.
+
+### CI verificada en el último commit consultado
+Commit: `76fc9c4115fd7cd246f553c19ec3acfaaa0b03a2`.
+- «Athun storage tests», ejecución 506: **correcta**.
+- «Visual preview», ejecución 272: **fallida** en el paso «Render adventure on mobile and desktop». La instalación, el servidor local y la preparación de Playwright sí terminaron correctamente; la subida de capturas se omitió por el fallo.
+- La suite de almacenamiento mantiene el resultado satisfactorio de 27 pruebas que recoge el PR. La validación visual de esta revisión no debe marcarse como aprobada hasta diagnosticar y corregir el fallo del paso Playwright y obtener una nueva ejecución verde.
+
+### Próxima tarea técnica
+1. Diagnosticar el fallo del workflow visual 272 sin cambiar a ciegas las reglas narrativas ni el guardado.
+2. Reproducir el flujo de selector, migración heredada y apertura de aventura que ejecuta Playwright; corregir únicamente la causa demostrada.
+3. Ejecutar de nuevo la suite de almacenamiento y Playwright en móvil simulado y escritorio.
+4. Mantener pendiente la prueba táctil física en Android y no fusionar el PR #4 hasta completarla.
+
+**Seguridad:** se creó antes de esta actualización una copia íntegra de este documento en `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-auditoria-autonoma`. No se eliminaron respaldos anteriores ni se realizaron operaciones sobre datos locales o partidas guardadas.
