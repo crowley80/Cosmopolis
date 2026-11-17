@@ -18,7 +18,7 @@ const WorldMap = {
     normalizeText(value) {
         return String(value || '')
             .normalize('NFD')
-            .replace(/[\\u0300-\\u036f]/g, '')
+            .replace(/[\u0300-\u036f]/g, '')
             .toLocaleLowerCase('es');
     },
 
@@ -46,14 +46,14 @@ const WorldMap = {
                 : normalizedEvidence.indexOf(toName, fromAt + fromName.length);
             if (fromAt < 0 || toAt < 0) return;
 
-            const phraseIsBetween = rule.phrases.some(phrase => {
+            const matchedPhrase = rule.phrases.find(phrase => {
                 const phraseAt = normalizedEvidence.indexOf(this.normalizeText(phrase), fromAt + fromName.length);
                 return phraseAt > fromAt && phraseAt < toAt;
             });
-            if (!phraseIsBetween) return;
+            if (!matchedPhrase) return;
 
             const key = [fromName, relation, toName].join('|');
-            accepted.set(key, { from, relation, label: rule.label, to, evidence });
+            accepted.set(key, { from, relation, label: matchedPhrase, to, evidence });
         });
         return Array.from(accepted.values()).slice(0, 12);
     },
