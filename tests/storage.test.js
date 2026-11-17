@@ -903,3 +903,27 @@ test('el narrador no recibe datos de Elia antes de que el protagonista la conozc
     assert.equal(context.currentAdventure.state.characters.Elia.name, 'Elia');
     assert.equal(context.persistentWorld.entities.elia.name, 'Elia');
 });
+
+test('Athun sanea recuerdos, revelaciones, vínculo e historial antes de aplicar cambios', () => {
+    const state = { athun: {
+        bond: 999,
+        memories: ['  Recuerdo válido  ', { texto: 'no válido' }, 'x'.repeat(500)],
+        revelations: [' Revelación válida ', null, 42],
+        bondHistory: [
+            { delta: 2, reason: 'Delta imposible' },
+            { delta: -1, reason: '  Motivo válido  ' },
+            { delta: 1, reason: 42 }
+        ]
+    } };
+
+    Narrator.applyAthunUpdates(state, {
+        athunMemoriesToAdd: ['Nuevo recuerdo'],
+        athunRevelationsToAdd: ['Nuevo descubrimiento']
+    });
+
+    assert.equal(state.athun.bond, 100);
+    assert.deepEqual(state.athun.memories, ['Recuerdo válido', 'x'.repeat(300), 'Nuevo recuerdo']);
+    assert.deepEqual(state.athun.revelations, ['Revelación válida', 'Nuevo descubrimiento']);
+    assert.deepEqual(state.athun.bondHistory, [{ delta: -1, reason: 'Motivo válido' }]);
+    assert.equal(state.athun.permanent, true);
+});
