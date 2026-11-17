@@ -41,6 +41,17 @@ const Save = {
                     return false;
                 }
                 if (!current || typeof current !== 'object' || Array.isArray(current)) return false;
+
+                // No normalizar y reescribir campos conocidos si el registro tiene un esquema incoherente.
+                const arrayFields = ['locations', 'connections', 'facts', 'events', 'changes'];
+                const objectFields = ['entities', 'relationships'];
+                if (arrayFields.some(field =>
+                    Object.prototype.hasOwnProperty.call(current, field) && !Array.isArray(current[field])
+                )) return false;
+                if (objectFields.some(field =>
+                    Object.prototype.hasOwnProperty.call(current, field) &&
+                    (!current[field] || typeof current[field] !== 'object' || Array.isArray(current[field]))
+                )) return false;
             }
             return this.writeVerified(this.worldKey, world);
         } catch (error) {
