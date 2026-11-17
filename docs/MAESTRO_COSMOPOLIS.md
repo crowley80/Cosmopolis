@@ -2102,3 +2102,10 @@ Se añadió una prueba que introduce deliberadamente objetos y valores de tipos 
 - Se descartan recuerdos y entradas de objetivos que no sean texto válido, y se excluyen campos arbitrarios que pudieran contener datos ajenos al contexto narrativo.
 - Se añade una regresión con recuerdos malformados, objetivos inválidos, confianza fuera de rango y un campo privado adicional.
 - Se conserva el estado original del personaje en la partida; el saneamiento afecta únicamente al contexto que recibe el modelo.
+
+
+### Validación de acciones autónomas dentro de la escena — 17/11/2026
+- Las iniciativas autónomas solo se guardan si el texto de la acción aparece realmente en la narración de la escena actual.
+- Se descartan acciones de personajes que no estén registrados, que estén en otra ubicación o que repitan exactamente su última iniciativa.
+- Se elimina la inserción automática de acciones al final del relato: el registro estructurado ya no puede introducir una acción que el narrador no haya contado.
+- Se añade una prueba de regresión para acciones narradas, omitidas, repetidas, de personajes fuera de escena y nombres desconocidos.
