@@ -1495,3 +1495,19 @@ Se centraliza la operación en writeSlotAndIndex(): conserva las versiones previ
 Se añaden dos pruebas de regresión que simulan un fallo de almacenamiento durante Save.save() y Save.replace(), y comprueban que el registro, el índice y la partida activa permanecen intactos.
 
 **Estado:** cambios preparados en feat/athun-multisave-world. Pendiente ejecutar GitHub Actions para validar sintaxis y toda la batería de pruebas. No se ha modificado main ni se ha fusionado el pull request. La validación en Chrome/Android sigue pendiente.
+
+
+### Posiciones relativas verificadas por la narración — 17/11/2026
+
+Se incorpora una capa de relaciones espaciales relativas sin asignar coordenadas ni dibujar una geometría ficticia:
+
+- El contrato del narrador admite relaciones north_of, south_of, east_of, west_of, inside y adjacent_to.
+- Cada relación exige from, to y un fragmento literal evidence de la respuesta narrativa. La validación comprueba que ambos nombres y la expresión relacional aparecen en ese orden dentro del fragmento.
+- La sesión vuelve a validar la evidencia antes de compartir la relación. El almacenamiento conserva el fragmento y evita duplicados.
+- El atlas muestra las relaciones por separado de los caminos recorridos. Una conexión sigue significando un desplazamiento confirmado; una posición relativa solo significa lo que la frase citada establece.
+- Los extremos de una relación explícita pasan al conocimiento compartido, pero no se convierten en visitas personales de otros protagonistas. La visibilidad y las visitas siguen aisladas por partida.
+- Si no hay evidencia explícita, no se añade ninguna posición. No se calculan coordenadas, distancias, orientación adicional ni rutas inversas.
+
+Se crearon respaldos previos con el sufijo .bak-20261117-posiciones-relativas para app/js/game/map.js, app/js/game/session.js, app/js/game/narrator.js, app/js/core/save.js, app/js/app.js, tests/map.test.js, tests/storage.test.js, index.html y ambos documentos maestros.
+
+**Validación pendiente de esta tanda:** ejecutar GitHub Actions después de estos cambios. La prueba visual y táctil en Chrome para Android sigue pendiente; no se declara realizada.
