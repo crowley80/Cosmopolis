@@ -1850,3 +1850,6 @@ La revisión del filtro antialucinaciones del atlas detectó que la expresión r
 - Respaldos previos: `app/js/game/narrator.js.bak-20261117-normalizacion-toponimos`, `tests/storage.test.js.bak-20261117-normalizacion-toponimos` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-normalizacion-toponimos`.
 
 **Validación:** pendiente de GitHub Actions sobre esta revisión. No se modifica `main`, no se fusiona el PR #4 y no se tocan partidas guardadas. La prueba táctil en Chrome para Android físico continúa pendiente.
+
+
+**Ajuste del caso de regresión:** la primera ejecución de la suite detectó que el propio texto de prueba mencionaba «Calle 12», por lo que el filtro actuaba correctamente al aceptarla. Se corrigió el fixture para que la escena mencione «Calle 1» y «Calle 12» quede únicamente como candidato no respaldado. La prueba ahora verifica que la cifra forma parte de la identidad del topónimo y no se confunde con otra calle.
