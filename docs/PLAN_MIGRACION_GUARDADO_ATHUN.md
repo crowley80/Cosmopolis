@@ -194,3 +194,19 @@ Se añadieron respaldos previos de `app/js/core/save.js`, `tests/storage.test.js
 ### Conservación del estado de Athun al migrar partidas — 16/11/2026
 
 La normalización de cada partida ahora conserva el vínculo, el nivel de unión, los recuerdos y las revelaciones existentes de Athun, además de forzar `id: athun` y `permanent: true`. La migración de partidas múltiples ya no se limita a garantizar la entrada del inventario: mantiene también el estado narrativo persistente del grimorio por protagonista. La prueba de migración heredada comprueba estos campos. Validado en GitHub Actions, ejecución 232 (25/25 pruebas).
+
+
+## Posiciones relativas con evidencia narrativa — 17/11/2026
+
+La siguiente ampliación no usa coordenadas arbitrarias ni convierte un desplazamiento en una orientación. El narrador puede declarar una relación relativa únicamente cuando su propia respuesta contiene una frase explícita que nombra ambos lugares y expresa la relación. El fragmento se conserva como evidencia y se valida de nuevo en la sesión antes de compartirlo.
+
+Relaciones admitidas: norte/sur/este/oeste de, dentro de y junto a. Las relaciones se muestran separadas de los caminos recorridos:
+- **Camino:** transición A → B confirmada por una acción clasificada como movement.
+- **Posición relativa:** frase narrativa verificable que sitúa un lugar respecto de otro.
+- **Visita y visibilidad:** siguen perteneciendo a cada protagonista; compartir un dato cartográfico no marca una visita ni revela la posición actual de otra partida.
+
+La interfaz no dibuja una cuadrícula ni infiere distancias. Si la narración no aporta evidencia suficiente, la relación se descarta. Los extremos solo se incorporan al catálogo compartido cuando ambos aparecen en la evidencia validada.
+
+Se añadieron pruebas unitarias de validación del fragmento, orden de la relación, rechazo de evidencia ausente o contradictoria, filtrado de extremos desconocidos y persistencia compartida sin crear caminos ni visitas personales. Los archivos modificados tienen copias previas con sufijo .bak-20261117-posiciones-relativas.
+
+**Estado:** cambios implementados en feat/athun-multisave-world; GitHub Actions pendiente de ejecutar/verificar. La comprobación visual en Chrome/Android sigue pendiente.
