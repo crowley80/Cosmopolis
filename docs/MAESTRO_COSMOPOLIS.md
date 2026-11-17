@@ -1928,3 +1928,15 @@ Commits de esta tanda:
 - Prueba automatizada: 0dfa605.
 
 Validación pendiente: las pruebas locales no se han ejecutado desde esta sesión. La nueva prueba y la comprobación sintáctica deben pasar en GitHub Actions antes de considerar validado el cambio. Mantener el PR #4 en borrador y sin fusionar. La prueba táctil real en Chrome sobre Android físico sigue pendiente. No se han tocado guardados locales ni la rama main.
+
+
+### Validación de protección del mundo compartido — 17 de noviembre de 2026
+
+La protección frente a registros globales dañados ha superado la validación automatizada remota sobre el commit 6d358d1b23fd4157ee1a449d49a9ea5ef784c1ac:
+
+- GitHub Actions «Athun storage tests», ejecución 638: correcta. La comprobación sintáctica de todos los archivos JavaScript terminó sin errores y las **42/42 pruebas** de almacenamiento, mundo compartido, migración, aislamiento y permanencia de Athun pasaron; 0 fallos.
+- GitHub Actions «Visual preview», ejecución 327: correcta. Playwright completó renderización e interacciones en Chromium móvil simulado (390 × 844) y escritorio (1024 × 900).
+- La nueva regresión es la prueba 42: simula JSON truncado en athun_shared_world_v1 y confirma que las operaciones de localización, conexión, entidad y guardado global rechazan la escritura sin alterar el valor original.
+- La rama de integración permanece 207 commits por delante y 0 por detrás de main. PR #4 sigue abierto, en borrador y sin fusionar.
+
+No se han ejecutado pruebas en Termux ni en un Android físico. La interacción táctil real en Chrome Android continúa pendiente; la simulación Playwright no la sustituye. No se han modificado main ni los guardados locales.
