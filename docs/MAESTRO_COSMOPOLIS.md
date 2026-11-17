@@ -1825,3 +1825,16 @@ La revisión del atlas encontró un punto débil: aunque el prompt prohíbe inve
 - Respaldos previos: `app/js/game/narrator.js.bak-20261117-visible-location-guard`, `tests/storage.test.js.bak-20261117-visible-location-guard` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-visible-location-guard`.
 
 **Validación completada:** GitHub Actions «Athun storage tests», ejecución 588: correcta (sintaxis y suite de almacenamiento/mundo compartido). «Visual preview», ejecución 300: correcta (Playwright en Chromium móvil simulado de 390 × 844 y escritorio de 1024 × 900, con renderización y pruebas de interacción). El cambio está publicado en `integration/athun-multisave-main-20261116`. No se ha modificado `main`, no se ha fusionado el PR #4 y no se han tocado partidas guardadas. La prueba táctil en Chrome sobre un Android físico sigue pendiente.
+
+
+### Revalidación final del atlas y estado de integración — 17 de noviembre de 2026
+
+Se ha revisado de nuevo el PR #4 y las ejecuciones más recientes de GitHub Actions sobre el commit `52a52ad01053b50ec42d2555641d2f0a42be1359` de la rama `integration/athun-multisave-main-20261116`:
+
+- «Athun storage tests», ejecución **590** (ID `44045635656`): completada correctamente. Pasaron la comprobación sintáctica y la suite de almacenamiento/mundo compartido.
+- «Visual preview», ejecución **301** (ID `44045635851`): completada correctamente. Playwright terminó la renderización y las interacciones en Chromium móvil simulado (390 × 844) y escritorio (1024 × 900).
+- La revisión del PR confirma que la rama está actualizada respecto a `main` (0 commits por detrás en el último estado registrado). El PR #4 continúa abierto y en borrador; no se ha fusionado ni se ha modificado `main`.
+
+**Único bloqueo de validación pendiente:** probar la interfaz mediante interacción táctil real en Chrome sobre un dispositivo Android físico. La simulación de Playwright no sustituye esa comprobación. Hasta completarla, mantener el PR en borrador y no fusionar.
+
+No se han modificado partidas guardadas ni datos locales. Se creó el respaldo íntegro previo `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-ci-590-301` antes de añadir esta actualización.
