@@ -726,3 +726,30 @@ test('no conserva zonas visibles anteriores al desplazarse sin una nueva declara
     }), true);
     assert.deepEqual(Save.load().adventure.state.visibleLocations, []);
 });
+
+
+
+test('Athun no puede perderse, venderse, transferirse ni destruirse por una respuesta narrativa', () => {
+    const state = { inventory: ['Athun — grimorio consciente', 'Moneda'] };
+    Narrator.applyInventoryUpdates(state, {
+        itemsToRemove: ['Athun', 'Moneda'],
+        itemsToAdd: ['Athun vendido', 'Athun transferido', 'Athun destruido', 'Llave']
+    });
+
+    assert.deepEqual(state.inventory, ['Athun — grimorio consciente', 'Llave']);
+
+    const restored = { inventory: ['Moneda'] };
+    Narrator.applyInventoryUpdates(restored, { itemsToRemove: [], itemsToAdd: [] });
+    assert.deepEqual(restored.inventory, ['Athun — grimorio consciente', 'Moneda']);
+
+    const messages = Narrator.buildMessages('Intento vender el grimorio', { name: 'Ariadna' }, {
+        title: 'Prueba de permanencia',
+        state: {
+            currentLocation: 'Camino de entrada a Valdebruma',
+            inventory: restored.inventory,
+            athun: { id: 'athun', permanent: true, memories: [], revelations: [] }
+        }
+    }, []);
+    assert.ok(messages[0].content.includes('Athun es permanente e inseparable'));
+    assert.ok(messages[0].content.includes('nunca puede perderse, ser robado, vendido'));
+});
