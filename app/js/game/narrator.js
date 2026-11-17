@@ -73,6 +73,31 @@ const Narrator = {
         return accepted.slice(0, 12);
     },
 
+    resolveCurrentLocation(result, adventure) {
+        const state = adventure && adventure.state && typeof adventure.state === 'object'
+            ? adventure.state
+            : {};
+        const current = String(state.currentLocation || adventure && adventure.location || 'Lugar desconocido')
+            .trim().slice(0, 120);
+        const requested = typeof result.location === 'string' ? result.location.trim().slice(0, 120) : '';
+        if (!requested) return current;
+
+        const normalize = value => String(value || '')
+            .toLocaleLowerCase('es')
+            .normalize('NFD')
+            .replace(/[\\u0300-\\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, ' ')
+            .trim();
+        if (normalize(requested) === normalize(current)) return current;
+
+        // El modelo no puede teletransportar al protagonista al cambiar un campo JSON:
+        // el desplazamiento debe estar clasificado como tal y narrado explícitamente.
+        if (result.category !== 'movement') return current;
+        const reply = ' ' + normalize(result.reply) + ' ';
+        if (!reply.includes(' ' + normalize(requested) + ' ')) return current;
+        return requested;
+    },
+
     buildMessages(action, character, adventure, previousActions) {
         const state = adventure.state || {};
         const world = Session.getWorld();
@@ -461,8 +486,7 @@ const Narrator = {
                 ? Math.max(1, Math.min(9999, Number(state.day)))
                 : 1;
             state.day = Math.max(previousDay, Math.max(1, Math.min(9999, result.day)));
-            state.currentLocation = result.location.trim().slice(0, 120) ||
-                state.currentLocation || updated.location || 'Lugar desconocido';
+            state.currentLocation = this.resolveCurrentLocation(result, updated);
             if (state.phase === 'arrival' && state.currentLocation !== 'Camino de entrada a Valdebruma') {
                 state.phase = 'exploration';
             }
