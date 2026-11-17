@@ -1009,3 +1009,37 @@ test('el contexto de personajes limita objetivos, recuerdos y campos no reconoci
     assert.equal(JSON.stringify(context).includes('NO DEBE APARECER'), false);
     assert.equal(JSON.stringify(context).includes('no debe filtrarse'), false);
 });
+
+
+test('las acciones autónomas solo se registran si están narradas en escena y no se repiten', () => {
+    const state = {
+        currentLocation: 'Plaza del pozo',
+        characters: {
+            Elia: {
+                name: 'Elia',
+                location: 'Plaza del pozo',
+                lastAutonomousAction: 'Revisa sus mapas'
+            },
+            Tomás: {
+                name: 'Tomás',
+                location: 'Camino del molino'
+            }
+        }
+    };
+    const accepted = Narrator.filterAutonomousActions([
+        { character: 'Elia', action: 'Revisa sus mapas' },
+        { character: 'Elia', action: 'Señala una marca recién dibujada' },
+        { character: 'Tomás', action: 'Se acerca desde el camino' },
+        { character: 'Desconocido', action: 'Abre una puerta' },
+        { character: 'Elia', action: '  ' }
+    ], 'Elia levanta la vista y señala una marca recién dibujada en uno de sus mapas.', state);
+
+    assert.deepEqual(accepted, [{
+        character: 'Elia',
+        action: 'Señala una marca recién dibujada'
+    }]);
+    assert.deepEqual(Narrator.filterAutonomousActions([
+        { character: 'Elia', action: 'Señala una marca recién dibujada' }
+    ], 'Elia continúa observando en silencio.', state), []);
+    assert.deepEqual(Narrator.filterAutonomousActions('no es una lista', '', state), []);
+});
