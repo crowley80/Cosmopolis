@@ -1853,3 +1853,13 @@ La revisión del filtro antialucinaciones del atlas detectó que la expresión r
 
 
 **Ajuste del caso de regresión:** la primera ejecución de la suite detectó que el propio texto de prueba mencionaba «Calle 12», por lo que el filtro actuaba correctamente al aceptarla. Se corrigió el fixture para que la escena mencione «Calle 1» y «Calle 12» quede únicamente como candidato no respaldado. La prueba ahora verifica que la cifra forma parte de la identidad del topónimo y no se confunde con otra calle.
+
+
+### Validación CI de normalización de topónimos — 17 de noviembre de 2026
+
+La corrección de la normalización Unicode y su regresión quedaron verificadas en la revisión `4f42703bf3450f38d7101eb76ca7315989a7629e`:
+
+- GitHub Actions «Athun storage tests», ejecución **611**: completada correctamente; sintaxis y las **40 pruebas** de almacenamiento/mundo compartido aprobadas.
+- GitHub Actions «Visual preview», ejecución **312**: completada correctamente; Playwright terminó renderización e interacciones en Chromium móvil simulado (390 × 844) y escritorio (1024 × 900), incluida la prueba del atlas.
+- La rama sigue basada en `main`, sin commits por detrás; PR #4 continúa abierto y en borrador.
+- La validación táctil real en Chrome sobre Android físico sigue pendiente. No se fusiona hasta completarla.
