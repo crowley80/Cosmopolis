@@ -753,3 +753,17 @@ test('Athun no puede perderse, venderse, transferirse ni destruirse por una resp
     assert.ok(messages[0].content.includes('Athun es permanente e inseparable'));
     assert.ok(messages[0].content.includes('nunca puede perderse, ser robado, vendido'));
 });
+
+
+test('no sobrescribe un registro dañado del mundo compartido al intentar actualizarlo', () => {
+    const damagedWorld = '{"locations":[{"name":"Valdebruma"}],"connections":';
+    localStorage.setItem(Save.worldKey, damagedWorld);
+
+    assert.equal(Save.addGlobalLocation('Puerto', 'Ariadna'), false);
+    assert.equal(Save.addGlobalConnection('Valdebruma', 'Puerto', 'Ariadna'), false);
+    assert.equal(Save.addGlobalEntity({ name: 'Elia', role: 'Cartógrafa' }, 'Ariadna'), false);
+    assert.equal(Save.saveGlobalWorld({ locations: [{ name: 'Puerto' }] }), false);
+
+    // La lectura degradada no debe convertir un registro ilegible en un mundo vacío persistido.
+    assert.equal(localStorage.getItem(Save.worldKey), damagedWorld);
+});
