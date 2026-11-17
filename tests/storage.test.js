@@ -21,6 +21,29 @@ require('../app/js/game/narrator.js');
 
 const Save = global.Save;
 const Session = global.Session;
+const Narrator = global.Narrator;
+
+test('el narrador descarta zonas visibles sin respaldo en la escena o el conocimiento', () => {
+    const adventure = {
+        title: 'Exploración de Valdebruma',
+        location: 'Plaza del pozo',
+        text: 'La plaza está rodeada de casas antiguas.',
+        state: {
+            currentLocation: 'Plaza del pozo',
+            visitedLocations: ['Plaza del pozo'],
+            visibleLocations: []
+        }
+    };
+    const visible = Narrator.filterVisibleLocations(
+        ['Calle del molino', 'Puente viejo', 'Torre del cuervo', 'Plaza del pozo', 'Calle del molino'],
+        'Desde la plaza distingues el Puente viejo entre la niebla.',
+        adventure,
+        { locations: [{ name: 'Calle del molino' }] }
+    );
+
+    assert.deepEqual(visible, ['Calle del molino', 'Puente viejo', 'Plaza del pozo']);
+});
+
 
 test.beforeEach(() => {
     global.localStorage = new MemoryStorage();
