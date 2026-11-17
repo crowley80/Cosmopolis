@@ -16,6 +16,7 @@ class MemoryStorage {
 global.window = global;
 global.localStorage = new MemoryStorage();
 require('../app/js/core/save.js');
+require('../app/js/game/map.js');
 require('../app/js/game/session.js');
 
 const Save = global.Save;
@@ -532,4 +533,61 @@ test('impide eliminar la última partida y conserva a Athun en ella', () => {
     assert.equal(Save.getActiveId(), id);
     const inventory = Save.load().adventure.state.inventory;
     assert.equal(inventory.filter(item => String(item).toLocaleLowerCase('es').includes('athun')).length, 1);
+});
+
+
+test('comparte posiciones relativas verificadas sin crear caminos ni visitas personales', () => {
+    const WorldMap = global.WorldMap;
+    Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Cartografía explícita',
+        state: {
+            currentLocation: 'Plaza del pozo',
+            visitedLocations: ['Plaza del pozo'],
+            inventory: []
+        }
+    });
+    const adventure = JSON.parse(JSON.stringify(Save.load().adventure));
+    const reply = 'La Posada del Tejón se encuentra al norte de la Plaza del pozo.';
+
+    assert.equal(Session.addAction('Reviso el mapa de Elia', reply, {
+        category: 'investigation',
+        adventure,
+        spatialRelations: [
+            {
+                from: 'La Posada del Tejón',
+                relation: 'north_of',
+                to: 'Plaza del pozo',
+                evidence: reply
+            },
+            {
+                from: 'Puerto',
+                relation: 'east_of',
+                to: 'Plaza del pozo',
+                evidence: 'Puerto está al oeste de la Plaza del pozo.'
+            },
+            {
+                from: 'Bosque',
+                relation: 'north_of',
+                to: 'Plaza del pozo',
+                evidence: 'El bosque queda al norte de la Plaza del pozo.'
+            }
+        ]
+    }), true);
+
+    const world = Save.getGlobalWorld();
+    assert.equal(world.spatialRelations.length, 1);
+    assert.equal(world.connections.length, 0);
+    assert.ok(world.locations.some(item => item.name === 'La Posada del Tejón'));
+
+    Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia B',
+        state: { currentLocation: 'Puerto', visitedLocations: ['Puerto'], inventory: [] }
+    });
+    const secondSave = Save.load();
+    const atlas = WorldMap.getAtlas(world, secondSave.adventure.state, secondSave.adventure);
+
+    assert.equal(atlas.spatialRelations.length, 1);
+    assert.equal(atlas.spatialRelations[0].label, 'al norte de');
+    assert.equal(atlas.visited.some(item => item.name === 'La Posada del Tejón'), false);
+    assert.equal(atlas.known.some(item => item.name === 'La Posada del Tejón'), true);
 });
