@@ -1799,3 +1799,16 @@ Se ha comprobado el resultado de GitHub Actions asociado a la revisión de integ
 - La rama `integration/athun-multisave-main-20261116` continúa basada directamente en `main` (162 commits por delante, 0 por detrás en esta comprobación).
 
 El guardado transaccional y sus pruebas están presentes en la rama del PR #4. La validación automatizada de Chromium móvil simulado y escritorio está aprobada; sigue pendiente exclusivamente la comprobación táctil en Chrome sobre un dispositivo Android físico. El PR #4 permanece abierto y en borrador. No fusionar ni modificar `main` hasta completar esa comprobación.
+
+
+### Descubrimientos al explorar sin desplazarse — 17 de noviembre de 2026
+
+La revisión del flujo de exploración encontró que Session.addAction() solo aplicaba las zonas visibles declaradas por el narrador cuando cambiaba la ubicación. Por tanto, una observación, búsqueda o investigación realizada desde el mismo lugar podía descubrir una calle o un punto cercano en la narración, pero el atlas no lo registraba como visible.
+
+Se corrigió el flujo para aceptar una lista explícita de zonas visibles también cuando el protagonista permanece en el mismo lugar. Al cambiar de ubicación, si la respuesta no declara una nueva visibilidad, se limpia la visión anterior para mantener la niebla de guerra. Se limitan los nombres a 120 caracteres y la lista a doce entradas; no se inventan zonas ni conexiones.
+
+Se añadieron dos regresiones: una confirma que la exploración estacionaria revela las zonas declaradas sin mover al protagonista; la otra confirma que una nueva ubicación no hereda zonas visibles antiguas si el narrador no declara otras. El conocimiento compartido sigue limitado a los lugares declarados y la visita personal no cambia.
+
+Respaldos previos: app/js/game/session.js.bak-20261117-stationary-visibility, tests/storage.test.js.bak-20261117-stationary-visibility y docs/MAESTRO_COSMOPOLIS.md.bak-20261117-stationary-visibility.
+
+Estado: cambio publicado en la rama integration/athun-multisave-main-20261116. Pendiente la validación de GitHub Actions. PR #4 permanece abierto y sin fusionar; main no se modifica.
