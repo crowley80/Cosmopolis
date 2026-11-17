@@ -189,6 +189,7 @@ const Narrator = {
                     'Eres el director narrativo de Athun: el grimorio oscuro, una aventura de fantasía textual en español.',
                     'Responde como narrador literario: inmersivo, concreto, coherente y sin repetir fórmulas.',
                     'Athun es un grimorio consciente que acompaña al protagonista desde el comienzo y figura siempre en su inventario. Puede tener voluntad, personalidad y reaccionar de forma sutil cuando sea narrativamente apropiado, pero no debe hablar ni intervenir en cada acción.',
+                    'Athun es permanente e inseparable: nunca puede perderse, ser robado, vendido, intercambiado, transferido, regalado, abandonado, destruido, consumido ni retirado de la partida. Si el jugador intenta hacerlo, no narres que la acción tiene éxito ni alteres su pertenencia; explica con naturalidad por qué Athun permanece con él y continúa la escena.',
                     'Athun contiene un conocimiento extraordinario, pero su historia, sus motivos, sus recuerdos y la naturaleza de su vínculo con este protagonista se descubren gradualmente. No reveles esos secretos por iniciativa propia ni confundas el conocimiento del grimorio con lo que sabe el personaje.',
                     'La apertura de Valdebruma comienza en el Camino de entrada a Valdebruma, durante una mañana tranquila. Al principio el personaje solo sabe que ha llegado a un pueblo situado en un valle entre montañas. No conoce todavía a Elia, no sabe nada de una campana ni de un pozo y no debe recibir pistas sobre ellos hasta descubrirlos mediante sus acciones.',
                     'Respeta el estado phase y los descubrimientos registrados. No adelantes acontecimientos, personajes, lugares ni misterios que no hayan aparecido en escena o sido descubiertos.',
@@ -258,6 +259,36 @@ const Narrator = {
         if (change && Number.isInteger(change.delta) && change.delta >= -1 && change.delta <= 1) {
             const current = Number.isFinite(Number(athun.bond)) ? Number(athun.bond) : 0;
             athun.bond = Math.max(-100, Math.min(100, current + change.delta));
+        }
+    },
+
+    applyInventoryUpdates(state, result) {
+        if (!state || typeof state !== 'object' || !result || typeof result !== 'object') return;
+        state.inventory = Array.isArray(state.inventory) ? state.inventory : [];
+
+        (Array.isArray(result.itemsToRemove) ? result.itemsToRemove : []).slice(0, 10).forEach(item => {
+            if (typeof item !== 'string' || !item.trim()) return;
+            // Athun nunca puede perderse, venderse, transferirse ni destruirse.
+            if (item.trim().toLocaleLowerCase('es').includes('athun')) return;
+            const index = state.inventory.findIndex(existing =>
+                String(existing).toLocaleLowerCase('es') === item.trim().toLocaleLowerCase('es'));
+            if (index !== -1 && !String(state.inventory[index]).toLocaleLowerCase('es').includes('athun')) {
+                state.inventory.splice(index, 1);
+            }
+        });
+
+        (Array.isArray(result.itemsToAdd) ? result.itemsToAdd : []).slice(0, 10).forEach(item => {
+            if (typeof item !== 'string' || !item.trim()) return;
+            const clean = item.trim().slice(0, 120);
+            // El narrador no puede crear copias de Athun.
+            if (clean.toLocaleLowerCase('es').includes('athun')) return;
+            if (!state.inventory.some(existing => String(existing).toLocaleLowerCase('es') === clean.toLocaleLowerCase('es')) && state.inventory.length < 50) {
+                state.inventory.push(clean);
+            }
+        });
+
+        if (!state.inventory.some(item => String(item).toLocaleLowerCase('es').includes('athun'))) {
+            state.inventory.unshift('Athun — grimorio consciente');
         }
     },
 
@@ -462,29 +493,7 @@ const Narrator = {
                 }
             });
 
-            state.inventory = Array.isArray(state.inventory) ? state.inventory : [];
-            result.itemsToRemove.slice(0, 10).forEach(item => {
-                if (typeof item !== 'string' || !item.trim()) return;
-                // Athun es un elemento permanente: ninguna instrucción narrativa puede retirarlo.
-                if (item.trim().toLocaleLowerCase('es').includes('athun')) return;
-                const index = state.inventory.findIndex(existing =>
-                    String(existing).toLocaleLowerCase('es') === item.trim().toLocaleLowerCase('es'));
-                if (index !== -1 && !String(state.inventory[index]).toLocaleLowerCase('es').includes('athun')) {
-                    state.inventory.splice(index, 1);
-                }
-            });
-            result.itemsToAdd.slice(0, 10).forEach(item => {
-                if (typeof item !== 'string' || !item.trim()) return;
-                const clean = item.trim().slice(0, 120);
-                // El narrador no puede añadir una segunda instancia ni una copia de Athun.
-                if (clean.toLocaleLowerCase('es').includes('athun')) return;
-                if (!state.inventory.some(existing => String(existing).toLocaleLowerCase('es') === clean.toLocaleLowerCase('es')) && state.inventory.length < 50) {
-                    state.inventory.push(clean);
-                }
-            });
-            if (!state.inventory.some(item => String(item).toLocaleLowerCase('es').includes('athun'))) {
-                state.inventory.unshift('Athun — grimorio consciente');
-            }
+            this.applyInventoryUpdates(state, result);
             if (!state.athun || typeof state.athun !== 'object') {
                 state.athun = { id: 'athun', name: 'Athun', kind: 'Grimorio consciente', permanent: true, bond: 0, memories: [], revelations: [] };
             }
