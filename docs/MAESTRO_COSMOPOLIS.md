@@ -1511,3 +1511,10 @@ Se incorpora una capa de relaciones espaciales relativas sin asignar coordenadas
 Se crearon respaldos previos con el sufijo .bak-20261117-posiciones-relativas para app/js/game/map.js, app/js/game/session.js, app/js/game/narrator.js, app/js/core/save.js, app/js/app.js, tests/map.test.js, tests/storage.test.js, index.html y ambos documentos maestros.
 
 **Validación pendiente de esta tanda:** ejecutar GitHub Actions después de estos cambios. La prueba visual y táctil en Chrome para Android sigue pendiente; no se declara realizada.
+
+
+### CI 44045159576 — cartografía relativa — 17/11/2026
+
+GitHub Actions completó correctamente la comprobación de sintaxis JavaScript y la batería de pruebas: **32/32 aprobadas, 0 fallidas**. La ejecución cubre las nuevas relaciones espaciales verificadas, el filtrado de extremos desconocidos, la separación entre caminos y posiciones relativas y el aislamiento de visitas por protagonista. La primera ejecución de esta tanda detectó un defecto en una prueba de persistencia de Athun (se modificaba una copia y luego se volvía a cargar el registro original); se corrigió la prueba para guardar la misma instancia modificada y la nueva ejecución quedó limpia.
+
+La comprobación visual y táctil en Chrome/Android continúa pendiente.
