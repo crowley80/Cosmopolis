@@ -402,6 +402,7 @@ jobs:
             const contextProbe = await page.evaluate(() => {
               const saved = Save.load();
               const probe = JSON.parse(JSON.stringify(saved.adventure));
+              probe.state.eliaMet = true;
               probe.state.events = Array.from({ length: 30 }, (_, i) => 'Evento de prueba ' + i);
               probe.state.characters.Elia.memories = Array.from({ length: 12 }, (_, i) => 'Recuerdo de prueba ' + i);
               probe.state.characters.Elia.completedGoals = Array.from({ length: 10 }, (_, i) => ({ goal: 'Meta cumplida ' + i, reason: 'Motivo archivado ' + i }));
