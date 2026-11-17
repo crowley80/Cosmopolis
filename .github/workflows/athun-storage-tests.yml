@@ -5,9 +5,17 @@ on:
     branches:
       - main
       - feat/athun-multisave-world
+    paths:
+      - 'app/js/**'
+      - 'tests/**'
+      - '.github/workflows/athun-storage-tests.yml'
   pull_request:
     branches:
       - main
+    paths:
+      - 'app/js/**'
+      - 'tests/**'
+      - '.github/workflows/athun-storage-tests.yml'
 
 jobs:
   storage-tests:
