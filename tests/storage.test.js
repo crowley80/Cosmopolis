@@ -767,3 +767,28 @@ test('no sobrescribe un registro dañado del mundo compartido al intentar actual
     // La lectura degradada no debe convertir un registro ilegible en un mundo vacío persistido.
     assert.equal(localStorage.getItem(Save.worldKey), damagedWorld);
 });
+
+
+test('rechaza esquemas globales incoherentes sin normalizarlos sobre el registro original', () => {
+    const cases = [
+        { field: 'locations', value: 'no-es-un-array', update: () => Save.addGlobalLocation('Puerto', 'Ariadna') },
+        { field: 'connections', value: {}, update: () => Save.addGlobalConnection('Plaza', 'Puerto', 'Ariadna') },
+        { field: 'entities', value: [], update: () => Save.addGlobalEntity({ name: 'Elia' }, 'Ariadna') },
+        { field: 'facts', value: 'dato-inválido', update: () => Save.saveGlobalWorld({ facts: ['Nuevo dato'] }) },
+        { field: 'events', value: null, update: () => Save.saveGlobalWorld({ events: ['Nuevo evento'] }) },
+        { field: 'changes', value: {}, update: () => Save.saveGlobalWorld({ changes: ['Nuevo cambio'] }) },
+        { field: 'relationships', value: [], update: () => Save.saveGlobalWorld({ relationships: { elia: 1 } }) }
+    ];
+
+    for (const scenario of cases) {
+        const damagedWorld = JSON.stringify({ [scenario.field]: scenario.value, preserved: 'dato-original' });
+        localStorage.setItem(Save.worldKey, damagedWorld);
+
+        assert.equal(scenario.update(), false, 'Debe rechazarse el campo ' + scenario.field);
+        assert.equal(
+            localStorage.getItem(Save.worldKey),
+            damagedWorld,
+            'Debe conservarse byte por byte el registro con ' + scenario.field
+        );
+    }
+});
