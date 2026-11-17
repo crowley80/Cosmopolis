@@ -1788,3 +1788,14 @@ En la revisión posterior de la persistencia se detectó que `Save.save()` y `Sa
 Se añaden dos pruebas que simulan fallos al guardar y sustituir una partida y comprueban que el registro y el índice originales se conservan. Copias previas: `app/js/core/save.js.bak-20261117-atomic-slot-save`, `tests/storage.test.js.bak-20261117-atomic-slot-save` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-atomic-slot-save`.
 
 **Estado:** el cambio transaccional está publicado en la rama del PR #4; pendiente de la nueva suite de CI. El PR continúa abierto y en borrador. La validación táctil en Chrome sobre un Android físico sigue pendiente; no fusionar hasta completarla.
+
+
+### Validación posterior del guardado transaccional — 17 de noviembre de 2026
+
+Se ha comprobado el resultado de GitHub Actions asociado a la revisión de integración que contiene `writeSlotAndIndex()` y las dos pruebas de regresión de guardado/sustitución:
+
+- **Athun storage tests**, ejecución 535: completada correctamente.
+- **Visual preview**, ejecución 284: completada correctamente.
+- La rama `integration/athun-multisave-main-20261116` continúa basada directamente en `main` (162 commits por delante, 0 por detrás en esta comprobación).
+
+El guardado transaccional y sus pruebas están presentes en la rama del PR #4. La validación automatizada de Chromium móvil simulado y escritorio está aprobada; sigue pendiente exclusivamente la comprobación táctil en Chrome sobre un dispositivo Android físico. El PR #4 permanece abierto y en borrador. No fusionar ni modificar `main` hasta completar esa comprobación.
