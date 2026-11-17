@@ -1777,3 +1777,14 @@ La nueva ejecución visual 276 superó la regresión narrativa inicial y confirm
 Se han completado los campos `athunMemoriesToAdd`, `athunRevelationsToAdd` y `athunBondChange` en las dos respuestas de interacción y en la fábrica de respuestas del test de ciclo de objetivos. Los valores son neutros y no alteran la historia ni el vínculo. Se creó un segundo respaldo del workflow y del documento maestro antes de esta modificación: `.github/workflows/visual-preview.yml.bak-20261117-narrative-fixture2` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-narrative-fixture2`.
 
 **Estado:** suite de almacenamiento/sintaxis aprobada en la ejecución 521. La ejecución visual 276 reveló este segundo fixture incompleto; la corrección queda publicada y requiere una nueva ejecución completa. No se han modificado módulos de producción ni se ha fusionado PR #4.
+
+
+### Revalidación Playwright y guardado transaccional — 17 de noviembre de 2026
+
+La ejecución visual 279 terminó correctamente: Playwright superó las regresiones narrativas, el panel del mapa, historial, inventario, exploración, acciones, guardado/recarga, selector de dos protagonistas y aislamiento entre Ariadna y Darian en Chromium móvil simulado (390 × 844) y escritorio (1024 × 900). La suite de almacenamiento y sintaxis 526 también terminó correctamente.
+
+En la revisión posterior de la persistencia se detectó que `Save.save()` y `Save.replace()` escribían primero el registro de la partida y después actualizaban el índice. Si fallaba la segunda escritura, el método podía devolver error dejando el registro ya cambiado. Se centralizó la operación en `writeSlotAndIndex()`, que conserva registro e índice anteriores, verifica ambas escrituras y revierte el cambio si falla la actualización del índice. `updateIndexEntry()` ahora propaga los fallos de verificación.
+
+Se añaden dos pruebas que simulan fallos al guardar y sustituir una partida y comprueban que el registro y el índice originales se conservan. Copias previas: `app/js/core/save.js.bak-20261117-atomic-slot-save`, `tests/storage.test.js.bak-20261117-atomic-slot-save` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-atomic-slot-save`.
+
+**Estado:** el cambio transaccional está publicado en la rama del PR #4; pendiente de la nueva suite de CI. El PR continúa abierto y en borrador. La validación táctil en Chrome sobre un Android físico sigue pendiente; no fusionar hasta completarla.
