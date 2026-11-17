@@ -544,7 +544,7 @@ test('el vínculo, recuerdos y revelaciones de Athun son independientes por prot
     });
     const second = Save.createSlot({ name: 'Darian' }, {
         title: 'Historia de Darian',
-        state: { inventory: [], athun: { bond: 2, memories: ['El camino del norte'], revelations: ['Una voz lejana'], bondHistory: [{ delta: -1, reason: 'Darian desconfió de una advertencia' }] } }
+        state: { inventory: [], athun: { bond: 2, memories: ['El camino del norte'], revelations: ['Una voz lejana'], bondHistory: [{ delta: -1, reason: 'Darian desconfió de una advertencia' }], bondHistory: [{ delta: -1, reason: 'Darian desconfió de una advertencia' }] } }
     });
 
     assert.ok(first);
