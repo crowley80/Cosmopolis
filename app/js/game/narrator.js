@@ -111,6 +111,16 @@ const Narrator = {
             },
             persistentWorld: {
                 locations: shortList(world.locations, 30),
+                connections: (Array.isArray(world.connections) ? world.connections : []).slice(-40).map(item => ({
+                    from: String(item && item.from || '').slice(0, 120),
+                    to: String(item && item.to || '').slice(0, 120)
+                })),
+                spatialRelations: (Array.isArray(world.spatialRelations) ? world.spatialRelations : []).slice(-40).map(item => ({
+                    from: String(item && item.from || '').slice(0, 120),
+                    relation: String(item && item.relation || ''),
+                    to: String(item && item.to || '').slice(0, 120),
+                    evidence: String(item && item.evidence || '').slice(0, 240)
+                })),
                 entities: Object.fromEntries(Object.entries(world.entities || {}).slice(-30).map(([key, entity]) => [
                     key,
                     {
@@ -158,6 +168,7 @@ const Narrator = {
                     'event: una frase factual que registre lo ocurrido.',
                     'location: ubicación actual; conserva la existente si no hay desplazamiento.',
                     'visibleLocations: lugares que el personaje puede ver claramente desde su posición actual. Recalcula la lista en cada respuesta; incluye solo nombres explícitos del contexto o de la escena, nunca inventes lugares, rutas ni coordenadas. No incluyas destinos lejanos ni sitios solo conocidos por rumores. Usa una lista vacía si no hay otros lugares visibles.',
+                    'spatialRelations: relaciones de posición relativa que reply establezca explícitamente en una frase. Solo usa north_of, south_of, east_of, west_of, inside o adjacent_to cuando la frase diga claramente esa relación; from debe aparecer antes de la expresión relacional y to después. evidence debe ser un fragmento literal de reply que incluya ambos nombres y la expresión. No deduzcas orientación, interioridad, proximidad, coordenadas, distancias ni rutas a partir del movimiento o de los nombres. Devuelve una lista vacía si la narración no establece una relación espacial inequívoca. Los caminos recorridos se registran por separado.',
                     'factsToAdd y cluesToAdd: solo datos nuevos realmente descubiertos, sin duplicados.',
                     'relationshipChanges: cambios justificados de confianza hacia personajes registrados, con character, delta entre -1 y 1 y reason breve. Usa cambios pequeños y no alteres relaciones sin una interacción significativa.',
                     'itemsToAdd: objetos que el personaje obtiene realmente y puede llevar consigo; no incluyas objetos solo vistos o examinados.',
@@ -199,6 +210,21 @@ const Narrator = {
                 },
                 location: { type: 'string' },
                 visibleLocations: { type: 'array', items: { type: 'string' } },
+                spatialRelations: {
+                    type: 'array',
+                    maxItems: 12,
+                    items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        properties: {
+                            from: { type: 'string' },
+                            relation: { type: 'string', enum: ['north_of', 'south_of', 'east_of', 'west_of', 'inside', 'adjacent_to'] },
+                            to: { type: 'string' },
+                            evidence: { type: 'string' }
+                        },
+                        required: ['from', 'relation', 'to', 'evidence']
+                    }
+                },
                 factsToAdd: { type: 'array', items: { type: 'string' } },
                 cluesToAdd: { type: 'array', items: { type: 'string' } },
                 relationshipChanges: {
@@ -286,7 +312,7 @@ const Narrator = {
                     }
                 }
             },
-            required: ['reply', 'event', 'category', 'location', 'visibleLocations', 'factsToAdd', 'cluesToAdd', 'relationshipChanges', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd', 'charactersToAdd', 'characterUpdates', 'characterActions', 'goalUpdates', 'time', 'day']
+            required: ['reply', 'event', 'category', 'location', 'visibleLocations', 'spatialRelations', 'factsToAdd', 'cluesToAdd', 'relationshipChanges', 'itemsToAdd', 'itemsToRemove', 'characterMemoriesToAdd', 'charactersToAdd', 'characterUpdates', 'characterActions', 'goalUpdates', 'time', 'day']
         };
 
         const controller = new AbortController();
@@ -321,6 +347,7 @@ const Narrator = {
             if (!result || typeof result.reply !== 'string' || !result.reply.trim() ||
                 typeof result.event !== 'string' || typeof result.location !== 'string' ||
                 !Array.isArray(result.visibleLocations) ||
+                !Array.isArray(result.spatialRelations) ||
                 !Array.isArray(result.factsToAdd) || !Array.isArray(result.cluesToAdd) ||
                 !Array.isArray(result.itemsToAdd) || !Array.isArray(result.itemsToRemove) ||
                 !Array.isArray(result.characterMemoriesToAdd) ||
@@ -344,6 +371,9 @@ const Narrator = {
                 .filter(name => typeof name === 'string' && name.trim())
                 .slice(0, 12)
                 .map(name => name.trim().slice(0, 120));
+            const spatialRelations = typeof WorldMap !== 'undefined'
+                ? WorldMap.normalizeSpatialRelations(result.spatialRelations, result.reply)
+                : [];
             state.knownFacts = Array.isArray(state.knownFacts) ? state.knownFacts : [];
             state.clues = Array.isArray(state.clues) ? state.clues : [];
             state.events = Array.isArray(state.events) ? state.events : [];
@@ -582,6 +612,7 @@ const Narrator = {
                 adventure: updated,
                 state,
                 visibleLocations: state.visibleLocations,
+                spatialRelations,
                 createdAt: new Date().toISOString(),
                 actionNumber: previousActions.length + 1,
                 aiUsed: true
