@@ -137,6 +137,17 @@ const Athun = {
                     ).join('') + '</ul>'
                     : '<p class="atlas-note">Todavía no has recorrido ningún camino entre dos zonas registradas.</p>'}
             </section>
+            <section class="atlas-section">
+                <h3>Posiciones relativas confirmadas</h3>
+                <p class="atlas-note">Estas referencias proceden de frases explícitas de la narración. No representan coordenadas ni distancias.</p>
+                ${atlas.spatialRelations.length
+                    ? '<ul class="atlas-list">' + atlas.spatialRelations.map(relation =>
+                        '<li class="atlas-place atlas-spatial"><span class="atlas-place-name">' +
+                        this.escape(relation.from) + ' ' + this.escape(relation.label) + ' ' + this.escape(relation.to) +
+                        '</span><small class="atlas-note">«' + this.escape(relation.evidence) + '»</small></li>'
+                    ).join('') + '</ul>'
+                    : '<p class="atlas-note">La historia todavía no ha establecido una posición relativa verificable.</p>'}
+            </section>
             <p class="atlas-frontier"><span aria-hidden="true">✧</span> Más allá de estas páginas, la niebla todavía oculta el territorio.</p>
             <h3>Pistas reunidas</h3><ul class="tool-list">${clues}</ul>
         `;
