@@ -8,7 +8,7 @@ const Save = {
     worldKey: 'athun_shared_world_v1',
 
     emptyWorld() {
-        return { locations: [], connections: [], entities: {}, facts: [], events: [], changes: [], relationships: {} };
+        return { locations: [], connections: [], spatialRelations: [], entities: {}, facts: [], events: [], changes: [], relationships: {} };
     },
 
     readJSON(key) {
@@ -403,6 +403,7 @@ const Save = {
         const world = this.readJSON(this.worldKey) || this.emptyWorld();
         world.locations = Array.isArray(world.locations) ? world.locations : [];
         world.connections = Array.isArray(world.connections) ? world.connections : [];
+        world.spatialRelations = Array.isArray(world.spatialRelations) ? world.spatialRelations : [];
         world.entities = world.entities && typeof world.entities === 'object' ? world.entities : {};
         world.facts = Array.isArray(world.facts) ? world.facts : [];
         world.events = Array.isArray(world.events) ? world.events : [];
@@ -460,6 +461,70 @@ const Save = {
             return this.writeVerified(this.worldKey, world);
         } catch (error) {
             console.error('No se pudo registrar el tramo recorrido:', error);
+            return false;
+        }
+    },
+
+
+    addGlobalSpatialRelation(relation, discoveredBy) {
+        if (!relation || typeof relation !== 'object') return false;
+        const from = String(relation.from || '').trim().slice(0, 120);
+        const to = String(relation.to || '').trim().slice(0, 120);
+        const type = String(relation.relation || '');
+        const evidence = String(relation.evidence || '').trim().slice(0, 240);
+        const phrases = {
+            north_of: ['al norte de', 'norte de'],
+            south_of: ['al sur de', 'sur de'],
+            east_of: ['al este de', 'este de'],
+            west_of: ['al oeste de', 'oeste de'],
+            inside: ['dentro de', 'en el interior de', 'forma parte de', 'pertenece a'],
+            adjacent_to: ['junto a', 'al lado de', 'contiguo a', 'colinda con']
+        }[type];
+        const normalize = value => String(value || '').normalize('NFD')
+            .replace(/[\\u0300-\\u036f]/g, '').toLocaleLowerCase('es');
+        const text = normalize(evidence);
+        const fromName = normalize(from);
+        const toName = normalize(to);
+        const fromAt = text.indexOf(fromName);
+        const toAt = fromAt < 0 ? -1 : text.indexOf(toName, fromAt + fromName.length);
+        if (!from || !to || !evidence || !phrases || !fromName || fromName === toName ||
+            fromAt < 0 || toAt < 0 ||
+            !phrases.some(phrase => {
+                const at = text.indexOf(normalize(phrase), fromAt + fromName.length);
+                return at > fromAt && at < toAt;
+            })) return false;
+
+        const world = this.getGlobalWorld();
+        const addEndpoint = name => {
+            const key = normalize(name);
+            if (!world.locations.some(item =>
+                normalize(typeof item === 'string' ? item : item && item.name) === key
+            )) {
+                world.locations.push({
+                    name,
+                    discoveredBy: String(discoveredBy || '').slice(0, 80),
+                    discoveredAt: new Date().toISOString()
+                });
+            }
+        };
+        addEndpoint(from);
+        addEndpoint(to);
+        const exists = world.spatialRelations.some(item =>
+            item && normalize(item.from) === fromName &&
+            item.relation === type && normalize(item.to) === toName
+        );
+        if (!exists) world.spatialRelations.push({
+            from,
+            relation: type,
+            to,
+            evidence,
+            discoveredBy: String(discoveredBy || '').slice(0, 80),
+            discoveredAt: new Date().toISOString()
+        });
+        try {
+            return this.writeVerified(this.worldKey, world);
+        } catch (error) {
+            console.error('No se pudo registrar la posición relativa:', error);
             return false;
         }
     },
