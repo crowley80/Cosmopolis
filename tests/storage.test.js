@@ -927,3 +927,29 @@ test('Athun sanea recuerdos, revelaciones, vínculo e historial antes de aplicar
     assert.deepEqual(state.athun.bondHistory, [{ delta: -1, reason: 'Motivo válido' }]);
     assert.equal(state.athun.permanent, true);
 });
+
+test('el contexto del narrador filtra datos relacionales dañados de Athun antes de enviarlos al modelo', () => {
+    const adventure = {
+        title: 'Memoria dañada',
+        state: {
+            currentLocation: 'Valdebruma',
+            inventory: ['Athun — grimorio consciente'],
+            athun: {
+                bond: 12,
+                memories: [' Recuerdo limpio ', { secreto: 'objeto no válido' }, '', 'x'.repeat(400)],
+                revelations: [null, ' Revelación limpia ', 23],
+                bondHistory: [
+                    { delta: 1, reason: 'Motivo válido' },
+                    { delta: 1, reason: { texto: 'no válido' } }
+                ]
+            }
+        }
+    };
+    const context = JSON.parse(Narrator.buildMessages('Abro el grimorio', { name: 'Ariadna' }, adventure, [])[1].content);
+
+    assert.deepEqual(context.currentAdventure.athun.memories, ['Recuerdo limpio', 'x'.repeat(240)]);
+    assert.deepEqual(context.currentAdventure.athun.revelations, ['Revelación limpia']);
+    assert.deepEqual(context.currentAdventure.athun.bondHistory, [{ delta: 1, reason: 'Motivo válido' }]);
+    assert.deepEqual(context.currentAdventure.state.athun, context.currentAdventure.athun);
+    assert.equal(JSON.stringify(context).includes('objeto no válido'), false);
+});
