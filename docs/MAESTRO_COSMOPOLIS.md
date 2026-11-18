@@ -2263,3 +2263,16 @@ Decisión confirmada por el usuario: desarrollar Athun: el grimorio oscuro sin r
 - El usuario debe poder iniciar una partida sin conocer de antemano el mundo, el mapa ni los acontecimientos futuros.
 
 Este protocolo prevalece sobre cualquier práctica anterior de presentar propuestas de regiones, ciudades, personajes o misterios como contenido visible durante el desarrollo.
+
+### Evidencia narrativa en cambios de objetivos — 18/11/2026
+
+Se endurece la validación de actualizaciones persistentes de objetivos de personajes:
+
+- `filterGoalUpdates()` recibe ahora el texto narrativo de la respuesta.
+- Cada cambio exige que el personaje esté registrado y que el motivo sea un fragmento literal suficientemente concreto de una misma frase de la narración que mencione a ese personaje.
+- Se descartan los cambios de objetivo cuyo motivo solo aparezca en el JSON estructurado, no en la escena narrada.
+- El prompt del narrador exige que `reason` cite evidencia literal de `reply`.
+- Se amplían las pruebas para cubrir cambios respaldados, personajes desconocidos, estados inválidos, motivos vacíos y cambios inventados sin evidencia narrativa.
+- Se crearon respaldos previos de `app/js/game/narrator.js` y `tests/storage.test.js` con el sufijo `bak-20261118-goal-evidence`.
+
+**Estado de validación:** cambios guardados en la rama `integration/athun-multisave-main-20261116`. La suite completa de GitHub Actions todavía no ha devuelto una ejecución asociada a este último commit; no se declara superada. La validación táctil en Chrome/Android físico sigue pendiente. No se modifica `main`, no se fusiona el PR #4 y no se toca ningún guardado del dispositivo.
