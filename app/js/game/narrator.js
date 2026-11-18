@@ -347,7 +347,7 @@ const Narrator = {
                 .toLocaleLowerCase('es')
                 .normalize('NFD')
                 .replace(/[\u0300-\u036f]/g, '');
-            const narrativeEvidence = normalizeEvidence(result.reply);
+            const narrativeEvidence = normalizeEvidence(result.reply + ' ' + result.characterActions.slice(0, 2).map(entry => entry && typeof entry.action === 'string' ? entry.action : '').join(' '));
             const isNarrativelySupported = value => {
                 if (!narrativeLocationAccepted) return false;
                 const words = normalizeEvidence(value).match(/[a-z0-9]{4,}/g) || [];
