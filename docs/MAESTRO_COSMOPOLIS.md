@@ -2159,3 +2159,30 @@ Se incorpora una capa narrativa derivada, no persistida, para que la personalida
 - El prompt pide que esa información matice gradualmente la voz, la iniciativa y la vulnerabilidad del grimorio, sin convertir una puntuación en una personalidad rígida ni forzar emociones en cada escena.
 - Los hechos y recuerdos concretos prevalecen sobre las etiquetas orientativas; se mantienen intactas la protección permanente de Athun y las reglas de descubrimiento gradual.
 - Se añaden pruebas para evolución hacia la cautela y hacia una familiaridad profunda, tendencia reciente, anclas de memoria y presencia del perfil en el contexto narrativo.
+
+
+## REVISIÓN DEL ESTADO DE INTEGRACIÓN Y LÍMITES DE DESCUBRIMIENTO — 18 DE NOVIEMBRE DE 2026
+
+### Estado del PR #4 antes de esta tanda
+- Rama: \`integration/athun-multisave-main-20261116\`.
+- Revisión: \`f3b58592199fe1bb7bfa0569062d3c30311725df\`.
+- PR #4 abierto y en borrador, con base \`main\`; GitHub lo informa como integrable (\`mergeable_state: clean\`), 320 commits por delante y ninguno por detrás.
+- Comprobaciones de esa revisión: «Athun storage tests» (ejecución 44265906015) y «Visual preview» (ejecución 44265906111), ambas correctas. No hay revisiones ni hilos de comentarios pendientes.
+- PR #3 sigue abierto como propuesta anterior de partidas/atlas; PR #1 sigue abierto como propuesta narrativa independiente. Ninguno se fusiona en esta tanda.
+- Continúa pendiente la prueba táctil real en Chrome sobre Android físico. Las pruebas Playwright móvil/escritorio no sustituyen esa comprobación.
+- No se modifica \`main\`, no se fusiona ningún PR y no se accede a los guardados del dispositivo.
+
+### Hallazgo: el JSON podía descubrir cosas que el texto no contaba
+La revisión de \`Narrator.respond()\` detectó que \`factsToAdd\`, \`cluesToAdd\` y \`charactersToAdd\` se aplicaban sin comprobar que el descubrimiento estuviera realmente narrado. Una respuesta podía registrar a Elia o marcar la campana como descubierta aunque el texto visible no la mencionara.
+
+### Corrección aplicada en esta tanda
+- Los hechos y pistas solo se guardan cuando su frase aparece literalmente en \`reply\`, tras normalizar mayúsculas, tildes y puntuación.
+- Las marcas de descubrimiento del pozo y la campana se derivan únicamente de afirmaciones respaldadas por el texto; las afirmaciones negativas no activan esas marcas.
+- Cada personaje nuevo debe aportar \`evidence\`: fragmento literal de \`reply\` que contiene su nombre y una señal de presencia o interacción.
+- La ubicación declarada del personaje debe coincidir con la ubicación actual de la escena. Se rechazan rumores, personajes de otra zona y cualquier intento de registrar a Athun como personaje duplicado.
+- \`eliaMet\` solo cambia a verdadero cuando el encuentro de Elia supera esas comprobaciones.
+- Se corrigieron los fixtures de Playwright para que los descubrimientos, el encuentro con Elia y la entrada de Tomás aparezcan también en el texto narrativo, no solo en el JSON estructurado.
+
+### Validación
+- Se añadieron regresiones para descubrimientos incluidos únicamente en el JSON, afirmaciones literales válidas, rumores, personajes fuera de escena, duplicación de Athun y afirmaciones negativas.
+- La validación remota de esta revisión queda pendiente de las ejecuciones de GitHub Actions. No se declara todavía aprobada.

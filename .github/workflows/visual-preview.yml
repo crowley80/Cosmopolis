@@ -161,12 +161,12 @@ jobs:
 
               const originalFetch = window.fetch;
               const fakeNarrative = {
-                reply: 'Llegas a Plaza del pozo. Athun permanece contigo.',
+                reply: 'Llegas a la Plaza del pozo y descubres un viejo pozo de piedra. Desde el fondo llega una campanada apagada. Una mujer se acerca y se presenta: «Me llamo Elia; soy cartógrafa». Athun permanece contigo.',
                 event: 'El grimorio ha permanecido en el inventario.',
                 category: 'movement',
                 location: 'Plaza del pozo',
                 visibleLocations: [],
-                factsToAdd: ['Hay un pozo antiguo en la plaza.', 'Una campana ha sonado desde el pozo.'],
+                factsToAdd: ['Llegas a la Plaza del pozo y descubres un viejo pozo de piedra.', 'Desde el fondo llega una campanada apagada.'],
                 cluesToAdd: [],
                 relationshipChanges: [],
                 itemsToAdd: [],
@@ -175,7 +175,7 @@ jobs:
                 athunRevelationsToAdd: [],
                 athunBondChange: { delta: 0, reason: 'La observación no altera el vínculo.' },
                 characterMemoriesToAdd: [],
-                charactersToAdd: [{ name: 'Elia', role: 'Cartógrafa', location: 'Plaza del pozo', attitude: 'Cautelosa', goal: 'Investigar los mapas', memory: 'Ha conocido al protagonista.' }],
+                charactersToAdd: [{ name: 'Elia', role: 'Cartógrafa', location: 'Plaza del pozo', attitude: 'Cautelosa', goal: 'Investigar los mapas', memory: 'Ha conocido al protagonista.', evidence: 'Una mujer se acerca y se presenta: «Me llamo Elia; soy cartógrafa».' }],
                 characterUpdates: [],
                 characterActions: [],
                 goalUpdates: [],
@@ -226,13 +226,13 @@ jobs:
                 await route.fulfill({ status: 200, headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'ok' }) });
               } else {
                 const result = narrativeCall++ === 0 ? {
-                  reply: 'La observación revela una pequeña marca de cobre entre las piedras. Elia se inclina para examinar la marca de cobre junto a Ariadna.',
+                  reply: 'La observación revela una pequeña marca de cobre entre las piedras. Junto a ella encuentras un medallón de cobre. Elia se inclina para examinar la marca de cobre junto a Ariadna. Tomás se acerca desde la entrada de la plaza y observa el hallazgo.',
                   event: 'Ariadna ha encontrado un medallón de cobre junto al pozo.',
                   category: 'investigation',
                   location: 'Plaza del pozo',
                 visibleLocations: [],
-                  factsToAdd: ['Hay una marca reciente entre las piedras.'],
-                  cluesToAdd: ['Un medallón de cobre estaba junto al pozo.'],
+                  factsToAdd: ['La observación revela una pequeña marca de cobre entre las piedras.'],
+                  cluesToAdd: ['Junto a ella encuentras un medallón de cobre.'],
                   relationshipChanges: [],
                   goalUpdates: [{ character: 'Elia', goal: 'Averiguar por qué suenan las campanas.', status: 'progress', reason: 'La marca recién descubierta aporta una pista nueva.' }],
                   itemsToAdd: ['Medallón de cobre'],
@@ -240,7 +240,7 @@ jobs:
                   athunMemoriesToAdd: [],
                   athunRevelationsToAdd: [],
                   athunBondChange: { delta: 0, reason: 'La acción no modifica el vínculo.' },
-                  charactersToAdd: [{ name: 'Tomás', role: 'Vecino', location: 'Plaza del pozo', attitude: 'Desconfiado', memory: 'Tomás vio a Ariadna encontrar el medallón.', goal: 'Proteger a los vecinos de los peligros que salgan del pozo.' }],
+                  charactersToAdd: [{ name: 'Tomás', role: 'Vecino', location: 'Plaza del pozo', attitude: 'Desconfiado', memory: 'Tomás vio a Ariadna encontrar el medallón.', goal: 'Proteger a los vecinos de los peligros que salgan del pozo.', evidence: 'Tomás se acerca desde la entrada de la plaza y observa el hallazgo.' }],
                   characterUpdates: [{ character: 'Elia', location: 'Plaza del pozo', attitude: 'Más confiada' }],
                   characterActions: [{ character: 'Elia', action: 'Elia se inclina para examinar la marca de cobre junto a Ariadna.' }],
                   characterMemoriesToAdd: [{ character: 'Elia', memory: 'Ariadna encontró un medallón de cobre junto al pozo.' }],
@@ -252,7 +252,7 @@ jobs:
                   category: 'offer',
                   location: 'Plaza del pozo',
                 visibleLocations: [],
-                  factsToAdd: ['Elia ha recibido el medallón de cobre.'],
+                  factsToAdd: ['Entregas el medallón a Elia.'],
                   cluesToAdd: [],
                   goalUpdates: [
                     { character: 'Tomás', goal: 'Proteger a los vecinos de los peligros que salgan del pozo.', status: 'blocked', reason: 'La generosidad de Ariadna le anima a implicarse en la seguridad del pueblo.' },

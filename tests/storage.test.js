@@ -1110,3 +1110,127 @@ test('las actualizaciones de objetivos exigen personaje conocido, estado válido
     ]);
     assert.deepEqual(Narrator.filterGoalUpdates('no es una lista', state), []);
 });
+
+
+test('el narrador no confirma hechos, pistas ni encuentros que solo aparecen en el JSON', () => {
+    const state = {
+        currentLocation: 'Camino de entrada a Valdebruma',
+        eliaMet: false,
+        knownFacts: [],
+        clues: [],
+        characters: {}
+    };
+
+    Narrator.applyDiscoveryUpdates(state, {
+        reply: 'La mañana sigue su curso y el camino permanece tranquilo.',
+        factsToAdd: ['Hay un viejo pozo de piedra en la plaza.'],
+        cluesToAdd: ['Una campanada llega desde el pozo.'],
+        charactersToAdd: [{
+            name: 'Elia',
+            role: 'Cartógrafa',
+            location: 'Camino de entrada a Valdebruma',
+            attitude: 'Cautelosa',
+            memory: 'Ha conocido al protagonista.',
+            evidence: 'Elia se acerca y se presenta.'
+        }]
+    });
+
+    assert.deepEqual(state.knownFacts, []);
+    assert.deepEqual(state.clues, []);
+    assert.equal(state.wellDiscovered, undefined);
+    assert.equal(state.bellDiscovered, undefined);
+    assert.equal(state.eliaMet, false);
+    assert.deepEqual(state.characters, {});
+});
+
+
+test('el narrador registra solo afirmaciones literales y encuentros presenciales en la ubicación actual', () => {
+    const reply = 'Llegas a la Plaza del pozo y descubres un viejo pozo de piedra. Desde el fondo llega una campanada apagada. Una mujer se acerca y se presenta: «Me llamo Elia; soy cartógrafa». Marta se acerca desde Calle Mayor y te saluda. Oyes hablar de Tomás en la posada.';
+    const state = {
+        currentLocation: 'Plaza del pozo',
+        eliaMet: false,
+        knownFacts: [],
+        clues: [],
+        characters: {}
+    };
+
+    Narrator.applyDiscoveryUpdates(state, {
+        reply,
+        factsToAdd: [
+            'Llegas a la Plaza del pozo y descubres un viejo pozo de piedra.',
+            'La campana ha abierto una puerta secreta.'
+        ],
+        cluesToAdd: [
+            'Desde el fondo llega una campanada apagada.',
+            'Una puerta secreta se abre bajo el pozo.'
+        ],
+        charactersToAdd: [
+            {
+                name: 'Elia',
+                role: 'Cartógrafa',
+                location: 'Plaza del pozo',
+                attitude: 'Cautelosa',
+                memory: 'Se ha presentado al protagonista.',
+                evidence: 'Una mujer se acerca y se presenta: «Me llamo Elia; soy cartógrafa».'
+            },
+            {
+                name: 'Marta',
+                role: 'Comerciante',
+                location: 'Calle Mayor',
+                attitude: 'Amable',
+                memory: 'Ha saludado al protagonista.',
+                evidence: 'Marta se acerca desde Calle Mayor y te saluda.'
+            },
+            {
+                name: 'Tomás',
+                role: 'Vecino',
+                location: 'Plaza del pozo',
+                attitude: 'Reservado',
+                memory: 'El protagonista ha oído hablar de él.',
+                evidence: 'Oyes hablar de Tomás en la posada.'
+            },
+            {
+                name: 'Athun',
+                role: 'Grimorio',
+                location: 'Plaza del pozo',
+                attitude: 'Consciente',
+                memory: 'Permanece con el protagonista.',
+                evidence: 'Athun permanece contigo.'
+            }
+        ]
+    });
+
+    assert.deepEqual(state.knownFacts, [
+        'Llegas a la Plaza del pozo y descubres un viejo pozo de piedra.'
+    ]);
+    assert.deepEqual(state.clues, [
+        'Desde el fondo llega una campanada apagada.'
+    ]);
+    assert.equal(state.wellDiscovered, true);
+    assert.equal(state.bellDiscovered, true);
+    assert.equal(state.eliaMet, true);
+    assert.deepEqual(Object.keys(state.characters), ['Elia']);
+    assert.equal(state.characters.Elia.location, 'Plaza del pozo');
+});
+
+
+test('las afirmaciones negativas no marcan el descubrimiento del pozo ni de la campana', () => {
+    const state = {
+        currentLocation: 'Camino de entrada a Valdebruma',
+        knownFacts: [],
+        clues: [],
+        characters: {}
+    };
+
+    Narrator.applyDiscoveryUpdates(state, {
+        reply: 'No hay ningún pozo en la plaza y no se oye ninguna campana.',
+        factsToAdd: ['No hay ningún pozo en la plaza.'],
+        cluesToAdd: ['No se oye ninguna campana.'],
+        charactersToAdd: []
+    });
+
+    assert.equal(state.knownFacts.length, 1);
+    assert.equal(state.clues.length, 1);
+    assert.equal(state.wellDiscovered, undefined);
+    assert.equal(state.bellDiscovered, undefined);
+});

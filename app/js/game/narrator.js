@@ -33,6 +33,134 @@ const Narrator = {
         return this.healthAvailable;
     },
 
+    normalizeNarrativeText(value) {
+        return String(value || '')
+            .toLocaleLowerCase('es')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, ' ')
+            .trim();
+    },
+
+    filterNarrativeClaims(entries, reply) {
+        const normalizedReply = ' ' + this.normalizeNarrativeText(reply) + ' ';
+        const accepted = [];
+        const seen = new Set();
+
+        (Array.isArray(entries) ? entries : []).slice(0, 5).forEach(entry => {
+            if (typeof entry !== 'string') return;
+            const clean = entry.trim().slice(0, 300);
+            const key = this.normalizeNarrativeText(clean);
+            if (!key || key.length < 4 || seen.has(key) ||
+                !normalizedReply.includes(' ' + key + ' ')) return;
+            seen.add(key);
+            accepted.push(clean);
+        });
+
+        return accepted;
+    },
+
+    filterNewCharacters(entries, reply, state) {
+        const currentLocation = this.normalizeNarrativeText(state && state.currentLocation);
+        const normalizedReply = ' ' + this.normalizeNarrativeText(reply) + ' ';
+        const presenceCues = [
+            'se acerca', 'se presenta', 'aparece', 'entra', 'llega',
+            'te saluda', 'te habla', 'te responde', 'te mira', 'te observa',
+            'se inclina', 'se dirige a ti', 'camina hacia ti', 'se vuelve hacia ti',
+            'te pregunta', 'te ofrece ayuda', 'se sienta a tu lado', 'se pone a tu lado'
+        ];
+        const accepted = [];
+        const seen = new Set();
+
+        (Array.isArray(entries) ? entries : []).slice(0, 5).forEach(entry => {
+            if (!entry || typeof entry.name !== 'string' ||
+                typeof entry.location !== 'string' || typeof entry.evidence !== 'string') return;
+
+            const name = entry.name.trim().slice(0, 80);
+            const nameKey = this.normalizeNarrativeText(name);
+            const location = entry.location.trim().slice(0, 120);
+            const locationKey = this.normalizeNarrativeText(location);
+            const evidence = entry.evidence.trim();
+            const evidenceKey = this.normalizeNarrativeText(evidence);
+            if (!nameKey || nameKey.includes('athun') || seen.has(nameKey)) return;
+            if (!currentLocation || locationKey !== currentLocation) return;
+            if (!evidence || evidence.length > 240 || !evidenceKey) return;
+            if (!normalizedReply.includes(' ' + evidenceKey + ' ')) return;
+            if (!(' ' + evidenceKey + ' ').includes(' ' + nameKey + ' ')) return;
+            if (!normalizedReply.includes(' ' + nameKey + ' ')) return;
+            if (!presenceCues.some(cue => evidenceKey.includes(cue))) return;
+
+            const role = typeof entry.role === 'string' ? entry.role.trim().slice(0, 100) : '';
+            const attitude = typeof entry.attitude === 'string' ? entry.attitude.trim().slice(0, 100) : '';
+            const memory = typeof entry.memory === 'string' ? entry.memory.trim().slice(0, 300) : '';
+            if (!role || !attitude || !memory) return;
+
+            accepted.push({
+                name,
+                role,
+                location,
+                attitude,
+                memory,
+                goal: typeof entry.goal === 'string' ? entry.goal.trim().slice(0, 240) : '',
+                evidence
+            });
+            seen.add(nameKey);
+        });
+
+        return accepted;
+    },
+
+    applyDiscoveryUpdates(state, result) {
+        if (!state || typeof state !== 'object' || !result || typeof result !== 'object') return;
+
+        state.knownFacts = Array.isArray(state.knownFacts) ? state.knownFacts : [];
+        state.clues = Array.isArray(state.clues) ? state.clues : [];
+        state.characters = state.characters && typeof state.characters === 'object' && !Array.isArray(state.characters)
+            ? state.characters
+            : {};
+
+        const addClaim = (target, claim) => {
+            const key = this.normalizeNarrativeText(claim);
+            if (!key) return;
+            if (!target.some(item => this.normalizeNarrativeText(item) === key)) target.push(claim);
+
+            const negativeWell = /(?:no hay (?:ningun )?pozo|no existe (?:ningun )?pozo|no ves (?:el )?pozo|no encuentras (?:el )?pozo|no conoces (?:el )?pozo|ningun pozo)/.test(key);
+            const negativeBell = /(?:no hay (?:ninguna )?campana|no existe (?:ninguna )?campana|no suena (?:ninguna )?campana|no ha sonado (?:ninguna )?campana|no se oye (?:ninguna )?campana|no has oido (?:ninguna )?campana|ninguna campanada)/.test(key);
+            if (key.includes('pozo') && !negativeWell) state.wellDiscovered = true;
+            if ((key.includes('campana') || key.includes('campanada')) && !negativeBell) state.bellDiscovered = true;
+        };
+
+        this.filterNarrativeClaims(result.factsToAdd, result.reply).forEach(fact => addClaim(state.knownFacts, fact));
+        this.filterNarrativeClaims(result.cluesToAdd, result.reply).forEach(clue => addClaim(state.clues, clue));
+
+        this.filterNewCharacters(result.charactersToAdd, result.reply, state).forEach(entry => {
+            const nameKey = this.normalizeNarrativeText(entry.name);
+            if (nameKey === 'elia') {
+                state.eliaMet = true;
+                state.eliaTrust = Number(state.eliaTrust) || 0;
+            }
+
+            const exists = Object.keys(state.characters).some(key =>
+                this.normalizeNarrativeText(key) === nameKey ||
+                this.normalizeNarrativeText(state.characters[key] && state.characters[key].name) === nameKey
+            );
+            if (exists || Object.keys(state.characters).length >= 50) return;
+
+            state.characters[entry.name] = {
+                name: entry.name,
+                role: entry.role,
+                location: entry.location,
+                attitude: entry.attitude,
+                personalGoal: entry.goal,
+                goalStatus: 'active',
+                goalHistory: [],
+                completedGoals: [],
+                trust: 0,
+                memories: [entry.memory]
+            };
+        });
+    },
+
     filterVisibleLocations(candidates, reply, adventure, world = Session.getWorld()) {
         const state = adventure && adventure.state && typeof adventure.state === 'object'
             ? adventure.state
@@ -378,11 +506,11 @@ const Narrator = {
                     'event: una frase factual que registre lo ocurrido.',
                     'location: ubicación actual; conserva la existente si no hay desplazamiento.',
                     'visibleLocations: lugares que el personaje puede ver claramente desde su posición actual. Recalcula la lista en cada respuesta; incluye solo nombres explícitos del contexto o de la escena, nunca inventes lugares, rutas ni coordenadas. No incluyas destinos lejanos ni sitios solo conocidos por rumores. Usa una lista vacía si no hay otros lugares visibles.',
-                    'factsToAdd y cluesToAdd: solo datos nuevos realmente descubiertos, sin duplicados.',
+                    'factsToAdd y cluesToAdd: solo hechos o pistas nuevos que se expresen literalmente en reply. Copia cada afirmación como un fragmento exacto de reply; no añadas inferencias, rumores ni conclusiones que el texto no diga. Si no hay evidencia literal, usa una lista vacía.',
                     'relationshipChanges: cambios justificados de confianza hacia personajes registrados, con character, delta entre -1 y 1 y reason breve. Usa cambios pequeños y no alteres relaciones sin una interacción significativa.',
                     'itemsToAdd: objetos que el personaje obtiene realmente y puede llevar consigo; no incluyas objetos solo vistos o examinados.',
                     'itemsToRemove: objetos que pierde, entrega, consume o deja atrás realmente; usa el nombre exacto del inventario.',
-                    'charactersToAdd: personajes nuevos que realmente entran en escena; incluye nombre, función, ubicación, actitud y un primer recuerdo significativo. No añadas figurantes irrelevantes.',
+                    'charactersToAdd: solo personajes que estén físicamente presentes, entren, hablen o interactúen directamente en la escena actual. Incluye nombre, función, ubicación actual, actitud, primer recuerdo y evidence: un fragmento literal de reply que contenga su nombre y describa su presencia. No registres rumores, recuerdos de terceros ni personajes situados en otra ubicación; si no hay encuentro presencial, usa una lista vacía.',
                     'characterUpdates: cambios de ubicación o actitud de personajes ya registrados; conserva sus valores si no han cambiado y no muevas personajes sin motivo narrativo.',
                     'characterActions: pequeñas iniciativas autónomas de personajes que ya están presentes en la ubicación actual. Sus objetivos personales deben influir de forma visible y natural en lo que hacen: pueden investigar algo relacionado, pedir ayuda, proteger un interés o reaccionar ante un obstáculo. Narra esas iniciativas dentro de reply como parte continua de la escena, con gestos y transiciones naturales; nunca como una lista, ficha o nota separada. El campo characterActions es solo el registro estructurado de esas acciones ya narradas. No repitas la misma iniciativa ni fuerces avances; máximo dos acciones visibles, coherentes con personalidad, recuerdos y objetivo. No cambies su ubicación con este campo, no inventes sucesos fuera de escena y usa una acción vacía si nadie actúa.',
                     'personalGoal: cada personaje puede tener un objetivo propio, breve y concreto, que refleje deseos, problemas o motivaciones. Ten en cuenta su objetivo actual al decidir cómo habla y actúa.',
@@ -537,9 +665,10 @@ const Narrator = {
                             location: { type: 'string' },
                             attitude: { type: 'string' },
                             memory: { type: 'string' },
+                            evidence: { type: 'string', maxLength: 240 },
                             goal: { type: 'string' }
                         },
-                        required: ['name', 'role', 'location', 'attitude', 'memory']
+                        required: ['name', 'role', 'location', 'attitude', 'memory', 'evidence']
                     }
                 },
                 characterUpdates: {
@@ -661,24 +790,8 @@ const Narrator = {
                 updated,
                 Session.getWorld()
             );
-            state.knownFacts = Array.isArray(state.knownFacts) ? state.knownFacts : [];
-            state.clues = Array.isArray(state.clues) ? state.clues : [];
             state.events = Array.isArray(state.events) ? state.events : [];
-
-            result.factsToAdd.slice(0, 5).forEach(fact => {
-                if (typeof fact === 'string' && fact.trim() && !state.knownFacts.includes(fact.trim())) {
-                    const cleanFact = fact.trim().slice(0, 300);
-                    state.knownFacts.push(cleanFact);
-                    const normalizedFact = cleanFact.toLocaleLowerCase('es');
-                    if (normalizedFact.includes('pozo')) state.wellDiscovered = true;
-                    if (normalizedFact.includes('campana')) state.bellDiscovered = true;
-                }
-            });
-            result.cluesToAdd.slice(0, 5).forEach(clue => {
-                if (typeof clue === 'string' && clue.trim() && !state.clues.includes(clue.trim())) {
-                    state.clues.push(clue.trim().slice(0, 300));
-                }
-            });
+            this.applyDiscoveryUpdates(state, result);
 
             this.applyInventoryUpdates(state, result);
             if (!state.athun || typeof state.athun !== 'object') {
@@ -687,33 +800,7 @@ const Narrator = {
             state.athun.permanent = true;
             this.applyAthunUpdates(state, result);
 
-            state.characters = state.characters && typeof state.characters === 'object' ? state.characters : {};
-            result.charactersToAdd.slice(0, 5).forEach(entry => {
-                if (!entry || typeof entry.name !== 'string' || !entry.name.trim()) return;
-                const name = entry.name.trim().slice(0, 80);
-                if (name.toLocaleLowerCase('es') === 'elia') {
-                    state.eliaMet = true;
-                    state.eliaTrust = Number(state.eliaTrust) || 0;
-                }
-                const exists = Object.keys(state.characters).some(key =>
-                    key.toLocaleLowerCase('es') === name.toLocaleLowerCase('es') ||
-                    String(state.characters[key] && state.characters[key].name || '').toLocaleLowerCase('es') === name.toLocaleLowerCase('es')
-                );
-                if (exists || Object.keys(state.characters).length >= 50) return;
-                const memory = typeof entry.memory === 'string' ? entry.memory.trim().slice(0, 300) : '';
-                state.characters[name] = {
-                    name,
-                    role: typeof entry.role === 'string' ? entry.role.trim().slice(0, 100) : 'Personaje',
-                    location: typeof entry.location === 'string' ? entry.location.trim().slice(0, 120) : state.currentLocation,
-                    attitude: typeof entry.attitude === 'string' ? entry.attitude.trim().slice(0, 100) : 'Desconocida',
-                    personalGoal: typeof entry.goal === 'string' ? entry.goal.trim().slice(0, 240) : '',
-                    goalStatus: 'active',
-                    goalHistory: [],
-                    completedGoals: [],
-                    trust: 0,
-                    memories: memory ? [memory] : []
-                };
-            });
+
             result.characterUpdates.slice(0, 10).forEach(entry => {
                 if (!entry || typeof entry.character !== 'string') return;
                 const requestedName = entry.character.trim().toLocaleLowerCase('es');
