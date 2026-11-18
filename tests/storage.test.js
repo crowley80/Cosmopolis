@@ -681,6 +681,52 @@ test('el narrador recibe los recuerdos y revelaciones de Athun solo desde la par
 });
 
 
+test('la personalidad de Athun evoluciona gradualmente con el vínculo y los recuerdos de cada partida', () => {
+    const guarded = Narrator.deriveAthunRelationship({
+        bond: -40,
+        memories: ['Ariadna rechazó una advertencia', 'Compartieron una noche de tormenta'],
+        bondHistory: [
+            { delta: -1, reason: 'Ariadna rechazó una advertencia' },
+            { delta: -1, reason: 'Ariadna ocultó un hallazgo' }
+        ]
+    });
+    assert.equal(guarded.trustTone, 'distante y a la defensiva');
+    assert.equal(guarded.recentMovement, 'se está replegando y necesita cautela');
+    assert.deepEqual(guarded.relationshipAnchors, [
+        'Ariadna rechazó una advertencia',
+        'Ariadna ocultó un hallazgo'
+    ]);
+    assert.deepEqual(guarded.sharedMemoryAnchors, [
+        'Ariadna rechazó una advertencia',
+        'Compartieron una noche de tormenta'
+    ]);
+
+    const close = Narrator.deriveAthunRelationship({
+        bond: 72,
+        memories: ['Ariadna protegió el grimorio'],
+        bondHistory: [
+            { delta: 1, reason: 'Ariadna compartió un secreto' },
+            { delta: 1, reason: 'Ariadna protegió el grimorio' }
+        ]
+    });
+    assert.equal(close.trustTone, 'profundamente familiar, sin ser incondicional');
+    assert.equal(close.recentMovement, 'se está abriendo poco a poco');
+
+    const messages = Narrator.buildMessages('Sigo caminando', { name: 'Ariadna' }, {
+        title: 'Historia',
+        state: { currentLocation: 'Valdebruma', inventory: [], athun: {
+            bond: 72, memories: ['Ariadna protegió el grimorio'], revelations: [],
+            bondHistory: [{ delta: 1, reason: 'Ariadna protegió el grimorio' }]
+        } }
+    }, []);
+    const context = JSON.parse(messages[1].content);
+    assert.equal(context.athunRelationship.trustTone, 'profundamente familiar, sin ser incondicional');
+    assert.deepEqual(context.currentAdventure.athun.bondHistory, [
+        { delta: 1, reason: 'Ariadna protegió el grimorio' }
+    ]);
+    assert.ok(messages[0].content.includes('La tendencia no es una emoción obligatoria'));
+});
+
 test('Athun conserva recuerdos compartidos, revelaciones justificadas y cambios pequeños de vínculo', () => {
     const state = { athun: { id: 'athun', permanent: true, bond: 4, memories: ['La primera noche'], revelations: [] } };
     Narrator.applyAthunUpdates(state, {
