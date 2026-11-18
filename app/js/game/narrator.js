@@ -48,11 +48,18 @@ const Narrator = {
 
         const currentLocation = state.currentLocation || adventure.location || '';
         const allCharacters = Object.entries(state.characters || {});
-        const nearby = allCharacters.filter(([, person]) =>
-            person && person.location && person.location === currentLocation
+        const nearby = allCharacters.filter(([key, person]) =>
+            person && person.location && person.location === currentLocation &&
+            (key.toLocaleLowerCase('es') !== 'elia' || state.eliaMet === true)
         );
-        const elia = allCharacters.filter(([key]) => key.toLocaleLowerCase('es') === 'elia');
-        const recent = allCharacters.slice(-20).reverse();
+        // Elia no debe filtrarse al contexto narrativo antes de que el protagonista la conozca.
+        const elia = state.eliaMet === true
+            ? allCharacters.filter(([key]) => key.toLocaleLowerCase('es') === 'elia')
+            : [];
+        const recent = allCharacters
+            .filter(([key]) => key.toLocaleLowerCase('es') !== 'elia' || state.eliaMet === true)
+            .slice(-20)
+            .reverse();
         const selectedCharacters = [];
         [...nearby, ...elia, ...recent].forEach(entry => {
             if (!selectedCharacters.some(([key]) => key === entry[0]) && selectedCharacters.length < 20) {
