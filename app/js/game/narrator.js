@@ -323,31 +323,40 @@ const Narrator = {
         return accepted;
     },
 
-    filterGoalUpdates(entries, state) {
+    filterGoalUpdates(entries, state, reply = '') {
         const characters = state && state.characters && typeof state.characters === 'object'
             ? state.characters
             : {};
         const statuses = new Set(['active', 'progress', 'blocked', 'completed']);
         const accepted = [];
-        const normalize = value => String(value || '')
-            .toLocaleLowerCase('es')
-            .normalize('NFD')
-            .replace(/[\\u0300-\\u036f]/g, '')
-            .replace(/[^a-z0-9]+/g, ' ')
-            .trim();
+        const sentences = String(reply || '').split(/[.!?;]+/)
+            .map(sentence => this.normalizeNarrativeText(sentence))
+            .filter(Boolean);
 
         (Array.isArray(entries) ? entries : []).slice(0, 2).forEach(entry => {
             if (!entry || typeof entry.character !== 'string' ||
                 typeof entry.goal !== 'string' || typeof entry.reason !== 'string' ||
                 !statuses.has(entry.status)) return;
-            const requestedName = normalize(entry.character);
+            const requestedName = this.normalizeNarrativeText(entry.character);
             const key = Object.keys(characters).find(name =>
-                normalize(name) === requestedName ||
-                normalize(characters[name] && characters[name].name) === requestedName
+                this.normalizeNarrativeText(name) === requestedName ||
+                this.normalizeNarrativeText(characters[name] && characters[name].name) === requestedName
             );
             const goal = entry.goal.trim().slice(0, 240);
             const reason = entry.reason.trim().slice(0, 200);
-            if (!key || !goal || !reason) return;
+            const evidence = this.normalizeNarrativeText(reason);
+            const name = key
+                ? this.normalizeNarrativeText(characters[key] && characters[key].name || key)
+                : '';
+            if (!key || !goal || evidence.length < 12 || !name) return;
+
+            // Un cambio de objetivo solo se persiste si su motivo cita un hecho
+            // expresado en la misma frase narrativa que identifica al personaje.
+            const grounded = sentences.some(sentence =>
+                sentence.includes(evidence) && sentence.includes(name)
+            );
+            if (!grounded) return;
+
             accepted.push({ character: key, goal, status: entry.status, reason });
         });
 
@@ -577,7 +586,7 @@ const Narrator = {
                     'characterUpdates: cambios de ubicación o actitud de personajes ya registrados; conserva sus valores si no han cambiado y no muevas personajes sin motivo narrativo.',
                     'characterActions: pequeñas iniciativas autónomas de personajes que ya están presentes en la ubicación actual. Sus objetivos personales deben influir de forma visible y natural en lo que hacen: pueden investigar algo relacionado, pedir ayuda, proteger un interés o reaccionar ante un obstáculo. Narra esas iniciativas dentro de reply como parte continua de la escena, con gestos y transiciones naturales; nunca como una lista, ficha o nota separada. El campo characterActions es solo el registro estructurado de esas acciones ya narradas. No repitas la misma iniciativa ni fuerces avances; máximo dos acciones visibles, coherentes con personalidad, recuerdos y objetivo. No cambies su ubicación con este campo, no inventes sucesos fuera de escena y usa una acción vacía si nadie actúa.',
                     'personalGoal: cada personaje puede tener un objetivo propio, breve y concreto, que refleje deseos, problemas o motivaciones. Ten en cuenta su objetivo actual al decidir cómo habla y actúa.',
-                    'goalUpdates: actualiza como máximo dos objetivos de personajes registrados solo cuando los hechos justifiquen un cambio, avance, bloqueo o resolución. Incluye character, goal, status y reason. status debe ser active, progress, blocked o completed; conserva el objetivo si solo cambia su estado. Consulta también completedGoals: no propongas como nuevo un objetivo ya archivado ni repitas una meta cumplida, salvo que un hecho nuevo aporte una motivación o consecuencia concreta que cambie su sentido. Un objetivo completed queda cerrado: no lo reactives ni lo sustituyas salvo que exista una nueva motivación o consecuencia concreta en los hechos, eventos o recuerdos. Solo entonces propone un objetivo distinto con status active, explica en reason qué hecho demuestra que el anterior se cumplió y por qué nace el nuevo. Nunca sustituyas un objetivo todavía activo, en progreso o bloqueado por otro; primero debe resolverse. No inventes avances ni cambies objetivos sin causa; usa una lista vacía si no hay cambios.',
+                    'goalUpdates: actualiza como máximo dos objetivos de personajes registrados solo cuando los hechos justifiquen un cambio, avance, bloqueo o resolución. Incluye character, goal, status y reason. reason debe ser un fragmento literal de reply que aparezca en la misma frase que el nombre del personaje; si no existe esa evidencia literal, no registres el cambio. status debe ser active, progress, blocked o completed; conserva el objetivo si solo cambia su estado. Consulta también completedGoals: no propongas como nuevo un objetivo ya archivado ni repitas una meta cumplida, salvo que un hecho nuevo aporte una motivación o consecuencia concreta que cambie su sentido. Un objetivo completed queda cerrado: no lo reactives ni lo sustituyas salvo que exista una nueva motivación o consecuencia concreta en los hechos, eventos o recuerdos. Solo entonces propone un objetivo distinto con status active, explica en reason qué hecho demuestra que el anterior se cumplió y por qué nace el nuevo. Nunca sustituyas un objetivo todavía activo, en progreso o bloqueado por otro; primero debe resolverse. No inventes avances ni cambies objetivos sin causa; usa una lista vacía si no hay cambios.',
                     'characterMemoriesToAdd: recuerdos concretos y duraderos de personajes que ya existen en el estado; no inventes personajes ni guardes detalles triviales.',
                     'athunMemoriesToAdd: hasta tres recuerdos duraderos y concretos que el protagonista y Athun hayan vivido juntos en esta partida; no conviertas acciones triviales en recuerdos ni inventes experiencias.',
                     'athunRevelationsToAdd: hasta tres descubrimientos nuevos y demostrados sobre la historia, naturaleza o motivos de Athun; no inventes secretos ni adelantes revelaciones que no hayan ocurrido en la escena. Usa una lista vacía si no procede.',
@@ -898,7 +907,7 @@ const Narrator = {
                 person.attitude = entry.attitude;
             });
 
-            this.filterGoalUpdates(result.goalUpdates, state).forEach(entry => {
+            this.filterGoalUpdates(result.goalUpdates, state, result.reply).forEach(entry => {
                 if (!entry || typeof entry.character !== 'string' ||
                     typeof entry.goal !== 'string' || typeof entry.reason !== 'string') return;
                 const requestedName = entry.character.trim().toLocaleLowerCase('es');
