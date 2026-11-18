@@ -327,7 +327,7 @@ const Narrator = {
                 : 1;
             state.day = Math.max(previousDay, Math.max(1, Math.min(9999, result.day)));
             const previousLocation = state.currentLocation || updated.location || 'Lugar desconocido';
-            const actionSuggestsMovement = /\b(camino|voy|entro|salgo|me acerco|me alejo|exploro|subo|bajo|me dirijo|avanzo|retrocedo|cruzo|atravieso|regreso|vuelvo|me desplazo|me traslado)\b/i.test(String(action || ''));
+            const actionSuggestsMovement = /\b(voy|entro|salgo|me acerco|me alejo|exploro|subo|bajo|me dirijo|avanzo|retrocedo|cruzo|atravieso|regreso|vuelvo|me desplazo|me traslado|me muevo|me marcho|viajo|parto|camino\s+(?:hacia|hasta|por|al|a))\b/i.test(String(action || ''));
             const proposedLocation = result.location.trim().slice(0, 120);
             // El modelo no puede cambiar de ubicación si el jugador no ha intentado desplazarse.
             state.currentLocation = actionSuggestsMovement && proposedLocation
