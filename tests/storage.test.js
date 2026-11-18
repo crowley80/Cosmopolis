@@ -894,6 +894,26 @@ test('el inventario rechaza objetos mencionados solo en JSON y no aplica pérdid
     assert.deepEqual(state.inventory, ['Athun — grimorio consciente', 'Poción', 'Llave']);
 });
 
+test('el inventario ignora adquisiciones y pérdidas que la narración niega', () => {
+    const state = { inventory: ['Athun — grimorio consciente', 'Moneda', 'Poción'] };
+
+    Narrator.applyInventoryUpdates(state, {
+        reply: 'No recoges la Llave ni entregas la Moneda. Nunca pierdes la Poción.',
+        itemsToAdd: ['Llave'],
+        itemsToRemove: ['Moneda', 'Poción']
+    }, 'No recoges la Llave ni entregas la Moneda. Nunca pierdes la Poción.');
+
+    assert.deepEqual(state.inventory, ['Athun — grimorio consciente', 'Moneda', 'Poción']);
+
+    Narrator.applyInventoryUpdates(state, {
+        reply: 'No recoges la Llave, pero después la guardas en tu mochila. No entregas la Moneda, aunque finalmente la vendes.',
+        itemsToAdd: ['Llave'],
+        itemsToRemove: ['Moneda']
+    }, 'No recoges la Llave, pero después la guardas en tu mochila. No entregas la Moneda, aunque finalmente la vendes.');
+
+    assert.deepEqual(state.inventory, ['Athun — grimorio consciente', 'Poción', 'Llave']);
+});
+
 test('no sobrescribe un registro dañado del mundo compartido al intentar actualizarlo', () => {
     const damagedWorld = '{"locations":[{"name":"Valdebruma"}],"connections":';
     localStorage.setItem(Save.worldKey, damagedWorld);
