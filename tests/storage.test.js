@@ -827,9 +827,10 @@ test('no conserva zonas visibles anteriores al desplazarse sin una nueva declara
 test('Athun no puede perderse, venderse, transferirse ni destruirse por una respuesta narrativa', () => {
     const state = { inventory: ['Athun — grimorio consciente', 'Moneda'] };
     Narrator.applyInventoryUpdates(state, {
+        reply: 'Entregas la Moneda al mercader, pero Athun permanece contigo. Recoges una Llave.',
         itemsToRemove: ['Athun', 'Moneda'],
         itemsToAdd: ['Athun vendido', 'Athun transferido', 'Athun destruido', 'Llave']
-    });
+    }, 'Entregas la Moneda al mercader, pero Athun permanece contigo. Recoges una Llave.');
 
     assert.deepEqual(state.inventory, ['Athun — grimorio consciente', 'Llave']);
 
@@ -849,6 +850,24 @@ test('Athun no puede perderse, venderse, transferirse ni destruirse por una resp
     assert.ok(messages[0].content.includes('nunca puede perderse, ser robado, vendido'));
 });
 
+
+
+test('el inventario rechaza objetos mencionados solo en JSON y no aplica pérdidas sin acción narrada', () => {
+    const state = { inventory: ['Athun — grimorio consciente', 'Moneda', 'Poción'] };
+    Narrator.applyInventoryUpdates(state, {
+        reply: 'La estancia permanece en silencio. Ves una llave sobre la mesa.',
+        itemsToAdd: ['Llave'],
+        itemsToRemove: ['Moneda', 'Poción']
+    }, 'La estancia permanece en silencio. Ves una llave sobre la mesa.');
+    assert.deepEqual(state.inventory, ['Athun — grimorio consciente', 'Moneda', 'Poción']);
+
+    Narrator.applyInventoryUpdates(state, {
+        reply: 'Recoges la Llave y la guardas en tu mochila. Entregas la Moneda al posadero.',
+        itemsToAdd: ['Llave'],
+        itemsToRemove: ['Moneda']
+    }, 'Recoges la Llave y la guardas en tu mochila. Entregas la Moneda al posadero.');
+    assert.deepEqual(state.inventory, ['Athun — grimorio consciente', 'Poción', 'Llave']);
+});
 
 test('no sobrescribe un registro dañado del mundo compartido al intentar actualizarlo', () => {
     const damagedWorld = '{"locations":[{"name":"Valdebruma"}],"connections":';
