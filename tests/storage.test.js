@@ -1178,6 +1178,31 @@ test('las acciones autónomas solo se registran si están narradas en escena y n
 });
 
 
+test('los recuerdos de personajes requieren evidencia literal en la misma frase', () => {
+    const state = {
+        characters: {
+            'Personaje A': { name: 'Personaje A' },
+            'Personaje B': { name: 'Personaje B' }
+        }
+    };
+    const reply = 'Personaje A guarda la llave en su bolsillo. Personaje B recuerda la promesa hecha ayer.';
+    assert.deepEqual(Narrator.filterCharacterMemories([
+        { character: 'Personaje A', memory: 'guarda la llave en su bolsillo' },
+        { character: 'Personaje B', memory: 'recuerda la promesa hecha ayer' },
+        { character: 'Personaje A', memory: 'ha descubierto una salida secreta' },
+        { character: 'Desconocido', memory: 'ha encontrado una pista importante' },
+        { character: 'Personaje A', memory: 'guarda la llave en su bolsillo' }
+    ], state, reply), [
+        { character: 'Personaje A', memory: 'guarda la llave en su bolsillo' },
+        { character: 'Personaje B', memory: 'recuerda la promesa hecha ayer' }
+    ]);
+    assert.deepEqual(Narrator.filterCharacterMemories([
+        { character: 'Personaje A', memory: 'guarda la llave en su bolsillo' }
+    ], state, 'La escena permanece tranquila.'), []);
+    assert.deepEqual(Narrator.filterCharacterMemories('no es una lista', state, reply), []);
+});
+
+
 test('las actualizaciones de objetivos exigen evidencia literal en la misma frase del personaje', () => {
     const state = {
         characters: {
