@@ -2236,3 +2236,30 @@ Se completa la revisión de las otras consecuencias persistentes señaladas en l
 - Se hicieron copias previas independientes de `narrator.js` y `storage.test.js` para esta revisión, con sufijo `bak-20261118-character-movement-guard`.
 
 **Comprobación local dirigida:** sintaxis de ambos archivos correcta y ejecución de los escenarios nuevos sobre el código real correcta (inventario y movimiento de personajes). No se ha obtenido una ejecución nueva de GitHub Actions asociada a estos commits; la suite remota completa sigue pendiente. No se modifica `main`, no se fusiona el PR y no se toca ningún guardado del dispositivo.
+
+
+## Protocolo de desarrollo sin spoilers — 18/11/2026
+
+Decisión confirmada por el usuario: desarrollar Athun: el grimorio oscuro sin revelar el contenido del mundo que debe descubrir como jugador.
+
+### Información reservada
+- Nombres, distribución, características y habitantes de ciudades, pueblos y localizaciones aún no descubiertos jugando.
+- Personajes, encuentros, misiones, acontecimientos, secretos, misterios, giros argumentales y recompensas futuras.
+- Contenido oculto del mapa, rutas no descubiertas y zonas aún no reveladas.
+- Historia, capacidades, recuerdos, motivaciones y revelaciones de Athun que deban descubrirse progresivamente.
+
+### Información compartible
+- Arquitectura del software, código, pruebas, almacenamiento, rendimiento, seguridad y depuración.
+- Mecánicas y sistemas descritos de forma abstracta, sin ejemplos que revelen contenido de la aventura.
+- Decisiones de interfaz, accesibilidad, controles, equilibrio y herramientas de desarrollo.
+- Estado técnico, riesgos, tareas pendientes y resultados de validación, evitando nombres y detalles narrativos reservados.
+
+### Normas operativas
+- No presentar atlas completos, listados de asentamientos, fichas de personajes, cronologías, argumentos ni documentos de lore al usuario.
+- Mantener el contenido narrativo reservado en los archivos internos de desarrollo y no reproducirlo en informes conversacionales.
+- Usar identificadores neutros o descripciones técnicas al hablar de pruebas que simulen descubrimientos.
+- No pedir decisiones creativas que adelanten lugares, personajes o acontecimientos que el usuario debería descubrir jugando.
+- Si una decisión del usuario es imprescindible, formularla en términos de experiencia o mecánica, sin revelar contenido reservado.
+- El usuario debe poder iniciar una partida sin conocer de antemano el mundo, el mapa ni los acontecimientos futuros.
+
+Este protocolo prevalece sobre cualquier práctica anterior de presentar propuestas de regiones, ciudades, personajes o misterios como contenido visible durante el desarrollo.
