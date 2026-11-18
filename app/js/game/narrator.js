@@ -323,6 +323,42 @@ const Narrator = {
         return accepted;
     },
 
+    filterCharacterMemories(entries, state, reply = '') {
+        const characters = state && state.characters && typeof state.characters === 'object'
+            ? state.characters
+            : {};
+        const sentences = String(reply || '').split(/[.!?;]+/)
+            .map(sentence => this.normalizeNarrativeText(sentence))
+            .filter(Boolean);
+        const accepted = [];
+        const seen = new Set();
+
+        (Array.isArray(entries) ? entries : []).slice(0, 5).forEach(entry => {
+            if (!entry || typeof entry.character !== 'string' || typeof entry.memory !== 'string') return;
+            const requestedName = this.normalizeNarrativeText(entry.character);
+            const key = Object.keys(characters).find(name =>
+                this.normalizeNarrativeText(name) === requestedName ||
+                this.normalizeNarrativeText(characters[name] && characters[name].name) === requestedName
+            );
+            const memory = entry.memory.trim().slice(0, 300);
+            const evidence = this.normalizeNarrativeText(memory);
+            const name = key
+                ? this.normalizeNarrativeText(characters[key] && characters[key].name || key)
+                : '';
+            if (!key || !name || evidence.length < 12) return;
+
+            const grounded = sentences.some(sentence =>
+                sentence.includes(name) && sentence.includes(evidence)
+            );
+            const uniqueKey = key + ':' + evidence;
+            if (!grounded || seen.has(uniqueKey)) return;
+            seen.add(uniqueKey);
+            accepted.push({ character: key, memory });
+        });
+
+        return accepted;
+    },
+
     filterGoalUpdates(entries, state, reply = '') {
         const characters = state && state.characters && typeof state.characters === 'object'
             ? state.characters
@@ -976,16 +1012,10 @@ const Narrator = {
                 }
             });
 
-            result.characterMemoriesToAdd.slice(0, 5).forEach(entry => {
-                if (!entry || typeof entry.character !== 'string' || typeof entry.memory !== 'string') return;
-                const requestedName = entry.character.trim().toLocaleLowerCase('es');
-                const key = Object.keys(state.characters).find(name =>
-                    name.toLocaleLowerCase('es') === requestedName ||
-                    String(state.characters[name] && state.characters[name].name || '').toLocaleLowerCase('es') === requestedName
-                );
-                const memory = entry.memory.trim().slice(0, 300);
-                if (!key || !memory) return;
-                const person = state.characters[key];
+            this.filterCharacterMemories(result.characterMemoriesToAdd, state, result.reply).forEach(entry => {
+                const person = state.characters[entry.character];
+                if (!person) return;
+                const memory = entry.memory;
                 person.memories = Array.isArray(person.memories) ? person.memories : [];
                 if (!person.memories.some(item => String(item).toLocaleLowerCase('es') === memory.toLocaleLowerCase('es'))) {
                     person.memories.push(memory);
