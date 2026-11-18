@@ -1178,24 +1178,29 @@ test('las acciones autónomas solo se registran si están narradas en escena y n
 });
 
 
-test('las actualizaciones de objetivos exigen personaje conocido, estado válido y motivo concreto', () => {
+test('las actualizaciones de objetivos exigen evidencia literal en la misma frase del personaje', () => {
     const state = {
         characters: {
             Elia: { name: 'Elia' },
             'Tomás': { name: 'Tomás' }
         }
     };
+    const reply = 'Elia ha encontrado una nueva señal en las marcas. Tomás confirma que el acceso está cerrado.';
     assert.deepEqual(Narrator.filterGoalUpdates([
-        { character: 'Elia', goal: 'Investigar las marcas', status: 'progress', reason: 'Ha encontrado una nueva señal' },
-        { character: 'Tomás', goal: 'Proteger el molino', status: 'blocked', reason: 'El acceso está cerrado' },
+        { character: 'Elia', goal: 'Investigar las marcas', status: 'progress', reason: 'ha encontrado una nueva señal' },
+        { character: 'Tomás', goal: 'Proteger el molino', status: 'blocked', reason: 'el acceso está cerrado' },
         { character: 'Desconocido', goal: 'Abrir la puerta', status: 'active', reason: 'Quiere entrar' },
         { character: 'Elia', goal: 'Cambiar de objetivo', status: 'inventado', reason: 'Motivo inválido' },
-        { character: 'Tomás', goal: 'Buscar ayuda', status: 'active', reason: '   ' }
-    ], state), [
-        { character: 'Elia', goal: 'Investigar las marcas', status: 'progress', reason: 'Ha encontrado una nueva señal' },
-        { character: 'Tomás', goal: 'Proteger el molino', status: 'blocked', reason: 'El acceso está cerrado' }
+        { character: 'Tomás', goal: 'Buscar ayuda', status: 'active', reason: '   ' },
+        { character: 'Elia', goal: 'Objetivo inventado', status: 'completed', reason: 'El personaje ha resuelto el problema' }
+    ], state, reply), [
+        { character: 'Elia', goal: 'Investigar las marcas', status: 'progress', reason: 'ha encontrado una nueva señal' },
+        { character: 'Tomás', goal: 'Proteger el molino', status: 'blocked', reason: 'el acceso está cerrado' }
     ]);
-    assert.deepEqual(Narrator.filterGoalUpdates('no es una lista', state), []);
+    assert.deepEqual(Narrator.filterGoalUpdates([
+        { character: 'Elia', goal: 'Objetivo no narrado', status: 'completed', reason: 'Ha resuelto el problema' }
+    ], state, 'La mañana permanece tranquila.'), []);
+    assert.deepEqual(Narrator.filterGoalUpdates('no es una lista', state, reply), []);
 });
 
 
