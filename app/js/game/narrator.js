@@ -593,8 +593,8 @@ const Narrator = {
                 (' ' + sentence + ' ').includes(' ' + name + ' ') && verbs.test(sentence)
             );
         };
-        const removalEvidence = /\\b(entregas|entrega|das|da|dejas|deja|pierdes|pierde|consumes|consume|gastas|gasta|vendes|vende|intercambias|intercambia|depositas|deposita|arrojas|arroja|abandonas|abandona|rompes|rompe|destruyes|destruye|te quitan|te quita|te roba|te roban|sacas|saca)\\b/;
-        const additionEvidence = /\\b(recoges|recoge|tomas|toma|guardas|guarda|obtienes|obtiene|recibes|recibe|te entrega|te entregan|te da|te ofrecen|aceptas|acepta|consigues|consigue|encuentras y guardas|añades|anades|introduces)\\b/;
+        const removalEvidence = /\b(entregas|entrega|das|da|dejas|deja|pierdes|pierde|consumes|consume|gastas|gasta|vendes|vende|intercambias|intercambia|depositas|deposita|arrojas|arroja|abandonas|abandona|rompes|rompe|destruyes|destruye|te quitan|te quita|te roba|te roban|sacas|saca)\b/;
+        const additionEvidence = /\b(recoges|recoge|tomas|toma|guardas|guarda|obtienes|obtiene|recibes|recibe|te entrega|te entregan|te da|te ofrecen|aceptas|acepta|consigues|consigue|encuentras y guardas|añades|anades|introduces)\b/;
 
         (Array.isArray(result.itemsToRemove) ? result.itemsToRemove : []).slice(0, 10).forEach(item => {
             if (typeof item !== 'string' || !item.trim()) return;
