@@ -1456,3 +1456,31 @@ Se implementó también una migración idempotente en `Save.load()` para partida
 **Pruebas automatizadas añadidas al workflow:** la misma batería narrativa, protección de Athun frente a la IA y migración de una partida antigua. El workflow se activa con los cambios de `index.html` y del propio archivo de workflow. No se ha podido consultar su resultado remoto en esta sesión y no se afirma que la prueba visual en Android esté completada.
 
 **Commits recientes:** guardado `99d7a19` y `db7d4a3`; prueba de migración `7eb287f`; caché `b9c37b1`; documentación `3a28313` y `3f2d582`. Se conservaron respaldos antes de las modificaciones. No se ha eliminado ni sobrescrito deliberadamente ninguna partida guardada.
+
+## ACTUALIZACIÓN DE DESARROLLO — 18 DE NOVIEMBRE DE 2026
+
+### Protección del conocimiento y los descubrimientos
+
+- `app/js/game/narrator.js`: Elia queda excluida del contexto narrativo hasta que `state.eliaMet === true`.
+- El registro de hechos y pistas ahora exige respaldo léxico en la narración de la escena actual; los indicadores `wellDiscovered` y `bellDiscovered` solo se activan cuando el hecho aceptado y la escena mencionan el elemento correspondiente.
+- Un personaje nuevo solo se registra si su nombre aparece en la narración y su ubicación coincide con la ubicación de la escena. Esto evita crear personajes que no han entrado en escena o situarlos fuera de ella sin una aparición narrada.
+- Se preserva la regla de permanencia de Athun en el inventario.
+
+### Respaldo y validación
+
+- Copia de seguridad del narrador antes de esta modificación: `app/js/game/narrator.js.backup-20261118-discoveries`.
+- Copia de seguridad de este documento: `docs/MAESTRO_COSMOPOLIS.md.backup-20261118`.
+- Comprobación sintáctica de `narrator.js`: correcta.
+- Pruebas aisladas de normalización de acentos, aceptación de hechos respaldados, rechazo de hechos no respaldados y aceptación de pistas respaldadas: correctas.
+- Pendiente: probar el flujo completo con llama-server y una partida real en Android/Termux. No considerar validada todavía la experiencia de juego.
+
+### Commits de esta sesión
+
+- `63c75dc`: ocultar Elia al contexto antes de conocerla.
+- `91a1d17`: validar hechos, pistas y altas de personajes con la escena narrada.
+- `8f326ca`: corregir la normalización de acentos usada por la validación.
+- `9eee3a3`: documentación inicial de la sesión.
+
+### Próximo paso
+
+Revisar el movimiento y los cambios de ubicación generados por el modelo para evitar teletransportes o entradas en lugares no descubiertos. Después ejecutar pruebas integradas del flujo narrador/director sin tocar partidas guardadas.
