@@ -425,7 +425,8 @@ jobs:
             assert.ok(restoredAction.includes('Entrego el medallón de cobre a Elia.'), 'La última acción debe recuperarse tras recargar: ' + restoredAction);
             assert.ok(restoredMeta.includes('Momento: Mediodía'), 'El reloj interno debe recuperarse tras recargar: ' + restoredMeta);
             await page.locator('#openInventory').click();
-            await page.locator('#toolOverlay').getByText('Tu inventario está vacío por ahora.').waitFor();
+            await page.locator('#toolOverlay .inventory-list').locator('li').filter({ hasText: 'Athun' }).waitFor();
+            assert.equal(await page.locator('#toolOverlay .inventory-list li').filter({ hasText: 'Medallón de cobre' }).count(), 0, 'El medallón entregado no debe seguir en el inventario');
             await page.locator('#closeToolPanel').click();
             await page.locator('#openHistory').click();
             await page.locator('#toolOverlay').getByText('Entregas el medallón a Elia. Ella lo guarda con cuidado en su tubo de mapas.').waitFor();
