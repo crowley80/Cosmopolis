@@ -112,7 +112,7 @@ jobs:
 
               const originalFetch = window.fetch;
               const fakeNarrative = {
-                reply: 'Athun permanece contigo.',
+                reply: 'Athun permanece contigo. A cierta distancia distingues la plaza, donde se ve un pozo antiguo; una campana apagada suena en la distancia. Elia se acerca desde el camino y se presenta como cartógrafa.',
                 event: 'El grimorio ha permanecido en el inventario.',
                 category: 'other',
                 location: 'Plaza del pozo',
@@ -138,12 +138,15 @@ jobs:
               };
               try {
                 Narrator.healthCheckedAt = 0;
-                const narrated = await Narrator.respond('Observo el grimorio.', player, opening, []);
-                if (!narrated.state.inventory.some(item => String(item).toLowerCase().includes('athun'))) fail('el narrador ha retirado Athun del inventario');
-                if (!narrated.state.athun || narrated.state.athun.permanent !== true) fail('se ha perdido la protección permanente de Athun');
-                if (narrated.state.phase !== 'exploration') fail('la fase no avanza al cambiar de ubicación');
+                const stationary = await Narrator.respond('Observo el grimorio.', player, opening, []);
+                if (stationary.state.currentLocation !== opening.state.currentLocation || stationary.state.phase !== 'arrival') fail('una acción estacionaria no debe teletransportar al protagonista');
+                if (stationary.state.wellDiscovered || stationary.state.bellDiscovered || stationary.state.eliaMet) fail('no deben registrarse descubrimientos de otra ubicación');
+                if (!stationary.state.inventory.some(item => String(item).toLowerCase().includes('athun'))) fail('el narrador ha retirado Athun del inventario');
+                if (!stationary.state.athun || stationary.state.athun.permanent !== true) fail('se ha perdido la protección permanente de Athun');
+                const narrated = await Narrator.respond('Camino hacia la plaza.', player, opening, []);
+                if (narrated.state.phase !== 'exploration' || narrated.state.currentLocation !== 'Plaza del pozo') fail('el desplazamiento explícito no actualiza la ubicación');
                 if (!narrated.state.wellDiscovered || !narrated.state.bellDiscovered) fail('los hechos descubiertos no actualizan las marcas de exploración');
-                if (!narrated.state.eliaMet || !narrated.state.characters.Elia) fail('el primer encuentro con Elia no queda registrado');
+                if (!narrated.state.eliaMet || !narrated.state.characters.Elia) fail('el primer encuentro narrado con Elia no queda registrado');
               } finally {
                 window.fetch = originalFetch;
                 Narrator.healthCheckedAt = 0;
