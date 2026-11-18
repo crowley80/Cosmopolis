@@ -235,7 +235,7 @@ jobs:
             await page.locator('#closeToolPanel').click();
 
             await page.locator('#openInventory').click();
-            await page.locator('#toolOverlay').getByText('Tu inventario está vacío por ahora.').waitFor();
+            await page.locator('#toolOverlay .inventory-list').locator('li').filter({ hasText: 'Athun' }).waitFor();
             await page.locator('#closeToolPanel').click();
 
             await page.locator('#openOptions').click();
