@@ -444,8 +444,26 @@ const Narrator = {
                 );
                 if (!key) return;
                 const person = state.characters[key];
-                if (typeof entry.location === 'string' && entry.location.trim()) person.location = entry.location.trim().slice(0, 120);
-                if (typeof entry.attitude === 'string' && entry.attitude.trim()) person.attitude = entry.attitude.trim().slice(0, 100);
+                if (typeof entry.location === 'string' && entry.location.trim()) {
+                    const proposedLocation = entry.location.trim().slice(0, 120);
+                    const currentPersonLocation = person.location || state.currentLocation;
+                    if (proposedLocation !== currentPersonLocation) {
+                        const personMentioned = narrativeEvidence.includes(normalizeEvidence(key)) ||
+                            narrativeEvidence.includes(normalizeEvidence(person.name));
+                        const locationWords = normalizeEvidence(proposedLocation).match(/[a-z0-9]{4,}/g) || [];
+                        const locationMentioned = locationWords.some(word => narrativeEvidence.includes(word));
+                        // Un NPC solo cambia de lugar si la escena narra su presencia y el destino.
+                        if (!personMentioned || !locationMentioned) return;
+                    }
+                    person.location = proposedLocation;
+                }
+                if (typeof entry.attitude === 'string' && entry.attitude.trim()) {
+                    const personMentioned = narrativeEvidence.includes(normalizeEvidence(key)) ||
+                        narrativeEvidence.includes(normalizeEvidence(person.name));
+                    if (person.location === state.currentLocation || personMentioned) {
+                        person.attitude = entry.attitude.trim().slice(0, 100);
+                    }
+                }
             });
 
             result.goalUpdates.slice(0, 2).forEach(entry => {
