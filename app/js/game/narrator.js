@@ -562,7 +562,8 @@ const Narrator = {
                 );
                 if (!key) return;
                 const person = state.characters[key];
-                if (person.location && person.location !== state.currentLocation) return;
+                if (person.location && person.location !== state.currentLocation &&
+                    !narrativeEvidence.includes(normalizeEvidence(key))) return;
                 const actionText = entry.action.trim().slice(0, 220);
                 if (!actionText) return;
                 autonomousNotes.push(actionText);
