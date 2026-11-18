@@ -165,16 +165,6 @@ const Narrator = {
         const state = adventure && adventure.state && typeof adventure.state === 'object'
             ? adventure.state
             : {};
-        const knownNames = [
-            adventure && adventure.title,
-            adventure && adventure.location,
-            state.currentLocation,
-            ...(Array.isArray(state.visitedLocations) ? state.visitedLocations : []),
-            ...(Array.isArray(state.visibleLocations) ? state.visibleLocations : []),
-            ...(Array.isArray(world && world.locations) ? world.locations.map(item =>
-                typeof item === 'string' ? item : item && item.name
-            ) : [])
-        ];
         const normalize = value => String(value || '')
             .toLocaleLowerCase('es')
             .normalize('NFD')
