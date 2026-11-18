@@ -1665,3 +1665,30 @@ Se recupera sobre la rama de integración de Athun el trabajo narrativo rescatad
 Esta recuperación se realiza en `integration/athun-narrative-recovery-fixed`, creada a partir de `integration/athun-multisave-main-20261116`. No se modifica `main`, no se fusiona el PR #4 y no se descarta la rama de rescate.
 
 Validación pendiente: ejecutar las pruebas automatizadas y la vista previa visual sobre esta rama; la prueba física en Android sigue pendiente.
+
+
+## Protocolo de desarrollo sin spoilers — 18/11/2026
+
+Decisión confirmada por el usuario: desarrollar Athun: el grimorio oscuro sin revelar al usuario el contenido del mundo que debe descubrir como jugador.
+
+### Información que debe permanecer reservada
+- Nombres, distribución, características y habitantes de ciudades, pueblos y localizaciones que todavía no haya descubierto jugando.
+- Personajes, encuentros, misiones, acontecimientos, secretos, misterios, giros argumentales y recompensas futuras.
+- Contenido oculto del mapa, rutas no descubiertas y zonas aún no reveladas.
+- Historia, capacidades, recuerdos, motivaciones y revelaciones de Athun que correspondan a descubrimientos progresivos.
+
+### Información que sí puede compartirse
+- Arquitectura del software, código, pruebas, almacenamiento, rendimiento, seguridad y depuración.
+- Mecánicas y sistemas explicados de forma abstracta, sin ejemplos que revelen contenido de la aventura.
+- Decisiones de interfaz, accesibilidad, controles, equilibrio y herramientas de desarrollo.
+- Estado técnico, riesgos, tareas pendientes y resultados de validación, evitando nombres y detalles narrativos secretos.
+
+### Normas operativas
+- No presentar al usuario atlas completos, listados de asentamientos, fichas de personajes, cronologías, argumentos ni documentos de lore.
+- Al documentar contenido narrativo internamente, mantenerlo en los archivos de desarrollo y no reproducirlo en los informes conversacionales.
+- Usar identificadores neutros o descripciones técnicas al hablar de pruebas que deban simular descubrimientos.
+- No pedir al usuario decisiones creativas que le adelanten lugares, personajes o acontecimientos que debería descubrir jugando.
+- Si una decisión del usuario es imprescindible, formular la pregunta en términos de experiencia o mecánica, sin revelar el contenido reservado.
+- El usuario debe poder jugar una partida sin conocer de antemano el mundo, el mapa ni los acontecimientos futuros.
+
+Este protocolo prevalece sobre las prácticas anteriores de presentar propuestas de regiones, ciudades, personajes o misterios como contenido visible durante el desarrollo.
