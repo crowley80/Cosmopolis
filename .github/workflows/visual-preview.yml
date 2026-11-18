@@ -6,6 +6,12 @@ on:
       - 'app/**'
       - 'index.html'
       - '.github/workflows/visual-preview.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'index.html'
+      - '.github/workflows/visual-preview.yml'
   workflow_dispatch:
 
 permissions:
@@ -64,7 +70,15 @@ jobs:
             const page = await context.newPage();
             page.on('pageerror', error => console.error('PAGE ERROR:', error.message));
             await page.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
+            const continueSave = page.locator('[data-load-save]').first();
+            if (await continueSave.count()) await continueSave.click();
             await page.locator('.adventure-screen').waitFor();
+
+            // Prueba real del panel de mapa y su primer nodo (posición actual).
+            await page.locator('#openMap').click();
+            await page.locator('.atlas-map').waitFor();
+            if (await page.locator('.atlas-map-node').count() < 1) throw new Error('El mapa no representa la ubicación actual');
+            await page.locator('#closeToolPanel').click();
 
             // Regresión narrativa: apertura aprobada, descubrimientos graduales y Athun permanente.
             await page.evaluate(async () => {
@@ -80,18 +94,28 @@ jobs:
               if (!opening.state.inventory.some(item => String(item).toLowerCase().includes('athun'))) fail('Athun no está en el inventario inicial');
               if (!opening.state.athun || opening.state.athun.permanent !== true) fail('Athun no está protegido como pertenencia permanente');
 
-              const previousSave = localStorage.getItem(Save.key);
+              const previousStorage = Array.from({ length: localStorage.length }, (_, index) => {
+                const key = localStorage.key(index);
+                return [key, localStorage.getItem(key)];
+              });
               try {
-                localStorage.setItem(Save.key, JSON.stringify({ adventure: { state: { inventory: [] } }, actions: [] }));
+                localStorage.clear();
+                const legacyRaw = JSON.stringify({ adventure: { state: { inventory: [] } }, actions: [] });
+                localStorage.setItem(Save.key, legacyRaw);
                 const legacySave = Save.load();
-                const persistedLegacy = JSON.parse(localStorage.getItem(Save.key));
                 if (!legacySave.adventure.state.inventory.some(item => String(item).toLowerCase().includes('athun'))) fail('la partida antigua no recibe a Athun');
-                if (!persistedLegacy.adventure.state.athun || persistedLegacy.adventure.state.athun.permanent !== true) fail('la migración no persiste la protección de Athun');
+                const activeId = Save.getActiveId();
+                const migratedKey = Save.slotPrefix + activeId;
+                const persistedSlot = JSON.parse(localStorage.getItem(migratedKey));
+                if (!persistedSlot.adventure.state.athun || persistedSlot.adventure.state.athun.permanent !== true) fail('la migración no persiste la protección de Athun');
+                if (localStorage.getItem(Save.key) !== legacyRaw) fail('la migración modifica la clave heredada original');
+                const beforeSecondLoad = localStorage.getItem(migratedKey);
                 const migratedAgain = Save.load();
                 if (!migratedAgain.adventure.state.inventory.some(item => String(item).toLowerCase().includes('athun'))) fail('la migración no es estable al cargar de nuevo');
+                if (localStorage.getItem(migratedKey) !== beforeSecondLoad) fail('la segunda carga vuelve a escribir la partida migrada');
               } finally {
-                if (previousSave === null) localStorage.removeItem(Save.key);
-                else localStorage.setItem(Save.key, previousSave);
+                localStorage.clear();
+                previousStorage.forEach(([key, value]) => { if (key !== null) localStorage.setItem(key, value); });
               }
 
               const question = Director.respond('Pregunto si ocurre algo importante en el pueblo.', player, opening, []);
@@ -110,19 +134,48 @@ jobs:
               const magic = Director.respond('Invoco magia sobre el pozo.', player, inspect.adventure, [{ text: 'Entro en el pueblo' }, { text: 'Camino hacia la plaza' }, { text: 'Examino el pozo' }]);
               if (!magic.state.bellDiscovered || !/campanada|campana/i.test(magic.reply)) fail('la magia no descubre la respuesta de la campana');
 
+              // La interacción con lugares y personajes exige presencia en la escena.
+              const awayState = JSON.parse(JSON.stringify(magic.adventure));
+              awayState.state.currentLocation = 'Calle Mayor';
+              awayState.location = 'Calle Mayor';
+              awayState.state.wellInspected = false;
+              const remoteWell = Director.respond('Examino el pozo con cuidado.', player, awayState, []);
+              if (remoteWell.state.wellInspected) fail('se puede inspeccionar el pozo desde otra ubicación');
+              if (/tres simbolos|piedra con detenimiento/i.test(remoteWell.reply)) fail('se narra una inspección presencial del pozo a distancia');
+
+              const eliaAway = JSON.parse(JSON.stringify(awayState));
+              eliaAway.state.eliaMet = true;
+              eliaAway.state.eliaTrust = 3;
+              eliaAway.state.characters.Elia = { name: 'Elia', role: 'Cartógrafa', location: 'Plaza del pozo', trust: 3 };
+              const eliaQuestion = Director.respond('Pregunto por Elia.', player, eliaAway, []);
+              if (/Elia aprieta|podemos examinar el pozo/i.test(eliaQuestion.reply) || eliaQuestion.state.eliaTrust !== 3) fail('Elia responde o aumenta confianza estando en otro lugar');
+              const remoteOffer = Director.respond('Ofrezco ayuda a Elia.', player, eliaAway, []);
+              if (remoteOffer.state.eliaTrust !== 3 || /Elia acepta tu gesto/i.test(remoteOffer.reply)) fail('se ofrece ayuda a Elia a distancia');
+
+              const wellWithoutElia = JSON.parse(JSON.stringify(magic.adventure));
+              wellWithoutElia.state.wellInspected = true;
+              wellWithoutElia.state.characters.Elia = { name: 'Elia', role: 'Cartógrafa', location: 'Calle Mayor', trust: 3 };
+              wellWithoutElia.state.eliaMet = true;
+              const openWithoutElia = Director.respond('Intento levantar la losa del pozo.', player, wellWithoutElia, []);
+              if (/Elia te observa/i.test(openWithoutElia.reply)) fail('Elia aparece junto al pozo aunque está en Calle Mayor');
+
               const originalFetch = window.fetch;
               const fakeNarrative = {
-                reply: 'Athun permanece contigo.',
+                reply: 'Llegas a la Plaza del pozo y descubres un viejo pozo de piedra. Desde el fondo llega una campanada apagada. Una mujer se acerca y se presenta: «Me llamo Elia; soy cartógrafa». Athun permanece contigo.',
                 event: 'El grimorio ha permanecido en el inventario.',
-                category: 'other',
+                category: 'movement',
                 location: 'Plaza del pozo',
-                factsToAdd: ['Hay un pozo antiguo en la plaza.', 'Una campana ha sonado desde el pozo.'],
+                visibleLocations: [],
+                factsToAdd: ['Llegas a la Plaza del pozo y descubres un viejo pozo de piedra.', 'Desde el fondo llega una campanada apagada.'],
                 cluesToAdd: [],
                 relationshipChanges: [],
                 itemsToAdd: [],
                 itemsToRemove: ['Athun'],
+                athunMemoriesToAdd: [],
+                athunRevelationsToAdd: [],
+                athunBondChange: { delta: 0, reason: 'La observación no altera el vínculo.' },
                 characterMemoriesToAdd: [],
-                charactersToAdd: [{ name: 'Elia', role: 'Cartógrafa', location: 'Plaza del pozo', attitude: 'Cautelosa', goal: 'Investigar los mapas', memory: 'Ha conocido al protagonista.' }],
+                charactersToAdd: [{ name: 'Elia', role: 'Cartógrafa', location: 'Plaza del pozo', attitude: 'Cautelosa', goal: 'Investigar los mapas', memory: 'Ha conocido al protagonista.', evidence: 'Una mujer se acerca y se presenta: «Me llamo Elia; soy cartógrafa».' }],
                 characterUpdates: [],
                 characterActions: [],
                 goalUpdates: [],
@@ -158,6 +211,7 @@ jobs:
             const pageErrors = [];
             page.on('pageerror', error => pageErrors.push(error.message));
             page.on('console', message => { if (message.type() === 'error') console.error('BROWSER_CONSOLE_ERROR:', message.text()); });
+            page.on('response', response => { if (response.status() === 404) console.error('RESOURCE_404_URL:', response.url()); });
             let narrativeCall = 0;
             await page.route('http://127.0.0.1:8081/**', async route => {
               const request = route.request();
@@ -172,17 +226,21 @@ jobs:
                 await route.fulfill({ status: 200, headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'ok' }) });
               } else {
                 const result = narrativeCall++ === 0 ? {
-                  reply: 'La observación revela una pequeña marca de cobre entre las piedras.',
+                  reply: 'La observación revela una pequeña marca de cobre entre las piedras. Junto a ella encuentras un medallón de cobre. Elia se inclina para examinar la marca de cobre junto a Ariadna. Tomás se acerca desde la entrada de la plaza y observa el hallazgo.',
                   event: 'Ariadna ha encontrado un medallón de cobre junto al pozo.',
                   category: 'investigation',
                   location: 'Plaza del pozo',
-                  factsToAdd: ['Hay una marca reciente entre las piedras.'],
-                  cluesToAdd: ['Un medallón de cobre estaba junto al pozo.'],
+                visibleLocations: [],
+                  factsToAdd: ['La observación revela una pequeña marca de cobre entre las piedras.'],
+                  cluesToAdd: ['Junto a ella encuentras un medallón de cobre.'],
                   relationshipChanges: [],
                   goalUpdates: [{ character: 'Elia', goal: 'Averiguar por qué suenan las campanas.', status: 'progress', reason: 'La marca recién descubierta aporta una pista nueva.' }],
                   itemsToAdd: ['Medallón de cobre'],
                   itemsToRemove: [],
-                  charactersToAdd: [{ name: 'Tomás', role: 'Vecino', location: 'Plaza del pozo', attitude: 'Desconfiado', memory: 'Tomás vio a Ariadna encontrar el medallón.', goal: 'Proteger a los vecinos de los peligros que salgan del pozo.' }],
+                  athunMemoriesToAdd: [],
+                  athunRevelationsToAdd: [],
+                  athunBondChange: { delta: 0, reason: 'La acción no modifica el vínculo.' },
+                  charactersToAdd: [{ name: 'Tomás', role: 'Vecino', location: 'Plaza del pozo', attitude: 'Desconfiado', memory: 'Tomás vio a Ariadna encontrar el medallón.', goal: 'Proteger a los vecinos de los peligros que salgan del pozo.', evidence: 'Tomás se acerca desde la entrada de la plaza y observa el hallazgo.' }],
                   characterUpdates: [{ character: 'Elia', location: 'Plaza del pozo', attitude: 'Más confiada' }],
                   characterActions: [{ character: 'Elia', action: 'Elia se inclina para examinar la marca de cobre junto a Ariadna.' }],
                   characterMemoriesToAdd: [{ character: 'Elia', memory: 'Ariadna encontró un medallón de cobre junto al pozo.' }],
@@ -193,7 +251,8 @@ jobs:
                   event: 'Ariadna ha entregado el medallón de cobre a Elia.',
                   category: 'offer',
                   location: 'Plaza del pozo',
-                  factsToAdd: ['Elia ha recibido el medallón de cobre.'],
+                visibleLocations: [],
+                  factsToAdd: ['Entregas el medallón a Elia.'],
                   cluesToAdd: [],
                   goalUpdates: [
                     { character: 'Tomás', goal: 'Proteger a los vecinos de los peligros que salgan del pozo.', status: 'blocked', reason: 'La generosidad de Ariadna le anima a implicarse en la seguridad del pueblo.' },
@@ -205,6 +264,9 @@ jobs:
                   ],
                   itemsToAdd: [],
                   itemsToRemove: ['Medallón de cobre'],
+                  athunMemoriesToAdd: [],
+                  athunRevelationsToAdd: [],
+                  athunBondChange: { delta: 0, reason: 'La entrega no modifica el vínculo.' },
                   charactersToAdd: [],
                   characterUpdates: [{ character: 'Tomás', location: 'Entrada de la posada', attitude: 'Atento' }],
                   characterActions: [{ character: 'Tomás', action: 'Tomás observa desde la entrada y decide no interrumpir.' }],
@@ -228,11 +290,11 @@ jobs:
             await page.locator('#closeToolPanel').click();
 
             await page.locator('#openMap').click();
-            await page.locator('#toolOverlay').getByText('Plaza del pozo').waitFor();
+            await page.locator('#toolOverlay .atlas-place-name').filter({ hasText: 'Plaza del pozo' }).waitFor();
             await page.locator('#closeToolPanel').click();
 
             await page.locator('#openInventory').click();
-            await page.locator('#toolOverlay').getByText('Tu inventario está vacío por ahora.').waitFor();
+            await page.locator('#toolOverlay').getByText('Athun — grimorio consciente').waitFor();
             await page.locator('#closeToolPanel').click();
 
             await page.locator('#openOptions').click();
@@ -248,6 +310,8 @@ jobs:
             assert.ok(!firstNarrative.includes('Elia: Elia se inclina') && !firstNarrative.includes(String.fromCharCode(92) + 'n'), 'La iniciativa no debe mostrarse como ficha ni con escapes visibles: ' + firstNarrative);
             const goalFallbackProbe = await page.evaluate(() => {
               const probeAdventure = Adventure.createOpening({ name: 'Ariadna' });
+              probeAdventure.state.currentLocation = 'Plaza del pozo';
+              probeAdventure.state.phase = 'exploration';
               probeAdventure.state.characters.Tomás = {
                 role: 'Vecino', location: 'Plaza del pozo', personalGoal: 'Proteger a los vecinos de los peligros del pozo.', trust: 0, memories: []
               };
@@ -265,9 +329,12 @@ jobs:
                 event: 'Un objetivo personal ha cambiado con fundamento.',
                 category: 'dialogue',
                 location: 'Plaza del pozo',
+                visibleLocations: [],
                 factsToAdd: [], cluesToAdd: [], relationshipChanges: [],
-                itemsToAdd: [], itemsToRemove: [], charactersToAdd: [],
-                characterUpdates: [], characterActions: [], characterMemoriesToAdd: [],
+                itemsToAdd: [], itemsToRemove: [],
+                athunMemoriesToAdd: [], athunRevelationsToAdd: [],
+                athunBondChange: { delta: 0, reason: 'La conversación no modifica el vínculo.' },
+                charactersToAdd: [], characterUpdates: [], characterActions: [], characterMemoriesToAdd: [],
                 goalUpdates: [goalUpdate], time: 'Tarde', day: 2
               });
               const run = async (person, goalUpdate) => {
@@ -339,6 +406,7 @@ jobs:
             const contextProbe = await page.evaluate(() => {
               const saved = Save.load();
               const probe = JSON.parse(JSON.stringify(saved.adventure));
+              probe.state.eliaMet = true;
               probe.state.events = Array.from({ length: 30 }, (_, i) => 'Evento de prueba ' + i);
               probe.state.characters.Elia.memories = Array.from({ length: 12 }, (_, i) => 'Recuerdo de prueba ' + i);
               probe.state.characters.Elia.completedGoals = Array.from({ length: 10 }, (_, i) => ({ goal: 'Meta cumplida ' + i, reason: 'Motivo archivado ' + i }));
@@ -366,9 +434,8 @@ jobs:
               'El contexto debe limitarse sin borrar recuerdos e incluir límites de conocimiento');
 
             await page.waitForFunction(() => {
-              const raw = localStorage.getItem('cosmopolis_save');
-              if (!raw) return false;
-              const data = JSON.parse(raw);
+              const data = Save.load();
+              if (!data) return false;
               return data.actions && data.actions.length === 1 &&
                 data.adventure.state.inventory.includes('Medallón de cobre') &&
                 data.adventure.state.visitedLocations.includes('Plaza del pozo');
@@ -381,9 +448,8 @@ jobs:
             await page.locator('#playerAction').fill('Entrego el medallón de cobre a Elia.');
             await page.locator('#actionForm button[type="submit"]').click();
             await page.waitForFunction(() => {
-              const raw = localStorage.getItem('cosmopolis_save');
-              if (!raw) return false;
-              const data = JSON.parse(raw);
+              const data = Save.load();
+              if (!data) return false;
               return data.actions && data.actions.length === 2 &&
                 !data.adventure.state.inventory.includes('Medallón de cobre') &&
                 data.adventure.state.characters.Elia.trust === 1 &&
@@ -411,6 +477,8 @@ jobs:
             const liveMeta = await page.locator('.manuscript-meta').textContent();
             assert.ok(liveMeta.includes('Momento: Mediodía'), 'La cabecera debe actualizarse sin recargar: ' + liveMeta);
             await page.reload({ waitUntil: 'networkidle' });
+            const reloadContinue = page.locator('[data-load-save]').first();
+            if (await reloadContinue.count()) await reloadContinue.click();
             await page.waitForFunction(() => {
               const story = document.querySelector('#storyContent');
               return story && story.textContent.trim().length > 0;
@@ -420,7 +488,7 @@ jobs:
             assert.ok(restoredAction.includes('Entrego el medallón de cobre a Elia.'), 'La última acción debe recuperarse tras recargar: ' + restoredAction);
             assert.ok(restoredMeta.includes('Momento: Mediodía'), 'El reloj interno debe recuperarse tras recargar: ' + restoredMeta);
             await page.locator('#openInventory').click();
-            await page.locator('#toolOverlay').getByText('Tu inventario está vacío por ahora.').waitFor();
+            await page.locator('#toolOverlay').getByText('Athun — grimorio consciente').waitFor();
             await page.locator('#closeToolPanel').click();
             await page.locator('#openHistory').click();
             await page.locator('#toolOverlay').getByText('Entregas el medallón a Elia. Ella lo guarda con cuidado en su tubo de mapas.').waitFor();
@@ -450,12 +518,59 @@ jobs:
             const desktopPage = await desktop.newPage();
             const desktopErrors = [];
             desktopPage.on('pageerror', error => desktopErrors.push(error.message));
+            desktopPage.on('response', response => { if (response.status() === 404) console.error('RESOURCE_404_URL:', response.url()); });
             await desktopPage.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
+            const desktopContinue = desktopPage.locator('[data-load-save]').first();
+            if (await desktopContinue.count()) await desktopContinue.click();
             await desktopPage.locator('.adventure-screen').waitFor();
             const desktopWidth = await desktopPage.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth }));
             assert.ok(desktopWidth.document <= desktopWidth.viewport, 'La interfaz de escritorio no debe desbordarse horizontalmente');
             assert.equal(desktopErrors.length, 0, 'No deben producirse errores JavaScript en escritorio: ' + desktopErrors.join('; '));
             await desktopPage.screenshot({ path: 'artifacts/cosmopolis-desktop.png', fullPage: true });
+
+            // Regresión de interfaz: dos protagonistas, alternancia y aislamiento personal.
+            const slotIds = await desktopPage.evaluate(() => {
+              const ari = Save.list().find(entry => entry.name === 'Ariadna');
+              const darian = Save.createSlot({
+                name: 'Darian',
+                nature: 'Humano',
+                appearance: 'Viajero de ojos claros.',
+                history: 'Procede del norte.',
+                abilities: 'Orientación.',
+                personality: 'Reservado.'
+              }, {
+                id: 'darian-adventure',
+                title: 'La ruta del norte',
+                location: 'Puerto de Bruma',
+                text: 'Una historia distinta.',
+                state: { currentLocation: 'Puerto de Bruma', inventory: ['Mapa antiguo'], visitedLocations: ['Puerto de Bruma'], visibleLocations: [], characters: {} }
+              }, {
+                world: { facts: ['Recuerdo privado de Darian'], events: [], relationships: {} }
+              });
+              return { ari: ari && ari.id, darian, globalLocations: Save.getGlobalWorld().locations.map(entry => typeof entry === 'string' ? entry : entry.name) };
+            });
+            assert.ok(slotIds.ari && slotIds.darian, 'Deben existir dos partidas independientes');
+            assert.ok(slotIds.globalLocations.includes('Plaza del pozo'), 'El mundo común debe conservar el lugar descubierto por Ariadna');
+
+            await desktopPage.reload({ waitUntil: 'networkidle' });
+            await desktopPage.locator('[data-load-save]').first().waitFor();
+            assert.equal(await desktopPage.locator('[data-load-save]').count(), 2, 'El selector debe mostrar ambos protagonistas');
+            await desktopPage.locator('[data-load-save="' + slotIds.ari + '"]').click();
+            const ariState = await desktopPage.evaluate(() => Save.load());
+            assert.equal(ariState.character.name, 'Ariadna', 'El selector debe abrir la partida elegida');
+            assert.ok(!ariState.world.facts.includes('Recuerdo privado de Darian'), 'Los recuerdos personales de Darian no deben filtrarse a Ariadna');
+            assert.ok(ariState.adventure.state.inventory.includes('Athun — grimorio consciente'), 'Ariadna debe conservar a Athun');
+
+            await desktopPage.locator('#openOptions').click();
+            await desktopPage.locator('#toolOverlay #switchSaveFromOptions').click();
+            await desktopPage.locator('[data-load-save="' + slotIds.darian + '"]').click();
+            const darianState = await desktopPage.evaluate(() => Save.load());
+            assert.equal(darianState.character.name, 'Darian', 'Debe poder alternarse al segundo protagonista');
+            assert.ok(darianState.world.facts.includes('Recuerdo privado de Darian'), 'La segunda partida debe conservar sus recuerdos propios');
+            assert.ok(!darianState.world.facts.includes('El personaje ha mostrado generosidad.'), 'El progreso personal de Ariadna no debe filtrarse a Darian');
+            assert.ok(darianState.adventure.state.inventory.includes('Mapa antiguo'), 'Darian debe conservar su inventario independiente');
+            assert.ok(darianState.adventure.state.inventory.includes('Athun — grimorio consciente'), 'Athun debe existir también en la partida de Darian');
+
             await browser.close();
           })().catch(error => { console.error(error); process.exit(1); });
           NODE

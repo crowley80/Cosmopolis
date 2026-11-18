@@ -90,21 +90,78 @@ const Athun = {
 
     showMap() {
         const saved = Save.load() || {};
-        const state = saved.adventure && saved.adventure.state ? saved.adventure.state : {};
-        const places = Array.isArray(state.visitedLocations) ? state.visitedLocations.slice() : [];
-        const current = state.currentLocation || (saved.adventure && saved.adventure.location) || '';
-        if (current && !places.includes(current)) places.push(current);
-        const placeList = places.length
-            ? places.map((place, index) => `<li><span>${index + 1}.</span> ${this.escape(place)}${place === current ? ' <strong>· Aquí</strong>' : ''}</li>`).join('')
-            : '<li>El personaje aún no ha registrado lugares.</li>';
+        const adventure = saved.adventure || {};
+        const state = adventure.state || {};
+        const atlas = WorldMap.getAtlas(Save.getGlobalWorld(), state, adventure);
+        const renderEntries = entries => entries.length
+            ? entries.map(item => `
+                <li class="atlas-place atlas-place-${item.status}">
+                    <span class="atlas-marker" aria-hidden="true"></span>
+                    <span class="atlas-place-name">${this.escape(item.name)}</span>
+                    <span class="atlas-status">${item.status === 'current' ? 'Aquí' : item.status === 'visible' ? 'A la vista' : item.status === 'visited' ? 'Visitado' : 'Conocido'}</span>
+                </li>
+            `).join('')
+            : '<li class="atlas-empty">Todavía no hay lugares en esta categoría.</li>';
         const clues = Array.isArray(state.clues) && state.clues.length
             ? state.clues.map(clue => `<li>${this.escape(clue)}</li>`).join('')
             : '<li>Todavía no has descubierto pistas.</li>';
-        this.openPanel('Mapa de lugares conocidos', `
-            <p class="tool-intro">Este registro solo muestra lugares que tu personaje ha visitado o conoce. Las zonas desconocidas permanecen en blanco.</p>
-            <h3>Lugares registrados</h3><ol class="tool-list">${placeList}</ol>
+        const visible = atlas.currentAndVisible;
+        const layout = WorldMap.getSchematicLayout(atlas);
+        const nodeMarkup = layout.nodes.map(node => `
+            <g class="atlas-map-node atlas-map-node-${node.status}" transform="translate(${node.x} ${node.y})">
+                <circle r="${node.status === 'current' ? 12 : 8}"></circle>
+                <text y="23" text-anchor="middle">${this.escape(node.name.length > 22 ? node.name.slice(0, 20) + '…' : node.name)}</text>
+            </g>
+        `).join('');
+        const edgeMarkup = layout.edges.map(edge => `
+            <path class="atlas-map-route" d="M ${edge.from.x} ${edge.from.y} L ${edge.to.x} ${edge.to.y}"></path>
+        `).join('');
+        const content = `
+            <p class="tool-intro">La cartografía se amplía cuando exploras. Este esquema no está a escala: muestra únicamente lugares descubiertos y caminos que alguien ha recorrido. El grimorio distingue lo que tienes a la vista, lo que ya recorriste y lo que otros viajeros descubrieron. Los territorios sin descubrir permanecen ocultos.</p>
+            <div class="atlas-map-frame" role="img" aria-label="Esquema de lugares conocidos y caminos recorridos">
+                <svg class="atlas-map" viewBox="0 0 ${layout.width} ${layout.height}" aria-hidden="true">
+                    <defs>
+                        <radialGradient id="atlasFog"><stop offset="0" stop-color="#756044" stop-opacity=".03"></stop><stop offset="1" stop-color="#3c3025" stop-opacity=".26"></stop></radialGradient>
+                    </defs>
+                    <rect x="0" y="0" width="600" height="348" rx="12" fill="url(#atlasFog)"></rect>
+                    <path class="atlas-map-fog" d="M0 30 Q95 0 165 42 T300 26 T455 40 T600 20 M0 315 Q110 280 180 322 T340 310 T480 326 T600 300"></path>
+                    ${edgeMarkup}${nodeMarkup}
+                </svg>
+                <p class="atlas-map-caption">Esquema de exploración · sin escala ni orientación geográfica</p>
+            </div>
+            <div class="atlas-legend" aria-label="Leyenda del mapa">
+                <span><i class="atlas-dot atlas-dot-visible"></i>A la vista</span>
+                <span><i class="atlas-dot atlas-dot-visited"></i>Visitado</span>
+                <span><i class="atlas-dot atlas-dot-known"></i>Conocido</span>
+                <span><i class="atlas-dot atlas-dot-hidden"></i>Sin descubrir</span>
+            </div>
+            <section class="atlas-section">
+                <h3>Entorno inmediato</h3>
+                <ul class="atlas-list">${renderEntries(visible)}</ul>
+            </section>
+            <section class="atlas-section">
+                <h3>Lugares que ya recorriste</h3>
+                <ul class="atlas-list">${renderEntries(atlas.visited)}</ul>
+            </section>
+            <section class="atlas-section">
+                <h3>Conocidos en el mundo compartido</h3>
+                <p class="atlas-note">Estos lugares ya forman parte del conocimiento del mundo compartido, pero tu personaje todavía no los ha visitado ni los tiene a la vista.</p>
+                <ul class="atlas-list">${renderEntries(atlas.known)}</ul>
+            </section>
+            <section class="atlas-section">
+                <h3>Caminos recorridos</h3>
+                ${atlas.connections.length
+                    ? '<ul class="atlas-list">' + atlas.connections.map(route =>
+                        '<li class="atlas-place atlas-route"><span class="atlas-place-name">' +
+                        this.escape(route.from) + ' → ' + this.escape(route.to) +
+                        '</span><span class="atlas-status">Recorrido</span></li>'
+                    ).join('') + '</ul>'
+                    : '<p class="atlas-note">Todavía no has recorrido ningún camino entre dos zonas registradas.</p>'}
+            </section>
+            <p class="atlas-frontier"><span aria-hidden="true">✧</span> Más allá de estas páginas, la niebla todavía oculta el territorio.</p>
             <h3>Pistas reunidas</h3><ul class="tool-list">${clues}</ul>
-        `);
+        `;
+        this.openPanel('Atlas y niebla de exploración', content);
     },
 
     showInventory() {
@@ -133,6 +190,7 @@ const Athun = {
             </dl>
             <button type="button" id="saveNow" class="tool-action">Guardar ahora</button>
             <button type="button" id="profileFromOptions" class="tool-action secondary">Consultar mi ficha</button>
+            <button type="button" id="switchSaveFromOptions" class="tool-action secondary">Cambiar de partida</button>
             <p id="toolFeedback" role="status" aria-live="polite"></p>
         `, overlay => {
             overlay.querySelector('#saveNow').addEventListener('click', () => {
@@ -145,6 +203,10 @@ const Athun = {
             overlay.querySelector('#profileFromOptions').addEventListener('click', () => {
                 overlay.remove();
                 this.showProfile(character);
+            });
+            overlay.querySelector('#switchSaveFromOptions').addEventListener('click', () => {
+                overlay.remove();
+                this.showSaveSelection();
             });
         });
     },
@@ -171,18 +233,106 @@ const Athun = {
         });
     },
 
-    init() {
-        const saved = Save.load();
+    showPrologue() {
+        const app = document.getElementById('app');
+        const paragraphs = [
+            'Athun no fue hallado en una torre de alta hechicería ni en la cripta de un rey olvidado. Apareció una madrugada en la costa, varado entre algas y con un penetrante y sospechoso tufo a sardina rancia. Un grupo de pescadores locales, poco impresionados por las runas doradas de su lomo, decidió que era el papel perfecto para envolver las raciones de pescado frito del puesto de la playa. De milagro, y antes de que terminara empapado en aceite y adobo, el libro fue rescatado.',
+            'Ahora, Athun se abre ante ti. Sus páginas, que aún conservan un potente e indómito aroma a marisma (al que solo puedes acceder con una pinza en la nariz) contienen un mundo vivo, obstinado y persistente. Un mundo que no espera a nadie... y al que le da exactamente igual cuántas veces mueras en el intento.'
+        ];
 
-        if (saved && saved.character) {
-            if (saved.adventure) {
-                this.showAdventure(saved.character, saved.adventure);
-            } else {
-                this.showProfile(saved.character);
+        app.innerHTML = `
+            <header class="main-header">
+                <p class="eyebrow">UNA HISTORIA QUE COMIENZA</p>
+                <h1>Athun: el grimorio oscuro</h1>
+                <p>Antes de abrir sus páginas, debes conocer su historia.</p>
+            </header>
+            <section class="welcome">
+                <h2>El origen de Athun</h2>
+                ${paragraphs.map(paragraph => `<p>${this.escape(paragraph)}</p>`).join('')}
+            </section>
+            <section class="character-creation">
+                <button type="button" id="continueFromPrologue">Continuar</button>
+            </section>
+            <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
+        `;
+
+        document.getElementById('continueFromPrologue').addEventListener('click', () => {
+            try {
+                localStorage.setItem('athun_intro_seen_v1', '1');
+            } catch (error) {
+                console.warn('No se pudo registrar la presentación inicial:', error);
             }
-        } else {
             this.showForm();
+        });
+    },
+
+    init() {
+        const saves = Save.list();
+        if (saves.length) {
+            this.showSaveSelection();
+            return;
         }
+        const index = Save.getIndex();
+        if (index && index.migrationFailed) {
+            document.getElementById('app').innerHTML = `
+                <section class="welcome" role="alert">
+                    <h2>No se ha podido recuperar la partida</h2>
+                    <p>Los datos anteriores siguen conservados. No se ha creado ni sobrescrito ninguna partida.</p>
+                    <p>Vuelve a intentarlo cuando el almacenamiento esté disponible.</p>
+                </section>
+            `;
+            return;
+        }
+        if (localStorage.getItem('athun_intro_seen_v1') !== '1') {
+            this.showPrologue();
+            return;
+        }
+        this.showForm();
+    },
+
+    showSaveSelection() {
+        const app = document.getElementById('app');
+        const saves = Save.list();
+        const entries = saves.map(entry => {
+            const date = entry.updatedAt ? new Date(entry.updatedAt).toLocaleString('es-ES') : 'Fecha desconocida';
+            return `
+                <article class="profile-section">
+                    <h3>${this.escape(entry.name || 'Partida sin nombre')}</h3>
+                    <p>${this.escape(entry.title || 'Ficha sin aventura')}</p>
+                    <p>${this.escape(date)}${entry.active ? ' · Activa' : ''}</p>
+                    <button type="button" data-load-save="${this.escape(entry.id)}">Continuar esta historia</button>
+                </article>
+            `;
+        }).join('');
+        app.innerHTML = `
+            <header class="main-header">
+                <p class="eyebrow">EL GRIMORIO TE RECUERDA</p>
+                <h1>Athun: el grimorio oscuro</h1>
+                <p>Un mundo compartido. Historias que pertenecen a cada protagonista.</p>
+            </header>
+            <section class="character-creation">
+                <div class="section-heading">
+                    <h2>Tus partidas</h2>
+                    <p>Elige qué historia deseas continuar o crea un nuevo protagonista.</p>
+                </div>
+                ${entries || '<p>Aún no hay partidas guardadas.</p>'}
+                <button type="button" id="createNewCharacter">Crear un personaje nuevo</button>
+            </section>
+            <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
+        `;
+        app.querySelectorAll('[data-load-save]').forEach(button => {
+            button.addEventListener('click', () => {
+                if (!Save.activate(button.dataset.loadSave)) {
+                    alert('No se ha podido abrir esa partida. Tus datos permanecen intactos.');
+                    return;
+                }
+                const saved = Save.load();
+                if (saved && saved.adventure) this.showAdventure(saved.character, saved.adventure);
+                else if (saved && saved.character) this.showProfile(saved.character);
+                else this.showForm();
+            });
+        });
+        document.getElementById('createNewCharacter').addEventListener('click', () => this.showForm());
     },
 
     showForm(character = {}) {
@@ -247,7 +397,17 @@ const Athun = {
         form.addEventListener('submit', event => {
             event.preventDefault();
             const data = Object.fromEntries(new FormData(form));
-            const created = Character.create(data);
+            const editing = Boolean(character && character.name);
+            let created;
+            try {
+                created = Character.create(data, {
+                    update: editing,
+                    previousCreatedAt: character.createdAt
+                });
+            } catch (error) {
+                alert('No se ha podido guardar el personaje. No se han eliminado partidas existentes.');
+                return;
+            }
             this.showProfile(created);
         });
     },
@@ -279,6 +439,7 @@ const Athun = {
                 <button id="startAdventure">${saved && saved.adventure ? 'Continuar aventura guardada' : 'Comenzar aventura'}</button>
                 <button id="newAdventure">Comenzar una aventura nueva</button>
                 <button id="editCharacter">Editar mi personaje</button>
+                <button id="changeSave">Cambiar de personaje o partida</button>
             </section>
             <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
         `;
@@ -293,6 +454,10 @@ const Athun = {
 
         document.getElementById('editCharacter').addEventListener('click', () => {
             this.showForm(character);
+        });
+
+        document.getElementById('changeSave').addEventListener('click', () => {
+            this.showSaveSelection();
         });
     },
 

@@ -1299,9 +1299,15 @@ La identidad vigente del proyecto es **Athun: el grimorio oscuro**. El nombre Co
 - El prólogo no debe confundirse con la narración recurrente de la aventura ni aparecer como escena inicial cada vez que se carga una partida.
 - La implementación debe guardar de forma persistente que la presentación inicial ya se mostró y manejar con cuidado instalaciones antiguas/partidas existentes: nunca reiniciar ni sobrescribir una partida guardada para mostrar el prólogo.
 
-### Estado de implementación de este flujo
-- La ruta actual de `Athun.init()` carga directamente la aventura si encuentra personaje y aventura guardados; si solo encuentra personaje, muestra su ficha; si no encuentra personaje, abre el formulario de creación.
-- Todavía no existe la presentación única del prólogo ni el registro persistente de que ya se mostró. El comportamiento solicitado está aprobado como requisito, pero **no está implementado ni probado**.
+### Estado de implementación de este flujo — verificado el 16/11/2026
+- `Athun.showPrologue()` presenta el texto aprobado íntegramente, dividido en dos párrafos, y ofrece el botón «Continuar».
+- Al continuar, registra `athun_intro_seen_v1=1` en el almacenamiento local y pasa a la creación del personaje.
+- `Athun.init()` comprueba primero las partidas existentes: si hay alguna, abre el selector de partidas y omite el prólogo, incluso en instalaciones antiguas que todavía no tengan la marca de presentación. Así se evita reiniciar o sobrescribir partidas previas.
+- En una instalación sin partidas, muestra el prólogo solo cuando la marca aún no existe; en siguientes arranques abre directamente la creación del personaje.
+- `tests/prologue.test.js` comprueba el texto aprobado, el registro al continuar, la presentación en una instalación nueva y la omisión para instalaciones con marca o con partidas existentes.
+- GitHub Actions, ejecución 447 (`43941850589`): suite completa `node --test tests/*.test.js` y comprobación de sintaxis JavaScript, correctas sobre el commit `82a3c38`.
+- Playwright, ejecución 233 (`43941850563`): validación visual móvil simulada y escritorio, correcta sobre el mismo commit.
+- La prueba en un Chrome de Android físico sigue pendiente; las pruebas automatizadas no la sustituyen.
 ## DECISIONES NARRATIVAS Y DE ARQUITECTURA — 15 DE NOVIEMBRE DE 2026
 
 ### Athun, el grimorio consciente
@@ -1456,3 +1462,742 @@ Se implementó también una migración idempotente en `Save.load()` para partida
 **Pruebas automatizadas añadidas al workflow:** la misma batería narrativa, protección de Athun frente a la IA y migración de una partida antigua. El workflow se activa con los cambios de `index.html` y del propio archivo de workflow. No se ha podido consultar su resultado remoto en esta sesión y no se afirma que la prueba visual en Android esté completada.
 
 **Commits recientes:** guardado `99d7a19` y `db7d4a3`; prueba de migración `7eb287f`; caché `b9c37b1`; documentación `3a28313` y `3f2d582`. Se conservaron respaldos antes de las modificaciones. No se ha eliminado ni sobrescrito deliberadamente ninguna partida guardada.
+
+
+## IMPLEMENTACIÓN INICIAL DE PARTIDAS MÚLTIPLES — 16 DE NOVIEMBRE DE 2026
+
+Se ha iniciado la implementación en la rama independiente `feat/athun-multisave-world`, sin modificar `main`.
+
+- Se creó un índice de partidas, un identificador de partida activa y un registro independiente por protagonista.
+- La partida antigua `cosmopolis_save` se migra como partida heredada y su clave original se conserva intacta.
+- Se incorporaron creación, listado y activación de partidas; la ficha puede editarse sin crear otra partida.
+- Una aventura nueva crea un registro independiente cuando ya existe una aventura, evitando archivar y reemplazar la anterior.
+- Se separó el almacenamiento del mundo compartido. Las localizaciones descubiertas se registran globalmente y aparecen en el mapa de los protagonistas.
+- Se añadió el selector inicial de partidas y accesos para cambiar de historia o crear otro protagonista.
+- Athun se repone en la normalización del inventario y el narrador no puede retirarlo mediante `itemsToRemove`.
+- Se añadieron pruebas automatizadas y un flujo de GitHub Actions para comprobar sintaxis y almacenamiento.
+- Se guardaron copias de seguridad de los archivos de ejecución modificados y de este documento.
+
+**Estado de validación:** implementación en rama de trabajo; GitHub Actions ha superado la comprobación de sintaxis y las 6 pruebas automatizadas de almacenamiento (ejecución 48, 16/11/2026); todavía no probada en Chrome/Android. No se incorpora a `main` hasta completar la revisión funcional en móvil. El mundo global comparte localizaciones en esta fase. No se migran automáticamente hechos, relaciones ni acontecimientos personales al mundo global. La incorporación a `main` queda supeditada a las pruebas y revisión del pull request.
+
+Plan técnico y alcance pendiente: `docs/PLAN_MIGRACION_GUARDADO_ATHUN.md`.
+
+
+### Ampliación del mundo compartido — 16/11/2026
+Además de las localizaciones, el mundo global conserva la identidad básica de los NPC descubiertos (nombre, función y primera localización conocida). La confianza, los recuerdos, los objetivos y las relaciones continúan aislados en la partida de cada protagonista. La migración antigua importa lugares visitados y NPC conocidos sin convertir memorias personales en información global. El narrador recibe el contexto global con instrucciones explícitas de respetar esa separación.
+
+
+### Recuperación del índice de partidas — 16/11/2026
+Si el índice de partidas se elimina o queda ilegible, el almacenamiento reconstruye su listado a partir de las claves de las partidas individuales. Esta recuperación evita que una incidencia del índice haga invisibles registros que siguen almacenados. Se añadieron pruebas para este caso.
+
+
+### Continuidad narrativa por protagonista — 16/11/2026
+El contexto del narrador mantiene separados el mundo global y el mundo personal de la partida activa. Los hechos, eventos y relaciones históricos de la partida heredada siguen disponibles para su protagonista; no se convierten en verdades universales. El selector también muestra el título de cada aventura para distinguir varias historias del mismo personaje.
+
+
+## PRESENTACIÓN ÚNICA DEL PRÓLOGO — 16/11/2026
+
+Se incorpora el prólogo literal aprobado por el usuario el 15/11/2026. En una instalación nueva se muestra antes de la creación del personaje; al pulsar «Continuar» se registra `athun_intro_seen_v1` y se abre el formulario de creación. En arranques posteriores, si ya existe una partida, se muestra directamente el selector de partidas y no se repite el prólogo. Si la migración del guardado heredado falla, la aplicación muestra un aviso y no inicia una ficha nueva que pueda confundir al jugador o poner en riesgo la recuperación.
+
+Se guardaron copias previas de `app/js/app.js`, `index.html` y este documento con el sufijo `.bak-20261116-prologo-unico`. La caché del script principal se renovó. Se añadieron pruebas automatizadas para comprobar el texto, el registro de primera presentación y la omisión del prólogo cuando ya existen partidas. Pendiente confirmar la ejecución de CI de esta nueva tanda y probar el flujo en Chrome/Android.
+
+
+### Validación posterior del prólogo y del guardado — 16/11/2026
+GitHub Actions, ejecución 76: comprobación de sintaxis JavaScript correcta y 10/10 pruebas aprobadas. Se incluyen dos pruebas nuevas del prólogo de primera ejecución y ocho pruebas de almacenamiento, migración, aislamiento, recuperación, permanencia de Athun e integridad ante fallos de escritura. La prueba visual y funcional en Chrome/Android continúa pendiente; la rama no se fusiona hasta completarla.
+
+
+## PRIMERA FASE DEL ATLAS DE EXPLORACIÓN — 16/11/2026
+
+Se incorpora el módulo de cartografía `app/js/game/map.js` y se renueva el panel de mapa:
+- Distingue la zona actual y otras zonas explícitamente visibles, lugares visitados por el protagonista y lugares conocidos por descubrimientos compartidos.
+- El conocimiento geográfico se comparte entre protagonistas; la lista de visitas y la visibilidad actual permanecen ligadas a cada aventura.
+- La sesión registra la ubicación actual y las zonas que el estado declare visibles.
+- El terreno nunca descubierto no se enumera ni revela nombres.
+
+**Límite deliberado:** todavía no se representa una cuadrícula geográfica ni se inventan rutas, coordenadas o distancias. La aventura inicial no contiene datos espaciales suficientes para dibujar un mapa fiable. Esta fase implementa la clasificación y la niebla de información; la cartografía espacial real queda pendiente de datos explícitos de posición/conexión y de su integración narrativa.
+
+Se añadieron pruebas unitarias del atlas y una prueba de integración para comprobar que una ubicación visible se comparte como conocimiento, pero no como visita personal de otro protagonista. Pendiente: CI de esta tanda y prueba visual/táctil en Chrome para Android.
+
+
+### Control de niebla durante desplazamientos — 16/11/2026
+Al cambiar de ubicación, la sesión evita arrastrar la visibilidad de la zona anterior: si `visibleLocations` no cambia explícitamente en el nuevo estado, se limpia. Los lugares descubiertos permanecen como conocimiento compartido, pero dejan de figurar como entorno visible. Se añade una prueba de regresión para este comportamiento.
+
+
+### Visibilidad cercana calculada por el narrador — 16/11/2026
+El formato estructurado del narrador incluye `visibleLocations`, recalculado en cada respuesta. Solo debe contener lugares próximos que estén identificados explícitamente; no puede inventar rutas, coordenadas ni destinos. La sesión comparte esos descubrimientos con el mundo, mientras las visitas siguen siendo personales. Si se cambia de zona y el narrador arrastra la lista anterior sin cambios, la sesión la limpia para evitar que la zona previa siga apareciendo como visible. La CI 118 aprobó 16/16 pruebas antes de esta ampliación del esquema; falta confirmar la nueva ejecución.
+
+
+### Validación de la integración narrativa del atlas — 16/11/2026
+GitHub Actions, ejecución **125**: sintaxis JavaScript correcta y **16/16 pruebas aprobadas** tras incorporar `visibleLocations` al esquema del narrador. La niebla del atlas y su sincronización con el mundo compartido quedan cubiertas por pruebas automatizadas; la validación visual y táctil en Chrome/Android continúa pendiente.
+
+
+### Refinamiento de visibilidad y estados del atlas — 16/11/2026
+El narrador entrega `visibleLocations` explícitamente a la sesión. Al desplazarse, esa lista sustituye la visión anterior; si el narrador no declara una nueva, la visión antigua se limpia. Las ubicaciones visitadas que vuelven a estar a la vista se clasifican como visibles mientras permanezcan en el campo de visión. Se añadió cobertura automatizada para ambos casos. La tanda actual contiene 18 pruebas; falta confirmar CI tras estos últimos ajustes.
+
+
+### CI 142 — atlas y visibilidad — 16/11/2026
+Comprobación de sintaxis JavaScript correcta y **18/18 pruebas aprobadas**. Quedan cubiertas la niebla, la clasificación actual/visible/visitado/conocido, el descubrimiento compartido, la limpieza de visión al desplazarse y la conservación de una nueva visibilidad explícita del narrador.
+
+
+### Primera red de caminos descubiertos — 16/11/2026
+Se añade al mundo compartido un registro de conexiones direccionales únicamente cuando una partida confirma un desplazamiento entre dos localizaciones distintas. El atlas puede mostrar esos tramos como caminos recorridos. No se deduce el trayecto inverso, la distancia, la orientación ni la posición geográfica; tampoco se enlazan lugares solo porque aparezcan juntos en una narración. Las conexiones se conservan al cambiar de protagonista y se filtran para no mostrar extremos que no estén registrados como lugares conocidos. Se crean copias previas de los archivos modificados con el sufijo `.bak-20261116-rutas`. GitHub Actions, ejecución **169**, completó la comprobación de sintaxis y **20/20 pruebas aprobadas**; incluye el registro de tramos y la protección frente a conexiones inversas inventadas.
+
+
+### Validación de caminos compartidos entre protagonistas — 16/11/2026
+GitHub Actions, ejecución **174** (`43832755166`): sintaxis JavaScript correcta y **21/21 pruebas aprobadas**. La nueva prueba confirma que una ruta descubierta por un protagonista aparece en el atlas de otro, pero no convierte el destino en una visita personal de ese segundo protagonista.
+
+
+### Auditoría de rutas y coherencia de identidad — 16/11/2026
+La revisión de la rama detectó que el sistema registraba una conexión compartida ante cualquier cambio de ubicación, aunque la respuesta narrativa no estuviera clasificada como desplazamiento. Se ha limitado el registro de caminos a respuestas con categoría `movement`; los cambios de ubicación por otras causas siguen actualizando la posición y la visita personal, pero no fabrican un tramo transitable. También se ha actualizado la identidad del prompt del narrador al nombre vigente «Athun: el grimorio oscuro». Se añade una prueba de regresión para el caso no-movimiento. La validación automatizada de estos cambios queda pendiente de la ejecución CI posterior al commit.
+
+
+### CI 195 — rutas confirmadas y coherencia de Athun — 16/11/2026
+GitHub Actions, ejecución **195** (`43836494217`): comprobación de sintaxis JavaScript correcta y **22/22 pruebas aprobadas**. Incluye la regresión que impide crear conexiones del atlas cuando cambia la ubicación por una acción que no está clasificada como desplazamiento. También se valida la actualización del prompt del narrador y el resto de pruebas de guardado, prólogo, atlas y mundo compartido.
+
+
+### Protección de Athun como instancia única — 16/11/2026
+
+Durante una revisión adicional se detectó un caso límite: aunque el narrador no podía retirar Athun, podía proponer añadir una segunda entrada con un nombre distinto (por ejemplo, «Athun duplicado»). La normalización del guardado ahora elimina todas las entradas que contengan el identificador Athun y conserva una única pertenencia canónica: «Athun — grimorio consciente». El procesador narrativo también rechaza explícitamente cualquier alta de inventario que contenga Athun.
+
+Se añadieron respaldos previos de app/js/core/save.js, app/js/game/narrator.js, tests/storage.test.js, index.html y este documento maestro. Se incorporó una prueba de regresión para asegurar que las variantes duplicadas se normalizan a una sola instancia y se actualizó la versión de caché de save.js.
+
+**Estado de validación:** cambios guardados en la rama feat/athun-multisave-world. GitHub Actions, ejecución 210, terminó correctamente: sintaxis JavaScript correcta y 23/23 pruebas aprobadas, incluida la nueva prueba de unicidad de Athun. La validación en Chrome/Android continúa pendiente; no se ha fusionado el pull request.
+
+
+### Eliminación transaccional de partidas — 16/11/2026
+
+La revisión del ciclo de borrado encontró un riesgo de pérdida parcial: el índice se actualizaba y el archivo de partida se eliminaba antes de confirmar el cambio de selección activa. Si fallaba esa última escritura, el método devolvía error aunque la partida ya hubiera desaparecido. Se ha endurecido `Save.deleteSlot()` para conservar los valores previos del índice, registro y partida activa, y restaurarlos ante cualquier fallo durante la operación. La última partida continúa protegida contra eliminación.
+
+Se añadieron respaldos previos de `app/js/core/save.js`, `tests/storage.test.js`, este documento y el plan de migración. Se incorporó una prueba que simula el fallo al cambiar la partida activa, comprueba la restauración íntegra y después verifica que el borrado normal funciona. GitHub Actions, ejecución 232, terminó correctamente: sintaxis JavaScript válida y 25/25 pruebas aprobadas. Incluye fallos simulados de eliminación y restauración de la partida activa, borrado correcto, migración del vínculo/recuerdos de Athun y las pruebas previas de partidas múltiples, mundo compartido y atlas. La validación visual en Chrome/Android sigue pendiente.
+
+
+La migración de cada partida también conserva el vínculo, los recuerdos y las revelaciones de Athun y fuerza su identidad canónica y `permanent: true`. Se amplió la prueba de partida heredada para comprobarlo. Validación CI: ejecución 232, 25/25 pruebas aprobadas.
+
+
+### Aislamiento del vínculo personal de Athun — 16/11/2026
+
+Se amplía la cobertura de partidas múltiples para verificar que el vínculo, los recuerdos y las revelaciones de Athun pertenecen a cada protagonista y no se mezclan al alternar entre partidas. La prueba modifica el vínculo y añade un recuerdo en una partida, cambia a otra y vuelve a la primera para comprobar que ambos estados se mantienen aislados y persistentes. También se cubre que la última partida no pueda eliminarse y que Athun siga presente en ella.
+
+Se crearon respaldos previos de `tests/storage.test.js` y este documento maestro con el sufijo `.bak-20261116-athun-state-isolation`. GitHub Actions, ejecución 317 (`43907207244`): sintaxis JavaScript correcta y 27/27 pruebas aprobadas, incluidas las dos nuevas pruebas de aislamiento del vínculo de Athun y protección de la última partida. No se ha realizado todavía validación manual en Android.
+
+
+### Integración selectiva sobre main — 16/11/2026
+
+Se prepara una rama de integración basada en el main vigente para evitar revertir las correcciones narrativas incorporadas después del punto común de las ramas. Se trasladan las partidas múltiples, el mundo persistente compartido, el atlas, el selector y las pruebas; se conservan las correcciones actuales de apertura de Valdebruma, descubrimiento gradual, estado de Elia y protección permanente de Athun. La normalización de la nueva capa de guardado sustituye la migración simple de una sola clave por una migración compatible a un registro individual, sin modificar la clave heredada original.
+
+La integración es selectiva y todavía no está validada. Las pruebas automatizadas y la comparación funcional con main deben completarse antes de proponer la fusión. No se ha ejecutado en Chrome/Android.
+
+
+### Corrección de prueba de aislamiento — 16/11/2026
+
+La primera ejecución CI de la rama de integración ejecutó 27 pruebas: 26 aprobadas y una fallida. El fallo estaba en la prueba añadida de aislamiento del vínculo de Athun: modificaba un objeto devuelto por una carga independiente y luego guardaba otra copia recién cargada. Se corrige el test para modificar y guardar la misma copia de la partida. No se ha cambiado la lógica de producción por este fallo de prueba. Se guardaron respaldos previos de los dos archivos. CI debe repetirse para validar la corrección.
+
+
+### Validación de navegador en integración — 16/11/2026
+
+La ejecución 173 de GitHub Actions (`43909804808`) completó correctamente el flujo Playwright en Chromium. Se validó el selector de partidas tras la migración y tras recargar, la apertura aprobada de Valdebruma, los límites de descubrimiento gradual, la permanencia de Athun, el inventario, atlas/mapa, historial, paneles, acciones narrativas, guardado y recuperación tras recarga. El informe del flujo confirma `INTERACTION_TESTS_OK` y `NARRATIVE REGRESSION: ... OK`.
+
+La vista móvil simulada de 390 × 844 px no presenta desbordamiento horizontal: documento 390 × 844 px; narración, panel de escritura y barra inferior quedan dentro de sus límites y en el orden correcto. La vista de escritorio de 1024 × 900 px también pasó sin desbordamiento ni errores JavaScript. La ejecución 348 de la suite de almacenamiento, en el mismo commit, aprobó 27/27 pruebas (0 fallos).
+
+Se observaron solicitudes de recursos con respuesta HTTP 404 en la consola del navegador; no produjeron errores JavaScript ni impidieron las pruebas funcionales o de disposición. Conviene identificar y corregir esos recursos en una limpieza posterior. Esta prueba usa Chromium emulado y no sustituye la validación táctil en un dispositivo Android físico.
+
+
+### Selector visual y alternancia entre protagonistas — 16/11/2026
+
+La ejecución 180 de Playwright (`43910478567`) también pasó la prueba de interfaz con dos partidas reales de prueba: crea a Darian además de Ariadna, verifica que el selector muestra ambas, abre Ariadna, cambia desde Opciones a Darian y comprueba que cada protagonista conserva su inventario y sus hechos personales sin filtraciones. Se comprueba además que una localización descubierta por Ariadna sigue en el mundo compartido y que Athun aparece como pertenencia canónica en ambas partidas. La suite de almacenamiento en la ejecución 361 (`43910479940`) volvió a aprobar 27/27 pruebas, 0 fallos.
+
+La rama de integración sigue basada directamente en main, con 57 commits por delante y ninguno por detrás; el pull request 4 es integrable y permanece en borrador. No se ha fusionado. La única validación funcional pendiente es en un dispositivo Android físico con Chrome. Persisten algunas solicitudes HTTP 404 no bloqueantes en la consola de Playwright, pendientes de identificar.
+
+
+### Corrección de recursos de plantilla ausentes — 16/11/2026
+
+La instrumentación de Playwright identificó que los cuatro avisos HTTP 404 procedían de dos fondos WebP inexistentes: `app/assets/templates/athun-papiro-limpio.webp` y `app/assets/templates/athun-aventura.webp`. En vez de introducir imágenes no disponibles, se sustituyeron las referencias rotas por fondos CSS de pergamino y aventura en capas de gradientes y textura, y se añadió `favicon.svg` para la identidad del juego. Se guardó respaldo previo de `app/css/style.css` e `index.html`.
+
+La ejecución 191 de Playwright (`43911426574`) pasó de nuevo en móvil y escritorio, con selector de dos protagonistas, regresión narrativa e interacciones completas. El registro de respuestas 404 quedó vacío: no se registraron recursos HTTP 404. La ejecución 380 de almacenamiento (`43911426719`) pasó 27/27 pruebas, 0 fallos. La rama está 69 commits por delante y 0 por detrás de main; PR #4 sigue abierto, en borrador e integrable. No se ha fusionado. La única validación pendiente es Chrome en un dispositivo Android físico.
+
+
+### Revalidación autónoma y estado de integración — 16/11/2026
+
+Se ha revisado el estado real de GitHub antes de continuar. El pull request #4 («Integrar partidas múltiples de Athun sin perder la narrativa actual») sigue abierto, en borrador y marcado como integrable, con destino `main`. La rama de integración conserva la apertura narrativa y reúne selector de partidas, registros independientes, mundo compartido, atlas, protección canónica de Athun y pruebas. No se ha fusionado ni se ha alterado `main`.
+
+Se consultaron las ejecuciones remotas asociadas al último commit de la rama:
+- GitHub Actions «Athun storage tests», ejecución **388** (ID `43911693394`): finalizada correctamente. Pasaron tanto la comprobación de sintaxis JavaScript como el paso de pruebas de almacenamiento y mundo compartido.
+- GitHub Actions «Visual preview», ejecución **195** (ID `43911693467`): finalizada correctamente. Pasaron la instalación de Playwright, el servidor local, la renderización/prueba en Chromium móvil y escritorio y la carga de vistas previas.
+
+Estas ejecuciones confirman CI y navegador Chromium simulado; no equivalen a una prueba táctil en un teléfono Android físico. Esa comprobación sigue pendiente y es el único requisito manual indicado antes de considerar la fusión. Se mantiene el PR en borrador y no se fusiona automáticamente.
+
+Se creó antes de esta actualización el respaldo íntegro `docs/MAESTRO_COSMOPOLIS.md.bak-20261116-validacion-final-ci`. Las partidas locales del usuario no son accesibles desde esta revisión remota y no se han modificado.
+
+
+### Corrección de consistencia del mundo compartido — 16/11/2026
+
+En la auditoría se detectó que una acción podía publicar localizaciones, personajes y caminos en el mundo compartido antes de que el guardado personal estuviera confirmado. Se corrigió `Session.addAction()`: primero guarda la acción del protagonista y, únicamente si la escritura se verifica, sincroniza después el conocimiento compartido. Si el guardado falla, devuelve `false` y no publica esos descubrimientos.
+
+Se añadió una prueba de regresión que simula un fallo de almacenamiento y comprueba que no se filtren lugares, rutas ni entidades, y que la posición y el historial personales permanezcan intactos. Se guardaron respaldos previos de los dos archivos de ejecución modificados.
+
+GitHub Actions, ejecución **397** (ID `43924727789`): comprobación de sintaxis JavaScript y suite de almacenamiento/mundo compartido completadas correctamente. La corrección está validada en CI. No se ha fusionado el PR #4 ni se ha modificado `main`. La validación táctil en Chrome sobre Android físico sigue pendiente.
+
+
+### Primer mapa visual para probar la exploración — 16/11/2026
+
+Se pasa del atlas textual a una primera representación visual dentro del panel «Mapa». El esquema coloca la ubicación actual en el centro y distribuye alrededor los lugares visibles, visitados y conocidos. Dibuja únicamente las conexiones direccionales que ya están registradas en el mundo compartido y cuyos dos extremos son conocidos. Los lugares desconocidos no se enumeran ni se convierten en nodos.
+
+Las posiciones del esquema son una distribución visual, no coordenadas, orientación ni distancias geográficas. Se mantiene esta limitación explícita para no presentar una topología provisional como cartografía real. La lista detallada del atlas y sus categorías sigue disponible debajo del dibujo.
+
+Se añadieron pruebas unitarias para verificar que el esquema no introduce lugares ni caminos no registrados, que la ubicación actual ocupa el centro y que un atlas vacío no genera contenido ficticio. Playwright incorpora una comprobación de interfaz que abre el panel del mapa y exige que represente al menos la ubicación actual. Se renovaron las referencias de caché de index.html.
+
+Respaldos previos: app/js/game/map.js.bak-20261116-mapa-jugable, app/js/app.js.bak-20261116-mapa-jugable, app/css/style.css.bak-20261116-mapa-jugable, tests/map.test.js.bak-20261116-mapa-jugable, index.html.bak-20261116-mapa-jugable y .github/workflows/visual-preview.yml.bak-20261116-mapa-jugable, además del respaldo de este documento creado antes de iniciar esta tanda.
+
+Estado: cambios en la rama integration/athun-multisave-main-20261116, PR #4 abierto y sin fusionar. Las ejecuciones de almacenamiento 420, 421, 424, 426 y 427 han completado correctamente; queda confirmar la ejecución Playwright 222, que ya incluye la nueva comprobación visual del mapa. La prueba táctil en Chrome/Android físico sigue pendiente. Próximo paso: convertir la representación esquemática en un recorrido que se pueda probar desde la interfaz y hacer que los descubrimientos se produzcan mediante acciones reales de la aventura.
+
+
+### Ajuste de la prueba visual del mapa — 16/11/2026
+
+La primera ejecución Playwright con el mapa mostró que una comprobación previa buscaba el nombre de una ubicación sin distinguir entre el rótulo del SVG y la entrada de la lista. Como ambos deben mostrar el mismo lugar, el selector se acotó a `.atlas-place-name`; no se cambió la interfaz ni los datos de la aventura por este fallo. Se guardó el respaldo `.github/workflows/visual-preview.yml.bak-20261116-mapa-selector` antes del ajuste. GitHub Actions, ejecución de almacenamiento **435**, completada correctamente. GitHub Actions, ejecución Playwright **225** (`43930341843`), completada correctamente en Chromium para la interfaz móvil y de escritorio, incluida la apertura del mapa y la comprobación de su nodo actual. La prueba es emulada y no sustituye la validación táctil en un Android físico.
+
+
+## Recuperación de avances narrativos y agente local — 16/11/2026
+
+Se recupera sobre la rama de integración de Athun el trabajo narrativo rescatado del commit `0022127`, conservando las mejoras posteriores ya presentes en esta rama.
+
+- Se mantiene la apertura de Valdebruma en el camino de entrada, sin encuentro prematuro con Elia ni revelación anticipada del pozo o la campana. Se conserva el estado ampliado de Athun: grimorio consciente, permanente y presente en el inventario, junto con la memoria y las revelaciones propias de la partida.
+- Se conserva la implementación más avanzada de `director.js` y `adventure.js` que ya existía en la rama de integración; no se sustituye por versiones anteriores del commit rescatado.
+- El historial de acciones registra `aiUsed`: `true` para respuestas de IA, `false` para respuestas alternativas y `null` cuando no hay información verificable.
+- El timeout de generación del narrador local se amplía de 90 a 180 segundos.
+- El lanzador de llama-server incorpora `--reasoning off`.
+- Se recupera `scripts/agente_cosmopolis.js`, que limita cada tarea a un archivo autorizado, comprueba los parches antes de aplicarlos, crea copias de seguridad y valida sintaxis e integridad del diff.
+- La eliminación de los adornos residuales de pliegues se mantiene sin tocar la composición del mapa ni el diseño actual de Athun.
+
+Esta recuperación se realiza en `integration/athun-narrative-recovery-fixed`, creada a partir de `integration/athun-multisave-main-20261116`. No se modifica `main`, no se fusiona el PR #4 y no se descarta la rama de rescate.
+
+Validación pendiente: ejecutar las pruebas automatizadas y la vista previa visual sobre esta rama; la prueba física en Android sigue pendiente.
+
+
+### Validación de la recuperación narrativa — 16/11/2026
+
+La recuperación selectiva de los avances narrativos y del agente local quedó validada en la rama de integración:
+- GitHub Actions «Athun storage tests», ejecución 441 (ID `43939916206`): completada correctamente; comprobación de sintaxis JavaScript y pruebas de almacenamiento/mundo compartido aprobadas.
+- GitHub Actions «Visual preview», ejecución 230 (ID `43939916229`): completada correctamente; Playwright renderizó y comprobó la interfaz móvil y de escritorio.
+
+Estas ejecuciones sustituyen el estado de validación pendiente indicado en la sección de recuperación anterior. Son pruebas automatizadas en Chromium simulado; no equivalen a una prueba táctil en un dispositivo Android físico. El PR #4 sigue abierto en borrador, sin fusionar, y `main` permanece intacta.
+
+### Coherencia espacial de las interacciones narrativas — 16/11/2026
+La revisión de `Director.respond()` detectó que algunas interacciones podían resolverse a distancia: bastaba con mencionar el pozo aunque el protagonista estuviera en otra ubicación, y Elia podía responder o recibir ofrecimientos aunque su ubicación registrada fuera distinta de la del protagonista.
+
+- El pozo solo admite inspección, manipulación o interacción mágica contextual cuando la ubicación actual es `Plaza del pozo` y el lugar ya ha sido descubierto.
+- Elia solo participa en diálogos específicos y recibe aumentos de confianza u ofrecimientos cuando su ubicación coincide con la ubicación actual del protagonista.
+- Si Elia es conocida pero está en otro lugar, preguntar por ella no simula una conversación presencial ni modifica su confianza.
+- Se añadieron regresiones Playwright para comprobar la inspección remota del pozo, las preguntas a Elia fuera de escena y los ofrecimientos a distancia.
+- Se conservaron copias previas de `director.js`, `visual-preview.yml` y este documento con el sufijo `.bak-20261116-presencia-escena`.
+
+**Validación pendiente:** las nuevas regresiones deben completar GitHub Actions en la rama de integración. La prueba táctil en Chrome/Android físico continúa pendiente.
+
+### Revisión adicional de presencia de Elia — 16/11/2026
+- La validación visual completa terminó correctamente en el commit `5212e12` (GitHub Actions, ejecución visual `43945612638`); las pruebas de almacenamiento también finalizaron correctamente (`43945612500`).
+- En una revisión posterior de `Director.respond()` se detectó una referencia residual: al intentar levantar la losa, el texto podía presentar a Elia observando aunque su ubicación registrada fuera otra. Se corrigió para usar la condición de presencia física `eliaPresent`, no solo el hecho de haberla conocido.
+- Se eliminó además una asignación duplicada de `wellInspected`.
+- Se añadió una regresión Playwright que sitúa a Elia en Calle Mayor y verifica que no aparezca narrativamente junto al pozo.
+- Copia previa de `director.js`: `app/js/game/director.js.bak-20261116-presencia-elia-pozo`.
+- La nueva tanda de CI correspondiente a este último cambio debe terminar antes de considerar cerrada la revisión.
+
+### Atlas con muchos descubrimientos — 16/11/2026
+- La distribución esquemática anterior aumentaba el radio del anillo en bloques de ocho lugares sin limitarlo al lienzo de 600 × 348. Una exploración prolongada podía colocar nodos fuera del área visible.
+- Se ajustó el cálculo para distribuir los lugares en anillos de hasta ocho posiciones, con radios horizontales y verticales acotados al lienzo. Se mantienen el centro de la ubicación actual, los estados de niebla de guerra y las conexiones explícitas; no se inventan rutas ni coordenadas geográficas.
+- Se añadió una prueba con 40 lugares para comprobar que no se pierden nodos, no aparecen duplicados y todas las posiciones quedan dentro del lienzo.
+- Copias previas: `app/js/game/map.js.bak-20261116-atlas-muchos-lugares` y `tests/map.test.js.bak-20261116-atlas-limites`.
+- La validación CI de esta ampliación queda pendiente.
+
+### Separación entre mundo compartido y conocimiento personal — 16/11/2026
+La revisión de `WorldMap.getAtlas()`, `Session` y el guardado por partidas confirma una separación deliberada que debe preservarse:
+
+- El registro global puede conservar nombres de lugares, conexiones realmente recorridas y datos básicos de entidades para dar continuidad al mundo entre protagonistas.
+- Cada atlas clasifica esos lugares según el estado de su propia partida: ubicación actual, zonas visibles declaradas, lugares visitados y lugares conocidos por el registro global. Que otro protagonista haya descubierto una zona no la marca como visitada ni visible para el personaje activo.
+- Los hechos, acontecimientos, relaciones, confianza y recuerdos narrativos permanecen en el guardado personal; no deben copiarse al mundo global.
+- Los datos compartidos de personajes se limitan a identidad, función y ubicación. No incluyen confianza ni recuerdos privados.
+- El vínculo, memorias y revelaciones de Athun también son independientes por protagonista.
+- Esta separación está cubierta por pruebas de `tests/map.test.js` y `tests/storage.test.js`, incluidas las regresiones de conocimiento de ubicaciones, rutas compartidas, privacidad de Elia y recuerdos de Athun.
+
+No se cambia esta arquitectura: el mundo conserva continuidad común, mientras la experiencia, la niebla de guerra y la memoria del protagonista siguen siendo personales.
+
+
+### Memoria de Athun disponible para el narrador — 16/11/2026
+- La revisión detectó que el guardado ya conservaba vínculo, recuerdos y revelaciones de Athun por protagonista, pero `Narrator.buildMessages()` no los incluía en el contexto enviado al modelo.
+- El narrador recibe ahora, dentro de la aventura activa, el vínculo y hasta doce recuerdos y doce revelaciones de Athun, con límites de longitud. Las instrucciones dejan claro que esa memoria pertenece exclusivamente a la partida activa, que no debe transferirse entre protagonistas y que los secretos se revelan gradualmente.
+- Se añadió una regresión que construye el contexto de dos partidas distintas y verifica que cada una recibe únicamente los recuerdos y revelaciones de su propio Athun.
+- Copias previas: `app/js/game/narrator.js.bak-20261116-athun-memoria-contexto`, `tests/storage.test.js.bak-20261116-athun-memoria-contexto` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261116-athun-memoria-contexto`.
+- La nueva validación CI debe completarse antes de considerar cerrado este cambio. No se modifican los recuerdos guardados ni se inventan recuerdos nuevos; se corrige únicamente su disponibilidad para la narración.
+
+
+### Registro activo de experiencias de Athun — 16/11/2026
+- El narrador puede proponer hasta tres recuerdos compartidos y tres revelaciones por respuesta, además de un cambio de vínculo de -1, 0 o +1.
+- Las instrucciones distinguen recuerdos vividos de revelaciones demostradas en escena; prohíben inventar experiencias y adelantar secretos.
+- La aplicación deduplica sin distinguir mayúsculas, limita cada lista a 40 entradas y cada texto a 300 caracteres, y mantiene el vínculo entre -100 y +100.
+- Se añadieron pruebas de deduplicación, límites de cantidad y estabilidad del vínculo. Todo queda dentro del guardado personal del protagonista; no se publica en el mundo compartido.
+- Copias previas: `app/js/game/narrator.js.bak-20261116-athun-memoria-activa`, `tests/storage.test.js.bak-20261116-athun-memoria-activa` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261116-athun-memoria-activa`.
+
+
+## REVISIÓN AUTÓNOMA DE CONTINUIDAD — 17 DE NOVIEMBRE DE 2026
+
+Se ha revisado el estado remoto del repositorio y de la integración antes de continuar. No se ha modificado `main`, no se han fusionado ramas y no se ha tocado ningún guardado del usuario.
+
+### Estado de integración
+- El trabajo principal de partidas múltiples, mundo compartido, protección permanente de Athun, selector y atlas está en la rama `integration/athun-multisave-main-20261116`, que alimenta el PR #4 contra `main`.
+- PR #4 sigue abierto y en borrador; su revisión informa 146 commits por delante y 0 por detrás de `main` en el último estado consultado. No se debe fusionar todavía porque falta la validación táctil en Chrome sobre Android físico.
+- PR #5 («Recuperar avances narrativos y agente local…») consta como fusionado en la rama de integración, no en `main`. Sus cambios recuperados incluyen `aiUsed`, timeout local ampliado y el agente con validación de parches y respaldos.
+- La rama `integracion/athun-multisave-main-20261116` es una línea distinta y más antigua (68 commits por delante de `main`); no debe confundirse con la rama actual del PR #4.
+
+### CI verificada en el último commit consultado
+Commit: `76fc9c4115fd7cd246f553c19ec3acfaaa0b03a2`.
+- «Athun storage tests», ejecución 506: **correcta**.
+- «Visual preview», ejecución 272: **fallida** en el paso «Render adventure on mobile and desktop». La instalación, el servidor local y la preparación de Playwright sí terminaron correctamente; la subida de capturas se omitió por el fallo.
+- La suite de almacenamiento mantiene el resultado satisfactorio de 27 pruebas que recoge el PR. La validación visual de esta revisión no debe marcarse como aprobada hasta diagnosticar y corregir el fallo del paso Playwright y obtener una nueva ejecución verde.
+
+### Próxima tarea técnica
+1. Diagnosticar el fallo del workflow visual 272 sin cambiar a ciegas las reglas narrativas ni el guardado.
+2. Reproducir el flujo de selector, migración heredada y apertura de aventura que ejecuta Playwright; corregir únicamente la causa demostrada.
+3. Ejecutar de nuevo la suite de almacenamiento y Playwright en móvil simulado y escritorio.
+4. Mantener pendiente la prueba táctil física en Android y no fusionar el PR #4 hasta completarla.
+
+**Seguridad:** se creó antes de esta actualización una copia íntegra de este documento en `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-auditoria-autonoma`. No se eliminaron respaldos anteriores ni se realizaron operaciones sobre datos locales o partidas guardadas.
+
+
+### Diagnóstico y corrección de regresión Playwright — 17 de noviembre de 2026
+
+La ejecución visual 272 (commit `76fc9c4115fd7cd246f553c19ec3acfaaa0b03a2`) falló en una aserción que indicaba que la fase no avanzaba al cambiar de ubicación. El registro del job permitió localizar la causa real: el `fakeNarrative` del propio test no cumplía ya el contrato obligatorio de `Narrator.respond()`. El narrador exige `athunMemoriesToAdd`, `athunRevelationsToAdd` y `athunBondChange` (con `delta` y `reason`); al faltar esos campos, la respuesta simulada era rechazada y se ejecutaba el director de respaldo. La aserción posterior atribuía erróneamente el resultado a la fase de exploración.
+
+Se ha actualizado únicamente el fixture de prueba para incluir los tres campos obligatorios con valores neutros. No se han cambiado las reglas narrativas ni el comportamiento de producción. Se conserva una copia previa del workflow en `.github/workflows/visual-preview.yml.bak-20261117-narrative-fixture` y otra de este documento en `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-narrative-fixture`.
+
+**Estado:** corrección publicada en `integration/athun-multisave-main-20261116`. Pendiente la nueva ejecución de Playwright y la suite de almacenamiento. La prueba física en Android sigue pendiente; no fusionar PR #4 hasta completarla.
+
+
+### Segunda corrección de fixtures Playwright — 17 de noviembre de 2026
+
+La nueva ejecución visual 276 superó la regresión narrativa inicial y confirmó que la corrección anterior era válida. Después detectó un segundo fixture desactualizado en la prueba de interacciones: las respuestas simuladas usadas para las acciones de exploración y el ciclo de objetivos de personajes tampoco incluían los campos obligatorios de memoria/vínculo de Athun. El narrador rechazaba esas respuestas y activaba su alternativa determinista, por lo que la prueba de iniciativa autónoma de Elia no recibía la respuesta simulada prevista.
+
+Se han completado los campos `athunMemoriesToAdd`, `athunRevelationsToAdd` y `athunBondChange` en las dos respuestas de interacción y en la fábrica de respuestas del test de ciclo de objetivos. Los valores son neutros y no alteran la historia ni el vínculo. Se creó un segundo respaldo del workflow y del documento maestro antes de esta modificación: `.github/workflows/visual-preview.yml.bak-20261117-narrative-fixture2` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-narrative-fixture2`.
+
+**Estado:** suite de almacenamiento/sintaxis aprobada en la ejecución 521. La ejecución visual 276 reveló este segundo fixture incompleto; la corrección queda publicada y requiere una nueva ejecución completa. No se han modificado módulos de producción ni se ha fusionado PR #4.
+
+
+### Revalidación Playwright y guardado transaccional — 17 de noviembre de 2026
+
+La ejecución visual 279 terminó correctamente: Playwright superó las regresiones narrativas, el panel del mapa, historial, inventario, exploración, acciones, guardado/recarga, selector de dos protagonistas y aislamiento entre Ariadna y Darian en Chromium móvil simulado (390 × 844) y escritorio (1024 × 900). La suite de almacenamiento y sintaxis 526 también terminó correctamente.
+
+En la revisión posterior de la persistencia se detectó que `Save.save()` y `Save.replace()` escribían primero el registro de la partida y después actualizaban el índice. Si fallaba la segunda escritura, el método podía devolver error dejando el registro ya cambiado. Se centralizó la operación en `writeSlotAndIndex()`, que conserva registro e índice anteriores, verifica ambas escrituras y revierte el cambio si falla la actualización del índice. `updateIndexEntry()` ahora propaga los fallos de verificación.
+
+Se añaden dos pruebas que simulan fallos al guardar y sustituir una partida y comprueban que el registro y el índice originales se conservan. Copias previas: `app/js/core/save.js.bak-20261117-atomic-slot-save`, `tests/storage.test.js.bak-20261117-atomic-slot-save` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-atomic-slot-save`.
+
+**Estado:** el cambio transaccional está publicado en la rama del PR #4; pendiente de la nueva suite de CI. El PR continúa abierto y en borrador. La validación táctil en Chrome sobre un Android físico sigue pendiente; no fusionar hasta completarla.
+
+
+### Validación posterior del guardado transaccional — 17 de noviembre de 2026
+
+Se ha comprobado el resultado de GitHub Actions asociado a la revisión de integración que contiene `writeSlotAndIndex()` y las dos pruebas de regresión de guardado/sustitución:
+
+- **Athun storage tests**, ejecución 535: completada correctamente.
+- **Visual preview**, ejecución 284: completada correctamente.
+- La rama `integration/athun-multisave-main-20261116` continúa basada directamente en `main` (162 commits por delante, 0 por detrás en esta comprobación).
+
+El guardado transaccional y sus pruebas están presentes en la rama del PR #4. La validación automatizada de Chromium móvil simulado y escritorio está aprobada; sigue pendiente exclusivamente la comprobación táctil en Chrome sobre un dispositivo Android físico. El PR #4 permanece abierto y en borrador. No fusionar ni modificar `main` hasta completar esa comprobación.
+
+
+### Descubrimientos al explorar sin desplazarse — 17 de noviembre de 2026
+
+La revisión del flujo de exploración encontró que Session.addAction() solo aplicaba las zonas visibles declaradas por el narrador cuando cambiaba la ubicación. Por tanto, una observación, búsqueda o investigación realizada desde el mismo lugar podía descubrir una calle o un punto cercano en la narración, pero el atlas no lo registraba como visible.
+
+Se corrigió el flujo para aceptar una lista explícita de zonas visibles también cuando el protagonista permanece en el mismo lugar. Al cambiar de ubicación, si la respuesta no declara una nueva visibilidad, se limpia la visión anterior para mantener la niebla de guerra. Se limitan los nombres a 120 caracteres y la lista a doce entradas; no se inventan zonas ni conexiones.
+
+Se añadieron dos regresiones: una confirma que la exploración estacionaria revela las zonas declaradas sin mover al protagonista; la otra confirma que una nueva ubicación no hereda zonas visibles antiguas si el narrador no declara otras. El conocimiento compartido sigue limitado a los lugares declarados y la visita personal no cambia.
+
+Respaldos previos: app/js/game/session.js.bak-20261117-stationary-visibility, tests/storage.test.js.bak-20261117-stationary-visibility y docs/MAESTRO_COSMOPOLIS.md.bak-20261117-stationary-visibility.
+
+Estado: cambio publicado en la rama integration/athun-multisave-main-20261116. Pendiente la validación de GitHub Actions. PR #4 permanece abierto y sin fusionar; main no se modifica.
+
+
+### Validación de zonas visibles declaradas por el narrador — 17 de noviembre de 2026
+
+La revisión del atlas encontró un punto débil: aunque el prompt prohíbe inventar lugares, el cliente aceptaba literalmente cualquier nombre devuelto por el modelo en `visibleLocations`. Una respuesta no conforme podía introducir topónimos sin respaldo en el mapa.
+
+- Se añadió un filtro en `Narrator.filterVisibleLocations()`: solo conserva nombres que aparecen explícitamente en la escena narrativa, en el texto de apertura o en el conocimiento ya registrado de la partida/mundo.
+- Se eliminan entradas vacías y duplicadas y se mantiene el límite de doce zonas.
+- El filtro no crea lugares ni conexiones y no convierte una zona conocida por otro protagonista en una visita personal.
+- Se añadió una prueba de regresión que combina una zona ya registrada, otra nombrada en la escena y una ubicación inventada que debe descartarse.
+- Respaldos previos: `app/js/game/narrator.js.bak-20261117-visible-location-guard`, `tests/storage.test.js.bak-20261117-visible-location-guard` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-visible-location-guard`.
+
+**Validación completada:** GitHub Actions «Athun storage tests», ejecución 588: correcta (sintaxis y suite de almacenamiento/mundo compartido). «Visual preview», ejecución 300: correcta (Playwright en Chromium móvil simulado de 390 × 844 y escritorio de 1024 × 900, con renderización y pruebas de interacción). El cambio está publicado en `integration/athun-multisave-main-20261116`. No se ha modificado `main`, no se ha fusionado el PR #4 y no se han tocado partidas guardadas. La prueba táctil en Chrome sobre un Android físico sigue pendiente.
+
+
+### Revalidación final del atlas y estado de integración — 17 de noviembre de 2026
+
+Se ha revisado de nuevo el PR #4 y las ejecuciones más recientes de GitHub Actions sobre el commit `52a52ad01053b50ec42d2555641d2f0a42be1359` de la rama `integration/athun-multisave-main-20261116`:
+
+- «Athun storage tests», ejecución **590** (ID `44045635656`): completada correctamente. Pasaron la comprobación sintáctica y la suite de almacenamiento/mundo compartido.
+- «Visual preview», ejecución **301** (ID `44045635851`): completada correctamente. Playwright terminó la renderización y las interacciones en Chromium móvil simulado (390 × 844) y escritorio (1024 × 900).
+- La revisión del PR confirma que la rama está actualizada respecto a `main` (0 commits por detrás en el último estado registrado). El PR #4 continúa abierto y en borrador; no se ha fusionado ni se ha modificado `main`.
+
+**Único bloqueo de validación pendiente:** probar la interfaz mediante interacción táctil real en Chrome sobre un dispositivo Android físico. La simulación de Playwright no sustituye esa comprobación. Hasta completarla, mantener el PR en borrador y no fusionar.
+
+No se han modificado partidas guardadas ni datos locales. Se creó el respaldo íntegro previo `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-ci-590-301` antes de añadir esta actualización.
+
+
+### Corrección de normalización de topónimos — 17 de noviembre de 2026
+
+La revisión del filtro antialucinaciones del atlas detectó que la expresión regular de normalización estaba escrita con barras invertidas duplicadas. En lugar de retirar únicamente las marcas diacríticas Unicode, eliminaba también letras (incluida la «u») y cifras. Esto podía hacer equivalentes nombres distintos, por ejemplo «Puente viejo» y «Pente viejo», o «Calle 1» y «Calle 12», permitiendo falsos positivos en la validación de lugares visibles.
+
+- Corregida la expresión para eliminar solo el rango Unicode de marcas combinantes tras normalizar a NFD.
+- Ampliada la regresión del filtro con topónimos casi idénticos y numeración distinta; los nombres no mencionados deben descartarse.
+- No se modifica el criterio de descubrimiento: los lugares deben estar respaldados por la escena o por el conocimiento registrado.
+- Respaldos previos: `app/js/game/narrator.js.bak-20261117-normalizacion-toponimos`, `tests/storage.test.js.bak-20261117-normalizacion-toponimos` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-normalizacion-toponimos`.
+
+**Validación:** pendiente de GitHub Actions sobre esta revisión. No se modifica `main`, no se fusiona el PR #4 y no se tocan partidas guardadas. La prueba táctil en Chrome para Android físico continúa pendiente.
+
+
+**Ajuste del caso de regresión:** la primera ejecución de la suite detectó que el propio texto de prueba mencionaba «Calle 12», por lo que el filtro actuaba correctamente al aceptarla. Se corrigió el fixture para que la escena mencione «Calle 1» y «Calle 12» quede únicamente como candidato no respaldado. La prueba ahora verifica que la cifra forma parte de la identidad del topónimo y no se confunde con otra calle.
+
+
+### Validación CI de normalización de topónimos — 17 de noviembre de 2026
+
+La corrección de la normalización Unicode y su regresión quedaron verificadas en la revisión `4f42703bf3450f38d7101eb76ca7315989a7629e`:
+
+- GitHub Actions «Athun storage tests», ejecución **611**: completada correctamente; sintaxis y las **40 pruebas** de almacenamiento/mundo compartido aprobadas.
+- GitHub Actions «Visual preview», ejecución **312**: completada correctamente; Playwright terminó renderización e interacciones en Chromium móvil simulado (390 × 844) y escritorio (1024 × 900), incluida la prueba del atlas.
+- La rama sigue basada en `main`, sin commits por detrás; PR #4 continúa abierto y en borrador.
+- La validación táctil real en Chrome sobre Android físico sigue pendiente. No se fusiona hasta completarla.
+
+
+
+### Verificación de continuidad y CI más reciente — 17 de noviembre de 2026
+
+Se ha vuelto a comprobar el estado del repositorio antes de cerrar esta tanda:
+
+- Rama de trabajo: `integration/athun-multisave-main-20261116`, cabecera funcional verificada en `2114652ab029ff6f7e1b008c265ec35f128ae1e2` antes de esta actualización documental.
+- PR #4: abierto, en borrador y sin fusionar; destino `main`.
+- Comparación con `main`: **193 commits por delante y 0 por detrás**; la base coincide con `ff292438bc60c391c2cc6f708ac12d02b166cb70`.
+- «Athun storage tests», ejecución **614** (ID `44063310467`): correcta. El registro de ejecución confirma comprobación sintáctica y **40/40 pruebas aprobadas**, 0 fallos.
+- «Visual preview», ejecución **313** (ID `44063310440`): correcta. Playwright terminó la regresión narrativa y las interacciones de historial, mapa, inventario, opciones, exploración, guardado/recarga y selector con dos protagonistas. La vista móvil simulada fue de 390 × 844 y la de escritorio de 1024 × 900; la interfaz quedó dentro del ancho y alto disponibles, sin errores JavaScript registrados.
+- La suite cubre migración heredada idempotente y conservación de la clave original, alternancia y aislamiento personal, persistencia del mundo compartido, publicación de descubrimientos solo tras guardar y presencia/protección de Athun.
+
+**Alcance de esta tanda:** no se ha modificado código de producción ni se han tocado partidas locales. Esta anotación solo registra la verificación remota. No se han ejecutado pruebas en Termux desde esta sesión.
+
+**Bloqueo restante:** la interacción táctil real en Chrome sobre un Android físico sigue sin poder verificarse desde GitHub Actions. Debe comprobarse en el teléfono antes de sacar el PR del borrador o fusionarlo. En esa prueba hay que confirmar apertura y alternancia de dos partidas, guardado/recarga, mundo conocido compartido frente a progreso personal aislado y permanencia de Athun en el inventario sin posibilidad de perderlo, venderlo, transferirlo o destruirlo.
+
+Hasta completar esa validación física, mantener el PR #4 en borrador y no fusionar. `main` y los guardados existentes permanecen intactos.
+
+
+
+### Protección narrativa y transaccional de Athun — 17 de noviembre de 2026
+
+La revisión confirmó que la capa de inventario ya impedía retirar o duplicar Athun, pero la instrucción literaria no enumeraba expresamente todas las formas de pérdida. Se reforzó el contrato entre narrador y estado del juego:
+
+- El prompt declara a Athun permanente e inseparable y prohíbe narrar como exitosos el robo, venta, intercambio, transferencia, regalo, abandono, destrucción, consumo o retirada del grimorio.
+- Se extrajo la aplicación de cambios de inventario a `Narrator.applyInventoryUpdates()`. El método ignora cualquier intento de retirar o añadir una entrada que contenga «Athun» y restaura la entrada canónica si faltara.
+- Se añadió una regresión que simula intentos de retirar, vender, transferir y destruir Athun, verifica que no desaparece ni se duplica, comprueba que los demás objetos sí se actualizan y confirma la regla del prompt.
+- Respaldos previos: `app/js/game/narrator.js.bak-20261117-athun-immutability`, `tests/storage.test.js.bak-20261117-athun-immutability` y este respaldo del documento maestro.
+
+**Validación automatizada sobre el commit funcional `43efbb730dbe8869fc59c575e07a584f35317660`:**
+- «Athun storage tests», ejecución **623** (push) y **624** (pull request): correctas; comprobación sintáctica y **41/41 pruebas aprobadas**, 0 fallos.
+- «Visual preview», ejecución **319**: correcta. Playwright completó la regresión narrativa y las interacciones; el diseño móvil simulado midió 390 × 844 sin desbordamiento horizontal y la prueba de escritorio utilizó 1024 × 900.
+- La nueva prueba específica de permanencia de Athun figura como subprueba **41** y pasó.
+
+**Estado de integración:** PR #4 sigue abierto y en borrador. En la comparación previa a esta anotación, la rama estaba 199 commits por delante de `main` y 0 por detrás, con base `ff292438bc60c391c2cc6f708ac12d02b166cb70`. No se ha fusionado ni modificado `main`.
+
+**Pendiente manual:** la interacción táctil real en Chrome sobre Android físico no puede certificarse desde Playwright/GitHub Actions. Debe comprobarse antes de retirar el borrador o fusionar: selector y alternancia de protagonistas, guardado y recarga, mundo común frente a progreso privado, e intentos de perder/vender/transferir/destruir Athun. No se han tocado partidas guardadas ni datos locales del teléfono.
+
+
+### Protección del mundo compartido ante datos dañados — 17 de noviembre de 2026
+
+La revisión del almacenamiento global detectó que getGlobalWorld() devuelve un mundo vacío cuando el registro athun_shared_world_v1 no se puede interpretar como JSON. Las funciones de actualización podían escribir después ese mundo vacío sobre el registro original, destruyendo el contenido recuperable de una entrada dañada.
+
+Corrección aplicada en app/js/core/save.js:
+- Se centralizó la escritura del mundo compartido en writeGlobalWorldVerified().
+- Antes de escribir, comprueba que la clave global esté vacía o contenga un objeto JSON válido.
+- Si el registro existente está truncado, es JSON inválido o contiene un tipo no admitido, la actualización se rechaza y los bytes originales permanecen intactos.
+- La protección se aplica a localizaciones, conexiones, entidades y guardado completo del mundo.
+- No se modifica el registro heredado cosmopolis_save, los registros individuales ni el índice de partidas.
+
+Prueba añadida en tests/storage.test.js: simula un mundo global truncado e intenta actualizarlo mediante las cuatro vías; todas deben devolver false y conservar exactamente el valor original.
+
+Respaldos creados antes de modificar:
+- app/js/core/save.js.bak-20261117-world-corruption-guard
+- tests/storage.test.js.bak-20261117-world-corruption-guard
+- docs/MAESTRO_COSMOPOLIS.md.bak-20261117-world-corruption-guard
+
+Commits de esta tanda:
+- Respaldos: bd95840, a6727d8, a2c3afb.
+- Protección de escritura: 8deccdc.
+- Prueba automatizada: 0dfa605.
+
+Validación pendiente: las pruebas locales no se han ejecutado desde esta sesión. La nueva prueba y la comprobación sintáctica deben pasar en GitHub Actions antes de considerar validado el cambio. Mantener el PR #4 en borrador y sin fusionar. La prueba táctil real en Chrome sobre Android físico sigue pendiente. No se han tocado guardados locales ni la rama main.
+
+
+### Validación de protección del mundo compartido — 17 de noviembre de 2026
+
+La protección frente a registros globales dañados ha superado la validación automatizada remota sobre el commit 6d358d1b23fd4157ee1a449d49a9ea5ef784c1ac:
+
+- GitHub Actions «Athun storage tests», ejecución 638: correcta. La comprobación sintáctica de todos los archivos JavaScript terminó sin errores y las **42/42 pruebas** de almacenamiento, mundo compartido, migración, aislamiento y permanencia de Athun pasaron; 0 fallos.
+- GitHub Actions «Visual preview», ejecución 327: correcta. Playwright completó renderización e interacciones en Chromium móvil simulado (390 × 844) y escritorio (1024 × 900).
+- La nueva regresión es la prueba 42: simula JSON truncado en athun_shared_world_v1 y confirma que las operaciones de localización, conexión, entidad y guardado global rechazan la escritura sin alterar el valor original.
+- La rama de integración permanece 207 commits por delante y 0 por detrás de main. PR #4 sigue abierto, en borrador y sin fusionar.
+
+No se han ejecutado pruebas en Termux ni en un Android físico. La interacción táctil real en Chrome Android continúa pendiente; la simulación Playwright no la sustituye. No se han modificado main ni los guardados locales.
+
+
+### Validación del esquema del mundo compartido — 17 de noviembre de 2026
+
+La protección anterior ya rechazaba JSON truncado y valores raíz que no fueran objetos. La revisión adicional detectó otro caso: un objeto JSON válido podía contener campos conocidos con tipos incorrectos (por ejemplo, locations como texto o entities como array). getGlobalWorld() normaliza esos campos en memoria; sin una validación previa del esquema original, la siguiente escritura podía sustituir el contenido anómalo por arrays u objetos vacíos.
+
+Corrección en app/js/core/save.js:
+- writeGlobalWorldVerified() valida ahora, antes de escribir, los tipos de todos los campos conocidos que ya existan en el registro.
+- locations, connections, facts, events y changes deben ser arrays.
+- entities y relationships deben ser objetos no nulos y no arrays.
+- Los campos ausentes siguen permitidos para mantener compatibilidad con registros anteriores.
+- Si cualquier campo conocido tiene un tipo incompatible, la escritura se rechaza y el texto original del almacenamiento permanece intacto.
+
+Prueba nueva en tests/storage.test.js: siete escenarios de esquema incoherente (locations, connections, entities, facts, events, changes y relationships). Cada actualización debe devolver false y conservar exactamente el JSON original.
+
+Respaldos previos:
+- app/js/core/save.js.bak-20261117-world-schema-guard
+- tests/storage.test.js.bak-20261117-world-schema-guard
+- docs/MAESTRO_COSMOPOLIS.md.bak-20261117-world-schema-guard
+
+Commits:
+- Respaldos: db4102e, 898d5f9, 77cad0f.
+- Validación de esquema: d89a4c4.
+- Prueba de regresión: ccd259e.
+- Esta anotación documental se registra en un commit separado.
+
+Validación pendiente al documentar: GitHub Actions debe ejecutar la comprobación sintáctica y la suite completa. No se afirma todavía que esta nueva prueba haya pasado. El PR #4 sigue abierto en borrador y no se fusiona. No se han modificado main ni guardados locales. La validación táctil en Chrome Android físico continúa pendiente.
+
+
+### Resultado CI de validación del esquema global — 17 de noviembre de 2026
+
+La validación automatizada ya se completó sobre el cambio funcional y sobre la revisión documental:
+- GitHub Actions «Athun storage tests», ejecución **653** (commit documental actual): correcta.
+- Comprobación sintáctica de todos los archivos JavaScript: correcta.
+- Suite Node.js: **43/43 pruebas aprobadas, 0 fallos**. La prueba 43 comprueba los siete campos de esquema global y la conservación exacta del registro original cuando sus tipos son incorrectos.
+- La ejecución 650, sobre el commit funcional de la prueba, también terminó correctamente con 43/43.
+- «Visual preview», ejecución **336**, sobre el commit documental, sigue en curso en el momento de esta anotación; no se afirma aún su resultado.
+
+Respaldos de esta actualización: docs/MAESTRO_COSMOPOLIS.md.bak-20261117-schema-ci653.
+
+El PR #4 permanece abierto, en borrador y sin fusionar. No se ha tocado main ni ningún guardado local. La prueba táctil en Android físico sigue pendiente.
+
+
+### Validación de cambios de ubicación del narrador — 17 de noviembre de 2026
+
+La revisión del flujo de respuestas de la IA local detectó que el modelo podía cambiar `state.currentLocation` mediante el campo estructurado `location`, incluso si la respuesta no describía un desplazamiento o no mencionaba el destino. Como la sesión publica después la ubicación guardada en el atlas compartido, una respuesta incoherente podía crear un teletransporte narrativo y registrar un lugar como descubierto.
+
+Corrección en `app/js/game/narrator.js`:
+- Se incorpora `resolveCurrentLocation()` como validación previa del destino propuesto.
+- Una ubicación distinta solo se acepta si la respuesta está clasificada como `movement` y el nombre del destino aparece explícitamente en el texto narrativo.
+- En diálogos, investigaciones, combates y demás categorías, el protagonista conserva su ubicación aunque el modelo proponga otra en el JSON.
+- Si el destino no aparece en la narración, se conserva la ubicación anterior; por tanto, no se activa falsamente la fase de exploración ni se publica ese destino en el mapa.
+
+Regresión añadida en `tests/storage.test.js`:
+- Rechaza un cambio de ubicación propuesto durante un diálogo.
+- Acepta un desplazamiento cuyo destino se narra explícitamente.
+- Rechaza un destino que no aparece en la respuesta, aunque la categoría sea movimiento.
+
+Respaldos previos:
+- `app/js/game/narrator.js.bak-20261117-location-guard`
+- `tests/storage.test.js.bak-20261117-location-guard`
+- `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-location-guard`
+
+Commits funcionales:
+- `10bc074`: validación inicial del desplazamiento.
+- `4c5b168`: pruebas de regresión.
+- `1efdf5d`: corrección de normalización Unicode en el validador.
+
+**Validación CI:** pendiente de consultar para la revisión actual. No se declara aprobada la nueva regresión hasta que GitHub Actions confirme el resultado. La prueba táctil real en Chrome Android sigue pendiente. PR #4 permanece abierto y en borrador; no se ha fusionado ni modificado `main`.
+
+### Revalidación visual y de almacenamiento — 17 de noviembre de 2026 (18:08 UTC)
+
+Se corrigió únicamente el escenario simulado de la prueba visual: la respuesta ficticia que representa el desplazamiento ahora declara la categoría `movement` y menciona explícitamente el destino «Plaza del pozo». Esto hace que el escenario respete la validación narrativa real de `Narrator.resolveCurrentLocation()`; no cambia el comportamiento del juego.
+
+- Commit: `21cdf2574c7263f61148f80db4e59c5fa02a2c7c`.
+- GitHub Actions «Athun storage tests», ejecución **44144525754**: completada correctamente.
+- GitHub Actions «Visual preview», ejecución **44144525744**: completada correctamente en Chromium móvil simulado y escritorio.
+- La prueba táctil en Chrome sobre Android físico continúa pendiente; las pruebas automatizadas no la sustituyen.
+- PR #4 permanece abierto, en borrador y sin fusionar. No se ha modificado `main` ni ningún guardado local.
+
+
+## Corrección del contexto de memoria narrativa (17/11/2026)
+
+Se ha corregido un desajuste en `Narrator.buildMessages()`: el historial reciente se preparaba con la propiedad `action`, pero al serializar el contexto se intentaba leer `text`. Como resultado, el modelo recibía las respuestas anteriores, pero no las acciones que las habían provocado. Ahora se conserva cada acción junto con su respuesta, y una prueba automatizada verifica ambos elementos en el contexto enviado al narrador.
+
+- Se crearon copias de seguridad previas de `app/js/game/narrator.js`, `tests/storage.test.js` y este documento.
+- La corrección no modifica partidas ni datos guardados.
+- Debe validarse mediante las ejecuciones de CI de esta rama.
+
+
+## Protección del límite de conocimiento sobre personajes (17/11/2026)
+
+Se ha detectado que el contexto del narrador podía incluir la ficha de Elia aunque el protagonista todavía no la hubiera conocido. Aunque las instrucciones narrativas prohibían revelar ese conocimiento, enviar la ficha completa al modelo suponía una filtración innecesaria. Ahora Elia solo se incorpora al contexto cuando la partida registra `eliaMet: true), incluso si su ubicación coincide con la del protagonista. Se ha añadido una prueba que verifica la exclusión antes del encuentro y su inclusión después.
+
+- Se crearon copias de seguridad previas de los tres archivos modificados.
+- No se altera la secuencia del prólogo ni el estado de ninguna partida guardada.
+- Pendiente de validación en CI.
+
+
+## Ajuste del escenario visual de memoria de personajes (17/11/2026)
+
+La nueva protección de conocimiento exige que Elia solo aparezca en el contexto del narrador cuando `eliaMet` sea verdadero. La prueba visual de compactación de recuerdos inspeccionaba la ficha de Elia sin declarar previamente que la protagonista la conocía, por lo que el escenario fallaba correctamente al no encontrarla. Se ha corregido el fixture para establecer explícitamente `probe.state.eliaMet = true` antes de comprobar límites de memoria y objetivos. No se ha debilitado la protección del juego.
+
+- La prueba automatizada de almacenamiento ya había pasado.
+- La vista previa falló por una precondición omitida en el fixture, no por un error de ejecución del juego.
+- Se creó backup previo del workflow y del documento maestro.
+- Pendiente nueva validación de CI.
+
+
+## Cierre de filtración de entidades compartidas no conocidas (17/11/2026)
+
+Al ampliar la revisión del límite de conocimiento se detectó una segunda vía: el registro global compartido de entidades podía entregar al narrador la identidad y función de Elia aunque la partida activa todavía no la hubiera conocido. La ficha local ya estaba protegida, pero el registro global se incluía sin filtrar.
+
+- El contexto narrativo ahora incorpora entidades compartidas únicamente si su identidad también está presente entre los personajes conocidos de la partida activa.
+- Elia continúa excluida por completo hasta que `state.eliaMet === true`, incluso si otra partida ya la registró en el mundo compartido.
+- Al conocerla, su referencia global puede acompañar al contexto para mantener identidad y continuidad.
+- Se amplió la prueba automatizada para simular que otra partida ya había descubierto a Elia y verificar que no se filtra antes del encuentro, pero sí después.
+- Se preserva el registro compartido; el filtro afecta solo a la información entregada al narrador de la partida activa.
+
+
+## Memoria relacional de Athun (17/11/2026)
+
+El vínculo de Athun ya no depende únicamente de una cifra. Cada cambio efectivo de afinidad conserva también un motivo breve en `state.athun.bondHistory`, dentro de la partida correspondiente.
+
+- El historial guarda solo cambios reales (no registra incrementos que hayan quedado bloqueados por los límites de -100/100).
+- Se conservan como máximo 30 motivos y se entregan al narrador los 12 más recientes.
+- El contexto mantiene el aislamiento entre protagonistas: cada partida recibe únicamente su propia historia de vínculo.
+- La instrucción narrativa utiliza esos motivos para dar continuidad emocional sin convertir la puntuación en una personalidad rígida.
+- Se añadió una prueba que registra cambios en sentidos opuestos y verifica que ambos motivos llegan al contexto narrativo de la misma partida.
+
+
+La prueba de aislamiento de Athun también comprueba ahora que los motivos del vínculo de Ariadna y Darian no se mezclan al alternar partidas.
+
+
+La capa de normalización de partidas en `app/js/core/save.js` también conserva y sanea este historial al cargar o migrar una ficha: mantiene los 30 registros válidos más recientes, limita cada motivo y descarta entradas mal formadas. Así la memoria relacional no desaparece al reabrir una partida.
+
+
+### Saneamiento defensivo del estado relacional de Athun — 17 de noviembre de 2026
+
+La actualización de memoria relacional se ha endurecido para no confiar en que el estado cargado esté siempre limpio. Antes de aplicar novedades, `Narrator.applyAthunUpdates()` normaliza el vínculo al intervalo -100..100, filtra recuerdos y revelaciones a texto no vacío de hasta 300 caracteres (máximo 40 de cada tipo) y valida el historial de vínculo (delta -1..1, motivo textual de hasta 240 caracteres y máximo 30 entradas). Los datos mal formados se descartan sin impedir que se incorporen recuerdos nuevos válidos.
+
+Respaldos previos creados en la rama:
+- `app/js/game/narrator.js.bak-20261117-athun-state-sanitization`
+- `tests/storage.test.js.bak-20261117-athun-state-sanitization`
+- `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-athun-state-sanitization`
+
+Se añadió una regresión que introduce entradas de tipos incorrectos, motivos inválidos, un delta fuera de rango y textos demasiado largos; comprueba la normalización y que la actualización continúa procesando datos válidos. La validación de CI queda pendiente; no se considera superada hasta consultar sus resultados.
+
+
+### Filtrado de memoria antes de construir el contexto del narrador — 17 de noviembre de 2026
+
+Se ha cerrado una segunda vía de entrada de datos defectuosos: `Narrator.buildMessages()` ya no copia objetos, valores vacíos ni motivos no textuales de recuerdos, revelaciones e historial de Athun al contexto enviado al modelo. Además, la representación compacta del estado sobrescribe cualquier copia sin filtrar de `state.athun` con el contexto normalizado, evitando que el mismo dato llegue por una ruta paralela. Se conserva el contenido textual válido y se limita cada recuerdo/revelación a 240 caracteres en el prompt.
+
+Se añadió una prueba que introduce deliberadamente objetos y valores de tipos incorrectos y verifica tanto el contexto específico de Athun como la copia anidada en el estado. Respaldo previo: `app/js/game/narrator.js.bak-20261117-athun-prompt-memory-filter`, `tests/storage.test.js.bak-20261117-athun-prompt-memory-filter` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-athun-prompt-memory-filter`.
+
+
+### Saneamiento del contexto de personajes y objetivos — 17/11/2026
+- El contexto enviado al narrador ya no copia indiscriminadamente los objetos completos de cada personaje.
+- Se construye una lista explícita de campos narrativos permitidos; objetivos, estados, confianza, acciones autónomas, recuerdos e historiales se validan y limitan.
+- Se descartan recuerdos y entradas de objetivos que no sean texto válido, y se excluyen campos arbitrarios que pudieran contener datos ajenos al contexto narrativo.
+- Se añade una regresión con recuerdos malformados, objetivos inválidos, confianza fuera de rango y un campo privado adicional.
+- Se conserva el estado original del personaje en la partida; el saneamiento afecta únicamente al contexto que recibe el modelo.
+
+
+### Validación de acciones autónomas dentro de la escena — 17/11/2026
+- Las iniciativas autónomas solo se guardan si el texto de la acción aparece realmente en la narración de la escena actual.
+- Se descartan acciones de personajes que no estén registrados, que estén en otra ubicación o que repitan exactamente su última iniciativa.
+- Se elimina la inserción automática de acciones al final del relato: el registro estructurado ya no puede introducir una acción que el narrador no haya contado.
+- Se añade una prueba de regresión para acciones narradas, omitidas, repetidas, de personajes fuera de escena y nombres desconocidos.
+
+
+### Ajuste del fixture visual de iniciativas autónomas — 17/11/2026
+- La escena simulada de la vista previa ahora incluye expresamente en el texto narrativo la iniciativa de Elia que registra el JSON.
+- La prueba conserva su propósito: verificar que la iniciativa aparece integrada en la narración, en vez de depender de que el juego añada una nota al final.
+
+
+### Validación estructural de actualizaciones de objetivos de personajes — 17 de noviembre de 2026
+
+Se ha reforzado la frontera entre la respuesta del narrador y el estado persistente de los personajes. Antes, una entrada de objetivo con un estado desconocido podía convertirse silenciosamente en «active», y se aceptaban motivos vacíos. Ahora `Narrator.filterGoalUpdates()` solo permite hasta dos actualizaciones por turno cuando:
+- El personaje existe en la partida activa y su nombre coincide con una ficha registrada.
+- El objetivo es texto no vacío y está limitado a 240 caracteres.
+- El estado pertenece exactamente a `active`, `progress`, `blocked` o `completed`.
+- El motivo es texto no vacío y está limitado a 200 caracteres.
+
+Las reglas existentes de continuidad siguen impidiendo sustituir objetivos pendientes o reabrir objetivos cumplidos sin una nueva etapa válida. Se añade una prueba de regresión para nombres desconocidos, estados inválidos, motivos vacíos y entradas no listadas.
+
+Respaldos creados antes de los cambios:
+- `app/js/game/narrator.js.bak-20261117-goal-update-validation`
+- `tests/storage.test.js.bak-20261117-goal-update-validation`
+- `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-goal-update-validation`
+
+La validación automatizada queda pendiente de GitHub Actions; no se considera aprobada hasta confirmar el resultado de CI. El PR #4 continúa abierto, en borrador y sin fusionar. No se modifican `main` ni las partidas guardadas locales.
+
+
+### Reducción de ejecuciones y notificaciones redundantes — 17/11/2026
+
+Se ajustaron los disparadores de GitHub Actions para evitar que cada commit de la rama de integración ejecute dos veces las mismas comprobaciones:
+- Las pruebas de almacenamiento ya no se disparan por `push` en la rama de integración; siguen ejecutándose en las ramas principales configuradas y en cada PR hacia `main` cuando cambian `app/js/**`, `tests/**` o su propio workflow.
+- La vista previa visual ya no se dispara por `push` en la rama de integración; se conserva en PR hacia `main` y se limita a cambios de `app/**`, `index.html` o su workflow. También se mantiene la ejecución manual.
+- Se conservan ambas suites; no se desactivan las validaciones de código ni las pruebas de interfaz. Los cambios solo eliminan ejecuciones duplicadas y las activaciones por documentación u otros archivos no relacionados.
+
+Respaldo previo: `docs/MAESTRO_COSMOPOLIS.md.bak-20261117-ci-notification-filter`, además de las copias previas de ambos workflows. Las nuevas reglas deben confirmarse mediante las ejecuciones que GitHub genere a partir de esta revisión. No se modifica `main`, no se fusiona el PR #4 y no se accede a partidas guardadas locales.
+
+
+La revalidación posterior a los cambios de disparadores ha finalizado correctamente sobre la revisión `95f3d4df`:
+- «Athun storage tests», ejecución **797**: correcta.
+- «Visual preview», ejecución **418**: correcta en Chromium móvil simulado y escritorio.
+
+La eliminación del disparador `push` redundante en la rama de integración y los filtros de rutas quedan validados. Las notificaciones de las pruebas de PR se mantienen para proteger los cambios que afectan al código; ya no se genera además una segunda ejecución equivalente por cada `push` en esta rama.
+
+
+### Personalidad evolutiva de Athun — 18 de noviembre de 2026
+
+Se incorpora una capa narrativa derivada, no persistida, para que la personalidad de Athun pueda evolucionar con el vínculo y las experiencias de cada protagonista:
+- Narrator.deriveAthunRelationship() calcula un tono orientativo de confianza, la tendencia de los últimos cambios de vínculo y hasta tres motivos y recuerdos compartidos.
+- El perfil se deriva del estado de la partida activa y se envía como athunRelationship, separado del registro canónico currentAdventure.athun. No añade claves al guardado ni mezcla datos entre protagonistas.
+- El prompt pide que esa información matice gradualmente la voz, la iniciativa y la vulnerabilidad del grimorio, sin convertir una puntuación en una personalidad rígida ni forzar emociones en cada escena.
+- Los hechos y recuerdos concretos prevalecen sobre las etiquetas orientativas; se mantienen intactas la protección permanente de Athun y las reglas de descubrimiento gradual.
+- Se añaden pruebas para evolución hacia la cautela y hacia una familiaridad profunda, tendencia reciente, anclas de memoria y presencia del perfil en el contexto narrativo.
+
+
+## REVISIÓN DEL ESTADO DE INTEGRACIÓN Y LÍMITES DE DESCUBRIMIENTO — 18 DE NOVIEMBRE DE 2026
+
+### Estado del PR #4 antes de esta tanda
+- Rama: \`integration/athun-multisave-main-20261116\`.
+- Revisión: \`f3b58592199fe1bb7bfa0569062d3c30311725df\`.
+- PR #4 abierto y en borrador, con base \`main\`; GitHub lo informa como integrable (\`mergeable_state: clean\`), 320 commits por delante y ninguno por detrás.
+- Comprobaciones de esa revisión: «Athun storage tests» (ejecución 44265906015) y «Visual preview» (ejecución 44265906111), ambas correctas. No hay revisiones ni hilos de comentarios pendientes.
+- PR #3 sigue abierto como propuesta anterior de partidas/atlas; PR #1 sigue abierto como propuesta narrativa independiente. Ninguno se fusiona en esta tanda.
+- Continúa pendiente la prueba táctil real en Chrome sobre Android físico. Las pruebas Playwright móvil/escritorio no sustituyen esa comprobación.
+- No se modifica \`main\`, no se fusiona ningún PR y no se accede a los guardados del dispositivo.
+
+### Hallazgo: el JSON podía descubrir cosas que el texto no contaba
+La revisión de \`Narrator.respond()\` detectó que \`factsToAdd\`, \`cluesToAdd\` y \`charactersToAdd\` se aplicaban sin comprobar que el descubrimiento estuviera realmente narrado. Una respuesta podía registrar a Elia o marcar la campana como descubierta aunque el texto visible no la mencionara.
+
+### Corrección aplicada en esta tanda
+- Los hechos y pistas solo se guardan cuando su frase aparece literalmente en \`reply\`, tras normalizar mayúsculas, tildes y puntuación.
+- Las marcas de descubrimiento del pozo y la campana se derivan únicamente de afirmaciones respaldadas por el texto; las afirmaciones negativas no activan esas marcas.
+- Cada personaje nuevo debe aportar \`evidence\`: fragmento literal de \`reply\` que contiene su nombre y una señal de presencia o interacción.
+- La ubicación declarada del personaje debe coincidir con la ubicación actual de la escena. Se rechazan rumores, personajes de otra zona y cualquier intento de registrar a Athun como personaje duplicado.
+- \`eliaMet\` solo cambia a verdadero cuando el encuentro de Elia supera esas comprobaciones.
+- Se corrigieron los fixtures de Playwright para que los descubrimientos, el encuentro con Elia y la entrada de Tomás aparezcan también en el texto narrativo, no solo en el JSON estructurado.
+
+### Validación
+- Se añadieron regresiones para descubrimientos incluidos únicamente en el JSON, afirmaciones literales válidas, rumores, personajes fuera de escena, duplicación de Athun y afirmaciones negativas.
+- La validación remota de esta revisión queda pendiente de las ejecuciones de GitHub Actions. No se declara todavía aprobada.
+
+
+### Resultados de validación del filtro de descubrimientos — 18 de noviembre de 2026
+
+La revisión de código \`01abd4847b2949a36a37d6d92b8ed40d6a478221\` ha superado las dos comprobaciones automáticas:
+
+- **Athun storage tests**, ejecución **44268205134**: correcta. La suite informa **56 pruebas, 56 aprobadas y 0 fallidas**. Incluye las tres regresiones nuevas sobre afirmaciones no narradas, encuentros presenciales y menciones negativas.
+- **Visual preview**, ejecución **44268205117**: correcta. La regresión narrativa de apertura, descubrimiento gradual y permanencia de Athun termina en \`OK\`; las pruebas de interacción terminan en \`INTERACTION_TESTS_OK\` para historial, atlas, inventario, opciones, exploración, respuesta de IA, guardado y recarga.
+- La vista móvil simulada se renderizó a **390 × 844 px**, sin desbordamiento horizontal del documento. La vista de escritorio también terminó correctamente.
+
+Los avisos de obsolescencia de Node.js 20 emitidos por algunas acciones de GitHub no provocaron fallos y no afectan al resultado de estas pruebas.
+
+**Pendiente fuera de CI:** probar los controles táctiles en Chrome sobre un dispositivo Android real. La simulación de Playwright no sustituye esa validación. También queda para una siguiente tanda revisar la evidencia narrativa de \`itemsToAdd/itemsToRemove\` y de los cambios de ubicación de personajes ya registrados; este cambio no amplía todavía esos validadores.
+
+El PR #4 permanece abierto y en borrador. No se ha fusionado ni se ha modificado \`main\`.

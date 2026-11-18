@@ -23,6 +23,7 @@ fi
 
 nohup "$BIN" \
   --model "$MODEL" \
+  --reasoning off \
   --host 127.0.0.1 \
   --port 8081 \
   --ctx-size 4096 \
