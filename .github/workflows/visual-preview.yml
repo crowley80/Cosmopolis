@@ -251,6 +251,7 @@ jobs:
             assert.ok(!firstNarrative.includes('Elia: Elia se inclina') && !firstNarrative.includes(String.fromCharCode(92) + 'n'), 'La iniciativa no debe mostrarse como ficha ni con escapes visibles: ' + firstNarrative);
             const goalFallbackProbe = await page.evaluate(() => {
               const probeAdventure = Adventure.createOpening({ name: 'Ariadna' });
+              probeAdventure.state.currentLocation = 'Plaza del pozo';
               probeAdventure.state.characters.Tomás = {
                 role: 'Vecino', location: 'Plaza del pozo', personalGoal: 'Proteger a los vecinos de los peligros del pozo.', trust: 0, memories: []
               };
