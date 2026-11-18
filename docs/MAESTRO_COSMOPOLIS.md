@@ -1484,3 +1484,13 @@ Se implementó también una migración idempotente en `Save.load()` para partida
 ### Próximo paso
 
 Revisar el movimiento y los cambios de ubicación generados por el modelo para evitar teletransportes o entradas en lugares no descubiertos. Después ejecutar pruebas integradas del flujo narrador/director sin tocar partidas guardadas.
+
+### Control de desplazamientos — 18 de noviembre de 2026
+
+- El narrador local ya no puede cambiar la ubicación del protagonista por iniciativa propia cuando la acción escrita no expresa desplazamiento.
+- Se reconocen verbos y expresiones de movimiento como caminar, entrar, salir, acercarse, alejarse, explorar, subir, bajar, dirigirse, avanzar, retroceder, cruzar, regresar y trasladarse.
+- Las altas de personajes nuevos usan la ubicación finalmente aceptada para la escena, no la ubicación propuesta sin validar por el modelo.
+- Copia previa del narrador: `app/js/game/narrator.js.backup-20261118-movement`.
+- Sintaxis JavaScript comprobada. Pruebas aisladas de intención de movimiento: entrar, acercarse y caminar se reconocen; hablar y examinar no provocan desplazamiento.
+- Pendiente de integración real con llama-server y Android/Termux.
+- Commit de la protección de movimiento: `19ed6c6`; corrección del patrón de límites de palabra: `ad7c2c1`.
