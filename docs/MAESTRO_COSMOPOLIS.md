@@ -1494,3 +1494,12 @@ Revisar el movimiento y los cambios de ubicación generados por el modelo para e
 - Sintaxis JavaScript comprobada. Pruebas aisladas de intención de movimiento: entrar, acercarse y caminar se reconocen; hablar y examinar no provocan desplazamiento.
 - Pendiente de integración real con llama-server y Android/Termux.
 - Commit de la protección de movimiento: `19ed6c6`; corrección del patrón de límites de palabra: `ad7c2c1`.
+
+### Pruebas automáticas — ajuste de regresiones
+
+- La primera parte de la regresión narrativa de GitHub Actions ya confirma correctamente la apertura, los descubrimientos graduales y la permanencia de Athun.
+- Se adaptó la prueba para comprobar que una acción estacionaria no teletransporta al personaje ni registra descubrimientos de otra ubicación, y que un desplazamiento explícito sí permite el cambio de ubicación y el encuentro narrado.
+- Se corrigió una expectativa obsoleta de inventario: el test esperaba un inventario vacío, aunque Athun debe estar siempre presente. Ahora comprueba que Athun aparece en la lista.
+- Se refinó el detector de movimiento para no confundir la palabra «camino» usada como sustantivo (por ejemplo, «examino el camino») con el verbo caminar; reconoce expresiones como «camino hacia la plaza».
+- Se crearon respaldos previos de los archivos de código y de la prueba visual. Sintaxis de `narrator.js` comprobada y pruebas aisladas del detector correctas.
+- La ejecución completa de GitHub Actions tras el último ajuste de la prueba está pendiente de resultado; no se declara todavía el CI en verde.
