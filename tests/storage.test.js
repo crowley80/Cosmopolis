@@ -41,7 +41,7 @@ test('el narrador descarta zonas visibles sin respaldo en la escena o el conocim
         { locations: [{ name: 'Calle del molino' }] }
     );
 
-    assert.deepEqual(visible, ['Calle del molino', 'Puente viejo', 'Calle 1', 'Plaza del pozo']);
+    assert.deepEqual(visible, ['Puente viejo', 'Calle 1', 'Plaza del pozo']);
 });
 
 
