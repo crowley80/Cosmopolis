@@ -852,6 +852,31 @@ test('Athun no puede perderse, venderse, transferirse ni destruirse por una resp
 
 
 
+test('los cambios de ubicación y actitud de personajes requieren evidencia en la escena', () => {
+    const state = {
+        currentLocation: 'Plaza del pozo',
+        characters: {
+            Elia: { name: 'Elia', location: 'Plaza del pozo', attitude: 'Cautelosa' }
+        }
+    };
+
+    assert.deepEqual(Narrator.filterCharacterUpdates([
+        { character: 'Elia', location: 'Castillo', attitude: 'Hostil' }
+    ], 'Elia permanece junto al pozo y observa la plaza.', state), []);
+
+    assert.deepEqual(Narrator.filterCharacterUpdates([
+        { character: 'Elia', location: 'Molino', attitude: 'Hostil' }
+    ], 'Elia se marcha hacia el molino, todavía cautelosa.', state), [
+        { character: 'Elia', location: 'Molino', attitude: 'Cautelosa' }
+    ]);
+
+    assert.deepEqual(Narrator.filterCharacterUpdates([
+        { character: 'Elia', location: 'Plaza del pozo', attitude: 'Tranquila' }
+    ], 'Elia se muestra Tranquila mientras habla contigo.', state), [
+        { character: 'Elia', location: 'Plaza del pozo', attitude: 'Tranquila' }
+    ]);
+});
+
 test('el inventario rechaza objetos mencionados solo en JSON y no aplica pérdidas sin acción narrada', () => {
     const state = { inventory: ['Athun — grimorio consciente', 'Moneda', 'Poción'] };
     Narrator.applyInventoryUpdates(state, {
