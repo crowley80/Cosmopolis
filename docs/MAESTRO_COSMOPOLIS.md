@@ -1524,7 +1524,7 @@ Revisar el movimiento y los cambios de ubicación generados por el modelo para e
 ### Integración de iniciativas autónomas y ubicación de NPC — 18 de noviembre de 2026
 
 - La evidencia de escena usada para validar hechos, personajes y destinos incluye también las iniciativas autónomas estructuradas que se incorporan a la narración.
-- Si un NPC cambia de ubicación en esa escena, su iniciativa autónoma narrada no se descarta por el hecho de que su nueva ubicación ya no coincida con la del protagonista; la acción se conserva en el texto y en sus recuerdos.
+- La iniciativa autónoma solo se registra si el NPC sigue presente en la ubicación del protagonista; si el personaje cambia de ubicación durante la misma respuesta, no se guarda una iniciativa fuera de escena. La acción estructurada puede servir como evidencia del desplazamiento cuando se integra en la narración.
 - Prueba aislada de integración: Tomás puede pasar a «Entrada de la posada» cuando la respuesta y su iniciativa describen ese desplazamiento, y la acción autónoma queda registrada.
 - Se completó el estado inicial de la vista previa de CI para reflejar que el personaje ya conoce el pozo, la campana y a Elia; el filtro de conocimiento del narrador deja de ocultar a Elia en esa escena de prueba.
 - Respaldo del narrador: `app/js/game/narrator.js.backup-20261118-autonomous-location`; respaldo del fixture: `.github/workflows/visual-preview.yml.backup-20261118-preview-state`.
