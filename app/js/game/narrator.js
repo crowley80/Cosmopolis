@@ -163,6 +163,33 @@ const Narrator = {
         return accepted;
     },
 
+    deriveAthunRelationship(athun) {
+        const bond = Number.isFinite(Number(athun && athun.bond))
+            ? Math.max(-100, Math.min(100, Number(athun.bond))) : 0;
+        let trustTone = 'cauteloso';
+        if (bond <= -25) trustTone = 'distante y a la defensiva';
+        else if (bond >= 60) trustTone = 'profundamente familiar, sin ser incondicional';
+        else if (bond >= 25) trustTone = 'familiar y dispuesto a confiar con prudencia';
+
+        const history = (Array.isArray(athun && athun.bondHistory) ? athun.bondHistory : [])
+            .filter(entry => entry && Number.isInteger(entry.delta) && entry.delta >= -1 &&
+                entry.delta <= 1 && typeof entry.reason === 'string' && entry.reason.trim())
+            .slice(-6);
+        const movement = history.reduce((sum, entry) => sum + entry.delta, 0);
+        let recentMovement = 'estable';
+        if (movement >= 2) recentMovement = 'se está abriendo poco a poco';
+        else if (movement <= -2) recentMovement = 'se está replegando y necesita cautela';
+
+        return {
+            trustTone,
+            recentMovement,
+            relationshipAnchors: history.slice(-3).map(entry => entry.reason.trim().slice(0, 180)),
+            sharedMemoryAnchors: (Array.isArray(athun && athun.memories) ? athun.memories : [])
+                .filter(item => typeof item === 'string' && item.trim())
+                .slice(-3).map(item => item.trim().slice(0, 180))
+        };
+    },
+
     buildMessages(action, character, adventure, previousActions) {
         const state = adventure.state || {};
         const world = Session.getWorld();
@@ -193,6 +220,7 @@ const Narrator = {
                 }))
                 .filter(entry => entry.reason)
         };
+        const athunRelationship = this.deriveAthunRelationship(athunContext);
         const currentLocation = state.currentLocation || adventure.location || '';
         const allCharacters = Object.entries(state.characters || {});
         // Elia puede existir en los datos de la aventura antes de que el protagonista la conozca.
@@ -294,6 +322,7 @@ const Narrator = {
 
         const context = {
             player: compactPlayer,
+            athunRelationship,
             currentAdventure: {
                 title: String(adventure.title || '').slice(0, 160),
                 location: currentLocation,
@@ -337,7 +366,7 @@ const Narrator = {
                     'Si el jugador examina algo, describe primero señales observables y permite que las conclusiones dependan de las pistas disponibles y de sus capacidades.',
                     'El mundo persistente es compartido entre protagonistas: usa sus localizaciones y entidades como referencias comunes. No traslades recuerdos, confianza, objetivos ni relaciones personales de un protagonista a otro; esos datos pertenecen a cada partida.',
                     'personalWorld contiene hechos, acontecimientos y relaciones exclusivos de la partida activa: consúltalos para mantener su continuidad, pero nunca los trates como hechos universales ni los transfieras a otro protagonista.',
-                    'athun contiene el vínculo, recuerdos, revelaciones e historial de cambios del grimorio exclusivos de esta partida. Usa bondHistory para recordar por qué cambió vuestra relación y mantener una respuesta emocional coherente; no repitas ni contradigas esos motivos, y no conviertas un cambio numérico en una personalidad rígida. Ten presentes sus recuerdos y revelaciones para que Athun reconozca decisiones y experiencias compartidas con este protagonista, pero no inventes recuerdos, no los atribuyas a otro protagonista y no reveles sus secretos antes de tiempo. Su conocimiento extraordinario no significa que deba intervenir en cada acción.',
+                    'athun contiene el vínculo, recuerdos, revelaciones e historial de cambios del grimorio exclusivos de esta partida. athunRelationship resume de forma orientativa el tono de confianza, la tendencia reciente y algunos motivos/recuerdos compartidos: deja que matice sutilmente la elección de palabras, la iniciativa y la vulnerabilidad de Athun cuando tenga sentido. La tendencia no es una emoción obligatoria ni una personalidad fija; una sola acción no debe producir un giro brusco. Prioriza siempre los hechos concretos y los recuerdos de esta partida, permite contradicciones humanas y cambios graduales, y no repitas mecánicamente sus motivos. No inventes recuerdos, no los atribuyas a otro protagonista ni reveles secretos antes de tiempo. Su conocimiento extraordinario no significa que deba intervenir en cada acción.',
                     'Si una entidad ya figura en el registro compartido, conserva su identidad y función; no crees un duplicado con otro nombre salvo que la historia establezca claramente que se trata de otra persona.',
                     'Respeta estrictamente los hechos, lugares, personajes, capacidades y consecuencias ya establecidos.',
                     'No decidas las intenciones del jugador ni fuerces una misión. Resuelve la acción que ha escrito.',
