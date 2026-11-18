@@ -2201,3 +2201,15 @@ Los avisos de obsolescencia de Node.js 20 emitidos por algunas acciones de GitHu
 **Pendiente fuera de CI:** probar los controles táctiles en Chrome sobre un dispositivo Android real. La simulación de Playwright no sustituye esa validación. También queda para una siguiente tanda revisar la evidencia narrativa de \`itemsToAdd/itemsToRemove\` y de los cambios de ubicación de personajes ya registrados; este cambio no amplía todavía esos validadores.
 
 El PR #4 permanece abierto y en borrador. No se ha fusionado ni se ha modificado \`main\`.
+
+### Validación de consecuencias narrativas — 18 de noviembre de 2026
+
+Se refuerzan tres fronteras entre la respuesta del modelo y el estado persistente de la partida:
+
+- **Inventario:** `itemsToAdd` y `itemsToRemove` solo se aplican cuando el objeto aparece literalmente en una misma frase de `reply` junto a una acción explícita de adquisición o pérdida. Las menciones sin acción no crean ni eliminan objetos. Athun sigue protegido frente a retirada, pérdida y duplicación.
+- **Personajes:** los cambios de ubicación requieren que el nombre del personaje, el destino y una señal de desplazamiento aparezcan juntos en la escena. Los cambios de actitud también deben estar expresados junto al personaje; los campos JSON por sí solos no bastan.
+- **Visibilidad:** el atlas deja de tratar todos los lugares conocidos del mundo o visitados anteriormente como visibles desde la posición actual. Solo acepta topónimos respaldados por la escena actual o la ubicación presente.
+
+Se añaden regresiones para adquisiciones y pérdidas sin evidencia, movimientos inventados, cambios de actitud no narrados y lugares conocidos pero no visibles.
+
+**Validación automática pendiente:** ejecutar «Athun storage tests» y «Visual preview» sobre esta revisión antes de considerar cerrada la tanda. No se ha fusionado el PR ni se ha modificado `main`. La prueba táctil en Chrome para Android físico continúa pendiente.
