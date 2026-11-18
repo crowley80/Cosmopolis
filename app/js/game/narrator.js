@@ -650,9 +650,9 @@ const Narrator = {
                     // La negación se evalúa dentro de su cláusula para admitir
                     // correcciones narrativas como «no lo recoges, pero luego lo guardas».
                     const clause = sentence.slice(0, match.index)
-                        .split(/[,;]|\\b(?:pero|aunque|sino|sin embargo)\\b/)
+                        .split(/[,;]|\b(?:pero|aunque|sino|sin embargo)\b/)
                         .pop();
-                    if (!/\\b(no|nunca|jamas|tampoco)\\b/.test(clause)) return true;
+                    if (!/\b(no|nunca|jamas|tampoco)\b/.test(clause)) return true;
                 }
                 return false;
             });
