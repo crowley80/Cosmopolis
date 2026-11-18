@@ -2224,3 +2224,15 @@ Se añaden regresiones para adquisiciones y pérdidas sin evidencia, movimientos
 - Se crearon copias previas de `narrator.js` y `storage.test.js` con sufijo `bak-20261118-inventory-negation-guard`.
 
 **Validación automática pendiente:** los nuevos commits deben completar «Athun storage tests» antes de dar por cerrada esta corrección. No se modifica `main`, no se fusiona el PR y no se toca ningún guardado del dispositivo.
+
+
+### Evidencia de acciones y desplazamientos afirmativos — 18 de noviembre de 2026
+
+Se completa la revisión de las otras consecuencias persistentes señaladas en la tanda anterior:
+
+- **Inventario:** las adquisiciones y pérdidas se aceptan solo si el verbo de acción aparece en una cláusula afirmativa junto al objeto. Se ignoran «no recoges», «nunca pierdes» y negaciones equivalentes; una acción afirmativa posterior tras «pero» o «aunque» sí puede registrarse.
+- **Ubicación de personajes:** ya no se aceptan como desplazamiento las frases estáticas «permanece», «espera» o «se encuentra». También se rechazan desplazamientos negados. Se conservan los movimientos afirmativos narrados hacia un destino explícito.
+- Se añadieron pruebas para las negaciones del inventario, las permanencias, los desplazamientos negados y una rectificación afirmativa posterior.
+- Se hicieron copias previas independientes de `narrator.js` y `storage.test.js` para esta revisión, con sufijo `bak-20261118-character-movement-guard`.
+
+**Comprobación local dirigida:** sintaxis de ambos archivos correcta y ejecución de los escenarios nuevos sobre el código real correcta (inventario y movimiento de personajes). No se ha obtenido una ejecución nueva de GitHub Actions asociada a estos commits; la suite remota completa sigue pendiente. No se modifica `main`, no se fusiona el PR y no se toca ningún guardado del dispositivo.
