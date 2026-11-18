@@ -333,6 +333,8 @@ const Narrator = {
             state.currentLocation = actionSuggestsMovement && proposedLocation
                 ? proposedLocation
                 : previousLocation;
+            const narrativeLocationAccepted = actionSuggestsMovement ||
+                !proposedLocation || proposedLocation === previousLocation;
             if (state.phase === 'arrival' && state.currentLocation !== 'Camino de entrada a Valdebruma') {
                 state.phase = 'exploration';
             }
@@ -347,6 +349,7 @@ const Narrator = {
                 .replace(/[\u0300-\u036f]/g, '');
             const narrativeEvidence = normalizeEvidence(result.reply);
             const isNarrativelySupported = value => {
+                if (!narrativeLocationAccepted) return false;
                 const words = normalizeEvidence(value).match(/[a-z0-9]{4,}/g) || [];
                 const meaningful = words.filter(word => ![
                     'este', 'esta', 'estos', 'estas', 'aquel', 'aquella', 'desde',
