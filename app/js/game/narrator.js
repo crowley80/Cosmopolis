@@ -578,17 +578,32 @@ const Narrator = {
         }
     },
 
-    applyInventoryUpdates(state, result) {
+    applyInventoryUpdates(state, result, reply = '') {
         if (!state || typeof state !== 'object' || !result || typeof result !== 'object') return;
         state.inventory = Array.isArray(state.inventory) ? state.inventory : [];
 
+        const normalize = value => this.normalizeNarrativeText(value);
+        const sentences = String(reply || '').split(/[.!?;]+/)
+            .map(sentence => normalize(sentence))
+            .filter(Boolean);
+        const hasNarratedEvidence = (item, verbs) => {
+            const name = normalize(item);
+            if (!name) return false;
+            return sentences.some(sentence =>
+                (' ' + sentence + ' ').includes(' ' + name + ' ') && verbs.test(sentence)
+            );
+        };
+        const removalEvidence = /\\b(entregas|entrega|das|da|dejas|deja|pierdes|pierde|consumes|consume|gastas|gasta|vendes|vende|intercambias|intercambia|depositas|deposita|arrojas|arroja|abandonas|abandona|rompes|rompe|destruyes|destruye|te quitan|te quita|te roba|te roban|sacas|saca)\\b/;
+        const additionEvidence = /\\b(recoges|recoge|tomas|toma|guardas|guarda|obtienes|obtiene|recibes|recibe|te entrega|te entregan|te da|te ofrecen|aceptas|acepta|consigues|consigue|encuentras y guardas|añades|anades|introduces)\\b/;
+
         (Array.isArray(result.itemsToRemove) ? result.itemsToRemove : []).slice(0, 10).forEach(item => {
             if (typeof item !== 'string' || !item.trim()) return;
+            const clean = item.trim().slice(0, 120);
             // Athun nunca puede perderse, venderse, transferirse ni destruirse.
-            if (item.trim().toLocaleLowerCase('es').includes('athun')) return;
+            if (normalize(clean).includes('athun') || !hasNarratedEvidence(clean, removalEvidence)) return;
             const index = state.inventory.findIndex(existing =>
-                String(existing).toLocaleLowerCase('es') === item.trim().toLocaleLowerCase('es'));
-            if (index !== -1 && !String(state.inventory[index]).toLocaleLowerCase('es').includes('athun')) {
+                normalize(existing) === normalize(clean));
+            if (index !== -1 && !normalize(state.inventory[index]).includes('athun')) {
                 state.inventory.splice(index, 1);
             }
         });
@@ -596,14 +611,14 @@ const Narrator = {
         (Array.isArray(result.itemsToAdd) ? result.itemsToAdd : []).slice(0, 10).forEach(item => {
             if (typeof item !== 'string' || !item.trim()) return;
             const clean = item.trim().slice(0, 120);
-            // El narrador no puede crear copias de Athun.
-            if (clean.toLocaleLowerCase('es').includes('athun')) return;
-            if (!state.inventory.some(existing => String(existing).toLocaleLowerCase('es') === clean.toLocaleLowerCase('es')) && state.inventory.length < 50) {
+            // El narrador no puede crear copias de Athun ni objetos sin adquisición narrada.
+            if (normalize(clean).includes('athun') || !hasNarratedEvidence(clean, additionEvidence)) return;
+            if (!state.inventory.some(existing => normalize(existing) === normalize(clean)) && state.inventory.length < 50) {
                 state.inventory.push(clean);
             }
         });
 
-        if (!state.inventory.some(item => String(item).toLocaleLowerCase('es').includes('athun'))) {
+        if (!state.inventory.some(item => normalize(item).includes('athun'))) {
             state.inventory.unshift('Athun — grimorio consciente');
         }
     },
@@ -793,7 +808,7 @@ const Narrator = {
             state.events = Array.isArray(state.events) ? state.events : [];
             this.applyDiscoveryUpdates(state, result);
 
-            this.applyInventoryUpdates(state, result);
+            this.applyInventoryUpdates(state, result, result.reply);
             if (!state.athun || typeof state.athun !== 'object') {
                 state.athun = { id: 'athun', name: 'Athun', kind: 'Grimorio consciente', permanent: true, bond: 0, memories: [], revelations: [], bondHistory: [] };
             }
