@@ -1529,3 +1529,12 @@ Revisar el movimiento y los cambios de ubicación generados por el modelo para e
 - Se completó el estado inicial de la vista previa de CI para reflejar que el personaje ya conoce el pozo, la campana y a Elia; el filtro de conocimiento del narrador deja de ocultar a Elia en esa escena de prueba.
 - Respaldo del narrador: `app/js/game/narrator.js.backup-20261118-autonomous-location`; respaldo del fixture: `.github/workflows/visual-preview.yml.backup-20261118-preview-state`.
 - La ejecución más reciente de GitHub Actions está pendiente; no declarar el CI en verde hasta que termine.
+
+### Resultado final de CI — 18 de noviembre de 2026
+
+- GitHub Actions, ejecución `44273850980`, commit de prueba `83e8820`: **correcta**.
+- Todos los pasos del trabajo `mobile-preview` terminaron correctamente, incluida la renderización y las pruebas de interacción en móvil y escritorio.
+- La regresión narrativa de apertura, descubrimientos graduales y permanencia de Athun pasó.
+- Pasaron las pruebas de inventario, mapa, historial, opciones, guardado, recarga, memoria de personajes, objetivos personales y presentación móvil/escritorio.
+- Se corrigieron expectativas antiguas de la prueba que no contemplaban Athun como pertenencia permanente ni el nuevo estado inicial de Valdebruma.
+- Sigue pendiente probar el modelo local real en Android/Termux; el CI utiliza respuestas simuladas para validar la integración del navegador.
