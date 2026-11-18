@@ -2149,3 +2149,13 @@ La revalidación posterior a los cambios de disparadores ha finalizado correctam
 - «Visual preview», ejecución **418**: correcta en Chromium móvil simulado y escritorio.
 
 La eliminación del disparador `push` redundante en la rama de integración y los filtros de rutas quedan validados. Las notificaciones de las pruebas de PR se mantienen para proteger los cambios que afectan al código; ya no se genera además una segunda ejecución equivalente por cada `push` en esta rama.
+
+
+### Personalidad evolutiva de Athun — 18 de noviembre de 2026
+
+Se incorpora una capa narrativa derivada, no persistida, para que la personalidad de Athun pueda evolucionar con el vínculo y las experiencias de cada protagonista:
+- Narrator.deriveAthunRelationship() calcula un tono orientativo de confianza, la tendencia de los últimos cambios de vínculo y hasta tres motivos y recuerdos compartidos.
+- El perfil se deriva del estado de la partida activa y se envía como athunRelationship, separado del registro canónico currentAdventure.athun. No añade claves al guardado ni mezcla datos entre protagonistas.
+- El prompt pide que esa información matice gradualmente la voz, la iniciativa y la vulnerabilidad del grimorio, sin convertir una puntuación en una personalidad rígida ni forzar emociones en cada escena.
+- Los hechos y recuerdos concretos prevalecen sobre las etiquetas orientativas; se mantienen intactas la protección permanente de Athun y las reglas de descubrimiento gradual.
+- Se añaden pruebas para evolución hacia la cautela y hacia una familiaridad profunda, tendencia reciente, anclas de memoria y presencia del perfil en el contexto narrativo.
