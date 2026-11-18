@@ -1503,3 +1503,11 @@ Revisar el movimiento y los cambios de ubicación generados por el modelo para e
 - Se refinó el detector de movimiento para no confundir la palabra «camino» usada como sustantivo (por ejemplo, «examino el camino») con el verbo caminar; reconoce expresiones como «camino hacia la plaza».
 - Se crearon respaldos previos de los archivos de código y de la prueba visual. Sintaxis de `narrator.js` comprobada y pruebas aisladas del detector correctas.
 - La ejecución completa de GitHub Actions tras el último ajuste de la prueba está pendiente de resultado; no se declara todavía el CI en verde.
+
+### Control de ubicación de personajes secundarios — 18 de noviembre de 2026
+
+- Las respuestas del modelo ya no pueden cambiar la ubicación de un personaje secundario sin que la narración de la escena mencione tanto al personaje como alguna referencia al destino.
+- Los cambios de actitud se limitan a personajes presentes en la ubicación actual o mencionados en la narración.
+- Se añadió respaldo previo: `app/js/game/narrator.js.backup-20261118-npc-location`.
+- La prueba automática del narrador alternativo se ajustó para situar a Tomás en la Plaza del pozo y poner la fase en exploración, coherente con el escenario de la prueba; el código de Director superó una comprobación aislada de esa conversación.
+- La última ejecución completa de GitHub Actions sigue pendiente. Las ejecuciones anteriores confirmaron que la regresión narrativa principal pasa, pero detectaron expectativas de pruebas antiguas que se han ido corrigiendo.
