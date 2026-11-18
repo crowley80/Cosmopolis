@@ -2213,3 +2213,14 @@ Se refuerzan tres fronteras entre la respuesta del modelo y el estado persistent
 Se añaden regresiones para adquisiciones y pérdidas sin evidencia, movimientos inventados, cambios de actitud no narrados y lugares conocidos pero no visibles.
 
 **Validación automática pendiente:** ejecutar «Athun storage tests» y «Visual preview» sobre esta revisión antes de considerar cerrada la tanda. No se ha fusionado el PR ni se ha modificado `main`. La prueba táctil en Chrome para Android físico continúa pendiente.
+
+
+### Evidencia negativa en cambios de inventario — 18 de noviembre de 2026
+
+- Se ha reforzado `Narrator.applyInventoryUpdates()`: una frase que contiene el nombre de un objeto y un verbo de adquisición o pérdida ya no basta si la acción está negada.
+- La comprobación analiza la cláusula de cada verbo para distinguir una negación real de una rectificación posterior (por ejemplo, «no lo recoges, pero después lo guardas»).
+- Athun conserva su protección canónica y no puede entrar ni salir del inventario mediante estos campos.
+- Se añadieron regresiones para adquisiciones y pérdidas negadas, además de acciones afirmativas posteriores a una negación.
+- Se crearon copias previas de `narrator.js` y `storage.test.js` con sufijo `bak-20261118-inventory-negation-guard`.
+
+**Validación automática pendiente:** los nuevos commits deben completar «Athun storage tests» antes de dar por cerrada esta corrección. No se modifica `main`, no se fusiona el PR y no se toca ningún guardado del dispositivo.
