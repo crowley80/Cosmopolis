@@ -260,8 +260,9 @@ const Narrator = {
             .filter(Boolean);
         const movementCue = /\b(llega|llegas|entra|entras|sale|sales|se marcha|se aleja|se acerca|camina|corre|cruza|se dirige|regresa|vuelve|abandona|se traslada|avanza|retrocede|parte|huye|se desplaza|aparece|baja|sube|atraviesa)\b/g;
         const hasPositiveMovement = sentence => {
+            const actionPattern = new RegExp(movementCue.source, 'g');
             let match;
-            while ((match = movementCue.exec(sentence)) !== null) {
+            while ((match = actionPattern.exec(sentence)) !== null) {
                 const clause = sentence.slice(0, match.index)
                     .split(/[,;]|\b(?:pero|aunque|sino|sin embargo)\b/)
                     .pop();
