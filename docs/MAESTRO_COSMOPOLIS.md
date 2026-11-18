@@ -1520,3 +1520,12 @@ Revisar el movimiento y los cambios de ubicación generados por el modelo para e
 - Resultado: un cambio de ubicación de Tomás se acepta cuando la escena lo menciona y alude al destino; se rechaza un traslado a un destino que no aparece en la narración.
 - Se ajustó el fixture de la prueba visual para que los personajes nuevos estén nombrados en la respuesta que los introduce, y para que Tomás esté situado en la fase y ubicación correctas.
 - La ejecución de GitHub Actions correspondiente a este último ajuste sigue pendiente. La integración simulada pasa, pero todavía no sustituye la prueba con el modelo local real.
+
+### Integración de iniciativas autónomas y ubicación de NPC — 18 de noviembre de 2026
+
+- La evidencia de escena usada para validar hechos, personajes y destinos incluye también las iniciativas autónomas estructuradas que se incorporan a la narración.
+- Si un NPC cambia de ubicación en esa escena, su iniciativa autónoma narrada no se descarta por el hecho de que su nueva ubicación ya no coincida con la del protagonista; la acción se conserva en el texto y en sus recuerdos.
+- Prueba aislada de integración: Tomás puede pasar a «Entrada de la posada» cuando la respuesta y su iniciativa describen ese desplazamiento, y la acción autónoma queda registrada.
+- Se completó el estado inicial de la vista previa de CI para reflejar que el personaje ya conoce el pozo, la campana y a Elia; el filtro de conocimiento del narrador deja de ocultar a Elia en esa escena de prueba.
+- Respaldo del narrador: `app/js/game/narrator.js.backup-20261118-autonomous-location`; respaldo del fixture: `.github/workflows/visual-preview.yml.backup-20261118-preview-state`.
+- La ejecución más reciente de GitHub Actions está pendiente; no declarar el CI en verde hasta que termine.
