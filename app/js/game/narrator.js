@@ -339,7 +339,7 @@ const Narrator = {
             const normalizeEvidence = value => String(value || '')
                 .toLocaleLowerCase('es')
                 .normalize('NFD')
-                .replace(/[\\u0300-\\u036f]/g, '');
+                .replace(/[\u0300-\u036f]/g, '');
             const narrativeEvidence = normalizeEvidence(result.reply);
             const isNarrativelySupported = value => {
                 const words = normalizeEvidence(value).match(/[a-z0-9]{4,}/g) || [];
