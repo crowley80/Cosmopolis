@@ -326,8 +326,13 @@ const Narrator = {
                 ? Math.max(1, Math.min(9999, Number(state.day)))
                 : 1;
             state.day = Math.max(previousDay, Math.max(1, Math.min(9999, result.day)));
-            state.currentLocation = result.location.trim().slice(0, 120) ||
-                state.currentLocation || updated.location || 'Lugar desconocido';
+            const previousLocation = state.currentLocation || updated.location || 'Lugar desconocido';
+            const actionSuggestsMovement = /\\b(camino|voy|entro|salgo|me acerco|me alejo|exploro|subo|bajo|me dirijo|avanzo|retrocedo|cruzo|atravieso|regreso|vuelvo|me desplazo|me traslado)\\b/i.test(String(action || ''));
+            const proposedLocation = result.location.trim().slice(0, 120);
+            // El modelo no puede cambiar de ubicación si el jugador no ha intentado desplazarse.
+            state.currentLocation = actionSuggestsMovement && proposedLocation
+                ? proposedLocation
+                : previousLocation;
             if (state.phase === 'arrival' && state.currentLocation !== 'Camino de entrada a Valdebruma') {
                 state.phase = 'exploration';
             }
@@ -399,7 +404,7 @@ const Narrator = {
                 const name = entry.name.trim().slice(0, 80);
                 // Un personaje nuevo debe aparecer nombrado en la escena y estar en su ubicación.
                 if (!narrativeEvidence.includes(normalizeEvidence(name))) return;
-                const sceneLocation = result.location.trim().slice(0, 120) || state.currentLocation;
+                const sceneLocation = state.currentLocation;
                 const proposedLocation = typeof entry.location === 'string' && entry.location.trim()
                     ? entry.location.trim().slice(0, 120)
                     : sceneLocation;
