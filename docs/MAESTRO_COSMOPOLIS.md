@@ -2186,3 +2186,18 @@ La revisión de \`Narrator.respond()\` detectó que \`factsToAdd\`, \`cluesToAdd
 ### Validación
 - Se añadieron regresiones para descubrimientos incluidos únicamente en el JSON, afirmaciones literales válidas, rumores, personajes fuera de escena, duplicación de Athun y afirmaciones negativas.
 - La validación remota de esta revisión queda pendiente de las ejecuciones de GitHub Actions. No se declara todavía aprobada.
+
+
+### Resultados de validación del filtro de descubrimientos — 18 de noviembre de 2026
+
+La revisión de código \`01abd4847b2949a36a37d6d92b8ed40d6a478221\` ha superado las dos comprobaciones automáticas:
+
+- **Athun storage tests**, ejecución **44268205134**: correcta. La suite informa **56 pruebas, 56 aprobadas y 0 fallidas**. Incluye las tres regresiones nuevas sobre afirmaciones no narradas, encuentros presenciales y menciones negativas.
+- **Visual preview**, ejecución **44268205117**: correcta. La regresión narrativa de apertura, descubrimiento gradual y permanencia de Athun termina en \`OK\`; las pruebas de interacción terminan en \`INTERACTION_TESTS_OK\` para historial, atlas, inventario, opciones, exploración, respuesta de IA, guardado y recarga.
+- La vista móvil simulada se renderizó a **390 × 844 px**, sin desbordamiento horizontal del documento. La vista de escritorio también terminó correctamente.
+
+Los avisos de obsolescencia de Node.js 20 emitidos por algunas acciones de GitHub no provocaron fallos y no afectan al resultado de estas pruebas.
+
+**Pendiente fuera de CI:** probar los controles táctiles en Chrome sobre un dispositivo Android real. La simulación de Playwright no sustituye esa validación. También queda para una siguiente tanda revisar la evidencia narrativa de \`itemsToAdd/itemsToRemove\` y de los cambios de ubicación de personajes ya registrados; este cambio no amplía todavía esos validadores.
+
+El PR #4 permanece abierto y en borrador. No se ha fusionado ni se ha modificado \`main\`.
