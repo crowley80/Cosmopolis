@@ -260,6 +260,68 @@ const Narrator = {
         return accepted;
     },
 
+    filterCharacterUpdates(entries, reply, state) {
+        const characters = state && state.characters && typeof state.characters === 'object'
+            ? state.characters
+            : {};
+        const normalize = value => this.normalizeNarrativeText(value);
+        const sentences = String(reply || '').split(/[.!?;]+/)
+            .map(sentence => normalize(sentence))
+            .filter(Boolean);
+        const movementCue = /\\b(llega|llegas|entra|entras|sale|sales|se marcha|se aleja|se acerca|camina|corre|cruza|se dirige|regresa|vuelve|abandona|se traslada|avanza|retrocede|parte|huye|se desplaza|se encuentra|permanece|espera|aparece)\\b/;
+        const accepted = [];
+
+        (Array.isArray(entries) ? entries : []).slice(0, 10).forEach(entry => {
+            if (!entry || typeof entry.character !== 'string') return;
+            const requestedName = normalize(entry.character);
+            const key = Object.keys(characters).find(name =>
+                normalize(name) === requestedName ||
+                normalize(characters[name] && characters[name].name) === requestedName
+            );
+            if (!key) return;
+
+            const person = characters[key];
+            const name = normalize(person.name || key);
+            const currentLocation = normalize(person.location);
+            const requestedLocation = typeof entry.location === 'string' ? entry.location.trim().slice(0, 120) : '';
+            const nextLocation = normalize(requestedLocation);
+            const currentAttitude = normalize(person.attitude);
+            const requestedAttitude = typeof entry.attitude === 'string' ? entry.attitude.trim().slice(0, 100) : '';
+            const nextAttitude = normalize(requestedAttitude);
+
+            let location = person.location || '';
+            let attitude = person.attitude || '';
+            let changed = false;
+
+            if (requestedLocation && nextLocation && nextLocation !== currentLocation) {
+                const grounded = sentences.some(sentence =>
+                    (' ' + sentence + ' ').includes(' ' + name + ' ') &&
+                    (' ' + sentence + ' ').includes(' ' + nextLocation + ' ') &&
+                    movementCue.test(sentence)
+                );
+                if (grounded) {
+                    location = requestedLocation;
+                    changed = true;
+                }
+            }
+
+            if (requestedAttitude && nextAttitude && nextAttitude !== currentAttitude) {
+                const grounded = sentences.some(sentence =>
+                    (' ' + sentence + ' ').includes(' ' + name + ' ') &&
+                    (' ' + sentence + ' ').includes(' ' + nextAttitude + ' ')
+                );
+                if (grounded) {
+                    attitude = requestedAttitude;
+                    changed = true;
+                }
+            }
+
+            if (changed) accepted.push({ character: key, location, attitude });
+        });
+
+        return accepted;
+    },
+
     filterGoalUpdates(entries, state) {
         const characters = state && state.characters && typeof state.characters === 'object'
             ? state.characters
@@ -816,17 +878,11 @@ const Narrator = {
             this.applyAthunUpdates(state, result);
 
 
-            result.characterUpdates.slice(0, 10).forEach(entry => {
-                if (!entry || typeof entry.character !== 'string') return;
-                const requestedName = entry.character.trim().toLocaleLowerCase('es');
-                const key = Object.keys(state.characters).find(name =>
-                    name.toLocaleLowerCase('es') === requestedName ||
-                    String(state.characters[name] && state.characters[name].name || '').toLocaleLowerCase('es') === requestedName
-                );
-                if (!key) return;
-                const person = state.characters[key];
-                if (typeof entry.location === 'string' && entry.location.trim()) person.location = entry.location.trim().slice(0, 120);
-                if (typeof entry.attitude === 'string' && entry.attitude.trim()) person.attitude = entry.attitude.trim().slice(0, 100);
+            this.filterCharacterUpdates(result.characterUpdates, result.reply, state).forEach(entry => {
+                const person = state.characters[entry.character];
+                if (!person) return;
+                person.location = entry.location;
+                person.attitude = entry.attitude;
             });
 
             this.filterGoalUpdates(result.goalUpdates, state).forEach(entry => {
