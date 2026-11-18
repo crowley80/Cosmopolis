@@ -258,7 +258,17 @@ const Narrator = {
         const sentences = String(reply || '').split(/[.!?;]+/)
             .map(sentence => normalize(sentence))
             .filter(Boolean);
-        const movementCue = /\b(llega|llegas|entra|entras|sale|sales|se marcha|se aleja|se acerca|camina|corre|cruza|se dirige|regresa|vuelve|abandona|se traslada|avanza|retrocede|parte|huye|se desplaza|se encuentra|permanece|espera|aparece)\b/;
+        const movementCue = /\b(llega|llegas|entra|entras|sale|sales|se marcha|se aleja|se acerca|camina|corre|cruza|se dirige|regresa|vuelve|abandona|se traslada|avanza|retrocede|parte|huye|se desplaza|aparece|baja|sube|atraviesa)\b/g;
+        const hasPositiveMovement = sentence => {
+            let match;
+            while ((match = movementCue.exec(sentence)) !== null) {
+                const clause = sentence.slice(0, match.index)
+                    .split(/[,;]|\b(?:pero|aunque|sino|sin embargo)\b/)
+                    .pop();
+                if (!/\b(no|nunca|jamas|tampoco)\b/.test(clause)) return true;
+            }
+            return false;
+        };
         const accepted = [];
 
         (Array.isArray(entries) ? entries : []).slice(0, 10).forEach(entry => {
@@ -287,7 +297,7 @@ const Narrator = {
                 const grounded = sentences.some(sentence =>
                     (' ' + sentence + ' ').includes(' ' + name + ' ') &&
                     (' ' + sentence + ' ').includes(' ' + nextLocation + ' ') &&
-                    movementCue.test(sentence)
+                    hasPositiveMovement(sentence)
                 );
                 if (grounded) {
                     location = requestedLocation;
