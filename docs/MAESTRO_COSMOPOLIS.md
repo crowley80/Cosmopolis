@@ -2276,3 +2276,17 @@ Se endurece la validación de actualizaciones persistentes de objetivos de perso
 - Se crearon respaldos previos de `app/js/game/narrator.js` y `tests/storage.test.js` con el sufijo `bak-20261118-goal-evidence`.
 
 **Estado de validación:** cambios guardados en la rama `integration/athun-multisave-main-20261116`. La suite completa de GitHub Actions todavía no ha devuelto una ejecución asociada a este último commit; no se declara superada. La validación táctil en Chrome/Android físico sigue pendiente. No se modifica `main`, no se fusiona el PR #4 y no se toca ningún guardado del dispositivo.
+
+
+### Evidencia narrativa en recuerdos de personajes — 18/11/2026
+
+Se aplica el mismo criterio de evidencia narrativa a los recuerdos persistentes de personajes:
+
+- Se añade `filterCharacterMemories(entries, state, reply)`.
+- Solo se acepta un recuerdo si el personaje ya está registrado y el contenido del recuerdo aparece literalmente, tras normalización, en una misma frase de `reply` que también identifica al personaje.
+- Se rechazan recuerdos inventados únicamente en el JSON estructurado, referencias a personajes desconocidos y duplicados dentro del lote.
+- El procesamiento de `characterMemoriesToAdd` utiliza el nuevo filtro antes de modificar el estado persistente.
+- Se añade una prueba con recuerdos respaldados, no respaldados, personaje desconocido, duplicados y respuesta no narrativa.
+- Se crearon respaldos previos de `app/js/game/narrator.js` y `tests/storage.test.js` con el sufijo `bak-20261118-character-memory-evidence`.
+
+**Estado de validación:** código, pruebas y documentación guardados en la rama `integration/athun-multisave-main-20261116`. Se ha comprobado la presencia de los cambios y de las pruebas en GitHub, pero no hay una ejecución de GitHub Actions asociada al último commit; no se declara superada la suite. La validación en Chrome/Android físico sigue pendiente. No se modifica `main`, no se fusiona el PR #4 y no se toca ningún guardado del dispositivo.
