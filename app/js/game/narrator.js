@@ -335,19 +335,37 @@ const Narrator = {
             state.clues = Array.isArray(state.clues) ? state.clues : [];
             state.events = Array.isArray(state.events) ? state.events : [];
 
+            // Solo se registran hechos y pistas que tengan respaldo en lo narrado en esta escena.
+            const normalizeEvidence = value => String(value || '')
+                .toLocaleLowerCase('es')
+                .normalize('NFD')
+                .replace(/[\\u0300-\\u036f]/g, '');
+            const narrativeEvidence = normalizeEvidence(result.reply);
+            const isNarrativelySupported = value => {
+                const words = normalizeEvidence(value).match(/[a-z0-9]{4,}/g) || [];
+                const meaningful = words.filter(word => ![
+                    'este', 'esta', 'estos', 'estas', 'aquel', 'aquella', 'desde',
+                    'hacia', 'sobre', 'entre', 'para', 'porque', 'cuando', 'donde',
+                    'tambien', 'parece', 'podria', 'habria', 'tiene', 'tienen'
+                ].includes(word));
+                if (!meaningful.length) return narrativeEvidence.includes(normalizeEvidence(value));
+                const supported = meaningful.filter(word => narrativeEvidence.includes(word));
+                return supported.length >= Math.min(2, meaningful.length);
+            };
+
             result.factsToAdd.slice(0, 5).forEach(fact => {
-                if (typeof fact === 'string' && fact.trim() && !state.knownFacts.includes(fact.trim())) {
-                    const cleanFact = fact.trim().slice(0, 300);
-                    state.knownFacts.push(cleanFact);
-                    const normalizedFact = cleanFact.toLocaleLowerCase('es');
-                    if (normalizedFact.includes('pozo')) state.wellDiscovered = true;
-                    if (normalizedFact.includes('campana')) state.bellDiscovered = true;
-                }
+                if (typeof fact !== 'string' || !fact.trim() || !isNarrativelySupported(fact)) return;
+                const cleanFact = fact.trim().slice(0, 300);
+                if (state.knownFacts.includes(cleanFact)) return;
+                state.knownFacts.push(cleanFact);
+                const normalizedFact = normalizeEvidence(cleanFact);
+                if (normalizedFact.includes('pozo') && narrativeEvidence.includes('pozo')) state.wellDiscovered = true;
+                if (normalizedFact.includes('campana') && narrativeEvidence.includes('campana')) state.bellDiscovered = true;
             });
             result.cluesToAdd.slice(0, 5).forEach(clue => {
-                if (typeof clue === 'string' && clue.trim() && !state.clues.includes(clue.trim())) {
-                    state.clues.push(clue.trim().slice(0, 300));
-                }
+                if (typeof clue !== 'string' || !clue.trim() || !isNarrativelySupported(clue)) return;
+                const cleanClue = clue.trim().slice(0, 300);
+                if (!state.clues.includes(cleanClue)) state.clues.push(cleanClue);
             });
 
             state.inventory = Array.isArray(state.inventory) ? state.inventory : [];
@@ -379,6 +397,13 @@ const Narrator = {
             result.charactersToAdd.slice(0, 5).forEach(entry => {
                 if (!entry || typeof entry.name !== 'string' || !entry.name.trim()) return;
                 const name = entry.name.trim().slice(0, 80);
+                // Un personaje nuevo debe aparecer nombrado en la escena y estar en su ubicación.
+                if (!narrativeEvidence.includes(normalizeEvidence(name))) return;
+                const sceneLocation = result.location.trim().slice(0, 120) || state.currentLocation;
+                const proposedLocation = typeof entry.location === 'string' && entry.location.trim()
+                    ? entry.location.trim().slice(0, 120)
+                    : sceneLocation;
+                if (normalizeEvidence(proposedLocation) !== normalizeEvidence(sceneLocation)) return;
                 const exists = Object.keys(state.characters).some(key =>
                     key.toLocaleLowerCase('es') === name.toLocaleLowerCase('es') ||
                     String(state.characters[key] && state.characters[key].name || '').toLocaleLowerCase('es') === name.toLocaleLowerCase('es')
@@ -388,7 +413,7 @@ const Narrator = {
                 state.characters[name] = {
                     name,
                     role: typeof entry.role === 'string' ? entry.role.trim().slice(0, 100) : 'Personaje',
-                    location: typeof entry.location === 'string' ? entry.location.trim().slice(0, 120) : state.currentLocation,
+                    location: proposedLocation,
                     attitude: typeof entry.attitude === 'string' ? entry.attitude.trim().slice(0, 100) : 'Desconocida',
                     personalGoal: typeof entry.goal === 'string' ? entry.goal.trim().slice(0, 240) : '',
                     goalStatus: 'active',
