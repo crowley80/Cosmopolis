@@ -45,6 +45,11 @@ const Director = {
         const asks = this.has(text, ['pregunto', 'preguntar', 'quien', 'que sabes', 'cuentame', 'explica', 'dime']);
         const investigates = this.has(text, ['examino', 'observo', 'investigo', 'inspecciono', 'miro', 'escucho', 'analizo', 'busco', 'registro']);
         const moves = this.has(text, ['camino', 'voy', 'entro', 'salgo', 'me acerco', 'me alejo', 'exploro', 'subo', 'bajo', 'me dirijo']);
+        const entersVillage = this.has(text, [
+            'entro', 'entrar', 'primeras calles', 'camino principal',
+            'busco alojamiento', 'buscar alojamiento', 'posada', 'taberna', 'meson',
+            'camino hacia el pueblo', 'me dirijo al pueblo', 'voy al pueblo'
+        ]);
         const magic = this.has(text, ['magia', 'hechizo', 'conjuro', 'invoco', 'runa', 'encanto', 'poder']);
         const combat = this.has(text, ['ataco', 'golpeo', 'lucho', 'disparo', 'apuñalo', 'combato']);
         const stealth = this.has(text, ['escondo', 'oculto', 'sigilosamente', 'me cuelo', 'acecho']);
@@ -58,20 +63,17 @@ const Director = {
         });
 
         if (state.phase === 'arrival') {
-            if (moves || this.has(text, ['entrar', 'alojamiento', 'habitantes', 'primeras calles', 'camino principal'])) {
+            if (entersVillage) {
                 state.phase = 'exploration';
                 state.currentLocation = 'Primeras calles de Valdebruma';
                 category = 'movement';
                 reply = 'Sigues el camino principal hasta las primeras calles. Las casas se encuentran más cerca unas de otras y el sonido cotidiano del pueblo va sustituyendo al silencio de las montañas. Puedes recorrer las calles, buscar un lugar donde alojarte o acercarte a alguien que esté disponible para hablar.';
                 event = `${name} ha entrado en Valdebruma.`;
-            } else if (investigates) {
-                category = 'investigation';
-                reply = 'Te detienes a observar el valle y el camino. La carreta continúa hacia el pueblo, alguien termina de recoger leña junto a una casa y una conversación llega desde una ventana abierta. No percibes nada que exija tu atención inmediata.';
-                event = `${name} ha observado el camino de entrada a Valdebruma.`;
-            } else if (asks || this.has(text, ['hablo', 'converso', 'saludo', 'carretero', 'recoge leña', 'persona que recoge', 'vecino'])) {
+            } else if (asks || this.has(text, ['hablo', 'converso', 'saludo', 'carretero', 'recoge leña', 'persona que recoge', 'vecino', 'persona que está recogiendo'])) {
+                // Hablar o acercarse a alguien junto al camino no equivale a entrar en el pueblo.
                 category = 'dialogue';
-                state.phase = 'exploration';
-                if (!state.characters.Vecino) {
+                const firstMeeting = !state.characters.Vecino;
+                if (firstMeeting) {
                     state.characters.Vecino = {
                         name: 'Vecino',
                         role: 'Habitante de Valdebruma',
@@ -85,8 +87,18 @@ const Director = {
                         memories: ['Ha visto llegar al viajero por el camino de entrada.']
                     };
                 }
-                reply = 'Te acercas a la persona que está recogiendo leña junto a una de las casas. Al verte, deja el haz de ramas en el suelo y te saluda con naturalidad.\n\n—Buenos días. ¿Acabas de llegar? Si buscas algo en el pueblo, quizá pueda orientarte.';
+                reply = firstMeeting
+                    ? 'Te acercas a la persona que está recogiendo leña junto a una de las casas. Al verte, deja el haz de ramas en el suelo y te saluda con naturalidad.\n\n—Buenos días. ¿Acabas de llegar? Si buscas algo en el pueblo, quizá pueda orientarte.'
+                    : 'El vecino deja el haz de ramas a un lado y te presta atención.\n\n—Claro, dime. Si buscas algo en el pueblo, puedo orientarte.';
                 event = `${name} ha hablado con un habitante en el camino de entrada a Valdebruma.`;
+            } else if (investigates) {
+                category = 'investigation';
+                reply = 'Te detienes a observar el valle y el camino. La carreta continúa hacia el pueblo, alguien termina de recoger leña junto a una casa y una conversación llega desde una ventana abierta. No percibes nada que exija tu atención inmediata.';
+                event = `${name} ha observado el camino de entrada a Valdebruma.`;
+            } else if (moves) {
+                category = 'movement';
+                reply = 'Te desplazas por el camino de entrada y sigues a las afueras de Valdebruma. Las primeras calles continúan delante de ti; todavía no has entrado en el pueblo.';
+                event = `${name} se ha desplazado por el camino de entrada a Valdebruma.`;
             } else if (rests) {
                 category = 'rest';
                 reply = 'Te tomas un momento para contemplar el valle. La mañana avanza con calma y el camino sigue abierto ante ti.';

@@ -1456,3 +1456,28 @@ Se implementó también una migración idempotente en `Save.load()` para partida
 **Pruebas automatizadas añadidas al workflow:** la misma batería narrativa, protección de Athun frente a la IA y migración de una partida antigua. El workflow se activa con los cambios de `index.html` y del propio archivo de workflow. No se ha podido consultar su resultado remoto en esta sesión y no se afirma que la prueba visual en Android esté completada.
 
 **Commits recientes:** guardado `99d7a19` y `db7d4a3`; prueba de migración `7eb287f`; caché `b9c37b1`; documentación `3a28313` y `3f2d582`. Se conservaron respaldos antes de las modificaciones. No se ha eliminado ni sobrescrito deliberadamente ninguna partida guardada.
+
+
+## Integración de partidas múltiples con la narrativa principal — 16/11/2026
+
+Se creó la rama `integracion/athun-multisave-main-20261116` desde el `main` actual para reconciliar el trabajo de guardado sin arrastrar los 50 commits que habían avanzado en paralelo en `main` ni reemplazar las correcciones narrativas recientes. Se integraron el selector de partidas, almacenamiento por protagonista, mundo global, sesión, atlas, estilos, pruebas automatizadas y workflow.
+
+La integración conserva los `adventure.js` y `director.js` actuales de `main`, incluida la apertura gradual de Valdebruma. El `narrator.js` de `main` se mantuvo como base y solo se añadió el rechazo de altas de inventario que contengan Athun; `save.js` incorpora la migración por partida y conserva el vínculo, recuerdos, revelaciones y `permanent: true` del grimorio. `index.html` conserva los scripts narrativos de `main` y carga el nuevo módulo del atlas y las versiones de caché de la integración.
+
+Se crearon respaldos previos de los nueve archivos existentes que se iban a actualizar. No se ha fusionado esta rama con `main` ni se ha cerrado el PR anterior. GitHub Actions, ejecución 237: comprobación de sintaxis correcta y 25/25 pruebas aprobadas (atlas, prólogo, migración, aislamiento, mundo compartido y fallos de almacenamiento). La validación visual en Chrome/Android continúa pendiente.
+
+
+### Regresión de diálogo desde el camino y descubrimiento gradual — 16/11/2026
+
+Las pruebas narrativas nuevas detectaron que la expresión «me acerco y pregunto a la persona que recoge leña» se clasificaba como movimiento por contener «me acerco», y adelantaba al protagonista a las primeras calles. Se corrigió `Director.respond()` para priorizar las entradas explícitas al pueblo y resolver el diálogo con el habitante antes de los movimientos genéricos. Hablar con quien recoge leña mantiene ubicación y fase de llegada; solo una orden explícita de entrar o seguir hacia las primeras calles cambia de zona.
+
+Se añadieron regresiones automatizadas para: apertura en el camino sin conocer a Elia, pozo o campana; conversación junto al camino sin entrar; entrada al pueblo sin revelaciones prematuras; descubrimiento e inspección del pozo sin revelar la campana; y revelación de la campana solo al provocar una respuesta mágica. Se actualizó la versión de caché del director en `index.html`.
+
+**Validación:** GitHub Actions, ejecución 265: sintaxis JavaScript correcta y 30/30 pruebas aprobadas. La validación visual y táctil en Chrome/Android sigue pendiente.
+
+
+### Aislamiento del vínculo de Athun por protagonista — 16/11/2026
+
+Se añadió una prueba de regresión que crea dos protagonistas con vínculos, recuerdos y revelaciones distintos para Athun, modifica el estado de uno y alterna entre partidas. Confirma que el grimorio permanece en ambos inventarios, conserva `permanent: true` y que el vínculo y los recuerdos de una historia no se filtran a la otra.
+
+**Validación:** GitHub Actions, ejecución 276: sintaxis correcta y 31/31 pruebas aprobadas.
