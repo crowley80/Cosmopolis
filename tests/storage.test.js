@@ -877,6 +877,29 @@ test('los cambios de ubicación y actitud de personajes requieren evidencia en l
     ]);
 });
 
+test('el narrador no mueve personajes por permanencia o desplazamientos negados', () => {
+    const state = {
+        currentLocation: 'Plaza del pozo',
+        characters: {
+            Elia: { name: 'Elia', location: 'Plaza del pozo', attitude: 'Cautelosa' }
+        }
+    };
+
+    assert.deepEqual(Narrator.filterCharacterUpdates([
+        { character: 'Elia', location: 'Molino', attitude: 'Cautelosa' }
+    ], 'Elia permanece en el Molino.', state), []);
+
+    assert.deepEqual(Narrator.filterCharacterUpdates([
+        { character: 'Elia', location: 'Molino', attitude: 'Cautelosa' }
+    ], 'Elia no se marcha hacia el Molino.', state), []);
+
+    assert.deepEqual(Narrator.filterCharacterUpdates([
+        { character: 'Elia', location: 'Puerto', attitude: 'Cautelosa' }
+    ], 'Elia no se marcha hacia el Molino, pero después camina hasta el Puerto.', state), [
+        { character: 'Elia', location: 'Puerto', attitude: 'Cautelosa' }
+    ]);
+});
+
 test('el inventario rechaza objetos mencionados solo en JSON y no aplica pérdidas sin acción narrada', () => {
     const state = { inventory: ['Athun — grimorio consciente', 'Moneda', 'Poción'] };
     Narrator.applyInventoryUpdates(state, {
