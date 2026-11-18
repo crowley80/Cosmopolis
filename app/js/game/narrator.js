@@ -641,9 +641,21 @@ const Narrator = {
         const hasNarratedEvidence = (item, verbs) => {
             const name = normalize(item);
             if (!name) return false;
-            return sentences.some(sentence =>
-                (' ' + sentence + ' ').includes(' ' + name + ' ') && verbs.test(sentence)
-            );
+            return sentences.some(sentence => {
+                if (!(' ' + sentence + ' ').includes(' ' + name + ' ')) return false;
+                const actionPattern = new RegExp(verbs.source, 'g');
+                let match;
+                while ((match = actionPattern.exec(sentence)) !== null) {
+                    // Una acción negada no autoriza cambios de inventario.
+                    // La negación se evalúa dentro de su cláusula para admitir
+                    // correcciones narrativas como «no lo recoges, pero luego lo guardas».
+                    const clause = sentence.slice(0, match.index)
+                        .split(/[,;]|\\b(?:pero|aunque|sino|sin embargo)\\b/)
+                        .pop();
+                    if (!/\\b(no|nunca|jamas|tampoco)\\b/.test(clause)) return true;
+                }
+                return false;
+            });
         };
         const removalEvidence = /\b(entregas|entrega|das|da|dejas|deja|pierdes|pierde|consumes|consume|gastas|gasta|vendes|vende|intercambias|intercambia|depositas|deposita|arrojas|arroja|abandonas|abandona|rompes|rompe|destruyes|destruye|te quitan|te quita|te roba|te roban|sacas|saca)\b/;
         const additionEvidence = /\b(recoges|recoge|tomas|toma|guardas|guarda|obtienes|obtiene|recibes|recibe|te entrega|te entregan|te da|te ofrecen|aceptas|acepta|consigues|consigue|encuentras y guardas|añades|anades|introduces)\b/;
