@@ -1511,3 +1511,12 @@ Revisar el movimiento y los cambios de ubicación generados por el modelo para e
 - Se añadió respaldo previo: `app/js/game/narrator.js.backup-20261118-npc-location`.
 - La prueba automática del narrador alternativo se ajustó para situar a Tomás en la Plaza del pozo y poner la fase en exploración, coherente con el escenario de la prueba; el código de Director superó una comprobación aislada de esa conversación.
 - La última ejecución completa de GitHub Actions sigue pendiente. Las ejecuciones anteriores confirmaron que la regresión narrativa principal pasa, pero detectaron expectativas de pruebas antiguas que se han ido corrigiendo.
+
+### Verificación integrada del narrador — 18 de noviembre de 2026
+
+- Se ejecutó una prueba aislada integrada con los archivos actuales `adventure.js`, `director.js` y `narrator.js`, usando una respuesta simulada de llama-server.
+- Resultado: una acción estacionaria conserva ubicación y fase, no marca el pozo ni la campana y no registra a Elia; Athun permanece en el inventario.
+- Resultado: una acción explícita de desplazamiento permite llegar a la plaza, avanzar a exploración, registrar los descubrimientos narrados y conocer a Elia; Athun permanece en el inventario.
+- Resultado: un cambio de ubicación de Tomás se acepta cuando la escena lo menciona y alude al destino; se rechaza un traslado a un destino que no aparece en la narración.
+- Se ajustó el fixture de la prueba visual para que los personajes nuevos estén nombrados en la respuesta que los introduce, y para que Tomás esté situado en la fase y ubicación correctas.
+- La ejecución de GitHub Actions correspondiente a este último ajuste sigue pendiente. La integración simulada pasa, pero todavía no sustituye la prueba con el modelo local real.
