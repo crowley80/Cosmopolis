@@ -119,7 +119,7 @@ const Narrator = {
                 relationships: Object.fromEntries(Object.entries(world.relationships || {}).slice(-20))
             },
             recentHistory: history.slice(-6).map(item => ({
-                action: String(item.text || '').slice(0, 500),
+                action: String(item.action || '').slice(0, 500),
                 response: String(item.response || '').slice(0, 900)
             })),
             currentAction: String(action || '').slice(0, 1200)
