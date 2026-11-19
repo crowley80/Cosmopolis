@@ -1552,3 +1552,14 @@ Revisar el movimiento y los cambios de ubicación generados por el modelo para e
 
 ### Próximo paso
 Sincronizar el repositorio local sin sobrescribir cambios, comprobar la disponibilidad de llama-server en el puerto 8081 y realizar una acción de prueba no destructiva en una copia de la partida. No usar la partida principal para pruebas que puedan alterar recuerdos, inventario o acontecimientos.
+
+
+## SESIÓN DE DESARROLLO — 19 DE NOVIEMBRE DE 2026
+
+- Se revisó el estado del repositorio privado `crowley80/Cosmopolis` en GitHub. La rama principal es `main` y los últimos commits remotos corresponden a correcciones y documentación del narrador.
+- Se detectó un defecto en `app/js/game/narrator.js`: el historial reciente se preparaba con la propiedad `action`, pero al construir el contexto enviado al modelo se leía `item.text`. Como esa propiedad no existía en esos objetos intermedios, las acciones anteriores llegaban vacías al narrador y se debilitaba la continuidad.
+- Se creó una copia exacta previa: `app/js/game/narrator.js.backup-20261119`.
+- Se corrigió la lectura para utilizar `item.action`. Commit: `e43946a2c79040e23bfb7c29044166a0b06ccb37` («Corregir envío del historial al narrador»).
+- Se creó una copia previa de este documento: `docs/MAESTRO_COSMOPOLIS.md.backup-20261119`.
+- Pruebas: cambio confirmado mediante lectura/escritura de GitHub. No se ha ejecutado todavía una prueba de sintaxis ni una prueba real en el móvil; no considerar validado en ejecución hasta sincronizar Termux y probar una acción seguida de otra.
+- Próximo paso: sincronizar de forma segura en Termux, comprobar la sintaxis de `narrator.js` y verificar que el narrador recibe las acciones anteriores. Después continuar con la revisión de la memoria narrativa y la interfaz de pergamino.
