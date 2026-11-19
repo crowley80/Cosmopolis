@@ -440,6 +440,36 @@ test('normaliza Athun como una única pertenencia canónica aunque lleguen copia
     assert.ok(inventory.includes('Moneda'));
 });
 
+
+test('normaliza Athun como única pertenencia también en inventarios estructurados', () => {
+    const slot = Save.normalizeSlot({
+        character: { name: 'Ariadna' },
+        adventure: {
+            state: {
+                inventory: [
+                    { id: 'athun', name: 'Grimorio consciente', kind: 'book' },
+                    { itemId: 'athun-copy', title: 'Copia del grimorio' },
+                    { name: 'Athun — grimorio consciente' },
+                    'Athun duplicado',
+                    { id: 'potion', name: 'Poción', kind: 'consumible' },
+                    'Moneda'
+                ]
+            }
+        }
+    });
+    const inventory = slot.adventure.state.inventory;
+
+    assert.equal(inventory.filter(item => Save.isAthunInventoryEntry(item)).length, 1);
+    assert.equal(inventory[0], 'Athun — grimorio consciente');
+    assert.deepEqual(inventory.slice(1), [
+        { id: 'potion', name: 'Poción', kind: 'consumible' },
+        'Moneda'
+    ]);
+    assert.equal(slot.adventure.state.athun.permanent, true);
+
+    const normalizedAgain = Save.normalizeSlot(JSON.parse(JSON.stringify(slot)));
+    assert.deepEqual(normalizedAgain.adventure.state.inventory, inventory);
+});
  test('un cambio de ubicación que no es desplazamiento no crea un camino', () => {
     Save.createSlot({ name: 'Ariadna' }, {
         title: 'Exploración',

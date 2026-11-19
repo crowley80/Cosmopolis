@@ -60,6 +60,19 @@ const Save = {
         }
     },
 
+    isAthunInventoryEntry(item) {
+        const identityFields = [
+            'id', 'itemId', 'key', 'identifier', 'uniqueId',
+            'name', 'title', 'label', 'displayName', 'kind', 'type'
+        ];
+        const candidates = item && typeof item === 'object' && !Array.isArray(item)
+            ? identityFields.map(field => item[field])
+            : [String(item)];
+        return candidates.some(value =>
+            typeof value === 'string' && value.toLocaleLowerCase('es').includes('athun')
+        );
+    },
+
     normalizeSlot(data) {
         const slot = { ...(data || {}) };
         slot.actions = Array.isArray(slot.actions) ? slot.actions : [];
@@ -74,9 +87,7 @@ const Save = {
             const inventory = Array.isArray(slot.adventure.state.inventory)
                 ? slot.adventure.state.inventory : [];
             // Athun tiene una única representación canónica: el narrador no puede retirarlo ni crear copias.
-            const withoutAthun = inventory.filter(item =>
-                !String(item).toLocaleLowerCase('es').includes('athun')
-            );
+            const withoutAthun = inventory.filter(item => !this.isAthunInventoryEntry(item));
             slot.adventure.state.inventory = ['Athun — grimorio consciente', ...withoutAthun];
 
             // La migración de partidas múltiples conserva también el vínculo y los recuerdos del grimorio.

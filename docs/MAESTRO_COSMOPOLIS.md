@@ -2290,3 +2290,25 @@ Se aplica el mismo criterio de evidencia narrativa a los recuerdos persistentes 
 - Se crearon respaldos previos de `app/js/game/narrator.js` y `tests/storage.test.js` con el sufijo `bak-20261118-character-memory-evidence`.
 
 **Estado de validación:** código, pruebas y documentación guardados en la rama `integration/athun-multisave-main-20261116`. Se ha comprobado la presencia de los cambios y de las pruebas en GitHub, pero no hay una ejecución de GitHub Actions asociada al último commit; no se declara superada la suite. La validación en Chrome/Android físico sigue pendiente. No se modifica `main`, no se fusiona el PR #4 y no se toca ningún guardado del dispositivo.
+
+## PROTECCIÓN DE ATHUN EN INVENTARIOS ESTRUCTURADOS — 19 DE NOVIEMBRE DE 2026
+
+### Hallazgo y corrección
+
+La normalización de partidas ya eliminaba las entradas de inventario cuyo texto contenía Athun, pero String(objeto) no inspeccionaba la identidad de una entrada estructurada. Un registro heredado o futuro con campos como id: "athun", itemId o name podía sobrevivir junto a la representación canónica.
+
+- Se incorpora Save.isAthunInventoryEntry(), que comprueba los campos de identidad habituales de entradas estructuradas sin confundir una descripción incidental con la identidad del objeto.
+- Save.normalizeSlot() elimina cualquier representación identificada como Athun y vuelve a insertar exactamente una entrada canónica.
+- Se conserva el resto del inventario, incluidas entradas estructuradas ajenas a Athun.
+- La nueva regresión comprueba varias formas de duplicación, conservación de objetos no relacionados, permanencia del estado de Athun e idempotencia de la normalización.
+- Respaldos previos creados antes de editar: app/js/core/save.js.bak-20261119-athun-structured-inventory, tests/storage.test.js.bak-20261119-athun-structured-inventory y docs/MAESTRO_COSMOPOLIS.md.bak-20261119-athun-structured-inventory.
+
+### Estado de la rama e integración
+
+- PR #4 sigue abierto y en borrador; no se ha fusionado.
+- En esta auditoría, la rama de integración estaba 359 commits por delante y 56 por detrás de main; GitHub no la considera integrable. La rama main permanece intacta.
+- La cabeza anterior del PR (b94167d) no tenía check-runs asociados. Las últimas ejecuciones verdes localizadas correspondían a una revisión anterior (b357d24), no a la cabeza actual.
+- La nueva modificación se valida mediante las ejecuciones de CI que se disparen al actualizar el PR. Hasta que terminen, no se declara aprobada la suite.
+- Sigue pendiente la prueba táctil real en Chrome para Android físico. Las pruebas automatizadas de navegador no la sustituyen.
+
+No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
