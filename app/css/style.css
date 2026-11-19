@@ -1047,3 +1047,28 @@ fieldset { background:rgba(255,242,211,.42); }
   .atlas-map { min-height:190px; }
   .atlas-map-node text { font-size:11px; }
 }
+
+
+/* Corrección visual 19/11/2026: pergamino legible en la pantalla de aventura.
+   Evita que el fondo oscuro tape la plantilla y anule el contraste del texto. */
+.adventure-screen {
+  color: #321907;
+  background-color: #e6d0a2;
+  background-image:
+    radial-gradient(ellipse at 16% 12%, rgba(255, 249, 226, .82) 0%, transparent 43%),
+    radial-gradient(ellipse at 86% 78%, rgba(160, 111, 57, .12) 0%, transparent 38%),
+    repeating-linear-gradient(2deg, rgba(93, 58, 26, .045) 0 1px, transparent 1px 5px),
+    linear-gradient(135deg, #f0dfba 0%, #ddc18c 52%, #ead4a8 100%);
+}
+.story-content {
+  color: #321907;
+  text-shadow: 0 1px rgba(255, 249, 231, .45);
+}
+.current-action {
+  color: #4a2a10;
+  background: rgba(139, 88, 37, .12);
+  border-left-color: #895522;
+}
+.manuscript-meta {
+  color: #321907;
+}
