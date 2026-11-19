@@ -2306,9 +2306,10 @@ La normalización de partidas ya eliminaba las entradas de inventario cuyo texto
 ### Estado de la rama e integración
 
 - PR #4 sigue abierto y en borrador; no se ha fusionado.
-- En esta auditoría, la rama de integración estaba 359 commits por delante y 56 por detrás de main; GitHub no la considera integrable. La rama main permanece intacta.
-- La cabeza anterior del PR (b94167d) no tenía check-runs asociados. Las últimas ejecuciones verdes localizadas correspondían a una revisión anterior (b357d24), no a la cabeza actual.
-- La nueva modificación se valida mediante las ejecuciones de CI que se disparen al actualizar el PR. Hasta que terminen, no se declara aprobada la suite.
+- Tras los dos commits de esta tanda, la rama está 361 commits por delante y 56 por detrás de main. GitHub informa mergeable_state = dirty (hay conflictos); no se intenta rebase ni fusión. main permanece intacta.
+- La cabeza nueva dd70f2772c7279d2578f5d43b80e345840cbb4af no tiene check-runs, estados ni ejecuciones de Actions asociadas. Por tanto, la regresión nueva y la suite completa no se han ejecutado en CI sobre esta revisión.
+- Las últimas ejecuciones verdes localizadas (44268522892 y 44268522900) corresponden al commit anterior b357d24, por lo que no validan dd70f277.
+- Sigue pendiente obtener una ejecución verificable de CI para esta revisión; no se declara aprobada la suite.
 - Sigue pendiente la prueba táctil real en Chrome para Android físico. Las pruebas automatizadas de navegador no la sustituyen.
 
 No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
