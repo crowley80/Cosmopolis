@@ -1538,3 +1538,17 @@ Revisar el movimiento y los cambios de ubicación generados por el modelo para e
 - Pasaron las pruebas de inventario, mapa, historial, opciones, guardado, recarga, memoria de personajes, objetivos personales y presentación móvil/escritorio.
 - Se corrigieron expectativas antiguas de la prueba que no contemplaban Athun como pertenencia permanente ni el nuevo estado inicial de Valdebruma.
 - Sigue pendiente probar el modelo local real en Android/Termux; el CI utiliza respuestas simuladas para validar la integración del navegador.
+
+
+## AJUSTE DE CACHÉ DEL NARRADOR — 19 DE NOVIEMBRE DE 2026
+
+- Se detectó que `index.html` seguía solicitando `narrator.js` con la versión de caché del 16/11, aunque el archivo había recibido cambios importantes el 18/11 (descubrimientos, movimiento y ubicación de personajes secundarios).
+- Se actualizó la referencia a `app/js/game/narrator.js?v=20261119-descubrimientos-movimiento-npc` para evitar que el navegador reutilice una copia anterior del narrador.
+- Se creó el respaldo previo `index.html.backup-20261119-narrator-cache`.
+- Se creó el respaldo de este documento `docs/MAESTRO_COSMOPOLIS.md.backup-20261119-cache`.
+- Commit de código: `c99ef75`.
+- No se modificó ninguna partida ni el contenido del narrador.
+- Estado: corrección guardada en GitHub; falta sincronizarla en Termux y comprobar que Chrome carga el script actualizado. La prueba con el modelo local real sigue pendiente.
+
+### Próximo paso
+Sincronizar el repositorio local sin sobrescribir cambios, comprobar la disponibilidad de llama-server en el puerto 8081 y realizar una acción de prueba no destructiva en una copia de la partida. No usar la partida principal para pruebas que puedan alterar recuerdos, inventario o acontecimientos.
