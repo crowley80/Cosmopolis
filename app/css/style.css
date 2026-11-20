@@ -1123,3 +1123,9 @@ fieldset { background:rgba(255,242,211,.42); }
 @media (max-width:390px) {
   .player-panel textarea { height:6.5vh; min-height:50px; }
 }
+
+
+/* Mantener accesibles los controles de turno por encima del formulario transparente. */
+.player-heading { z-index:10; pointer-events:auto; }
+.player-heading button { position:relative; z-index:11; }
+.player-panel form { position:relative; z-index:1; }
