@@ -1576,7 +1576,7 @@ Sincronizar el repositorio local sin sobrescribir cambios, comprobar la disponib
 - Se añadieron copias previas de CSS, HTML y workflow: `app/css/style.css.backup-20261120-parchment`, `index.html.backup-20261120-parchment` y `.github/workflows/visual-preview.yml.backup-20261120-parchment`.
 - Se amplió el workflow visual con una comprobación automática de que el pergamino no depende de imágenes y de que los colores principales conservan la paleta de contraste prevista.
 - Todo el trabajo está aislado en `work/athun-parchment-css-fix-20261120`. No se ha modificado `main`, no se ha fusionado ninguna rama y no se ha accedido ni escrito en partidas guardadas.
-- La validación Playwright del cambio está en curso; no declarar la corrección validada hasta que la última ejecución termine correctamente. La comprobación visual física en Android/Chrome queda pendiente para cuando el usuario esté en casa.
+- La ejecución Playwright `44683177193` terminó correctamente (20/11/2026, commit `513e48b`): renderizado móvil y escritorio, regresión narrativa, interacción, guardado/recarga, ausencia de errores JavaScript y nueva comprobación del fondo CSS y colores de alto contraste. Se generaron capturas de ambos tamaños como artefacto `cosmopolis-visual-preview`.
 
 ### Integración pendiente
 
