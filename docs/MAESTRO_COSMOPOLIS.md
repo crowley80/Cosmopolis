@@ -1591,3 +1591,11 @@ Sincronizar el repositorio local sin sobrescribir cambios, comprobar la disponib
 - Se crearon copias previas de CSS, HTML y workflow en la rama de trabajo.
 - El cambio se prepara aislado en `work/athun-parchment-css-fix-main-20261120`, basado en el main del 20/11/2026. No se modifica ningún archivo de partidas ni se accede a los guardados del teléfono.
 - La prueba en Chrome/Android físico queda pendiente para realizarla con el usuario; las pruebas automatizadas de navegador no la sustituyen.
+
+
+### Resultado de validación automatizada — 20 de noviembre de 2026
+
+- La rama limpia basada en el main actual es `work/athun-parchment-css-fix-main-20261120`; solicitud de integración #7 en borrador.
+- GitHub Actions «Visual preview», ejecución [44754804487](https://github.com/crowley80/Cosmopolis/actions/runs/44754804487), commit `de71ec1eab50ef261dcb148aa6c21db017cc7dc7`: **correcta**.
+- Playwright comprobó el pergamino CSS sin imágenes, el fondo `rgb(223, 201, 158)`, el texto narrativo y metadatos `rgb(46, 25, 10)`, el favicon, la regresión narrativa, interacciones, guardado/recarga y ausencia de errores JavaScript en móvil simulado y escritorio.
+- La prueba física en Chrome/Android sigue pendiente. No se ha fusionado la solicitud ni se han modificado datos de partidas.
