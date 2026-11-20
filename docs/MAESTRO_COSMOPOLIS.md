@@ -1579,3 +1579,15 @@ Sincronizar el repositorio local sin sobrescribir cambios, comprobar la disponib
 - Se actualizó la versión de consulta de `app/js/core/save.js` en `index.html` a `20261120-athun-normalization`, para que el navegador no reutilice la migración anterior.
 - Respaldo previo: `index.html.backup-20261120-athun-normalization`.
 - No se ha tocado ningún dato de partida.
+
+
+## CORRECCIÓN VISUAL DEL PERGAMINO — 20 DE NOVIEMBRE DE 2026
+
+- La auditoría de recursos confirmó que las reglas finales de CSS apuntaban a `app/assets/templates/athun-papiro-limpio.webp` y `athun-aventura.webp`, recursos que no están presentes en el repositorio. Esas referencias dejaban la pantalla de aventura sin el fondo de papel esperado.
+- Se sustituyeron por fondos CSS con tonos crema/ocre, textura sutil y bordes de lectura; el texto narrativo, los metadatos de ubicación/tiempo y la acción actual reciben colores de tinta más oscuros.
+- Se renovó la versión de caché de `style.css` y la del narrador, manteniendo la versión de caché de `save.js` ya actualizada en main.
+- Se añadió un favicon SVG y una comprobación automatizada de su respuesta HTTP.
+- Playwright ahora verifica explícitamente que el fondo no dependa de imágenes y que los colores principales coincidan con la paleta de alto contraste, además de conservar las regresiones narrativas e interactivas existentes.
+- Se crearon copias previas de CSS, HTML y workflow en la rama de trabajo.
+- El cambio se prepara aislado en `work/athun-parchment-css-fix-main-20261120`, basado en el main del 20/11/2026. No se modifica ningún archivo de partidas ni se accede a los guardados del teléfono.
+- La prueba en Chrome/Android físico queda pendiente para realizarla con el usuario; las pruebas automatizadas de navegador no la sustituyen.
