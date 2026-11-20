@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - feat/athun-multisave-world
+      - work/athun-storage-migration-atomic-20261120
     paths:
       - 'app/js/**'
       - 'tests/**'
