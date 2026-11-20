@@ -87,6 +87,9 @@ jobs:
                 const persistedLegacy = JSON.parse(localStorage.getItem(Save.key));
                 if (!legacySave.adventure.state.inventory.some(item => String(item).toLowerCase().includes('athun'))) fail('la partida antigua no recibe a Athun');
                 if (!persistedLegacy.adventure.state.athun || persistedLegacy.adventure.state.athun.permanent !== true) fail('la migración no persiste la protección de Athun');
+                if (persistedLegacy.adventure.state.athun.id !== 'athun' ||
+                    persistedLegacy.adventure.state.athun.name !== 'Athun' ||
+                    persistedLegacy.adventure.state.athun.kind !== 'Grimorio consciente') fail('la migración no normaliza la identidad canónica de Athun');
                 const migratedAgain = Save.load();
                 if (!migratedAgain.adventure.state.inventory.some(item => String(item).toLowerCase().includes('athun'))) fail('la migración no es estable al cargar de nuevo');
               } finally {
