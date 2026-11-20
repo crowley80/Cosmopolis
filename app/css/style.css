@@ -1094,3 +1094,20 @@ fieldset { background:rgba(255,242,211,.42); }
   .player-panel textarea { min-height:54px; }
   .manuscript-toolbar { min-height:66px; }
 }
+
+
+/* Ajuste fino de legibilidad y separación entre narración y zona de escritura. */
+.wordmark h1 { font-size:clamp(.84rem,3.8vw,1.3rem); }
+.manuscript-meta { font-size:clamp(.52rem,2.1vw,.75rem); line-height:1.18; }
+.story-content {
+  font-size:clamp(1rem,3.2vw,1.25rem);
+  line-height:1.38;
+}
+.story-entry { padding:3px 0 10px; }
+.player-heading > span {
+  flex:1 1 auto;
+  color:#4a2a10;
+  font-size:clamp(.62rem,2.1vw,.78rem);
+  font-weight:bold;
+  text-align:center;
+}
