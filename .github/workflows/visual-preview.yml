@@ -1,7 +1,7 @@
 name: Visual preview
 on:
   push:
-    branches: [main]
+    branches: [main, work/athun-parchment-css-fix-20261120]
     paths:
       - 'app/**'
       - 'index.html'
@@ -64,7 +64,37 @@ jobs:
             const page = await context.newPage();
             page.on('pageerror', error => console.error('PAGE ERROR:', error.message));
             await page.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
+            const faviconHref = await page.locator('link[rel="icon"]').getAttribute('href');
+            if (faviconHref) {
+              const faviconResponse = await page.request.get(new URL(faviconHref, page.url()).toString());
+              if (!faviconResponse.ok()) throw new Error('El favicon devuelve HTTP ' + faviconResponse.status());
+            }
             await page.locator('.adventure-screen').waitFor();
+
+            // Regresión visual: el pergamino debe existir sin depender de imágenes externas ausentes.
+            const parchmentCheck = await page.evaluate(() => {
+              const screen = document.querySelector('.adventure-screen');
+              const story = document.querySelector('.story-content');
+              const meta = document.querySelector('.manuscript-meta');
+              if (!screen || !story || !meta) throw new Error('Faltan elementos principales del manuscrito');
+              const screenStyle = getComputedStyle(screen);
+              return {
+                backgroundColor: screenStyle.backgroundColor,
+                backgroundImage: screenStyle.backgroundImage,
+                storyColor: getComputedStyle(story).color,
+                metaColor: getComputedStyle(meta).color
+              };
+            });
+            const normalizeColor = color => color.split(' ').join('');
+            if (!parchmentCheck.backgroundImage.includes('gradient') || parchmentCheck.backgroundImage.includes('url(')) {
+              throw new Error('El fondo del pergamino depende de una imagen ausente: ' + JSON.stringify(parchmentCheck));
+            }
+            if (normalizeColor(parchmentCheck.backgroundColor) !== 'rgb(223,201,158)' ||
+                normalizeColor(parchmentCheck.storyColor) !== 'rgb(46,25,10)' ||
+                normalizeColor(parchmentCheck.metaColor) !== 'rgb(46,25,10)') {
+              throw new Error('Los colores de pergamino o texto no coinciden con la paleta de alto contraste: ' + JSON.stringify(parchmentCheck));
+            }
+            console.log('PARCHMENT_VISUAL_OK', JSON.stringify(parchmentCheck));
 
             // Regresión narrativa: apertura aprobada, descubrimientos graduales y Athun permanente.
             await page.evaluate(async () => {

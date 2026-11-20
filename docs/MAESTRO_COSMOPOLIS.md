@@ -1563,3 +1563,24 @@ Sincronizar el repositorio local sin sobrescribir cambios, comprobar la disponib
 - Se creó una copia previa de este documento: `docs/MAESTRO_COSMOPOLIS.md.backup-20261119`.
 - Pruebas: cambio confirmado mediante lectura/escritura de GitHub. No se ha ejecutado todavía una prueba de sintaxis ni una prueba real en el móvil; no considerar validado en ejecución hasta sincronizar Termux y probar una acción seguida de otra.
 - Próximo paso: sincronizar de forma segura en Termux, comprobar la sintaxis de `narrator.js` y verificar que el narrador recibe las acciones anteriores. Después continuar con la revisión de la memoria narrativa y la interfaz de pergamino.
+
+
+## SESIÓN AUTÓNOMA — 20 DE NOVIEMBRE DE 2026
+
+### Auditoría y corrección visual preparada
+
+- En la rama principal, `app/css/style.css` hacía referencia a `app/assets/templates/athun-papiro-limpio.webp` y `app/assets/templates/athun-aventura.webp`, pero ninguno de esos archivos existe en el árbol de GitHub. El fondo dependía, por tanto, de recursos ausentes.
+- Se sustituyeron esas dependencias en el fondo general, los paneles de consulta y la pantalla de aventura por fondos de pergamino generados con CSS.
+- Se reforzó el color de tinta de la narración y de los metadatos para conseguir contraste alto.
+- Se renovaron las versiones de caché de `style.css` y `narrator.js`; esta última también incorpora la corrección del historial narrativo confirmada el 19/11.
+- La auditoría de recursos locales detectó que el repositorio no incluía un favicon; se añadió `favicon.svg`, se enlazó desde `index.html` y se incorporó una comprobación HTTP en Playwright.
+- Se añadieron copias previas de CSS, HTML y workflow: `app/css/style.css.backup-20261120-parchment`, `index.html.backup-20261120-parchment` y `.github/workflows/visual-preview.yml.backup-20261120-parchment`.
+- Se amplió el workflow visual con una comprobación automática de que el pergamino no depende de imágenes y de que los colores principales conservan la paleta de contraste prevista.
+- Todo el trabajo está aislado en `work/athun-parchment-css-fix-20261120`. No se ha modificado `main`, no se ha fusionado ninguna rama y no se ha accedido ni escrito en partidas guardadas.
+- Las ejecuciones Playwright `44683177193` y `44683481775` terminaron correctamente. La segunda (20/11/2026, commit `b6b85b8`) valida además que `favicon.svg` responde correctamente. Se comprobó renderizado móvil y escritorio, regresión narrativa, interacción, guardado/recarga, ausencia de errores JavaScript, fondo CSS sin imágenes y paleta de alto contraste. Se generaron capturas de ambos tamaños como artefacto `cosmopolis-visual-preview`.
+
+### Integración pendiente
+
+- La PR #4 (`integration/athun-multisave-main-20261116`) continúa abierta como borrador.
+- La comparación actual indica que esa rama está 362 commits por delante y 64 por detrás de `main`, con historial divergente. No fusionar ni actualizarla automáticamente: requiere una revisión de integración específica para evitar sobrescribir cambios narrativos o de almacenamiento.
+- Las últimas ejecuciones verdes localizadas para esa línea son del 18/11 (visual y almacenamiento, commit `b357d24`). La cabeza actual de la PR #4 es posterior (`9e58abc`, 19/11) y no se localizó una ejecución equivalente para esa cabeza; volver a validar antes de integrar.

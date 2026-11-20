@@ -806,7 +806,13 @@ body {
 body {
   padding: 8px;
   color: #321907;
-  background: #1b1009 url('../assets/templates/athun-papiro-limpio.webp') center center / 100% 100% fixed no-repeat;
+  background-color: #dfc99e;
+  background-image:
+    radial-gradient(ellipse at 18% 12%, rgba(255,248,222,.88) 0%, transparent 44%),
+    radial-gradient(ellipse at 86% 78%, rgba(132,83,34,.16) 0%, transparent 42%),
+    repeating-linear-gradient(2deg, rgba(93,58,26,.045) 0 1px, transparent 1px 5px),
+    linear-gradient(135deg, #f2e3c4 0%, #dfc99e 52%, #ead8b5 100%);
+  background-attachment: fixed;
 }
 #app { min-height: calc(100vh - 16px); }
 .main-header { color:#321907; border:0; }
@@ -821,12 +827,21 @@ body {
 .character-creation::before,.character-creation::after { display:none; }
 fieldset { background:rgba(255,242,211,.42); }
 .tool-panel {
-  background:#ead09a url('../assets/templates/athun-papiro-limpio.webp') center / 100% 100% no-repeat;
+  background-color:#ead09a;
+  background-image:
+    radial-gradient(ellipse at 18% 8%,rgba(255,247,218,.78),transparent 45%),
+    repeating-linear-gradient(3deg,rgba(101,70,36,.035) 0 1px,transparent 1px 5px),
+    linear-gradient(135deg,#f1dfb9,#dfc18b 55%,#eed8aa);
   border:0;
   outline:0;
 }
 .adventure-screen {
-  background:#160b05 url('../assets/templates/athun-aventura.webp') center / 100% 100% no-repeat;
+  background-color:#dfc99e;
+  background-image:
+    radial-gradient(ellipse at 16% 12%, rgba(255,249,226,.9) 0%, transparent 43%),
+    radial-gradient(ellipse at 86% 78%, rgba(160,111,57,.13) 0%, transparent 38%),
+    repeating-linear-gradient(2deg, rgba(93,58,26,.05) 0 1px, transparent 1px 5px),
+    linear-gradient(135deg,#f0dfba 0%,#ddc18c 52%,#ead4a8 100%);
 }
 .adventure-screen::before { content:none; display:none; }
 .adventure-screen::after { display:none; }
@@ -881,4 +896,19 @@ fieldset { background:rgba(255,242,211,.42); }
   .manuscript-meta { font-size:.57rem; }
   .manuscript-toolbar { margin:2px 7px 6px; padding:3px 5px; }
   .toolbar-button { font-size:.56rem; }
+}
+
+
+/* Contraste reforzado para lectura sobre el pergamino CSS. */
+.story-content {
+  color: #2e190a;
+  text-shadow: 0 1px rgba(255, 249, 231, .48);
+}
+.manuscript-meta {
+  color: #2e190a;
+}
+.current-action {
+  color: #4a2a10;
+  background: rgba(139, 88, 37, .12);
+  border-left-color: #895522;
 }
