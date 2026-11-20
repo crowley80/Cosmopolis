@@ -64,6 +64,11 @@ jobs:
             const page = await context.newPage();
             page.on('pageerror', error => console.error('PAGE ERROR:', error.message));
             await page.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
+            const faviconHref = await page.locator('link[rel="icon"]').getAttribute('href');
+            if (faviconHref) {
+              const faviconResponse = await page.request.get(new URL(faviconHref, page.url()).toString());
+              if (!faviconResponse.ok()) throw new Error('El favicon devuelve HTTP ' + faviconResponse.status());
+            }
             await page.locator('.adventure-screen').waitFor();
 
             // Regresión visual: el pergamino debe existir sin depender de imágenes externas ausentes.
