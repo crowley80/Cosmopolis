@@ -912,3 +912,185 @@ fieldset { background:rgba(255,242,211,.42); }
   background: rgba(139, 88, 37, .12);
   border-left-color: #895522;
 }
+
+
+/* Plantilla principal definitiva de Athun: pergamino ilustrado sin rosas de los vientos. */
+.adventure-screen {
+  background-color:#090503;
+  background-image:url("../assets/athun-plantilla-principal-sin-rosas.webp");
+  background-position:center center;
+  background-size:100% 100%;
+  background-repeat:no-repeat;
+}
+.adventure-screen::before { content:none !important; display:none !important; }
+.manuscript-header {
+  flex:0 0 10.5%;
+  min-height:0;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:4px;
+  padding:2px 18%;
+  border:0;
+  outline:0;
+  background:transparent;
+  box-shadow:none;
+}
+.wordmark { min-width:0; text-align:left; }
+.wordmark h1 {
+  margin:0;
+  color:#351704;
+  font-size:clamp(.82rem,3.6vw,1.35rem);
+  line-height:1.05;
+  letter-spacing:0;
+  text-shadow:0 1px rgba(255,239,207,.6);
+}
+.wordmark p { display:none; }
+.manuscript-meta {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  justify-content:center;
+  gap:1px;
+  min-width:0;
+  padding:0;
+  color:#321907;
+  background:transparent;
+  border:0;
+  font-size:clamp(.47rem,1.8vw,.72rem);
+  line-height:1.2;
+  text-align:right;
+}
+.story-panel { min-height:0; flex:1 1 auto; background:transparent; }
+.narrative-panel { min-height:100%; padding:4% 7% 16%; background:transparent; }
+.player-panel {
+  flex:0 0 17%;
+  min-height:128px;
+  padding:0;
+  border:0;
+  outline:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+.player-panel::before,.player-panel::after,.quill-inkwell { display:none !important; }
+.player-heading {
+  position:absolute;
+  top:-23px;
+  left:7%;
+  right:7%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:4px;
+  min-height:18px;
+  margin:0;
+  color:#4a2a10;
+  font-size:.64rem;
+  line-height:1;
+  text-align:center;
+}
+.player-heading button {
+  min-height:18px;
+  margin:0;
+  padding:0 3px;
+  color:#633711;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  font-size:.62rem;
+  line-height:1;
+}
+.player-panel form {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) clamp(48px,13vw,82px);
+  align-items:center;
+  gap:2%;
+  min-height:100%;
+  margin:0 2% 0 14%;
+}
+.player-panel textarea {
+  width:100%;
+  height:9vh;
+  min-height:58px;
+  max-height:100%;
+  padding:8px 10px;
+  color:#321907;
+  background:rgba(255,239,207,.72);
+  border:1px solid #704017;
+  border-radius:5px;
+  resize:none;
+}
+.player-panel form > button {
+  width:100%;
+  min-height:clamp(46px,7vh,64px);
+  margin:0;
+  padding:2px;
+  color:transparent;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  font-size:0;
+}
+.player-panel #actionStatus {
+  position:absolute;
+  right:3%;
+  bottom:0;
+  max-height:14px;
+  margin:0;
+  color:#3b1d08;
+  font-size:.55rem;
+  line-height:1;
+}
+.manuscript-toolbar {
+  flex:0 0 11%;
+  min-height:72px;
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:0;
+  margin:0 1% 1%;
+  padding:0;
+  border:0;
+  outline:0;
+  background:transparent;
+  box-shadow:none;
+}
+.manuscript-toolbar::before,.manuscript-toolbar::after,.toolbar-divider { display:none !important; }
+.toolbar-button {
+  grid-row:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:0;
+  padding:0;
+  color:transparent;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  font-size:0;
+}
+#openHistory { grid-column:1; }
+#openMap { grid-column:2; }
+#openInventory { grid-column:3; }
+#openOptions { grid-column:4; }
+#openHint { grid-column:5; }
+.toolbar-button > svg,.toolbar-button > span[aria-hidden="true"] { display:none !important; }
+.toolbar-button > span:not([aria-hidden="true"]) {
+  position:absolute;
+  width:1px;
+  height:1px;
+  padding:0;
+  margin:-1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+  white-space:nowrap;
+  border:0;
+}
+@media (max-width:390px) {
+  .manuscript-header { padding:2px 18%; gap:3px; }
+  .wordmark h1 { font-size:clamp(.76rem,3.5vw,1rem); }
+  .manuscript-meta { font-size:clamp(.43rem,1.7vw,.62rem); }
+  .player-panel { min-height:116px; }
+  .player-panel form { grid-template-columns:minmax(0,1fr) clamp(46px,13vw,58px); }
+  .player-panel textarea { min-height:54px; }
+  .manuscript-toolbar { min-height:66px; }
+}
