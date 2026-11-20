@@ -1583,3 +1583,4 @@ Sincronizar el repositorio local sin sobrescribir cambios, comprobar la disponib
 
 - La PR #4 (`integration/athun-multisave-main-20261116`) continúa abierta como borrador.
 - La comparación actual indica que esa rama está 362 commits por delante y 64 por detrás de `main`, con historial divergente. No fusionar ni actualizarla automáticamente: requiere una revisión de integración específica para evitar sobrescribir cambios narrativos o de almacenamiento.
+- Las últimas ejecuciones verdes localizadas para esa línea son del 18/11 (visual y almacenamiento, commit `b357d24`). La cabeza actual de la PR #4 es posterior (`9e58abc`, 19/11) y no se localizó una ejecución equivalente para esa cabeza; volver a validar antes de integrar.
