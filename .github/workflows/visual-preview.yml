@@ -1,7 +1,7 @@
 name: Visual preview
 on:
   push:
-    branches: [main]
+    branches: [main, work/athun-parchment-css-fix-20261120]
     paths:
       - 'app/**'
       - 'index.html'
@@ -65,6 +65,38 @@ jobs:
             page.on('pageerror', error => console.error('PAGE ERROR:', error.message));
             await page.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
             await page.locator('.adventure-screen').waitFor();
+
+            // Regresión visual: el pergamino debe existir sin depender de imágenes externas ausentes.
+            const parchmentCheck = await page.evaluate(() => {
+              const screen = document.querySelector('.adventure-screen');
+              const story = document.querySelector('.story-content');
+              const meta = document.querySelector('.manuscript-meta');
+              if (!screen || !story || !meta) throw new Error('Faltan elementos principales del manuscrito');
+              const screenStyle = getComputedStyle(screen);
+              return {
+                backgroundColor: screenStyle.backgroundColor,
+                backgroundImage: screenStyle.backgroundImage,
+                storyColor: getComputedStyle(story).color,
+                metaColor: getComputedStyle(meta).color
+              };
+            });
+            const luminance = color => {
+              const channels = color.match(/[\\d.]+/g).slice(0, 3).map(Number).map(value => {
+                const channel = value / 255;
+                return channel <= .04045 ? channel / 12.92 : Math.pow((channel + .055) / 1.055, 2.4);
+              });
+              return .2126 * channels[0] + .7152 * channels[1] + .0722 * channels[2];
+            };
+            const paperLuminance = luminance(parchmentCheck.backgroundColor);
+            const storyContrast = (paperLuminance + .05) / (luminance(parchmentCheck.storyColor) + .05);
+            const metaContrast = (paperLuminance + .05) / (luminance(parchmentCheck.metaColor) + .05);
+            if (!parchmentCheck.backgroundImage.includes('gradient') || parchmentCheck.backgroundImage.includes('url(')) {
+              throw new Error('El fondo del pergamino depende de una imagen ausente: ' + JSON.stringify(parchmentCheck));
+            }
+            if (storyContrast < 7 || metaContrast < 7) {
+              throw new Error('Contraste insuficiente en narración o metadatos: ' + JSON.stringify({ parchmentCheck, storyContrast, metaContrast }));
+            }
+            console.log('PARCHMENT_VISUAL_OK', JSON.stringify({ parchmentCheck, storyContrast, metaContrast }));
 
             // Regresión narrativa: apertura aprobada, descubrimientos graduales y Athun permanente.
             await page.evaluate(async () => {
