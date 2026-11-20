@@ -266,6 +266,106 @@ test('la migración heredada es idempotente y no duplica partidas ni lugares', (
     assert.equal(localStorage.getItem(Save.key), original);
 });
 
+test('migra una partida heredada aunque ya exista un índice moderno vacío', () => {
+    const legacy = {
+        character: { name: 'Ariadna' },
+        adventure: {
+            title: 'Historia heredada',
+            location: 'Valdebruma',
+            state: { currentLocation: 'Valdebruma', visitedLocations: ['Valdebruma'] }
+        },
+        createdAt: '2026-01-02T00:00:00.000Z'
+    };
+    const original = JSON.stringify(legacy);
+    localStorage.setItem(Save.key, original);
+    localStorage.setItem(Save.indexKey, JSON.stringify({ version: 1, saves: [] }));
+
+    assert.equal(Save.list().length, 1);
+    assert.equal(Save.load().character.name, 'Ariadna');
+    assert.ok(Save.getGlobalWorld().locations.some(item => item.name === 'Valdebruma'));
+    assert.equal(localStorage.getItem(Save.key), original);
+    assert.equal(Save.list().length, 1);
+});
+
+test('conserva un índice ilegible si no hay partidas recuperables ni legado válido', () => {
+    const damagedIndex = '{"version":1,"saves":';
+    localStorage.setItem(Save.indexKey, damagedIndex);
+
+    assert.deepEqual(Save.list(), []);
+    assert.equal(localStorage.getItem(Save.indexKey), damagedIndex);
+    assert.equal(localStorage.getItem(Save.activeKey), null);
+});
+
+test('la migración revierte slot, índice, selección y mundo si falla la publicación global y permite reintentarse', () => {
+    const legacy = {
+        character: { name: 'Ariadna' },
+        adventure: {
+            title: 'Historia heredada',
+            location: 'Valdebruma',
+            state: {
+                currentLocation: 'Valdebruma',
+                visitedLocations: ['Valdebruma'],
+                characters: {
+                    Elia: {
+                        name: 'Elia',
+                        role: 'Cartógrafa',
+                        location: 'Valdebruma',
+                        trust: 9,
+                        memories: ['Recuerdo privado']
+                    }
+                }
+            }
+        },
+        createdAt: '2026-01-03T00:00:00.000Z'
+    };
+    const originalLegacy = JSON.stringify(legacy);
+    const originalWorld = JSON.stringify({
+        ...Save.emptyWorld(),
+        locations: [{ name: 'Puerto', discoveredBy: 'Darian', discoveredAt: '2026-01-01T00:00:00.000Z' }],
+        facts: ['Hecho previo']
+    });
+    const id = 'legacy-' + legacy.createdAt.replace(/[^a-zA-Z0-9-]/g, '').slice(0, 40);
+    localStorage.setItem(Save.key, originalLegacy);
+    localStorage.setItem(Save.worldKey, originalWorld);
+
+    const setItem = localStorage.setItem.bind(localStorage);
+    let failOnce = true;
+    localStorage.setItem = (key, value) => {
+        if (key === Save.worldKey && failOnce) {
+            failOnce = false;
+            setItem(key, value);
+            throw new Error('Fallo simulado después de escribir el mundo compartido');
+        }
+        setItem(key, value);
+    };
+
+    assert.deepEqual(Save.list(), []);
+    localStorage.setItem = setItem;
+
+    assert.equal(localStorage.getItem(Save.key), originalLegacy);
+    assert.equal(localStorage.getItem(Save.slotPrefix + id), null);
+    assert.equal(localStorage.getItem(Save.indexKey), null);
+    assert.equal(localStorage.getItem(Save.activeKey), null);
+    assert.equal(localStorage.getItem(Save.worldKey), originalWorld);
+
+    const migrated = Save.list();
+    assert.equal(migrated.length, 1);
+    assert.equal(Save.load().character.name, 'Ariadna');
+
+    const world = Save.getGlobalWorld();
+    assert.ok(world.locations.some(item => item.name === 'Puerto'));
+    assert.equal(world.locations.filter(item => item.name === 'Valdebruma').length, 1);
+    assert.equal(world.entities.elia.role, 'Cartógrafa');
+    assert.equal('memories' in world.entities.elia, false);
+    assert.ok(world.facts.includes('Hecho previo'));
+
+    const stableWorld = localStorage.getItem(Save.worldKey);
+    assert.equal(Save.list().length, 1);
+    assert.equal(localStorage.getItem(Save.worldKey), stableWorld);
+    assert.equal(localStorage.getItem(Save.key), originalLegacy);
+});
+
+
 test('si falla la activación de una partida nueva, conserva la partida anterior', () => {
     const first = Save.createSlot({ name: 'Ariadna' }, {
         title: 'Historia conservada', state: { inventory: ['Llave'] }
