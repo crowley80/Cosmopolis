@@ -1526,7 +1526,7 @@ test('una acción publica ubicaciones, ruta y personajes con una sola escritura 
     );
     assert.deepEqual(world.connections.map(item => [item.from, item.to]), [['Camino', 'Plaza']]);
     assert.equal(world.entities.elia.role, 'Cartógrafa');
-    assert.equal(world.entities.tomas.role, 'Vecino');
+    assert.equal(world.entities['tomás'].role, 'Vecino');
     assert.equal('memories' in world.entities.elia, false);
 });
 
