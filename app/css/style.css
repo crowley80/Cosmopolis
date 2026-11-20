@@ -1111,3 +1111,15 @@ fieldset { background:rgba(255,242,211,.42); }
   font-weight:bold;
   text-align:center;
 }
+
+
+/* La banda de turno ocupa su placa y no invade la zona narrativa. */
+.player-heading { top:0; left:7%; right:7%; }
+.player-panel form { transform:translateY(-9px); }
+.player-panel textarea {
+  height:6.5vh;
+  min-height:50px;
+}
+@media (max-width:390px) {
+  .player-panel textarea { height:6.5vh; min-height:50px; }
+}
