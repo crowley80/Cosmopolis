@@ -2385,3 +2385,11 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - Commits: implementación `5ae7345`; pruebas `9b53b89`.
 - **Validación pendiente:** la nueva ejecución de GitHub Actions debe confirmar sintaxis y suite completa. No se declara aún que las dos nuevas pruebas hayan pasado.
 - Próximo paso: comprobar CI; después revisar las reglas de sincronización entre protagonistas y el mundo compartido. La prueba real en Android/Termux se hará contigo cuando estés disponible.
+
+
+### Revisión de integración aislada — 20 de noviembre de 2026
+
+- Se abrió la PR #8 desde `work/athun-storage-migration-atomic-20261120` hacia `integration/athun-multisave-main-20261116`, no hacia `main`. La comparación confirma 13 commits por delante y 0 por detrás de su base.
+- La ejecución de almacenamiento [44706751286](https://github.com/crowley80/Cosmopolis/actions/runs/44706751286), sobre el checkpoint anterior `1428216b`, terminó correctamente: sintaxis JavaScript y **65/65 pruebas aprobadas**.
+- Después de ese checkpoint se añadieron dos pruebas de publicación coherente del mundo compartido. No se ha podido confirmar todavía una ejecución de CI que incluya esas dos pruebas; permanecen pendientes y no se declaran aprobadas.
+- La PR #8 permanece en borrador. No se fusiona en `main` ni se modifica ninguna partida del dispositivo. La prueba física en Android/Termux sigue pendiente.
