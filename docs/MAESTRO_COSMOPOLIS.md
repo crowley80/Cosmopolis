@@ -2372,3 +2372,16 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - Mantener las pruebas de aislamiento entre protagonistas, mundo compartido, atlas y protección de Athun al reconciliar la rama de integración con los cambios posteriores de `main`.
 - No rebasar ni fusionar PR #4 hasta resolver la divergencia mediante una reconciliación selectiva revisada. No modificar `main`.
 - La validación táctil real en Android sigue siendo requisito antes de cualquier integración final que dependa de ella.
+
+
+## PUBLICACIÓN COHERENTE DEL MUNDO COMPARTIDO — 20 DE NOVIEMBRE DE 2026
+
+- Se revisó `Session.addAction()`: tras guardar la partida personal, publicaba por separado cada ruta, localización visible y personaje. Un fallo intermedio podía dejar el mundo compartido con solo una parte de los descubrimientos de una misma acción.
+- Se sustituyó esa secuencia por `Session.syncActionWorld()`: reúne las ubicaciones actuales/visibles, el tramo recorrido y las identidades básicas de personajes secundarios y las publica mediante una única llamada a `Save.saveGlobalWorld()`.
+- Los recuerdos, la confianza y demás datos privados de los personajes no se copian al mundo compartido.
+- Si falla la escritura global, la acción personal permanece guardada y se informa del fallo; no se comunica al juego que la acción personal se perdió.
+- Se añadieron dos regresiones a `tests/storage.test.js`: una verifica que todos los cambios globales de una acción se escriben de una vez; la otra simula un fallo de escritura y comprueba que el historial personal se conserva y que el mundo compartido no queda parcialmente actualizado.
+- Archivos modificados: `app/js/game/session.js` y `tests/storage.test.js`. Se trabaja exclusivamente en `work/athun-storage-migration-atomic-20261120`; no se modifica `main`, no se fusiona ningún PR y no se accede a partidas del dispositivo.
+- Commits: implementación `5ae7345`; pruebas `9b53b89`.
+- **Validación pendiente:** la nueva ejecución de GitHub Actions debe confirmar sintaxis y suite completa. No se declara aún que las dos nuevas pruebas hayan pasado.
+- Próximo paso: comprobar CI; después revisar las reglas de sincronización entre protagonistas y el mundo compartido. La prueba real en Android/Termux se hará contigo cuando estés disponible.
