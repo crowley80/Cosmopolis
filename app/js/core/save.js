@@ -132,9 +132,67 @@ const Save = {
         return saves;
     },
 
+    buildLegacyWorld(slot) {
+        const world = this.getGlobalWorld();
+        const state = slot && slot.adventure && slot.adventure.state || {};
+        const discoveredBy = String(slot && slot.character && slot.character.name || '').trim().slice(0, 80);
+        let changed = false;
+
+        const locations = [
+            ...(Array.isArray(state.visitedLocations) ? state.visitedLocations : []),
+            state.currentLocation || (slot.adventure && slot.adventure.location) || ''
+        ];
+        locations.forEach(value => {
+            const name = String(value || '').trim().slice(0, 120);
+            if (!name) return;
+            const key = name.toLocaleLowerCase('es');
+            const exists = world.locations.some(item => {
+                const existingName = typeof item === 'string'
+                    ? item
+                    : (item && typeof item === 'object' ? item.name : '');
+                return String(existingName || '').trim().toLocaleLowerCase('es') === key;
+            });
+            if (!exists) {
+                world.locations.push({
+                    name,
+                    discoveredBy,
+                    discoveredAt: new Date().toISOString()
+                });
+                changed = true;
+            }
+        });
+
+        const characters = state.characters && typeof state.characters === 'object' && !Array.isArray(state.characters)
+            ? state.characters
+            : {};
+        Object.entries(characters).forEach(([fallbackName, entity]) => {
+            if (!entity || typeof entity !== 'object' || Array.isArray(entity)) return;
+            const name = String(entity.name || fallbackName || '').trim().slice(0, 80);
+            if (!name || name.toLocaleLowerCase('es') === 'athun') return;
+            const key = name.toLocaleLowerCase('es');
+            if (Object.prototype.hasOwnProperty.call(world.entities, key)) return;
+
+            Object.defineProperty(world.entities, key, {
+                configurable: true,
+                enumerable: true,
+                writable: true,
+                value: {
+                    name,
+                    role: String(entity.role || 'Personaje').trim().slice(0, 100),
+                    firstKnownLocation: String(entity.location || '').trim().slice(0, 120),
+                    discoveredBy,
+                    discoveredAt: new Date().toISOString()
+                }
+            });
+            changed = true;
+        });
+
+        return { world, changed };
+    },
+
     ensureReady() {
         let index = this.readJSON(this.indexKey);
-        if (index && Array.isArray(index.saves)) {
+        if (index && Array.isArray(index.saves) && index.saves.length) {
             if (!localStorage.getItem(this.activeKey) && index.saves.length) {
                 this.activate(index.saves[0].id);
             }
@@ -157,6 +215,12 @@ const Save = {
 
         const legacy = this.readJSON(this.key);
         if (!legacy) {
+            if (index && Array.isArray(index.saves)) return index;
+            // No reemplazar un índice ilegible si tampoco hay registros recuperables.
+            if (localStorage.getItem(this.indexKey) !== null) {
+                console.error('Se conserva el índice de partidas ilegible para evitar sobrescribir datos recuperables.');
+                return { version: 1, saves: [], recoveryFailed: true };
+            }
             const empty = { version: 1, saves: [] };
             try {
                 this.writeVerified(this.indexKey, empty);
@@ -178,27 +242,50 @@ const Save = {
             updatedAt: slot.updatedAt || legacy.updatedAt || new Date().toISOString()
         };
         const migratedIndex = { version: 1, saves: [entry] };
+        const slotKey = this.slotPrefix + id;
+        const originalSlot = localStorage.getItem(slotKey);
+        const originalIndex = localStorage.getItem(this.indexKey);
+        const originalActive = localStorage.getItem(this.activeKey);
+        const originalWorld = localStorage.getItem(this.worldKey);
 
+        // Un registro huérfano con el mismo ID no se sobrescribe, aunque su contenido sea ilegible.
+        if (originalSlot !== null) {
+            console.error('La migración se detuvo porque ya existe un registro con el identificador heredado.');
+            return { version: 1, saves: [], migrationFailed: true };
+        }
+
+        const migratedWorld = this.buildLegacyWorld(slot);
         try {
-            if (!this.writeVerified(this.slotPrefix + id, slot)) return { version: 1, saves: [], migrationFailed: true };
-            if (!this.writeVerified(this.indexKey, migratedIndex)) {
-                localStorage.removeItem(this.slotPrefix + id);
-                return { version: 1, saves: [], migrationFailed: true };
+            if (!this.writeVerified(slotKey, slot)) {
+                throw new Error('No se pudo verificar el registro migrado.');
             }
-            this.writeVerified(this.activeKey, { id });
-            const legacyState = slot.adventure && slot.adventure.state || {};
-            const discovered = [
-                ...(Array.isArray(legacyState.visitedLocations) ? legacyState.visitedLocations : []),
-                legacyState.currentLocation || (slot.adventure && slot.adventure.location) || ''
-            ];
-            discovered.forEach(location => this.addGlobalLocation(location, slot.character && slot.character.name));
-            Object.entries(legacyState.characters || {}).forEach(([key, entity]) => {
-                if (entity && typeof entity === 'object') {
-                    this.addGlobalEntity({ ...entity, name: entity.name || key }, slot.character && slot.character.name);
-                }
-            });
+            if (!this.writeVerified(this.indexKey, migratedIndex)) {
+                throw new Error('No se pudo verificar el índice migrado.');
+            }
+            if (!this.writeVerified(this.activeKey, { id })) {
+                throw new Error('No se pudo verificar la selección de la partida migrada.');
+            }
+            if (migratedWorld.changed && !this.writeGlobalWorldVerified(migratedWorld.world)) {
+                throw new Error('No se pudo publicar el mundo compartido migrado.');
+            }
             return migratedIndex;
         } catch (error) {
+            // La migración solo se considera completa si también queda persistido el mundo compartido.
+            // Ante cualquier fallo se restauran los valores exactos previos; la clave heredada permanece intacta.
+            const rollback = [
+                [this.worldKey, originalWorld],
+                [this.activeKey, originalActive],
+                [this.indexKey, originalIndex],
+                [slotKey, originalSlot]
+            ];
+            rollback.forEach(([key, originalValue]) => {
+                try {
+                    if (originalValue === null) localStorage.removeItem(key);
+                    else localStorage.setItem(key, originalValue);
+                } catch (rollbackError) {
+                    console.error('No se pudo restaurar el registro ' + key + ' tras la migración:', rollbackError);
+                }
+            });
             console.error('La migración de la partida heredada no se completó:', error);
             return { version: 1, saves: [], migrationFailed: true };
         }
