@@ -1573,7 +1573,7 @@ Sincronizar el repositorio local sin sobrescribir cambios, comprobar la disponib
 - Se sustituyeron esas dependencias en el fondo general, los paneles de consulta y la pantalla de aventura por fondos de pergamino generados con CSS.
 - Se reforzó el color de tinta de la narración y de los metadatos para conseguir contraste alto.
 - Se renovaron las versiones de caché de `style.css` y `narrator.js`; esta última también incorpora la corrección del historial narrativo confirmada el 19/11.
-- La auditoría de recursos locales también detectó que `index.html` referenciaba `favicon.svg`, ausente en `main`; se añadió el icono del grimorio y una comprobación HTTP en Playwright.
+- La auditoría de recursos locales detectó que el repositorio no incluía un favicon; se añadió `favicon.svg`, se enlazó desde `index.html` y se incorporó una comprobación HTTP en Playwright.
 - Se añadieron copias previas de CSS, HTML y workflow: `app/css/style.css.backup-20261120-parchment`, `index.html.backup-20261120-parchment` y `.github/workflows/visual-preview.yml.backup-20261120-parchment`.
 - Se amplió el workflow visual con una comprobación automática de que el pergamino no depende de imágenes y de que los colores principales conservan la paleta de contraste prevista.
 - Todo el trabajo está aislado en `work/athun-parchment-css-fix-20261120`. No se ha modificado `main`, no se ha fusionado ninguna rama y no se ha accedido ni escrito en partidas guardadas.
