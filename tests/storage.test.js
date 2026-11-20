@@ -1481,3 +1481,89 @@ test('las afirmaciones negativas no marcan el descubrimiento del pozo ni de la c
     assert.equal(state.wellDiscovered, undefined);
     assert.equal(state.bellDiscovered, undefined);
 });
+
+
+test('una acción publica ubicaciones, ruta y personajes con una sola escritura global', () => {
+    Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Exploración',
+        state: {
+            currentLocation: 'Camino',
+            inventory: ['Athun'],
+            characters: {}
+        }
+    });
+
+    let worldWrites = 0;
+    const originalSetItem = localStorage.setItem.bind(localStorage);
+    localStorage.setItem = (key, value) => {
+        if (key === Save.worldKey) worldWrites += 1;
+        return originalSetItem(key, value);
+    };
+
+    const adventure = {
+        title: 'Exploración',
+        state: {
+            currentLocation: 'Plaza',
+            visibleLocations: ['Calle Mayor', 'Puente viejo'],
+            inventory: ['Athun'],
+            characters: {
+                Elia: { name: 'Elia', role: 'Cartógrafa', location: 'Plaza', memories: ['Recuerdo privado'] },
+                Tomás: { name: 'Tomás', role: 'Vecino', location: 'Calle Mayor' }
+            }
+        }
+    };
+
+    assert.equal(Session.addAction('Camino hacia la plaza', 'Llegas a la plaza.', {
+        category: 'movement',
+        adventure
+    }), true);
+
+    assert.equal(worldWrites, 1);
+    const world = Save.getGlobalWorld();
+    assert.deepEqual(
+        world.locations.map(item => item.name),
+        ['Plaza', 'Calle Mayor', 'Puente viejo']
+    );
+    assert.deepEqual(world.connections.map(item => [item.from, item.to]), [['Camino', 'Plaza']]);
+    assert.equal(world.entities.elia.role, 'Cartógrafa');
+    assert.equal(world.entities.tomas.role, 'Vecino');
+    assert.equal('memories' in world.entities.elia, false);
+});
+
+
+test('si falla la publicación global, la acción personal queda guardada y el mundo no queda a medias', () => {
+    Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Exploración',
+        state: {
+            currentLocation: 'Camino',
+            inventory: ['Athun'],
+            characters: {}
+        }
+    });
+    const before = JSON.stringify(Save.getGlobalWorld());
+    const originalSetItem = localStorage.setItem.bind(localStorage);
+    localStorage.setItem = (key, value) => {
+        if (key === Save.worldKey) throw new Error('Fallo de escritura simulado');
+        return originalSetItem(key, value);
+    };
+
+    const adventure = {
+        title: 'Exploración',
+        state: {
+            currentLocation: 'Plaza',
+            visibleLocations: ['Calle Mayor'],
+            inventory: ['Athun'],
+            characters: {
+                Elia: { name: 'Elia', role: 'Cartógrafa', location: 'Plaza' }
+            }
+        }
+    };
+
+    assert.equal(Session.addAction('Camino hacia la plaza', 'Llegas a la plaza.', {
+        category: 'movement',
+        adventure
+    }), true);
+    assert.equal(Save.load().actions.length, 1);
+    assert.equal(Save.load().actions[0].text, 'Camino hacia la plaza');
+    assert.equal(JSON.stringify(Save.getGlobalWorld()), before);
+});
