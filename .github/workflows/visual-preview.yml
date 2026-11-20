@@ -80,7 +80,7 @@ jobs:
                 metaColor: getComputedStyle(meta).color
               };
             });
-            const normalizeColor = color => color.replace(/\\s/g, '');
+            const normalizeColor = color => color.split(' ').join('');
             if (!parchmentCheck.backgroundImage.includes('gradient') || parchmentCheck.backgroundImage.includes('url(')) {
               throw new Error('El fondo del pergamino depende de una imagen ausente: ' + JSON.stringify(parchmentCheck));
             }
