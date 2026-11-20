@@ -2313,3 +2313,62 @@ La normalización de partidas ya eliminaba las entradas de inventario cuyo texto
 - Sigue pendiente la prueba táctil real en Chrome para Android físico. Las pruebas automatizadas de navegador no la sustituyen.
 
 No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
+
+
+## CONSOLIDACIÓN DE LA MIGRACIÓN HEREDADA Y RECUPERACIÓN SEGURA — 20 DE NOVIEMBRE DE 2026
+
+### Auditoría previa del repositorio
+
+- Rama principal consultada: `main`, commit `9ce666f64c219faba49adbf80392ee7b58a38d41`.
+- PR #4 sigue abierto y en borrador, con cabeza `9e58abca7ea1510d48835fee1dbab59c97b77f44`. GitHub lo informa como no integrable: su rama está 362 commits por delante y 73 por detrás de `main`, con conflictos. Las últimas ejecuciones localizadas para esa rama corresponden al commit anterior `b357d24` (18/11); no validan la cabeza actual. No se modifica el PR ni se intenta rebase o fusión.
+- PR #3 y PR #1 continúan abiertos y en borrador. PR #5 está cerrado y su trabajo permanece incorporado en la rama de integración. PR #6 continúa abierto y en borrador, separado del sistema de guardado; su corrección del pergamino CSS obtuvo ejecuciones visuales correctas el 20/11 (44683177193 y 44683481775), pero la rama sigue divergente de `main` y pendiente de la prueba táctil Android.
+- Las ramas de arquitectura del mundo vivo se mantienen separadas; no se han copiado ni integrado sus módulos durante esta tanda.
+- Para no alterar la rama del PR #4 ni `main`, se creó `work/athun-storage-migration-atomic-20261120` desde la cabeza exacta del PR #4. Esta rama contiene únicamente respaldos, endurecimiento de migración, regresiones y el disparador de CI específico de la rama.
+
+### Hallazgos
+
+1. La migración heredada podía escribir la partida y el índice antes de publicar los descubrimientos en el mundo compartido. Si fallaba una escritura global, el índice ya indicaba que la migración estaba terminada y las ubicaciones/identidades no se volvían a importar al siguiente arranque.
+2. La migración ignoraba el resultado de la escritura de la selección activa.
+3. Un índice moderno válido pero vacío podía impedir la recuperación de una clave heredada todavía presente.
+4. Si el índice era ilegible y no había registros ni legado válido, la inicialización podía reemplazarlo por un índice vacío, destruyendo el contenido original que debía conservarse para diagnóstico/recuperación.
+5. La migración no debía sobrescribir un registro huérfano con el mismo identificador determinista.
+
+### Corrección aplicada
+
+- Se añadió `Save.buildLegacyWorld(slot)`: construye en memoria una única versión del mundo compartido con las ubicaciones visitadas/actuales y la identidad básica de personajes heredados. No importa recuerdos, confianza, objetivos ni relaciones personales. Athun no se incorpora como entidad del mundo.
+- La migración ahora verifica cada escritura del registro individual, el índice, la selección activa y el mundo compartido. Solo devuelve éxito cuando todas las escrituras necesarias quedan verificadas.
+- Si falla cualquier paso, intenta restaurar byte por byte los valores anteriores del mundo, selección, índice y registro individual. La clave heredada nunca se modifica ni se elimina, de modo que el siguiente arranque puede reintentar la migración.
+- Si ya existe un registro huérfano con el ID heredado, la migración se detiene sin sobrescribirlo.
+- Un índice moderno vacío ya no oculta una partida heredada válida; se intenta recuperar primero cualquier registro individual y después el legado.
+- Un índice ilegible sin partidas recuperables ni legado válido se conserva intacto; no se escribe encima un índice vacío.
+- Se añadieron tres regresiones: migración con índice vacío, conservación de índice corrupto y fallo simulado después de escribir el mundo (incluye rollback exacto y reintento idempotente).
+- Se creó un respaldo exacto previo de cada archivo modificado y se verificó contra la versión de origen de la rama de integración:
+  - `app/js/core/save.js.bak-20261120-legacy-migration-atomicity`
+  - `tests/storage.test.js.bak-20261120-legacy-migration-atomicity`
+  - `.github/workflows/athun-storage-tests.yml.bak-20261120-legacy-migration-atomicity`
+  - `docs/MAESTRO_COSMOPOLIS.md.bak-20261120-legacy-migration-atomicity`
+- El workflow de almacenamiento incluye un disparador `push` limitado a esta rama aislada para poder validar sin modificar el PR #4 ni cambiar su estado de borrador.
+
+### Commits de esta tanda
+
+- Respaldos previos: `5123b390`, `a5e0b939`, `c640ec7b`, `2bf62aec`.
+- CI aislado: `9e9cc581`.
+- Migración transaccional y recuperación: `29e55839`.
+- Regresiones de migración: `1428216b`.
+- Esta actualización documental se registra por separado.
+
+### Validación comprobada
+
+- GitHub Actions «Athun storage tests», ejecución [44706751286](https://github.com/crowley80/Cosmopolis/actions/runs/44706751286), sobre `1428216b4467e43988ca17ec13fc818a1eae74a9`: **correcta**.
+- Comprobación de sintaxis de todos los archivos JavaScript de `app/js`: correcta.
+- Suite completa `node --test tests/*.test.js`: **65/65 pruebas aprobadas, 0 fallos**. El registro del trabajo confirma `# tests 65`, `# pass 65`, `# fail 0`.
+- La prueba nueva simula una escritura global que llega a modificar el registro y después lanza un error; se verifica que el rollback restaura el mundo previo y elimina los registros parciales, y que un segundo intento migra correctamente sin duplicar ubicaciones ni entidades.
+- La rama de trabajo está 7 commits por delante de la cabeza del PR #4 y 0 por detrás de ella. Respecto a `main`, sigue heredando la divergencia del PR #4 (369 por delante y 73 por detrás); no es una rama lista para integrar.
+- No se ha ejecutado una prueba táctil en Chrome sobre Android físico. Tampoco se ha validado aquí el modelo local real: estas pruebas verifican almacenamiento, reglas y JavaScript, no la inferencia en el dispositivo.
+
+### Pendientes y siguiente paso
+
+- Revisar y endurecer la publicación de descubrimientos de `Session.addAction()`: el guardado personal se confirma antes del mundo global, pero conviene comprobar que una tanda con varias ubicaciones/entidades no deje una publicación global parcial si falla una escritura intermedia.
+- Mantener las pruebas de aislamiento entre protagonistas, mundo compartido, atlas y protección de Athun al reconciliar la rama de integración con los cambios posteriores de `main`.
+- No rebasar ni fusionar PR #4 hasta resolver la divergencia mediante una reconciliación selectiva revisada. No modificar `main`.
+- La validación táctil real en Android sigue siendo requisito antes de cualquier integración final que dependa de ella.
