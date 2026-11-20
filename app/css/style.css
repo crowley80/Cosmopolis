@@ -1142,3 +1142,7 @@ fieldset { background:rgba(255,242,211,.42); }
   box-sizing:border-box;
   padding-bottom:clamp(26px,4vh,38px) !important;
 }
+
+
+/* Recortar visualmente el último tramo del scroll bajo la placa separadora. */
+.story-panel { clip-path:inset(0 0 26px 0); }
