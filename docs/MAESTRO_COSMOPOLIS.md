@@ -1540,6 +1540,16 @@ Revisar el movimiento y los cambios de ubicación generados por el modelo para e
 - Sigue pendiente probar el modelo local real en Android/Termux; el CI utiliza respuestas simuladas para validar la integración del navegador.
 
 
+## CORRECCIÓN DE NORMALIZACIÓN DE ATHUN — 20 DE NOVIEMBRE DE 2026
+
+- Se detectó que la migración de partidas antiguas construía primero los campos canónicos de Athun y después copiaba encima los valores previos. Una partida heredada con un identificador o nombre inconsistente podía, por tanto, sobrescribir la identidad canónica aunque la migración se considerase completada.
+- Se cambió el orden de combinación: se conservan primero los campos adicionales previos y después se fijan los valores canónicos `id: athun`, `name: Athun` y `kind: Grimorio consciente`, además del vínculo, recuerdos, revelaciones y marca permanente normalizados.
+- Se amplió la regresión automatizada para verificar explícitamente el identificador, nombre y tipo canónicos tras migrar una partida heredada.
+- No se han abierto, editado ni sobrescrito partidas reales. El cambio afecta únicamente al código de migración y a su prueba automatizada.
+- Respaldo previo de `save.js`: `app/js/core/save.js.backup-20261120-athun-normalization`.
+- Respaldo previo del workflow: `.github/workflows/visual-preview.yml.backup-20261120-athun-normalization`.
+- Validación remota pendiente de la nueva ejecución de GitHub Actions. No se declara aún la prueba como superada.
+
 ## AJUSTE DE CACHÉ DEL NARRADOR — 19 DE NOVIEMBRE DE 2026
 
 - Se detectó que `index.html` seguía solicitando `narrator.js` con la versión de caché del 16/11, aunque el archivo había recibido cambios importantes el 18/11 (descubrimientos, movimiento y ubicación de personajes secundarios).
