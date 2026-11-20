@@ -38,13 +38,13 @@ const Save = {
                     athunMigrationNeeded = true;
                 }
                 state.athun = {
+                    ...previousAthun,
                     id: 'athun',
                     name: 'Athun',
                     kind: 'Grimorio consciente',
                     bond: Number.isFinite(Number(previousAthun.bond)) ? Number(previousAthun.bond) : 0,
                     memories: Array.isArray(previousAthun.memories) ? previousAthun.memories : [],
                     revelations: Array.isArray(previousAthun.revelations) ? previousAthun.revelations : [],
-                    ...previousAthun,
                     permanent: true
                 };
                 if (athunMigrationNeeded) {
