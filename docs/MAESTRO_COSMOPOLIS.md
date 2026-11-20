@@ -1573,3 +1573,9 @@ Sincronizar el repositorio local sin sobrescribir cambios, comprobar la disponib
 - Se creó una copia previa de este documento: `docs/MAESTRO_COSMOPOLIS.md.backup-20261119`.
 - Pruebas: cambio confirmado mediante lectura/escritura de GitHub. No se ha ejecutado todavía una prueba de sintaxis ni una prueba real en el móvil; no considerar validado en ejecución hasta sincronizar Termux y probar una acción seguida de otra.
 - Próximo paso: sincronizar de forma segura en Termux, comprobar la sintaxis de `narrator.js` y verificar que el narrador recibe las acciones anteriores. Después continuar con la revisión de la memoria narrativa y la interfaz de pergamino.
+
+### Caché de la migración de Athun — 20 de noviembre de 2026
+
+- Se actualizó la versión de consulta de `app/js/core/save.js` en `index.html` a `20261120-athun-normalization`, para que el navegador no reutilice la migración anterior.
+- Respaldo previo: `index.html.backup-20261120-athun-normalization`.
+- No se ha tocado ningún dato de partida.
