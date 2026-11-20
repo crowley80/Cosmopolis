@@ -1579,3 +1579,13 @@ Sincronizar el repositorio local sin sobrescribir cambios, comprobar la disponib
 - Se actualizó la versión de consulta de `app/js/core/save.js` en `index.html` a `20261120-athun-normalization`, para que el navegador no reutilice la migración anterior.
 - Respaldo previo: `index.html.backup-20261120-athun-normalization`.
 - No se ha tocado ningún dato de partida.
+
+
+## RESTAURACIÓN VISUAL DEL PERGAMINO — 20 DE NOVIEMBRE DE 2026
+
+- Se preparó una rama de integración basada en el `main` actualizado: `work/athun-pergamino-integracion-main-20261120`.
+- Se integró únicamente la corrección de estilos del pergamino: fondo claro CSS de respaldo en la pantalla de aventura, texto narrativo y metadatos con tinta oscura de alto contraste, y fondo legible para paneles de consulta.
+- Se evitó copiar el `index.html` de una rama antigua: se mantuvo la referencia actualizada de migración `save.js?v=20261120-athun-normalization` y solo se renovó la caché del CSS a `20261120-pergamino-integracion`.
+- Se crearon respaldos previos de `app/css/style.css`, `index.html` y este documento maestro.
+- No se modificó código de partidas ni se abrió o sobrescribió ningún guardado.
+- Estado: cambios aislados en rama; pendientes comprobación visual en Android y validación de ejecución antes de integrar en `main`.
