@@ -12,6 +12,46 @@ const Athun = {
     setScreenMode(mode) {
         document.body.classList.toggle('adventure-mode', mode === 'adventure');
         document.body.classList.toggle('parchment-mode', mode !== 'adventure');
+        document.body.classList.remove('athun-home-mode');
+        const app = document.getElementById('app');
+        if (app) app.classList.remove('athun-home-screen', 'secondary-layout');
+    },
+
+    layoutParchmentScreen(actionSelectors = []) {
+        const app = document.getElementById('app');
+        if (!app) return;
+        const header = app.querySelector(':scope > .main-header');
+        if (!header) return;
+
+        const footer = app.querySelector(':scope > footer');
+        const scroll = document.createElement('div');
+        scroll.className = 'secondary-scroll';
+        scroll.setAttribute('role', 'region');
+        scroll.setAttribute('aria-label', 'Contenido de la pantalla');
+
+        const actions = document.createElement('nav');
+        actions.className = 'secondary-actions';
+        actions.setAttribute('aria-label', 'Acciones');
+
+        actionSelectors.forEach(selector => {
+            const control = app.querySelector(selector);
+            if (!control) return;
+            if (control.matches('button[type="submit"]')) {
+                const form = control.closest('form');
+                if (form && form.id) control.setAttribute('form', form.id);
+            }
+            actions.appendChild(control);
+        });
+
+        let node = header.nextElementSibling;
+        while (node && node !== footer) {
+            const next = node.nextElementSibling;
+            scroll.appendChild(node);
+            node = next;
+        }
+        app.insertBefore(scroll, footer || null);
+        if (actions.children.length) app.appendChild(actions);
+        app.classList.add('secondary-layout');
     },
 
     escape(value) {
@@ -219,6 +259,7 @@ const Athun = {
             </section>
             <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
         `;
+        this.layoutParchmentScreen(['#saveNow', '#profileFromOptions', '#switchSaveFromOptions', '#returnAdventure']);
         document.getElementById('saveNow').addEventListener('click', () => {
             const feedback = document.getElementById('optionsFeedback');
             try {
@@ -290,6 +331,7 @@ const Athun = {
             </section>
             <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
         `;
+        this.layoutParchmentScreen(['#continueFromPrologue']);
 
         document.getElementById('continueFromPrologue').addEventListener('click', () => {
             try {
@@ -340,8 +382,6 @@ const Athun = {
                 </article>
             `;
         }).join('');
-        document.body.classList.add('athun-home-mode');
-        app.classList.add('athun-home-screen');
         app.innerHTML = `
             <header class="main-header">
                 <h1>Athun: el grimorio oscuro</h1>
@@ -354,6 +394,7 @@ const Athun = {
                 <button type="button" id="createNewCharacter">Crear un personaje nuevo</button>
             </nav>
         `;
+        this.layoutParchmentScreen(['#createNewCharacter']);
         app.querySelectorAll('[data-load-save]').forEach(button => {
             button.addEventListener('click', () => {
                 if (!Save.activate(button.dataset.loadSave)) {
@@ -422,6 +463,7 @@ const Athun = {
             </section>
             <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
         `;
+        this.layoutParchmentScreen(['#characterForm button[type="submit"]']);
 
         const form = document.getElementById('characterForm');
 
@@ -479,6 +521,7 @@ const Athun = {
             </section>
             <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
         `;
+        this.layoutParchmentScreen(['#startAdventure', '#newAdventure', '#editCharacter', '#changeSave']);
 
         document.getElementById('startAdventure').addEventListener('click', () => {
             this.startAdventure(character);
