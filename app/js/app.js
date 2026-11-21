@@ -343,12 +343,10 @@ const Athun = {
         app.innerHTML = `
             <header class="main-header">
                 <h1>Athun: el grimorio oscuro</h1>
-                <p>Un mundo compartido. Historias que pertenecen a cada protagonista.</p>
             </header>
             <section class="character-creation">
                 <div class="section-heading">
                     <h2>Tus partidas</h2>
-                    <p>Elige qué historia deseas continuar o crea un nuevo protagonista.</p>
                 </div>
                 ${entries || '<p>Aún no hay partidas guardadas.</p>'}
                 <button type="button" id="createNewCharacter">Crear un personaje nuevo</button>
