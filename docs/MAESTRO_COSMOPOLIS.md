@@ -2350,3 +2350,5 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - No modificar, borrar ni migrar partidas guardadas como parte de los ajustes visuales. Cualquier prueba destructiva debe hacerse únicamente con datos de prueba aislados.
 
 - Validación automatizada en GitHub Actions (21/11/2026, commit `ae2e99d`): comprobación de sintaxis JavaScript correcta y **62/62 pruebas** superadas (`node --test tests/*.test.js`). La prueba del prólogo se ajustó para simular el `document.body.classList` que utiliza el navegador real. Esta validación no sustituye la prueba visual en Chrome Android.
+
+- Ampliación de pruebas de interfaz (21/11/2026): se añadieron comprobaciones automatizadas para la pantalla Opciones. Verifican que no se guarda nada al abrirla, que el guardado solo ocurre al pulsar «Guardar ahora» y que funcionan los enlaces a ficha, selector de partidas y regreso a la aventura. Resultado CI: **64/64 pruebas superadas** y sintaxis JavaScript correcta.
