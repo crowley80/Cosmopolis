@@ -386,13 +386,11 @@ const Athun = {
             <header class="main-header">
                 <h1>Athun: el grimorio oscuro</h1>
             </header>
-            <section class="home-scroll" aria-label="Partidas guardadas">
+            <section class="save-list" aria-label="Partidas guardadas">
                 <div class="section-heading"><h2>Tus partidas</h2></div>
                 ${entries || '<p>Aún no hay partidas guardadas.</p>'}
             </section>
-            <nav class="home-actions" aria-label="Acciones de inicio">
-                <button type="button" id="createNewCharacter">Crear un personaje nuevo</button>
-            </nav>
+            <button type="button" id="createNewCharacter">Crear un personaje nuevo</button>
         `;
         this.layoutParchmentScreen(['#createNewCharacter']);
         app.querySelectorAll('[data-load-save]').forEach(button => {
