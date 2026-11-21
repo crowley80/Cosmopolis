@@ -1173,3 +1173,58 @@ body.athun-secondary-mode {
   #app.athun-secondary-screen > .welcome { padding:4px 10px; }
   #app.athun-secondary-screen > .character-creation { margin:4px auto; padding:10px 12px; }
 }
+
+
+/* Ajuste de composición: zona de lectura desplazable y acciones fuera del scroll. */
+#app.athun-secondary-screen > .secondary-scroll {
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-color:#9b7442 rgba(255,245,220,.35);
+}
+#app.athun-secondary-screen > .secondary-scroll > .welcome {
+  padding:8px 14px;
+}
+#app.athun-secondary-screen > .secondary-scroll > .character-creation {
+  min-height:min-content;
+  overflow:visible;
+  margin:8px auto 12px;
+}
+#app.athun-secondary-screen > .secondary-actions {
+  flex:0 0 auto;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:7px;
+  padding:9px 10px max(9px,env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(242,222,185,.12),rgba(238,216,176,.92) 22%,rgba(224,196,148,.96));
+  border-top:1px solid rgba(104,67,31,.42);
+}
+#app.athun-secondary-screen > .secondary-actions:has(> :only-child) {
+  grid-template-columns:minmax(0,1fr);
+}
+#app.athun-secondary-screen > .secondary-actions button {
+  width:100%;
+  min-height:42px;
+  margin:0;
+  padding:8px 10px;
+  color:#fff4df;
+  background:linear-gradient(180deg,#79502a,#4d2c14);
+  border:1px solid #3b210f;
+  border-radius:3px;
+  box-shadow:0 2px 5px rgba(48,27,10,.22);
+  font-size:.88rem;
+  line-height:1.2;
+}
+#app.athun-secondary-screen > .secondary-actions button:focus-visible {
+  outline:3px solid #bd8b43;
+  outline-offset:2px;
+}
+#app.athun-secondary-screen > footer {
+  padding-bottom:2px;
+}
+@media (max-width:360px) {
+  #app.athun-secondary-screen > .secondary-actions { gap:5px; padding-left:6px; padding-right:6px; }
+  #app.athun-secondary-screen > .secondary-actions button { font-size:.78rem; padding:7px 5px; }
+}
