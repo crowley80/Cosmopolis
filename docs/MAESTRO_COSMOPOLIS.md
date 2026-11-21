@@ -1,6 +1,6 @@
 # ATHUN: EL GRIMORIO OSCURO — DOCUMENTO MAESTRO
 
-Última actualización: 12 de noviembre de 2026.
+Última actualización: 21 de noviembre de 2026.
 
 ## 1. IDENTIDAD DEL PROYECTO
 
@@ -16,14 +16,14 @@ Ruta:
 Servidor local:
 http://127.0.0.1:8080/index.html
 
-Cosmopolis es una aventura narrativa en la que el jugador crea un
+Athun: el grimorio oscuro es una aventura narrativa en la que el jugador crea un
 personaje y vive acontecimientos que dependen de su naturaleza,
 pasado, capacidades, personalidad y decisiones.
 
 El universo debe ser original, con personajes, lugares e historias
 propios.
 
-No cambiar el nombre Cosmopolis sin autorización del usuario.
+El nombre oficial del proyecto es «Athun: el grimorio oscuro». «Cosmopolis» se conserva únicamente en la ruta física del repositorio y en referencias históricas que no deban alterarse.
 
 ## 2. ENTORNO DE TRABAJO
 
@@ -2340,3 +2340,11 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - Las pantallas secundarias se han configurado para usar `app/assets/plantillas/athun-papiro-interfaz.webp` como fondo común, manteniendo HTML accesible y texto legible por encima.
 - Las dos imágenes originales permanecen respaldadas en la Biblioteca de ChatGPT, carpeta `Athun - Plantillas oficiales`.
 - Pendiente obligatorio antes de considerar cerrada la integración: incorporar los dos WebP respaldados al repositorio en `app/assets/plantillas/` y validar visualmente en Chrome Android. No se han tocado partidas ni datos guardados.
+
+
+## 2026-11-21 — Identidad y estado de integración
+- Nombre oficial y único en la interfaz y documentación activa: **Athun: el grimorio oscuro**. El nombre antiguo del repositorio no representa el título del juego.
+- La rama de trabajo `work/athun-papiro-integracion-segura-20261121` contiene cambios visuales y una pantalla completa de Opciones. La propuesta sigue en la PR #11 y no se ha fusionado.
+- La plantilla principal está referenciada desde `app/assets/athun-plantilla-principal-sin-rosas.webp`. La plantilla secundaria se referencia desde `app/assets/plantillas/athun-papiro-interfaz.webp`, pero ese archivo binario todavía debe incorporarse; no se debe afirmar que está presente ni que se ha validado su aspecto real.
+- No se ha realizado una prueba visual en Chrome Android desde esta rama. La validación de legibilidad, fondos, botones y continuidad de partidas antiguas sigue pendiente.
+- No modificar, borrar ni migrar partidas guardadas como parte de los ajustes visuales. Cualquier prueba destructiva debe hacerse únicamente con datos de prueba aislados.
