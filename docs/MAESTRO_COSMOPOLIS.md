@@ -2332,3 +2332,11 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - Se han preservado las partidas: estos cambios son exclusivamente visuales y de presentación.
 - Las dos imágenes maestras originales están respaldadas en la Biblioteca de ChatGPT, carpeta `Athun - Plantillas oficiales`, con los nombres `athun-plantilla-principal.webp` y `athun-papiro-interfaz.webp`.
 - Pendiente técnico: incorporar el archivo binario `athun-papiro-interfaz.webp` al repositorio para sustituir el fondo provisional CSS de las pantallas no jugables por la imagen oficial. No se declara todavía validación en Chrome Android.
+
+
+## Interfaz de plantillas oficiales — 21/11/2026
+- Se conserva la plantilla principal de aventura ya integrada en `app/assets/athun-plantilla-principal-sin-rosas.webp`.
+- Se ha preparado la pantalla completa de Opciones con retorno a la aventura, consulta de ficha, cambio de protagonista/partida y guardado manual.
+- Las pantallas secundarias se han configurado para usar `app/assets/plantillas/athun-papiro-interfaz.webp` como fondo común, manteniendo HTML accesible y texto legible por encima.
+- Las dos imágenes originales permanecen respaldadas en la Biblioteca de ChatGPT, carpeta `Athun - Plantillas oficiales`.
+- Pendiente obligatorio antes de considerar cerrada la integración: incorporar los dos WebP respaldados al repositorio en `app/assets/plantillas/` y validar visualmente en Chrome Android. No se han tocado partidas ni datos guardados.
