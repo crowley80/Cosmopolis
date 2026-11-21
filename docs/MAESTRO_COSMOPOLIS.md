@@ -2374,3 +2374,12 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - El título «Athun: el grimorio oscuro» queda como único título de cabecera y se ajusta con tipografía adaptable, centrada y con salto de línea natural para no desbordar el rectángulo superior en pantallas estrechas.
 - Cambios visuales únicamente: no se modifica el sistema de guardado ni el contenido de las partidas.
 - Pendiente comprobar en Chrome Android que el título queda dentro del marco de la imagen real y que el resto del contenido respeta la plantilla.
+
+
+### Aclaración de diseño de la plantilla secundaria en blanco — 21/11/2026
+- La plantilla secundaria en blanco NO contiene un rectángulo para el título. El rectángulo pertenece exclusivamente a la plantilla de aventura y alberga las zonas del narrador y de escritura del jugador.
+- En las pantallas secundarias, el título «Athun: el grimorio oscuro» se coloca directamente en la zona superior libre del papiro, centrado y acompañado por adornos estáticos discretos.
+- Las opciones se sitúan debajo, integradas en el fondo. Se eliminan paneles/cajas superpuestas innecesarias y textos accesorios del selector que ocupaban espacio visual.
+- No se añaden textos deslizantes, carruseles automáticos ni elementos móviles; debe permanecer visible el dibujo, especialmente en el borde inferior.
+- No se modifica la plantilla de aventura ni los datos de las partidas.
+- Pendiente comprobar el resultado visual en Chrome Android con la imagen oficial y una partida guardada.
