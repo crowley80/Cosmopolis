@@ -342,7 +342,6 @@ const Athun = {
         }).join('');
         app.innerHTML = `
             <header class="main-header">
-                <p class="eyebrow">EL GRIMORIO TE RECUERDA</p>
                 <h1>Athun: el grimorio oscuro</h1>
                 <p>Un mundo compartido. Historias que pertenecen a cada protagonista.</p>
             </header>
