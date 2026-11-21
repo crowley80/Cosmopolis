@@ -2330,16 +2330,18 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - Se mantiene la plantilla principal de pergamino en la pantalla de aventura.
 - Las pantallas ajenas a la aventura (presentación, selector de partidas, creación y ficha del personaje) reciben un marco de papiro claro con contenido HTML independiente, contraste reforzado y controles legibles.
 - Se han preservado las partidas: estos cambios son exclusivamente visuales y de presentación.
-- Las dos imágenes maestras originales están respaldadas en la Biblioteca de ChatGPT, carpeta `Athun - Plantillas oficiales`, con los nombres `athun-plantilla-principal.webp` y `athun-papiro-interfaz.webp`.
-- La plantilla secundaria oficial ya está incorporada en `app/assets/plantillas/athun-papiro-interfaz.webp` y se utiliza como fondo CSS de las pantallas secundarias. No se declara todavía validación en Chrome Android.
+- La plantilla principal aprobada está integrada en `app/assets/athun-plantilla-principal-sin-rosas.webp`.
+- La plantilla secundaria realmente en blanco se ha localizado en la Biblioteca como `Pergamino antiguo de bordes quemados.webp`: no contiene rectángulo, textos, botones ni controles dibujados.
+- El archivo que había en `app/assets/plantillas/athun-papiro-interfaz.webp` era una maqueta con controles incrustados, no el papiro vacío aprobado; se retira de la rama para evitar integrar una imagen incorrecta.
+- La CSS conserva esa ruta como destino del fondo secundario. El WebP correcto queda pendiente de incorporación desde el paquete local preparado para el usuario; no se declara validación en Chrome Android.
 
 
 ## Interfaz de plantillas oficiales — 21/11/2026
 - Se conserva la plantilla principal de aventura ya integrada en `app/assets/athun-plantilla-principal-sin-rosas.webp`.
 - Se ha preparado la pantalla completa de Opciones con retorno a la aventura, consulta de ficha, cambio de protagonista/partida y guardado manual.
 - Las pantallas secundarias se han configurado para usar `app/assets/plantillas/athun-papiro-interfaz.webp` como fondo común, manteniendo HTML accesible y texto legible por encima.
-- Las dos imágenes originales permanecen respaldadas en la Biblioteca de ChatGPT, carpeta `Athun - Plantillas oficiales`.
-- Pendiente obligatorio antes de considerar cerrada la integración: incorporar los dos WebP respaldados al repositorio en `app/assets/plantillas/` y validar visualmente en Chrome Android. No se han tocado partidas ni datos guardados.
+- La plantilla principal ya está en la rama. El papiro secundario en blanco original está respaldado en la Biblioteca con el nombre `Pergamino antiguo de bordes quemados.webp`.
+- Pendiente obligatorio: incorporar ese WebP en `app/assets/plantillas/athun-papiro-interfaz.webp` y validar visualmente en Chrome Android. No se han tocado partidas ni datos guardados.
 
 
 ## 2026-11-21 — Identidad y estado de integración
@@ -2362,16 +2364,17 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 
 
 ## Actualización de integración — 21/11/2026
-- Se incorporó físicamente `app/assets/plantillas/athun-papiro-interfaz.webp` a la rama `work/athun-papiro-integracion-segura-20261121`.
-- Se verificó que CSS referencia la plantilla principal y la secundaria en sus rutas correspondientes.
-- La PR #11 sigue sin fusionar. La validación automatizada del último commit está en curso.
-- Sigue pendiente la comprobación visual real en Chrome Android: fondos, contraste, botones y continuidad de partidas guardadas. No declarar la interfaz terminada hasta completar esa prueba.
+- Se comprobó que la rama contenía un WebP en `app/assets/plantillas/athun-papiro-interfaz.webp`, pero la imagen era una maqueta con controles y textos incrustados, no el fondo en blanco solicitado.
+- Se localizó el recurso correcto: `Pergamino antiguo de bordes quemados.webp`, una hoja vertical de papiro vacía, sin rectángulos ni elementos de interfaz.
+- Se preparó un ZIP que coloca el original en la ruta exacta que ya utiliza la CSS. El archivo incorrecto se retira de la rama para no confundirlo con el fondo aprobado.
+- La PR #11 sigue sin fusionar. En el commit anterior `1e22f6a` GitHub Actions completó la sintaxis y **67/67 pruebas**; la eliminación del recurso equivocado y la corrección documental requieren una nueva ejecución.
+- Sigue pendiente que el usuario extraiga el paquete en la raíz del repositorio, incorpore y suba el WebP correcto, y que se comprueben fondos, contraste, botones y continuidad de partidas en Chrome Android. No declarar la interfaz terminada hasta completar esa prueba.
 
 
 ### Corrección de cabecera sobre papiro en blanco — 21/11/2026
 - El selector de partidas utiliza la plantilla secundaria oficial en blanco (`app/assets/plantillas/athun-papiro-interfaz.webp`), no la plantilla de aventura.
 - Se elimina el rótulo «EL GRIMORIO TE RECUERDA» del selector.
-- El título «Athun: el grimorio oscuro» queda como único título de cabecera y se ajusta con tipografía adaptable, centrada y con salto de línea natural para no desbordar el rectángulo superior en pantallas estrechas.
+- El título «Athun: el grimorio oscuro» queda como único título de cabecera y se ajusta con tipografía adaptable, centrada y con salto de línea natural para encajar en la zona superior libre del papiro, que no tiene rectángulo.
 - Cambios visuales únicamente: no se modifica el sistema de guardado ni el contenido de las partidas.
 - Pendiente comprobar en Chrome Android que el título queda dentro del marco de la imagen real y que el resto del contenido respeta la plantilla.
 
@@ -2391,3 +2394,12 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - Se eliminan paneles y cajas generales que tapaban la ilustración del papiro; las opciones quedan agrupadas en la zona inferior mediante controles propios.
 - No se añaden carruseles, textos deslizantes ni animaciones superpuestas. No se altera ninguna partida.
 - Pendiente validación visual en Chrome Android para ajustar la posición exacta del título y las opciones sobre la imagen física.
+
+
+### Recurso secundario correcto y paquete de instalación — 21/11/2026
+- Se inspeccionó visualmente el original `Pergamino antiguo de bordes quemados.webp`: es el fondo vertical vacío aprobado, sin rectángulo superior, sin cajas y sin controles dibujados.
+- El ZIP preparado contiene ese original, sin redibujarlo, en `app/assets/plantillas/athun-papiro-interfaz.webp`, además de instrucciones de instalación.
+- La CSS ya apunta a esa ruta. La extracción de `app/` debe hacerse en la raíz de `~/storage/shared/Download/Cosmopolis`, reemplazando el archivo provisional si existe.
+- No se ha podido hacer la prueba visual en Chrome Android desde este entorno; requiere que el archivo correcto esté en el repositorio local y que se abra en el teléfono.
+- La última ejecución automatizada verificada antes de esta corrección fue el commit `1e22f6a`: sintaxis correcta y **67/67 pruebas** superadas. La nueva revisión debe completar CI de nuevo.
+- No se han leído, modificado ni eliminado partidas guardadas.
