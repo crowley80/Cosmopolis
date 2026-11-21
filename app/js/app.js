@@ -9,6 +9,12 @@ const Athun = {
         personality: 'Personalidad'
     },
 
+    setSecondaryScreen(enabled = true) {
+        const app = document.getElementById('app');
+        document.body.classList.toggle('athun-secondary-mode', enabled);
+        if (app) app.classList.toggle('athun-secondary-screen', enabled);
+    },
+
     escape(value) {
         return String(value || '').replace(/[&<>"']/g, char => ({
             '&': '&amp;',
@@ -234,6 +240,7 @@ const Athun = {
     },
 
     showPrologue() {
+        this.setSecondaryScreen(true);
         const app = document.getElementById('app');
         const paragraphs = [
             'Athun no fue hallado en una torre de alta hechicería ni en la cripta de un rey olvidado. Apareció una madrugada en la costa, varado entre algas y con un penetrante y sospechoso tufo a sardina rancia. Un grupo de pescadores locales, poco impresionados por las runas doradas de su lomo, decidió que era el papel perfecto para envolver las raciones de pescado frito del puesto de la playa. De milagro, y antes de que terminara empapado en aceite y adobo, el libro fue rescatado.',
@@ -291,6 +298,7 @@ const Athun = {
     },
 
     showSaveSelection() {
+        this.setSecondaryScreen(true);
         const app = document.getElementById('app');
         const saves = Save.list();
         const entries = saves.map(entry => {
@@ -336,6 +344,7 @@ const Athun = {
     },
 
     showForm(character = {}) {
+        this.setSecondaryScreen(true);
         const app = document.getElementById('app');
 
         app.innerHTML = `
@@ -413,6 +422,7 @@ const Athun = {
     },
 
     showProfile(character) {
+        this.setSecondaryScreen(true);
         const app = document.getElementById('app');
         const saved = Save.load();
 
@@ -483,6 +493,7 @@ const Athun = {
     },
 
     showAdventure(character, adventure) {
+        this.setSecondaryScreen(false);
         const app = document.getElementById('app');
 
         const worldState = adventure.state || {};
