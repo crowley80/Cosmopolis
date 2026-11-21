@@ -2348,3 +2348,5 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - La plantilla principal está referenciada desde `app/assets/athun-plantilla-principal-sin-rosas.webp`. La plantilla secundaria se referencia desde `app/assets/plantillas/athun-papiro-interfaz.webp`, pero ese archivo binario todavía debe incorporarse; no se debe afirmar que está presente ni que se ha validado su aspecto real.
 - No se ha realizado una prueba visual en Chrome Android desde esta rama. La validación de legibilidad, fondos, botones y continuidad de partidas antiguas sigue pendiente.
 - No modificar, borrar ni migrar partidas guardadas como parte de los ajustes visuales. Cualquier prueba destructiva debe hacerse únicamente con datos de prueba aislados.
+
+- Validación automatizada en GitHub Actions (21/11/2026, commit `ae2e99d`): comprobación de sintaxis JavaScript correcta y **62/62 pruebas** superadas (`node --test tests/*.test.js`). La prueba del prólogo se ajustó para simular el `document.body.classList` que utiliza el navegador real. Esta validación no sustituye la prueba visual en Chrome Android.
