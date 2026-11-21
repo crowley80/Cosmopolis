@@ -2439,3 +2439,37 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
   - `docs/MAESTRO_COSMOPOLIS.md.bak-20261121-atlas-sync2`
 - La nueva ejecución de GitHub Actions queda pendiente de resultado. No se declara todavía aprobada la suite.
 - La prueba física en Chrome Android y la inferencia con el modelo local real siguen pendientes. `main` y el PR #4 permanecen sin modificar.
+
+
+
+## CONSOLIDACIÓN DE SINCRONIZACIÓN DE NUEVAS AVENTURAS — 21 DE NOVIEMBRE DE 2026
+
+### Cambio implementado
+
+- `Session.startNewAdventure()` sustituye las llamadas separadas a sincronización de ubicaciones y personajes por una única publicación mediante `Session.syncActionWorld()`. La creación normal de una aventura realiza una sola escritura del mundo compartido.
+- La sincronización incluye las ubicaciones visitadas, además de la actual y las visibles. Esto permite reconstruir los descubrimientos personales de la partida en la siguiente acción si una escritura global transitoria falla al crear la aventura.
+- Si falla esa publicación, el registro personal de la nueva aventura se conserva. La siguiente acción vuelve a publicar el conocimiento recuperable de esa partida; no se borra ni se reemplaza el mundo compartido.
+- Se añadió una regresión que cuenta las escrituras globales durante la creación normal y otra que simula un fallo inicial, verifica que la partida permanece guardada y comprueba la recuperación en la siguiente acción. Se mantiene la prueba de aislamiento de recuerdos privados.
+
+### Respaldos y archivos
+
+- Antes de modificar `app/js/game/session.js` y `tests/storage.test.js` se crearon y verificaron:
+  - `app/js/game/session.js.bak-20261121-new-adventure-sync`
+  - `tests/storage.test.js.bak-20261121-new-adventure-sync`
+- Antes de esta actualización documental se creó `docs/MAESTRO_COSMOPOLIS.md.bak-20261121-final-validation`.
+- Archivos de código modificados: `app/js/game/session.js`, `tests/storage.test.js`. Este documento registra los cambios y resultados.
+
+### Validación automatizada
+
+- La ejecución anterior [44883717999](https://github.com/crowley80/Cosmopolis/actions/runs/44883717999) validó la corrección del atlas y la visibilidad: **67/67 pruebas aprobadas**.
+- La ejecución más reciente [44883980979](https://github.com/crowley80/Cosmopolis/actions/runs/44883980979), sobre el commit de código/pruebas `a01ac6a0d9c7e7e37141687d12e6968a1f5e6ca8`, terminó correctamente: comprobación de sintaxis JavaScript aprobada y **68/68 pruebas aprobadas, 0 fallos**.
+- La ejecución paralela de push [44883978719](https://github.com/crowley80/Cosmopolis/actions/runs/44883978719) también terminó correctamente con **68/68**.
+- La nueva regresión confirma que el fallo de publicación global no pierde la partida nueva y que los lugares visitados y personajes básicos se pueden recuperar en la siguiente acción sin copiar recuerdos privados.
+
+### Estado de integración y pendientes
+
+- PR #8 continúa abierto y en borrador, dirigido a `integration/athun-multisave-main-20261116`; su cabeza de código validada es `a01ac6a0d9c7e7e37141687d12e6968a1f5e6ca8`. No se fusiona.
+- PR #4 continúa abierto y en borrador, sin comprobaciones ni ejecuciones de Actions localizadas para su cabeza actual `9e58abca7ea1510d48835fee1dbab59c97b77f44`. La comparación con `main` sigue divergente: 362 commits por delante y 73 por detrás; GitHub informa conflictos. No se modifica.
+- `main` permanece intacta. No se han accedido ni alterado guardados del dispositivo.
+- Pendiente: validar el flujo táctil real en Chrome Android con una partida antigua y otra nueva; comprobar el modelo local real. Las pruebas automatizadas no sustituyen esas verificaciones.
+- Siguiente paso técnico: revisar la recuperación de sincronización al cambiar de protagonista y el selector de partidas, asegurando que la reconstrucción del mundo compartido no filtre recuerdos, objetivos, confianza ni progreso personal.
