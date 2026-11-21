@@ -1242,3 +1242,49 @@ body.athun-secondary-mode {
 #app.athun-secondary-screen > .secondary-scroll > .character-creation::after {
   display:none;
 }
+
+
+/* Remate de plantilla secundaria: título fijo y pie de acciones sin competir con el contenido. */
+#app.athun-secondary-screen > .main-header {
+  padding-top:clamp(10px,2.4vh,22px);
+  padding-bottom:12px;
+}
+#app.athun-secondary-screen > .main-header::before {
+  content:"✦  ❧  ✧  ❧  ✦";
+  display:block;
+  margin:0 auto 7px;
+  color:#94652c;
+  text-align:center;
+  letter-spacing:.22em;
+}
+#app.athun-secondary-screen > .main-header::after {
+  content:"";
+  display:block;
+  width:min(68%,280px);
+  margin:9px auto 0;
+  border-bottom:1px solid rgba(112,70,29,.48);
+}
+#app.athun-secondary-screen > .main-header p {
+  display:none;
+}
+#app.athun-secondary-screen > footer {
+  display:none;
+}
+#app.athun-secondary-screen > .secondary-scroll {
+  padding-top:clamp(8px,1.8vh,16px);
+  padding-bottom:12px;
+}
+#app.athun-secondary-screen > .secondary-actions {
+  padding-bottom:max(9px,env(safe-area-inset-bottom));
+}
+@media (max-height:650px) {
+  #app.athun-secondary-screen > .main-header {
+    padding-top:6px;
+    padding-bottom:7px;
+  }
+  #app.athun-secondary-screen > .main-header::before,
+  #app.athun-secondary-screen > .main-header::after {
+    margin-top:3px;
+    margin-bottom:3px;
+  }
+}
