@@ -2366,3 +2366,11 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - Se verificó que CSS referencia la plantilla principal y la secundaria en sus rutas correspondientes.
 - La PR #11 sigue sin fusionar. La validación automatizada del último commit está en curso.
 - Sigue pendiente la comprobación visual real en Chrome Android: fondos, contraste, botones y continuidad de partidas guardadas. No declarar la interfaz terminada hasta completar esa prueba.
+
+
+### Corrección de cabecera sobre papiro en blanco — 21/11/2026
+- El selector de partidas utiliza la plantilla secundaria oficial en blanco (`app/assets/plantillas/athun-papiro-interfaz.webp`), no la plantilla de aventura.
+- Se elimina el rótulo «EL GRIMORIO TE RECUERDA» del selector.
+- El título «Athun: el grimorio oscuro» queda como único título de cabecera y se ajusta con tipografía adaptable, centrada y con salto de línea natural para no desbordar el rectángulo superior en pantallas estrechas.
+- Cambios visuales únicamente: no se modifica el sistema de guardado ni el contenido de las partidas.
+- Pendiente comprobar en Chrome Android que el título queda dentro del marco de la imagen real y que el resto del contenido respeta la plantilla.
