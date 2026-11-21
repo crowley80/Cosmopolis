@@ -14,7 +14,7 @@ function createHarness() {
         adventure: { state: { currentLocation: 'Lugar de prueba' } },
         actions: [{ id: 'action-1' }]
     };
-    const calls = { load: 0, save: [], profile: 0, selection: 0, adventure: [] };
+    const calls = { load: 0, save: [], saveThrows: false, profile: 0, selection: 0, adventure: [] };
 
     const document = {
         body: { classList: { toggle(name, enabled) { modes.push([name, enabled]); } } },
@@ -33,7 +33,7 @@ function createHarness() {
     };
     const Save = {
         load() { calls.load += 1; return saved; },
-        save(value) { calls.save.push(value); return true; }
+        save(value) { calls.save.push(value); if (calls.saveThrows) throw new Error('storage unavailable'); return true; }
     };
     const context = {
         document,
@@ -90,4 +90,15 @@ test('los controles de opciones conectan ficha, selector y regreso a la aventura
     assert.equal(h.calls.adventure.length, 1);
     assert.equal(h.calls.adventure[0][0], h.saved.character);
     assert.equal(h.calls.adventure[0][1], h.saved.adventure);
+});
+
+
+test('un fallo del almacenamiento se comunica sin romper la pantalla de opciones', () => {
+    const h = createHarness();
+    h.Athun.showOptions(h.saved.character, h.saved.adventure);
+    h.calls.saveThrows = true;
+
+    assert.doesNotThrow(() => h.elements.get('saveNow').listeners.click());
+    assert.match(h.elements.get('optionsFeedback').textContent, /datos anteriores permanecen intactos/);
+    assert.equal(h.calls.save.length, 1);
 });

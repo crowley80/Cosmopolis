@@ -213,11 +213,16 @@ const Athun = {
             <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
         `;
         document.getElementById('saveNow').addEventListener('click', () => {
-            const latest = Save.load();
-            const ok = latest ? Save.save(latest) : false;
-            document.getElementById('optionsFeedback').textContent = ok
-                ? 'La partida se ha guardado correctamente.'
-                : 'No se ha podido guardar la partida.';
+            const feedback = document.getElementById('optionsFeedback');
+            try {
+                const latest = Save.load();
+                const ok = latest ? Save.save(latest) : false;
+                feedback.textContent = ok
+                    ? 'La partida se ha guardado correctamente.'
+                    : 'No se ha podido guardar la partida.';
+            } catch (error) {
+                feedback.textContent = 'No se ha podido guardar la partida. Tus datos anteriores permanecen intactos.';
+            }
         });
         document.getElementById('profileFromOptions').addEventListener('click', () => this.showProfile(character));
         document.getElementById('switchSaveFromOptions').addEventListener('click', () => this.showSaveSelection());
