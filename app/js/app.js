@@ -15,6 +15,41 @@ const Athun = {
         if (app) app.classList.toggle('athun-secondary-screen', enabled);
     },
 
+    prepareSecondaryLayout() {
+        const app = document.getElementById('app');
+        if (!app || !app.classList.contains('athun-secondary-screen')) return;
+        const header = app.querySelector(':scope > .main-header');
+        const panel = app.querySelector(':scope > .character-creation');
+        if (!header || !panel) return;
+
+        const scroll = document.createElement('div');
+        scroll.className = 'secondary-scroll';
+        header.after(scroll);
+        const welcome = app.querySelector(':scope > .welcome');
+        if (welcome) scroll.appendChild(welcome);
+        scroll.appendChild(panel);
+
+        const actions = document.createElement('nav');
+        actions.className = 'secondary-actions';
+        actions.setAttribute('aria-label', 'Acciones de esta pantalla');
+        const actionSelectors = [
+            '#continueFromPrologue',
+            '#createNewCharacter',
+            '#characterForm button[type="submit"]',
+            '#startAdventure',
+            '#newAdventure',
+            '#editCharacter',
+            '#changeSave'
+        ];
+        actionSelectors.forEach(selector => {
+            const button = panel.querySelector(selector);
+            if (!button) return;
+            if (button.form) button.setAttribute('form', button.form.id);
+            actions.appendChild(button);
+        });
+        if (actions.children.length) scroll.after(actions);
+    },
+
     escape(value) {
         return String(value || '').replace(/[&<>"']/g, char => ({
             '&': '&amp;',
@@ -263,6 +298,7 @@ const Athun = {
             <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
         `;
 
+        this.prepareSecondaryLayout();
         document.getElementById('continueFromPrologue').addEventListener('click', () => {
             try {
                 localStorage.setItem('athun_intro_seen_v1', '1');
@@ -329,6 +365,7 @@ const Athun = {
             </section>
             <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
         `;
+        this.prepareSecondaryLayout();
         app.querySelectorAll('[data-load-save]').forEach(button => {
             button.addEventListener('click', () => {
                 if (!Save.activate(button.dataset.loadSave)) {
@@ -398,6 +435,7 @@ const Athun = {
             <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
         `;
 
+        this.prepareSecondaryLayout();
         const form = document.getElementById('characterForm');
 
         Object.entries(character).forEach(([key, value]) => {
@@ -455,6 +493,7 @@ const Athun = {
             <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
         `;
 
+        this.prepareSecondaryLayout();
         document.getElementById('startAdventure').addEventListener('click', () => {
             this.startAdventure(character);
         });
