@@ -1222,34 +1222,6 @@ body.parchment-mode #optionsFeedback {
 }
 
 
-/* Ajuste del título maestro sobre la plantilla secundaria en blanco.
-   El texto debe caber dentro del rectángulo superior del papiro en móvil y escritorio. */
-body.parchment-mode .main-header {
-  width:100%;
-  max-width:100%;
-  margin:0 auto 14px;
-  padding:8px 10px 12px;
-  border-bottom:0;
-}
-body.parchment-mode .main-header h1 {
-  display:block;
-  width:100%;
-  max-width:100%;
-  margin:0 auto;
-  padding:3px 8px 5px;
-  box-sizing:border-box;
-  font-size:clamp(1.2rem,5.5vw,2.35rem);
-  line-height:1.08;
-  letter-spacing:.015em;
-  text-align:center;
-  white-space:normal;
-  overflow-wrap:normal;
-  word-break:normal;
-  text-wrap:balance;
-}
-body.parchment-mode .main-header h1::first-letter {
-  font-size:1em;
-}
 
 
 /* Diseño despejado para la plantilla secundaria en blanco: sin paneles ni cajas superpuestas. */
