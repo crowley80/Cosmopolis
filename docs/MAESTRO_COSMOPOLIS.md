@@ -2313,3 +2313,14 @@ La normalización de partidas ya eliminaba las entradas de inventario cuyo texto
 - Sigue pendiente la prueba táctil real en Chrome para Android físico. Las pruebas automatizadas de navegador no la sustituyen.
 
 No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
+
+
+## INTEGRACIÓN VISUAL DEL PAPIRO — 21 DE NOVIEMBRE DE 2026
+
+- Rama aislada desde `integration/athun-multisave-main-20261116` para evitar mezclar historiales divergentes.
+- La pantalla de aventura utiliza como fondo la plantilla principal aprobada sin rosas de los vientos (`app/assets/athun-plantilla-principal-sin-rosas.webp`).
+- Se elimina la capa CSS oscura que ocultaba el papel y se refuerza el contraste de narración, ubicación, acción y campo de texto.
+- Se invalida la caché de CSS desde `index.html`.
+- No se modifica la lógica de guardado ni los datos de partidas.
+- Pendiente localizar e incorporar la plantilla secundaria en blanco original; no se reemplaza por una imagen inventada.
+- Pendiente validación en Chrome Android con una partida guardada.
