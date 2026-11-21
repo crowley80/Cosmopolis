@@ -1047,3 +1047,19 @@ fieldset { background:rgba(255,242,211,.42); }
   .atlas-map { min-height:190px; }
   .atlas-map-node text { font-size:11px; }
 }
+
+/* Plantilla principal oficial de Athun: fondo de pergamino sin rosas. */
+.adventure-screen {
+  background-color:#d8b477;
+  background-image:url('../assets/athun-plantilla-principal-sin-rosas.webp');
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:100% 100%;
+}
+.adventure-screen::before { content:none; display:none; }
+.adventure-screen::after { display:none; }
+.story-content,.manuscript-meta,.current-action { color:#321b0b; }
+.story-content { text-shadow:0 1px rgba(255,248,226,.72); }
+.manuscript-meta { text-shadow:0 1px rgba(255,248,226,.65); }
+.current-action { background:rgba(255,244,218,.72); border-left-color:#805021; }
+.player-panel textarea { color:#321b0b; background:rgba(255,246,224,.94); border-color:#704017; }
