@@ -2424,3 +2424,18 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - La corrección de código está guardada en la rama aislada del PR #8. La nueva ejecución de Actions debe confirmar si las 67 pruebas pasan; hasta obtener ese resultado no se declara validada.
 - La prueba táctil real en Chrome Android y la comprobación con el modelo local siguen pendientes.
 - Siguiente paso: revisar el resultado de CI y, si queda verde, añadir una regresión específica de fallo de escritura durante la creación de una aventura nueva, ya que `Session.startNewAdventure()` todavía publica el conocimiento global mediante varias llamadas independientes.
+
+
+
+## AJUSTE DE VISIBILIDAD Y EXTREMOS DE RUTA — 21 DE NOVIEMBRE DE 2026
+
+- La segunda ejecución de CI, [44883539615](https://github.com/crowley80/Cosmopolis/actions/runs/44883539615), volvió a fallar: la sintaxis JavaScript pasó, pero la suite obtuvo 64/67 pruebas. El diagnóstico identificó tres aserciones afectadas por dos detalles de la corrección anterior.
+- Al aceptar `visibleLocations` desde el estado de la aventura sin compararlo con el estado anterior, una lista antigua podía seguir iluminada después de desplazarse. Ahora solo se adopta esa lista anidada cuando ha cambiado respecto al estado previo; el campo superior explícito del narrador conserva prioridad. Si no hay declaración nueva y cambia la ubicación, se limpia la visibilidad anterior.
+- Al publicar una ruta, su origen también se registra como ubicación global. La prueba ahora exige explícitamente que el atlas compartido incluya ese extremo, además del destino y las zonas visibles.
+- Archivos modificados: `app/js/game/session.js` y `tests/storage.test.js`. Se mantienen todas las regresiones de aislamiento, conocimiento compartido y visibilidad.
+- Antes de esta modificación se crearon y verificaron respaldos exactos:
+  - `app/js/game/session.js.bak-20261121-atlas-sync2`
+  - `tests/storage.test.js.bak-20261121-atlas-sync2`
+  - `docs/MAESTRO_COSMOPOLIS.md.bak-20261121-atlas-sync2`
+- La nueva ejecución de GitHub Actions queda pendiente de resultado. No se declara todavía aprobada la suite.
+- La prueba física en Chrome Android y la inferencia con el modelo local real siguen pendientes. `main` y el PR #4 permanecen sin modificar.
