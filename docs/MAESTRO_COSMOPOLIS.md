@@ -2313,3 +2313,18 @@ La normalización de partidas ya eliminaba las entradas de inventario cuyo texto
 - Sigue pendiente la prueba táctil real en Chrome para Android físico. Las pruebas automatizadas de navegador no la sustituyen.
 
 No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
+
+
+## Ajuste de encuadre de la plantilla principal — 21/11/2026
+
+Se corrige la distribución responsive de la pantalla de aventura, sin alterar el contenido ni la estructura de las partidas guardadas.
+
+- La pantalla pasa a distribuir cabecera, lectura, panel de acción y barra inferior en filas explícitas.
+- El área narrativa es la única región principal con desplazamiento vertical; su contenido y su barra de desplazamiento quedan contenidos en el marco de lectura.
+- Cabecera, panel de acción y barra inferior no se desplazan con el texto narrativo.
+- Los cinco accesos de la barra inferior se distribuyen en cinco columnas iguales; los separadores decorativos dejan de consumir columnas y estrechar los botones.
+- El encabezado del panel de acción usa columnas propias para evitar que «Explorar», el rótulo del turno y «Mi ficha» se superpongan.
+- El campo de acción y el botón «Enviar» permanecen dentro del panel; el campo limita su altura y gestiona su propio contenido.
+- Se añaden ajustes para pantallas estrechas y de poca altura, respetando el área segura inferior del móvil.
+
+**Alcance y validación:** cambios CSS aislados en la rama fix/athun-manuscript-layout-20261121, creada desde integration/athun-multisave-main-20261116. No se modifica JavaScript, almacenamiento, migraciones ni datos de partidas. El cambio está guardado en GitHub; todavía requiere comprobación visual real en Chrome/Android para confirmar el encaje exacto con la plantilla gráfica y ajustar cualquier diferencia que solo aparezca en el dispositivo.
