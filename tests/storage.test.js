@@ -156,9 +156,22 @@ test('una aventura nueva no elimina la anterior ni reinicia el mundo compartido'
     });
     Save.addGlobalLocation('Valdebruma', 'Ariadna');
 
-    assert.equal(Session.startNewAdventure({ name: 'Ariadna' }, {
-        title: 'Segunda aventura', state: { currentLocation: 'Puerto', inventory: [], characters: { Elia: { role: 'Cartógrafa', location: 'Valdebruma', trust: 0, memories: ['Recuerdo de Darian'] } } }
-    }), true);
+    let worldWrites = 0;
+    const originalSetItem = localStorage.setItem.bind(localStorage);
+    let started;
+    try {
+        localStorage.setItem = (key, value) => {
+            if (key === Save.worldKey) worldWrites += 1;
+            return originalSetItem(key, value);
+        };
+        started = Session.startNewAdventure({ name: 'Ariadna' }, {
+            title: 'Segunda aventura', state: { currentLocation: 'Puerto', visitedLocations: ['Puerto'], inventory: [], characters: { Elia: { role: 'Cartógrafa', location: 'Valdebruma', trust: 0, memories: ['Recuerdo de Darian'] } } }
+        });
+    } finally {
+        localStorage.setItem = originalSetItem;
+    }
+    assert.equal(started, true);
+    assert.equal(worldWrites, 1);
 
     const second = Save.getActiveId();
     assert.notEqual(second, first);
@@ -169,6 +182,57 @@ test('una aventura nueva no elimina la anterior ni reinicia el mundo compartido'
     assert.ok(Save.getGlobalWorld().entities.elia);
     assert.equal(Save.activate(first), true);
     assert.equal(Save.load().adventure.title, 'Primera aventura');
+});
+
+
+test('si falla la sincronización inicial, la partida nueva se conserva y sus descubrimientos se reintentan en la siguiente acción', () => {
+    Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Aventura anterior',
+        state: { currentLocation: 'Plaza', visitedLocations: ['Plaza'], inventory: [] }
+    });
+    const worldBefore = JSON.stringify(Save.getGlobalWorld());
+    const originalSetItem = localStorage.setItem.bind(localStorage);
+    let failWorldWrite = true;
+    localStorage.setItem = (key, value) => {
+        if (key === Save.worldKey && failWorldWrite) {
+            failWorldWrite = false;
+            throw new Error('Fallo de escritura global simulado');
+        }
+        return originalSetItem(key, value);
+    };
+
+    let created;
+    try {
+        created = Session.startNewAdventure({ name: 'Darian' }, {
+            title: 'Aventura recuperable',
+            state: {
+                currentLocation: 'Puerto',
+                visitedLocations: ['Puerto', 'Camino del puerto'],
+                visibleLocations: ['Muelle'],
+                inventory: [],
+                characters: {
+                    Elia: { name: 'Elia', role: 'Cartógrafa', location: 'Puerto', memories: ['Recuerdo privado'] }
+                }
+            }
+        });
+    } finally {
+        localStorage.setItem = originalSetItem;
+    }
+
+    assert.equal(created, true);
+    assert.equal(Save.load().adventure.title, 'Aventura recuperable');
+    assert.equal(JSON.stringify(Save.getGlobalWorld()), worldBefore);
+
+    assert.equal(Session.addAction('Observo el puerto', 'El muelle se extiende ante ti.', {
+        adventure: Save.load().adventure
+    }), true);
+
+    const world = Save.getGlobalWorld();
+    assert.ok(world.locations.some(item => item.name === 'Puerto'));
+    assert.ok(world.locations.some(item => item.name === 'Camino del puerto'));
+    assert.ok(world.locations.some(item => item.name === 'Muelle'));
+    assert.equal(world.entities.elia.role, 'Cartógrafa');
+    assert.equal('memories' in world.entities.elia, false);
 });
 
 test('reconstruye el índice si desaparece sin perder los registros de partidas', () => {
