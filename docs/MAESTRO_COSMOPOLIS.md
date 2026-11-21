@@ -2328,3 +2328,12 @@ Se corrige la distribución responsive de la pantalla de aventura, sin alterar e
 - Se añaden ajustes para pantallas estrechas y de poca altura, respetando el área segura inferior del móvil.
 
 **Alcance y validación:** cambios CSS aislados en la rama fix/athun-manuscript-layout-20261121, creada desde integration/athun-multisave-main-20261116. No se modifica JavaScript, almacenamiento, migraciones ni datos de partidas. El cambio está guardado en GitHub; todavía requiere comprobación visual real en Chrome/Android para confirmar el encaje exacto con la plantilla gráfica y ajustar cualquier diferencia que solo aparezca en el dispositivo.
+
+
+### Recarga de estilos y comprobación de estructura — 21/11/2026
+
+- Se actualiza la versión de la hoja de estilos en index.html para invalidar la caché del navegador y evitar que Chrome siga mostrando el CSS anterior.
+- Se ha contrastado el marcado real de app.js con la distribución CSS: cabecera, panel de lectura, panel de acción y barra inferior son los cuatro bloques directos de la pantalla.
+- La barra inferior contiene cinco botones y cuatro separadores; estos últimos se excluyen del grid de cinco columnas para que no desplacen los botones.
+- La pluma decorativa del formulario está oculta en la composición compacta existente, por lo que el campo y el botón de envío ocupan las dos columnas previstas.
+- La prueba visual en el dispositivo sigue pendiente. La invalidación de caché no sustituye esa comprobación.
