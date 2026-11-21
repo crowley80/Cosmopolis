@@ -1346,3 +1346,88 @@ body.parchment-mode footer { display:none; }
   body.parchment-mode .main-header { margin-top:clamp(12px,3vh,28px); }
   body.parchment-mode .character-creation { margin-top:clamp(24px,6vh,56px); }
 }
+
+
+/* INICIO SOBRE EL PAPIRO EN BLANCO: cabecera y acciones fijas, texto desplazable. */
+body.parchment-mode.athun-home-mode {
+  min-height:100dvh;
+  height:100dvh;
+  padding:0;
+  overflow:hidden;
+  background-image:url('../assets/plantillas/athun-papiro-interfaz.webp');
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:100% 100%;
+  background-attachment:fixed;
+}
+body.athun-home-mode #app.athun-home-screen {
+  width:min(100%,760px);
+  height:100dvh;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  overflow:hidden;
+  padding:clamp(12px,3vw,24px) clamp(12px,4vw,28px) max(12px,env(safe-area-inset-bottom));
+  background:transparent;
+  border:0;
+  box-shadow:none;
+}
+body.athun-home-mode #app > .main-header {
+  flex:0 0 auto;
+  margin:0;
+  padding:clamp(12px,3vh,26px) 8px 12px;
+  border:0;
+}
+body.athun-home-mode #app > .main-header h1 {
+  margin:0;
+  color:#45220c;
+  font-family:'IM Fell English',Georgia,serif;
+  font-size:clamp(1.55rem,6.5vw,2.55rem);
+  line-height:1.12;
+  text-align:center;
+  text-shadow:0 1px 0 rgba(255,239,202,.95),1px 2px 2px rgba(70,35,10,.2);
+}
+body.athun-home-mode #app > .main-header p { display:none; }
+body.athun-home-mode #app > .main-header::before {
+  content:"✦  ❧  ✧  ❧  ✦";
+  display:block;
+  margin:0 auto 8px;
+  color:#94652c;
+  text-align:center;
+  letter-spacing:.22em;
+}
+body.athun-home-mode .home-scroll {
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  scrollbar-color:#8a5a27 transparent;
+  padding:clamp(10px,2vh,20px) 6px;
+}
+body.athun-home-mode .home-scroll .section-heading { margin:0 0 12px; }
+body.athun-home-mode .home-scroll .section-heading h2 {
+  color:#60330f;
+  text-align:center;
+}
+body.athun-home-mode .home-scroll .profile-section {
+  margin:10px 0;
+  padding:12px 14px;
+  color:#321b0b;
+  background:rgba(255,247,224,.48);
+  border:1px solid rgba(105,66,28,.35);
+  box-shadow:0 2px 7px rgba(57,32,12,.08);
+}
+body.athun-home-mode .home-scroll .profile-section button {
+  margin-top:10px;
+}
+body.athun-home-mode .home-actions {
+  flex:0 0 auto;
+  padding:10px 4px max(6px,env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(237,215,171,0),rgba(237,215,171,.84) 22%,rgba(237,215,171,.96));
+}
+body.athun-home-mode .home-actions button {
+  max-width:560px;
+  margin:0 auto;
+}
