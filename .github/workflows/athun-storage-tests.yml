@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - feat/athun-multisave-world
+      - work/athun-papiro-integracion-segura-20261121
     paths:
       - 'app/js/**'
       - 'tests/**'
