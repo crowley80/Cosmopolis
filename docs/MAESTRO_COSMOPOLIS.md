@@ -2393,3 +2393,34 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - La ejecución de almacenamiento [44706751286](https://github.com/crowley80/Cosmopolis/actions/runs/44706751286), sobre el checkpoint anterior `1428216b`, terminó correctamente: sintaxis JavaScript y **65/65 pruebas aprobadas**.
 - Después de ese checkpoint se añadieron dos pruebas de publicación coherente del mundo compartido. No se ha podido confirmar todavía una ejecución de CI que incluya esas dos pruebas; permanecen pendientes y no se declaran aprobadas.
 - La PR #8 permanece en borrador. No se fusiona en `main` ni se modifica ninguna partida del dispositivo. La prueba física en Android/Termux sigue pendiente.
+
+
+
+## CORRECCIÓN DE REGRESIONES EN LA PUBLICACIÓN DEL ATLAS — 21 DE NOVIEMBRE DE 2026
+
+### Revisión de CI y diagnóstico
+
+- Se volvió a revisar el PR #4 antes de continuar: sigue abierto y en borrador, con cabeza `9e58abca7ea1510d48835fee1dbab59c97b77f44`. La comparación actual de `main` con la rama de integración informa 362 commits por delante y 73 por detrás; GitHub mantiene `mergeable_state: dirty`. No se encontraron ejecuciones de Actions ni estados de commit asociados a esa cabeza actual. No se modifica el PR #4 ni `main`.
+- El PR #8 sigue abierto y en borrador, dirigido exclusivamente a `integration/athun-multisave-main-20261116`. Su cabeza anterior `b1c41491601231467a776462f43369a48252294d` estaba 15 commits por delante y 0 por detrás de esa base.
+- La ejecución [44755250299](https://github.com/crowley80/Cosmopolis/actions/runs/44755250299) terminó con fallo: la comprobación de sintaxis pasó, pero la suite obtuvo 65/67 pruebas aprobadas. No se debe confundir con el checkpoint anterior de 65/65.
+- Los dos fallos se aislaron en `tests/storage.test.js`: una ruta compartida no aparecía en el atlas de otro protagonista porque la sincronización publicaba la conexión sin asegurar la presencia global de ambos extremos; y una prueba de visibilidad recibía `visibleLocations` dentro de `details.adventure.state`, mientras la sesión solo leía el campo superior `details.visibleLocations`.
+
+### Correcciones aplicadas
+
+- `Session.syncActionWorld()` incorpora ahora los dos extremos de una ruta recorrida al mundo compartido antes de publicar la conexión. Se conserva la dirección real del trayecto y no se inventa el camino inverso.
+- `Session.addAction()` acepta la lista de visibilidad ya validada tanto en el campo superior de la respuesta como dentro del estado de la aventura. Si no llega una lista nueva y cambia la ubicación, continúa limpiando la visibilidad anterior.
+- Se reutilizan las pruebas de regresión existentes; no se ha debilitado ni eliminado ninguna aserción.
+
+### Respaldos y archivos
+
+- Antes de modificar cada archivo se creó y releyó un respaldo exacto:
+  - `app/js/game/session.js.bak-20261121-atlas-sync`
+  - `docs/MAESTRO_COSMOPOLIS.md.bak-20261121-atlas-sync`
+- Archivos modificados en esta corrección: `app/js/game/session.js` y este documento maestro.
+- No se han modificado guardados locales, inventarios, datos de partidas ni la rama `main`.
+
+### Validación y siguiente paso
+
+- La corrección de código está guardada en la rama aislada del PR #8. La nueva ejecución de Actions debe confirmar si las 67 pruebas pasan; hasta obtener ese resultado no se declara validada.
+- La prueba táctil real en Chrome Android y la comprobación con el modelo local siguen pendientes.
+- Siguiente paso: revisar el resultado de CI y, si queda verde, añadir una regresión específica de fallo de escritura durante la creación de una aventura nueva, ya que `Session.startNewAdventure()` todavía publica el conocimiento global mediante varias llamadas independientes.
