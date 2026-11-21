@@ -281,6 +281,7 @@ const Athun = {
         }
         const index = Save.getIndex();
         if (index && index.migrationFailed) {
+            this.setSecondaryScreen(true);
             document.getElementById('app').innerHTML = `
                 <section class="welcome" role="alert">
                     <h2>No se ha podido recuperar la partida</h2>
