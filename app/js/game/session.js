@@ -65,10 +65,16 @@ const Session = {
             : null;
         const locationChanged = previousLocation && currentLocation &&
             previousLocation.toLocaleLowerCase('es') !== currentLocation.toLocaleLowerCase('es');
-        if (Array.isArray(details.visibleLocations)) {
-            // Explorar desde el mismo sitio también puede revelar zonas cercanas.
-            // La visibilidad solo cambia si la respuesta narrativa la declara explícitamente.
-            state.visibleLocations = details.visibleLocations
+        const declaredVisibleLocations = Array.isArray(details.visibleLocations)
+            ? details.visibleLocations
+            : (details.adventure && details.adventure.state &&
+                Array.isArray(details.adventure.state.visibleLocations)
+                ? details.adventure.state.visibleLocations
+                : null);
+        if (Array.isArray(declaredVisibleLocations)) {
+            // El narrador ya ha filtrado esta lista; también se admite el estado
+            // de la aventura para conservar compatibilidad con llamadas anteriores.
+            state.visibleLocations = declaredVisibleLocations
                 .filter(name => typeof name === 'string' && name.trim())
                 .map(name => name.trim().slice(0, 120))
                 .slice(0, 12);
@@ -159,6 +165,28 @@ const Session = {
             if (traversedRoute) {
                 const from = String(traversedRoute.from || '').trim().slice(0, 120);
                 const to = String(traversedRoute.to || '').trim().slice(0, 120);
+                const ensureEndpoint = name => {
+                    const key = name.toLocaleLowerCase('es');
+                    const exists = world.locations.some(item => {
+                        const existingName = typeof item === 'string'
+                            ? item
+                            : (item && typeof item === 'object' ? item.name : '');
+                        return String(existingName || '').trim().toLocaleLowerCase('es') === key;
+                    });
+                    if (!exists) {
+                        world.locations.push({
+                            name,
+                            discoveredBy,
+                            discoveredAt: new Date().toISOString()
+                        });
+                    }
+                };
+                // Una conexión global debe publicar también sus dos extremos.
+                // De lo contrario, el atlas de otro protagonista la filtra como ruta huérfana.
+                if (from && to) {
+                    ensureEndpoint(from);
+                    ensureEndpoint(to);
+                }
                 const exists = from && to && world.connections.some(item =>
                     item && String(item.from || '').toLocaleLowerCase('es') === from.toLocaleLowerCase('es') &&
                     String(item.to || '').toLocaleLowerCase('es') === to.toLocaleLowerCase('es')
