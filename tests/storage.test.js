@@ -1522,7 +1522,7 @@ test('una acción publica ubicaciones, ruta y personajes con una sola escritura 
     const world = Save.getGlobalWorld();
     assert.deepEqual(
         world.locations.map(item => item.name),
-        ['Plaza', 'Calle Mayor', 'Puente viejo']
+        ['Plaza', 'Calle Mayor', 'Puente viejo', 'Camino']
     );
     assert.deepEqual(world.connections.map(item => [item.from, item.to]), [['Camino', 'Plaza']]);
     assert.equal(world.entities.elia.role, 'Cartógrafa');
