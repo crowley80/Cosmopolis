@@ -180,7 +180,14 @@ const Athun = {
     },
 
     showOptions(character, adventure) {
-        const saved = Save.load();
+        let saved = null;
+        let storageUnavailable = false;
+        try {
+            saved = Save.load();
+        } catch (error) {
+            storageUnavailable = true;
+        }
+        const safeCharacter = character || {};
         const currentAdventure = saved && saved.adventure ? saved.adventure : adventure;
         const location = currentAdventure && currentAdventure.state
             ? currentAdventure.state.currentLocation || currentAdventure.location
@@ -200,7 +207,7 @@ const Athun = {
                     <p>Administra tu sesión sin alterar el mundo ni tus progresos.</p>
                 </div>
                 <dl class="tool-facts">
-                    <div><dt>Personaje</dt><dd>${this.escape(character.name || 'Sin nombre')}</dd></div>
+                    <div><dt>Personaje</dt><dd>${this.escape(safeCharacter.name || 'Sin nombre')}</dd></div>
                     <div><dt>Ubicación</dt><dd>${this.escape(location)}</dd></div>
                     <div><dt>Acciones guardadas</dt><dd>${count}</dd></div>
                 </dl>
@@ -208,7 +215,7 @@ const Athun = {
                 <button type="button" class="secondary" id="profileFromOptions">Consultar mi ficha</button>
                 <button type="button" class="secondary" id="switchSaveFromOptions">Cambiar de protagonista o partida</button>
                 <button type="button" class="secondary" id="returnAdventure">Volver a la aventura</button>
-                <p id="optionsFeedback" role="status" aria-live="polite"></p>
+                <p id="optionsFeedback" role="status" aria-live="polite">${storageUnavailable ? 'No se ha podido consultar el almacenamiento. Tus partidas no se han modificado.' : ''}</p>
             </section>
             <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
         `;
@@ -227,9 +234,14 @@ const Athun = {
         document.getElementById('profileFromOptions').addEventListener('click', () => this.showProfile(character));
         document.getElementById('switchSaveFromOptions').addEventListener('click', () => this.showSaveSelection());
         document.getElementById('returnAdventure').addEventListener('click', () => {
-            const latest = Save.load();
-            if (latest && latest.adventure) this.showAdventure(latest.character || character, latest.adventure);
-            else this.showProfile(character);
+            const feedback = document.getElementById('optionsFeedback');
+            try {
+                const latest = Save.load();
+                if (latest && latest.adventure) this.showAdventure(latest.character || safeCharacter, latest.adventure);
+                else this.showProfile(safeCharacter);
+            } catch (error) {
+                feedback.textContent = 'No se ha podido recuperar la partida. Tus datos anteriores permanecen intactos.';
+            }
         });
     },
 

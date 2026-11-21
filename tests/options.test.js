@@ -14,7 +14,7 @@ function createHarness() {
         adventure: { state: { currentLocation: 'Lugar de prueba' } },
         actions: [{ id: 'action-1' }]
     };
-    const calls = { load: 0, save: [], saveThrows: false, profile: 0, selection: 0, adventure: [] };
+    const calls = { load: 0, save: [], saveThrows: false, loadThrows: false, profile: 0, selection: 0, adventure: [] };
 
     const document = {
         body: { classList: { toggle(name, enabled) { modes.push([name, enabled]); } } },
@@ -32,7 +32,7 @@ function createHarness() {
         addEventListener() {}
     };
     const Save = {
-        load() { calls.load += 1; return saved; },
+        load() { calls.load += 1; if (calls.loadThrows) throw new Error('storage unavailable'); return saved; },
         save(value) { calls.save.push(value); if (calls.saveThrows) throw new Error('storage unavailable'); return true; }
     };
     const context = {
@@ -101,4 +101,17 @@ test('un fallo del almacenamiento se comunica sin romper la pantalla de opciones
     assert.doesNotThrow(() => h.elements.get('saveNow').listeners.click());
     assert.match(h.elements.get('optionsFeedback').textContent, /datos anteriores permanecen intactos/);
     assert.equal(h.calls.save.length, 1);
+});
+
+
+test('un fallo al consultar el almacenamiento no impide abrir opciones ni salir de forma segura', () => {
+    const h = createHarness();
+    h.calls.loadThrows = true;
+
+    assert.doesNotThrow(() => h.Athun.showOptions(h.saved.character, h.saved.adventure));
+    assert.match(h.app.innerHTML, /No se ha podido consultar el almacenamiento/);
+
+    assert.doesNotThrow(() => h.elements.get('returnAdventure').listeners.click());
+    assert.match(h.elements.get('optionsFeedback').textContent, /datos anteriores permanecen intactos/);
+    assert.equal(h.calls.save.length, 0);
 });
