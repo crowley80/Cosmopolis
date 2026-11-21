@@ -2324,3 +2324,11 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - No se modifica la lógica de guardado ni los datos de partidas.
 - Pendiente localizar e incorporar la plantilla secundaria en blanco original; no se reemplaza por una imagen inventada.
 - Pendiente validación en Chrome Android con una partida guardada.
+
+
+## 2026-11-21 — Organización visual de plantillas y pantallas
+- Se mantiene la plantilla principal de pergamino en la pantalla de aventura.
+- Las pantallas ajenas a la aventura (presentación, selector de partidas, creación y ficha del personaje) reciben un marco de papiro claro con contenido HTML independiente, contraste reforzado y controles legibles.
+- Se han preservado las partidas: estos cambios son exclusivamente visuales y de presentación.
+- Las dos imágenes maestras originales están respaldadas en la Biblioteca de ChatGPT, carpeta `Athun - Plantillas oficiales`, con los nombres `athun-plantilla-principal.webp` y `athun-papiro-interfaz.webp`.
+- Pendiente técnico: incorporar el archivo binario `athun-papiro-interfaz.webp` al repositorio para sustituir el fondo provisional CSS de las pantallas no jugables por la imagen oficial. No se declara todavía validación en Chrome Android.
