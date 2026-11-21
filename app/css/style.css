@@ -1175,3 +1175,48 @@ body.adventure-mode { background:#24160d; }
   body.parchment-mode .welcome,
   body.parchment-mode .character-creation { padding:12px 9px; }
 }
+
+
+/* Pantallas secundarias de Athun: la plantilla de papiro oficial ocupa el fondo completo. */
+body.parchment-mode {
+  background-color:#3a2414;
+  background-image:
+    url('../assets/plantillas/athun-papiro-interfaz.webp'),
+    radial-gradient(ellipse at 50% 45%,rgba(255,244,211,.98) 0%,rgba(237,215,171,.98) 58%,rgba(151,104,57,.94) 100%),
+    repeating-linear-gradient(2deg,rgba(82,48,19,.045) 0 1px,transparent 1px 5px);
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:100% 100%,cover,cover;
+  background-attachment:fixed;
+}
+body.parchment-mode #app {
+  background:transparent;
+  border:0;
+  box-shadow:none;
+}
+body.parchment-mode #app::before { display:none; }
+body.parchment-mode .secondary-screen {
+  max-width:720px;
+  margin:clamp(22px,7vh,70px) auto 18px;
+  padding:clamp(16px,4vw,30px);
+  background:rgba(255,247,224,.62);
+  border:1px solid rgba(110,70,30,.4);
+  box-shadow:0 5px 18px rgba(57,32,12,.14),inset 0 0 18px rgba(112,72,32,.08);
+}
+body.parchment-mode .tool-facts {
+  padding:8px 12px;
+  background:rgba(255,246,221,.58);
+  border:1px solid rgba(105,66,28,.3);
+}
+body.parchment-mode #optionsFeedback {
+  min-height:1.5em;
+  color:#315d3a;
+  text-align:center;
+}
+@media (max-width:520px) {
+  body.parchment-mode {
+    background-position:center;
+    background-size:100% 100%,cover,cover;
+  }
+  body.parchment-mode .secondary-screen { margin:12px auto; }
+}
