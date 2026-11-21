@@ -340,18 +340,19 @@ const Athun = {
                 </article>
             `;
         }).join('');
+        document.body.classList.add('athun-home-mode');
+        app.classList.add('athun-home-screen');
         app.innerHTML = `
             <header class="main-header">
                 <h1>Athun: el grimorio oscuro</h1>
             </header>
-            <section class="character-creation">
-                <div class="section-heading">
-                    <h2>Tus partidas</h2>
-                </div>
+            <section class="home-scroll" aria-label="Partidas guardadas">
+                <div class="section-heading"><h2>Tus partidas</h2></div>
                 ${entries || '<p>Aún no hay partidas guardadas.</p>'}
-                <button type="button" id="createNewCharacter">Crear un personaje nuevo</button>
             </section>
-            <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
+            <nav class="home-actions" aria-label="Acciones de inicio">
+                <button type="button" id="createNewCharacter">Crear un personaje nuevo</button>
+            </nav>
         `;
         app.querySelectorAll('[data-load-save]').forEach(button => {
             button.addEventListener('click', () => {
