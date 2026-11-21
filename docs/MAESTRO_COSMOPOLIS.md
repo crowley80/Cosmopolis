@@ -2383,3 +2383,11 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - No se añaden textos deslizantes, carruseles automáticos ni elementos móviles; debe permanecer visible el dibujo, especialmente en el borde inferior.
 - No se modifica la plantilla de aventura ni los datos de las partidas.
 - Pendiente comprobar el resultado visual en Chrome Android con la imagen oficial y una partida guardada.
+
+
+### Selector sobre la plantilla secundaria libre — 21/11/2026
+- Se aclara la separación visual: el rectángulo pertenece únicamente a la plantilla de aventura (narrador y campo de escritura); la plantilla secundaria en blanco no contiene rectángulo.
+- En el selector se mantiene el título en la parte superior, sin rótulos auxiliares ni subtítulo, con adorno tipográfico discreto.
+- Se eliminan paneles y cajas generales que tapaban la ilustración del papiro; las opciones quedan agrupadas en la zona inferior mediante controles propios.
+- No se añaden carruseles, textos deslizantes ni animaciones superpuestas. No se altera ninguna partida.
+- Pendiente validación visual en Chrome Android para ajustar la posición exacta del título y las opciones sobre la imagen física.
