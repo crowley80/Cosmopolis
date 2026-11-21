@@ -39,7 +39,11 @@ const Athun = {
             '#startAdventure',
             '#newAdventure',
             '#editCharacter',
-            '#changeSave'
+            '#changeSave',
+            '#saveNow',
+            '#profileFromOptions',
+            '#switchSaveFromOptions',
+            '#returnAdventure'
         ];
         actionSelectors.forEach(selector => {
             const button = panel.querySelector(selector);
@@ -222,33 +226,51 @@ const Athun = {
             ? adventure.state.currentLocation || adventure.location
             : 'Sin aventura iniciada';
         const count = saved && Array.isArray(saved.actions) ? saved.actions.length : 0;
-        this.openPanel('Opciones de la partida', `
-            <p class="tool-intro">La partida se guarda automáticamente en este navegador.</p>
-            <dl class="tool-facts">
-                <div><dt>Personaje</dt><dd>${this.escape(character.name || 'Sin nombre')}</dd></div>
-                <div><dt>Ubicación</dt><dd>${this.escape(location)}</dd></div>
-                <div><dt>Acciones guardadas</dt><dd>${count}</dd></div>
-            </dl>
-            <button type="button" id="saveNow" class="tool-action">Guardar ahora</button>
-            <button type="button" id="profileFromOptions" class="tool-action secondary">Consultar mi ficha</button>
-            <button type="button" id="switchSaveFromOptions" class="tool-action secondary">Cambiar de partida</button>
-            <p id="toolFeedback" role="status" aria-live="polite"></p>
-        `, overlay => {
-            overlay.querySelector('#saveNow').addEventListener('click', () => {
+        this.setSecondaryScreen(true);
+        const app = document.getElementById('app');
+        app.innerHTML = `
+            <header class="main-header">
+                <h1>Athun: el grimorio oscuro</h1>
+                <p>Opciones de la aventura</p>
+            </header>
+            <section class="character-creation secondary-screen">
+                <div class="section-heading">
+                    <h2>Opciones</h2>
+                    <p>Administra tu sesión sin alterar el mundo ni tus progresos.</p>
+                </div>
+                <dl class="tool-facts">
+                    <div><dt>Personaje</dt><dd>${this.escape(character.name || 'Sin nombre')}</dd></div>
+                    <div><dt>Ubicación</dt><dd>${this.escape(location)}</dd></div>
+                    <div><dt>Acciones guardadas</dt><dd>${count}</dd></div>
+                </dl>
+                <p id="optionsFeedback" role="status" aria-live="polite"></p>
+                <button type="button" id="saveNow">Guardar ahora</button>
+                <button type="button" class="secondary" id="profileFromOptions">Consultar mi ficha</button>
+                <button type="button" class="secondary" id="switchSaveFromOptions">Cambiar de protagonista o partida</button>
+                <button type="button" class="secondary" id="returnAdventure">Volver a la aventura</button>
+            </section>
+            <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
+        `;
+        this.prepareSecondaryLayout();
+
+        document.getElementById('saveNow').addEventListener('click', () => {
+            const feedback = document.getElementById('optionsFeedback');
+            try {
                 const latest = Save.load();
                 const ok = latest ? Save.save(latest) : false;
-                overlay.querySelector('#toolFeedback').textContent = ok
+                feedback.textContent = ok
                     ? 'La partida se ha guardado correctamente.'
                     : 'No se ha podido guardar la partida.';
-            });
-            overlay.querySelector('#profileFromOptions').addEventListener('click', () => {
-                overlay.remove();
-                this.showProfile(character);
-            });
-            overlay.querySelector('#switchSaveFromOptions').addEventListener('click', () => {
-                overlay.remove();
-                this.showSaveSelection();
-            });
+            } catch (error) {
+                feedback.textContent = 'No se ha podido guardar la partida. Tus datos anteriores permanecen intactos.';
+            }
+        });
+        document.getElementById('profileFromOptions').addEventListener('click', () => this.showProfile(character));
+        document.getElementById('switchSaveFromOptions').addEventListener('click', () => this.showSaveSelection());
+        document.getElementById('returnAdventure').addEventListener('click', () => {
+            const latest = Save.load();
+            if (latest && latest.adventure) this.showAdventure(latest.character || character, latest.adventure);
+            else this.showProfile(character);
         });
     },
 
@@ -318,13 +340,16 @@ const Athun = {
         const index = Save.getIndex();
         if (index && index.migrationFailed) {
             this.setSecondaryScreen(true);
-            document.getElementById('app').innerHTML = `
-                <section class="welcome" role="alert">
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <header class="main-header"><h1>Athun: el grimorio oscuro</h1></header>
+                <section class="character-creation" role="alert">
                     <h2>No se ha podido recuperar la partida</h2>
                     <p>Los datos anteriores siguen conservados. No se ha creado ni sobrescrito ninguna partida.</p>
                     <p>Vuelve a intentarlo cuando el almacenamiento esté disponible.</p>
                 </section>
             `;
+            this.prepareSecondaryLayout();
             return;
         }
         if (localStorage.getItem('athun_intro_seen_v1') !== '1') {
