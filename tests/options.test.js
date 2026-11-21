@@ -115,3 +115,12 @@ test('un fallo al consultar el almacenamiento no impide abrir opciones ni salir 
     assert.match(h.elements.get('optionsFeedback').textContent, /datos anteriores permanecen intactos/);
     assert.equal(h.calls.save.length, 0);
 });
+
+
+test('consultar la ficha usa un personaje seguro aunque falte el argumento original', () => {
+    const h = createHarness();
+
+    assert.doesNotThrow(() => h.Athun.showOptions(null, h.saved.adventure));
+    assert.doesNotThrow(() => h.elements.get('profileFromOptions').listeners.click());
+    assert.equal(h.calls.profile, 1);
+});

@@ -231,7 +231,7 @@ const Athun = {
                 feedback.textContent = 'No se ha podido guardar la partida. Tus datos anteriores permanecen intactos.';
             }
         });
-        document.getElementById('profileFromOptions').addEventListener('click', () => this.showProfile(character));
+        document.getElementById('profileFromOptions').addEventListener('click', () => this.showProfile(safeCharacter));
         document.getElementById('switchSaveFromOptions').addEventListener('click', () => this.showSaveSelection());
         document.getElementById('returnAdventure').addEventListener('click', () => {
             const feedback = document.getElementById('optionsFeedback');

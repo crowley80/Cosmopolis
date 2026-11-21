@@ -2352,3 +2352,10 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - Validación automatizada en GitHub Actions (21/11/2026, commit `ae2e99d`): comprobación de sintaxis JavaScript correcta y **62/62 pruebas** superadas (`node --test tests/*.test.js`). La prueba del prólogo se ajustó para simular el `document.body.classList` que utiliza el navegador real. Esta validación no sustituye la prueba visual en Chrome Android.
 
 - Ampliación de pruebas de interfaz y robustez del guardado (21/11/2026): se comprueba que Opciones no guarda al abrirse, que el guardado manual es explícito, que funcionan los enlaces a ficha, selector y aventura, y que los errores del almacenamiento se comunican sin romper la pantalla ni alterar los datos anteriores. Resultado CI en el commit `a4dd600`: **65/65 pruebas superadas**, 0 fallos y sintaxis JavaScript correcta.
+
+
+### Robustez adicional de Opciones (21/11/2026)
+- La consulta inicial del guardado está protegida: si el almacenamiento no responde, la pantalla informa del problema y permanece disponible.
+- La acción de volver a la aventura captura también errores de lectura y no intenta modificar partidas.
+- La consulta de ficha usa un objeto de personaje seguro si la pantalla se invoca sin argumento de personaje.
+- Pruebas automatizadas: se añade cobertura de lectura fallida y de invocación sin personaje; el resultado de CI se registra cuando termine la ejecución correspondiente.
