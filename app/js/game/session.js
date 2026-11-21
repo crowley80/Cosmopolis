@@ -65,12 +65,19 @@ const Session = {
             : null;
         const locationChanged = previousLocation && currentLocation &&
             previousLocation.toLocaleLowerCase('es') !== currentLocation.toLocaleLowerCase('es');
+        const adventureVisibleLocations = details.adventure && details.adventure.state &&
+            Array.isArray(details.adventure.state.visibleLocations)
+            ? details.adventure.state.visibleLocations
+            : null;
+        const previousVisibleLocations = Array.isArray(previousState.visibleLocations)
+            ? previousState.visibleLocations
+            : [];
+        const stateVisibilityChanged = Array.isArray(adventureVisibleLocations) &&
+            (adventureVisibleLocations.length !== previousVisibleLocations.length ||
+                adventureVisibleLocations.some((name, index) => name !== previousVisibleLocations[index]));
         const declaredVisibleLocations = Array.isArray(details.visibleLocations)
             ? details.visibleLocations
-            : (details.adventure && details.adventure.state &&
-                Array.isArray(details.adventure.state.visibleLocations)
-                ? details.adventure.state.visibleLocations
-                : null);
+            : (stateVisibilityChanged ? adventureVisibleLocations : null);
         if (Array.isArray(declaredVisibleLocations)) {
             // El narrador ya ha filtrado esta lista; también se admite el estado
             // de la aventura para conservar compatibilidad con llamadas anteriores.
