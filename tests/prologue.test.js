@@ -20,6 +20,7 @@ function createHarness(options = {}) {
         }
     };
     const document = {
+        body: { classList: { toggle() {} } },
         getElementById(id) {
             if (id === 'app') return app;
             if (id === 'continueFromPrologue') return continueButton;

@@ -1,6 +1,6 @@
 # ATHUN: EL GRIMORIO OSCURO — DOCUMENTO MAESTRO
 
-Última actualización: 12 de noviembre de 2026.
+Última actualización: 21 de noviembre de 2026.
 
 ## 1. IDENTIDAD DEL PROYECTO
 
@@ -16,14 +16,14 @@ Ruta:
 Servidor local:
 http://127.0.0.1:8080/index.html
 
-Cosmopolis es una aventura narrativa en la que el jugador crea un
+Athun: el grimorio oscuro es una aventura narrativa en la que el jugador crea un
 personaje y vive acontecimientos que dependen de su naturaleza,
 pasado, capacidades, personalidad y decisiones.
 
 El universo debe ser original, con personajes, lugares e historias
 propios.
 
-No cambiar el nombre Cosmopolis sin autorización del usuario.
+El nombre oficial del proyecto es «Athun: el grimorio oscuro». «Cosmopolis» se conserva únicamente en la ruta física del repositorio y en referencias históricas que no deban alterarse.
 
 ## 2. ENTORNO DE TRABAJO
 
@@ -2313,3 +2313,93 @@ La normalización de partidas ya eliminaba las entradas de inventario cuyo texto
 - Sigue pendiente la prueba táctil real en Chrome para Android físico. Las pruebas automatizadas de navegador no la sustituyen.
 
 No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
+
+
+## INTEGRACIÓN VISUAL DEL PAPIRO — 21 DE NOVIEMBRE DE 2026
+
+- Rama aislada desde `integration/athun-multisave-main-20261116` para evitar mezclar historiales divergentes.
+- La pantalla de aventura utiliza como fondo la plantilla principal aprobada sin rosas de los vientos (`app/assets/athun-plantilla-principal-sin-rosas.webp`).
+- Se elimina la capa CSS oscura que ocultaba el papel y se refuerza el contraste de narración, ubicación, acción y campo de texto.
+- Se invalida la caché de CSS desde `index.html`.
+- No se modifica la lógica de guardado ni los datos de partidas.
+- Pendiente localizar e incorporar la plantilla secundaria en blanco original; no se reemplaza por una imagen inventada.
+- Pendiente validación en Chrome Android con una partida guardada.
+
+
+## 2026-11-21 — Organización visual de plantillas y pantallas
+- Se mantiene la plantilla principal de pergamino en la pantalla de aventura.
+- Las pantallas ajenas a la aventura (presentación, selector de partidas, creación y ficha del personaje) reciben un marco de papiro claro con contenido HTML independiente, contraste reforzado y controles legibles.
+- Se han preservado las partidas: estos cambios son exclusivamente visuales y de presentación.
+- La plantilla principal aprobada está integrada en `app/assets/athun-plantilla-principal-sin-rosas.webp`.
+- La plantilla secundaria realmente en blanco se ha localizado en la Biblioteca como `Pergamino antiguo de bordes quemados.webp`: no contiene rectángulo, textos, botones ni controles dibujados.
+- El archivo que había en `app/assets/plantillas/athun-papiro-interfaz.webp` era una maqueta con controles incrustados, no el papiro vacío aprobado; se retira de la rama para evitar integrar una imagen incorrecta.
+- La CSS conserva esa ruta como destino del fondo secundario. El WebP correcto queda pendiente de incorporación desde el paquete local preparado para el usuario; no se declara validación en Chrome Android.
+
+
+## Interfaz de plantillas oficiales — 21/11/2026
+- Se conserva la plantilla principal de aventura ya integrada en `app/assets/athun-plantilla-principal-sin-rosas.webp`.
+- Se ha preparado la pantalla completa de Opciones con retorno a la aventura, consulta de ficha, cambio de protagonista/partida y guardado manual.
+- Las pantallas secundarias se han configurado para usar `app/assets/plantillas/athun-papiro-interfaz.webp` como fondo común, manteniendo HTML accesible y texto legible por encima.
+- La plantilla principal ya está en la rama. El papiro secundario en blanco original está respaldado en la Biblioteca con el nombre `Pergamino antiguo de bordes quemados.webp`.
+- Pendiente obligatorio: incorporar ese WebP en `app/assets/plantillas/athun-papiro-interfaz.webp` y validar visualmente en Chrome Android. No se han tocado partidas ni datos guardados.
+
+
+## 2026-11-21 — Identidad y estado de integración
+- Nombre oficial y único en la interfaz y documentación activa: **Athun: el grimorio oscuro**. El nombre antiguo del repositorio no representa el título del juego.
+- La rama de trabajo `work/athun-papiro-integracion-segura-20261121` contiene cambios visuales y una pantalla completa de Opciones. La propuesta sigue en la PR #11 y no se ha fusionado.
+- La plantilla principal está referenciada desde `app/assets/athun-plantilla-principal-sin-rosas.webp`. La plantilla secundaria se referencia desde `app/assets/plantillas/athun-papiro-interfaz.webp`, pero ese archivo binario todavía debe incorporarse; no se debe afirmar que está presente ni que se ha validado su aspecto real.
+- No se ha realizado una prueba visual en Chrome Android desde esta rama. La validación de legibilidad, fondos, botones y continuidad de partidas antiguas sigue pendiente.
+- No modificar, borrar ni migrar partidas guardadas como parte de los ajustes visuales. Cualquier prueba destructiva debe hacerse únicamente con datos de prueba aislados.
+
+- Validación automatizada en GitHub Actions (21/11/2026, commit `ae2e99d`): comprobación de sintaxis JavaScript correcta y **62/62 pruebas** superadas (`node --test tests/*.test.js`). La prueba del prólogo se ajustó para simular el `document.body.classList` que utiliza el navegador real. Esta validación no sustituye la prueba visual en Chrome Android.
+
+- Ampliación de pruebas de interfaz y robustez del guardado (21/11/2026): se comprueba que Opciones no guarda al abrirse, que el guardado manual es explícito, que funcionan los enlaces a ficha, selector y aventura, y que los errores del almacenamiento se comunican sin romper la pantalla ni alterar los datos anteriores. Resultado CI en el commit `a4dd600`: **65/65 pruebas superadas**, 0 fallos y sintaxis JavaScript correcta.
+
+
+### Robustez adicional de Opciones (21/11/2026)
+- La consulta inicial del guardado está protegida: si el almacenamiento no responde, la pantalla informa del problema y permanece disponible.
+- La acción de volver a la aventura captura también errores de lectura y no intenta modificar partidas.
+- La consulta de ficha usa un objeto de personaje seguro si la pantalla se invoca sin argumento de personaje.
+- Pruebas automatizadas: se añade cobertura de lectura fallida y de invocación sin personaje; el resultado de CI se registra cuando termine la ejecución correspondiente.
+
+
+## Actualización de integración — 21/11/2026
+- Se comprobó que la rama contenía un WebP en `app/assets/plantillas/athun-papiro-interfaz.webp`, pero la imagen era una maqueta con controles y textos incrustados, no el fondo en blanco solicitado.
+- Se localizó el recurso correcto: `Pergamino antiguo de bordes quemados.webp`, una hoja vertical de papiro vacía, sin rectángulos ni elementos de interfaz.
+- Se preparó un ZIP que coloca el original en la ruta exacta que ya utiliza la CSS. El archivo incorrecto se retira de la rama para no confundirlo con el fondo aprobado.
+- La PR #11 sigue sin fusionar. En el commit anterior `1e22f6a` GitHub Actions completó la sintaxis y **67/67 pruebas**; la eliminación del recurso equivocado y la corrección documental requieren una nueva ejecución.
+- Sigue pendiente que el usuario extraiga el paquete en la raíz del repositorio, incorpore y suba el WebP correcto, y que se comprueben fondos, contraste, botones y continuidad de partidas en Chrome Android. No declarar la interfaz terminada hasta completar esa prueba.
+
+
+### Corrección de cabecera sobre papiro en blanco — 21/11/2026
+- El selector de partidas utiliza la plantilla secundaria oficial en blanco (`app/assets/plantillas/athun-papiro-interfaz.webp`), no la plantilla de aventura.
+- Se elimina el rótulo «EL GRIMORIO TE RECUERDA» del selector.
+- El título «Athun: el grimorio oscuro» queda como único título de cabecera y se ajusta con tipografía adaptable, centrada y con salto de línea natural para encajar en la zona superior libre del papiro, que no tiene rectángulo.
+- Cambios visuales únicamente: no se modifica el sistema de guardado ni el contenido de las partidas.
+- Pendiente comprobar en Chrome Android que el título queda dentro del marco de la imagen real y que el resto del contenido respeta la plantilla.
+
+
+### Aclaración de diseño de la plantilla secundaria en blanco — 21/11/2026
+- La plantilla secundaria en blanco NO contiene un rectángulo para el título. El rectángulo pertenece exclusivamente a la plantilla de aventura y alberga las zonas del narrador y de escritura del jugador.
+- En las pantallas secundarias, el título «Athun: el grimorio oscuro» se coloca directamente en la zona superior libre del papiro, centrado y acompañado por adornos estáticos discretos.
+- Las opciones se sitúan debajo, integradas en el fondo. Se eliminan paneles/cajas superpuestas innecesarias y textos accesorios del selector que ocupaban espacio visual.
+- No se añaden textos deslizantes, carruseles automáticos ni elementos móviles; debe permanecer visible el dibujo, especialmente en el borde inferior.
+- No se modifica la plantilla de aventura ni los datos de las partidas.
+- Pendiente comprobar el resultado visual en Chrome Android con la imagen oficial y una partida guardada.
+
+
+### Selector sobre la plantilla secundaria libre — 21/11/2026
+- Se aclara la separación visual: el rectángulo pertenece únicamente a la plantilla de aventura (narrador y campo de escritura); la plantilla secundaria en blanco no contiene rectángulo.
+- En el selector se mantiene el título en la parte superior, sin rótulos auxiliares ni subtítulo, con adorno tipográfico discreto.
+- Se eliminan paneles y cajas generales que tapaban la ilustración del papiro; las opciones quedan agrupadas en la zona inferior mediante controles propios.
+- No se añaden carruseles, textos deslizantes ni animaciones superpuestas. No se altera ninguna partida.
+- Pendiente validación visual en Chrome Android para ajustar la posición exacta del título y las opciones sobre la imagen física.
+
+
+### Recurso secundario correcto y paquete de instalación — 21/11/2026
+- Se inspeccionó visualmente el original `Pergamino antiguo de bordes quemados.webp`: es el fondo vertical vacío aprobado, sin rectángulo superior, sin cajas y sin controles dibujados.
+- El ZIP preparado contiene ese original, sin redibujarlo, en `app/assets/plantillas/athun-papiro-interfaz.webp`, además de instrucciones de instalación.
+- La CSS ya apunta a esa ruta. La extracción de `app/` debe hacerse en la raíz de `~/storage/shared/Download/Cosmopolis`, reemplazando el archivo provisional si existe.
+- No se ha podido hacer la prueba visual en Chrome Android desde este entorno; requiere que el archivo correcto esté en el repositorio local y que se abra en el teléfono.
+- La última ejecución automatizada verificada antes de esta corrección fue el commit `1e22f6a`: sintaxis correcta y **67/67 pruebas** superadas. La nueva revisión debe completar CI de nuevo.
+- No se han leído, modificado ni eliminado partidas guardadas.

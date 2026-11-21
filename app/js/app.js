@@ -9,6 +9,11 @@ const Athun = {
         personality: 'Personalidad'
     },
 
+    setScreenMode(mode) {
+        document.body.classList.toggle('adventure-mode', mode === 'adventure');
+        document.body.classList.toggle('parchment-mode', mode !== 'adventure');
+    },
+
     escape(value) {
         return String(value || '').replace(/[&<>"']/g, char => ({
             '&': '&amp;',
@@ -174,40 +179,69 @@ const Athun = {
         this.openPanel('Tus pertenencias', content);
     },
 
-    showOptions(character) {
-        const saved = Save.load();
-        const adventure = saved && saved.adventure;
-        const location = adventure && adventure.state
-            ? adventure.state.currentLocation || adventure.location
+    showOptions(character, adventure) {
+        let saved = null;
+        let storageUnavailable = false;
+        try {
+            saved = Save.load();
+        } catch (error) {
+            storageUnavailable = true;
+        }
+        const safeCharacter = character || {};
+        const currentAdventure = saved && saved.adventure ? saved.adventure : adventure;
+        const location = currentAdventure && currentAdventure.state
+            ? currentAdventure.state.currentLocation || currentAdventure.location
             : 'Sin aventura iniciada';
         const count = saved && Array.isArray(saved.actions) ? saved.actions.length : 0;
-        this.openPanel('Opciones de la partida', `
-            <p class="tool-intro">La partida se guarda automáticamente en este navegador.</p>
-            <dl class="tool-facts">
-                <div><dt>Personaje</dt><dd>${this.escape(character.name || 'Sin nombre')}</dd></div>
-                <div><dt>Ubicación</dt><dd>${this.escape(location)}</dd></div>
-                <div><dt>Acciones guardadas</dt><dd>${count}</dd></div>
-            </dl>
-            <button type="button" id="saveNow" class="tool-action">Guardar ahora</button>
-            <button type="button" id="profileFromOptions" class="tool-action secondary">Consultar mi ficha</button>
-            <button type="button" id="switchSaveFromOptions" class="tool-action secondary">Cambiar de partida</button>
-            <p id="toolFeedback" role="status" aria-live="polite"></p>
-        `, overlay => {
-            overlay.querySelector('#saveNow').addEventListener('click', () => {
+        this.setScreenMode('parchment');
+        const app = document.getElementById('app');
+        app.innerHTML = `
+            <header class="main-header">
+                <p class="eyebrow">EL GRIMORIO Y TUS PREFERENCIAS</p>
+                <h1>Athun: el grimorio oscuro</h1>
+                <p>Opciones de la aventura</p>
+            </header>
+            <section class="character-creation secondary-screen">
+                <div class="section-heading">
+                    <h2>Opciones</h2>
+                    <p>Administra tu sesión sin alterar el mundo ni tus progresos.</p>
+                </div>
+                <dl class="tool-facts">
+                    <div><dt>Personaje</dt><dd>${this.escape(safeCharacter.name || 'Sin nombre')}</dd></div>
+                    <div><dt>Ubicación</dt><dd>${this.escape(location)}</dd></div>
+                    <div><dt>Acciones guardadas</dt><dd>${count}</dd></div>
+                </dl>
+                <button type="button" id="saveNow">Guardar ahora</button>
+                <button type="button" class="secondary" id="profileFromOptions">Consultar mi ficha</button>
+                <button type="button" class="secondary" id="switchSaveFromOptions">Cambiar de protagonista o partida</button>
+                <button type="button" class="secondary" id="returnAdventure">Volver a la aventura</button>
+                <p id="optionsFeedback" role="status" aria-live="polite">${storageUnavailable ? 'No se ha podido consultar el almacenamiento. Tus partidas no se han modificado.' : ''}</p>
+            </section>
+            <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
+        `;
+        document.getElementById('saveNow').addEventListener('click', () => {
+            const feedback = document.getElementById('optionsFeedback');
+            try {
                 const latest = Save.load();
                 const ok = latest ? Save.save(latest) : false;
-                overlay.querySelector('#toolFeedback').textContent = ok
+                feedback.textContent = ok
                     ? 'La partida se ha guardado correctamente.'
                     : 'No se ha podido guardar la partida.';
-            });
-            overlay.querySelector('#profileFromOptions').addEventListener('click', () => {
-                overlay.remove();
-                this.showProfile(character);
-            });
-            overlay.querySelector('#switchSaveFromOptions').addEventListener('click', () => {
-                overlay.remove();
-                this.showSaveSelection();
-            });
+            } catch (error) {
+                feedback.textContent = 'No se ha podido guardar la partida. Tus datos anteriores permanecen intactos.';
+            }
+        });
+        document.getElementById('profileFromOptions').addEventListener('click', () => this.showProfile(safeCharacter));
+        document.getElementById('switchSaveFromOptions').addEventListener('click', () => this.showSaveSelection());
+        document.getElementById('returnAdventure').addEventListener('click', () => {
+            const feedback = document.getElementById('optionsFeedback');
+            try {
+                const latest = Save.load();
+                if (latest && latest.adventure) this.showAdventure(latest.character || safeCharacter, latest.adventure);
+                else this.showProfile(safeCharacter);
+            } catch (error) {
+                feedback.textContent = 'No se ha podido recuperar la partida. Tus datos anteriores permanecen intactos.';
+            }
         });
     },
 
@@ -234,6 +268,7 @@ const Athun = {
     },
 
     showPrologue() {
+        this.setScreenMode('parchment');
         const app = document.getElementById('app');
         const paragraphs = [
             'Athun no fue hallado en una torre de alta hechicería ni en la cripta de un rey olvidado. Apareció una madrugada en la costa, varado entre algas y con un penetrante y sospechoso tufo a sardina rancia. Un grupo de pescadores locales, poco impresionados por las runas doradas de su lomo, decidió que era el papel perfecto para envolver las raciones de pescado frito del puesto de la playa. De milagro, y antes de que terminara empapado en aceite y adobo, el libro fue rescatado.',
@@ -291,6 +326,7 @@ const Athun = {
     },
 
     showSaveSelection() {
+        this.setScreenMode('parchment');
         const app = document.getElementById('app');
         const saves = Save.list();
         const entries = saves.map(entry => {
@@ -304,21 +340,19 @@ const Athun = {
                 </article>
             `;
         }).join('');
+        document.body.classList.add('athun-home-mode');
+        app.classList.add('athun-home-screen');
         app.innerHTML = `
             <header class="main-header">
-                <p class="eyebrow">EL GRIMORIO TE RECUERDA</p>
                 <h1>Athun: el grimorio oscuro</h1>
-                <p>Un mundo compartido. Historias que pertenecen a cada protagonista.</p>
             </header>
-            <section class="character-creation">
-                <div class="section-heading">
-                    <h2>Tus partidas</h2>
-                    <p>Elige qué historia deseas continuar o crea un nuevo protagonista.</p>
-                </div>
+            <section class="home-scroll" aria-label="Partidas guardadas">
+                <div class="section-heading"><h2>Tus partidas</h2></div>
                 ${entries || '<p>Aún no hay partidas guardadas.</p>'}
-                <button type="button" id="createNewCharacter">Crear un personaje nuevo</button>
             </section>
-            <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
+            <nav class="home-actions" aria-label="Acciones de inicio">
+                <button type="button" id="createNewCharacter">Crear un personaje nuevo</button>
+            </nav>
         `;
         app.querySelectorAll('[data-load-save]').forEach(button => {
             button.addEventListener('click', () => {
@@ -336,6 +370,7 @@ const Athun = {
     },
 
     showForm(character = {}) {
+        this.setScreenMode('parchment');
         const app = document.getElementById('app');
 
         app.innerHTML = `
@@ -413,6 +448,7 @@ const Athun = {
     },
 
     showProfile(character) {
+        this.setScreenMode('parchment');
         const app = document.getElementById('app');
         const saved = Save.load();
 
@@ -483,6 +519,7 @@ const Athun = {
     },
 
     showAdventure(character, adventure) {
+        this.setScreenMode('adventure');
         const app = document.getElementById('app');
 
         const worldState = adventure.state || {};
@@ -532,7 +569,7 @@ const Athun = {
         document.getElementById('openHistory').addEventListener('click', () => this.showHistory());
         document.getElementById('openMap').addEventListener('click', () => this.showMap());
         document.getElementById('openInventory').addEventListener('click', () => this.showInventory());
-        document.getElementById('openOptions').addEventListener('click', () => this.showOptions(character));
+        document.getElementById('openOptions').addEventListener('click', () => this.showOptions(character, adventure));
         document.getElementById('openExplore').addEventListener('click', () => this.showExplore(input, form));
 
         document.getElementById('backToProfile').addEventListener('click', () => {

@@ -12,6 +12,7 @@ on:
   pull_request:
     branches:
       - main
+      - integration/athun-multisave-main-20261116
     paths:
       - 'app/js/**'
       - 'tests/**'
