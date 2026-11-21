@@ -25,8 +25,9 @@ const Session = {
             }
             if (saved) {
                 const state = adventure && adventure.state || {};
-                this.syncMapKnowledge(state, character);
-                this.syncSharedEntities(adventure, character);
+                if (!this.syncActionWorld(state, adventure, character, null)) {
+                    console.warn('La nueva aventura se guardó, pero el mundo compartido no pudo actualizarse; se reintentará al registrar otra acción.');
+                }
             }
             return saved;
         } catch (error) {
@@ -148,6 +149,7 @@ const Session = {
 
             const locations = [
                 state && state.currentLocation,
+                ...(state && Array.isArray(state.visitedLocations) ? state.visitedLocations : []),
                 ...(state && Array.isArray(state.visibleLocations) ? state.visibleLocations : [])
             ];
             locations.forEach(value => {
