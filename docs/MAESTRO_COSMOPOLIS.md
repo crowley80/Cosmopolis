@@ -2473,3 +2473,68 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - `main` permanece intacta. No se han accedido ni alterado guardados del dispositivo.
 - Pendiente: validar el flujo táctil real en Chrome Android con una partida antigua y otra nueva; comprobar el modelo local real. Las pruebas automatizadas no sustituyen esas verificaciones.
 - Siguiente paso técnico: revisar la recuperación de sincronización al cambiar de protagonista y el selector de partidas, asegurando que la reconstrucción del mundo compartido no filtre recuerdos, objetivos, confianza ni progreso personal.
+
+## ACTIVACIÓN SEGURA DEL SELECTOR DE PARTIDAS — 22 DE NOVIEMBRE DE 2026
+
+### Auditoría previa
+
+- Se revisaron las ramas, PR abiertos, diferencias y el documento maestro antes de continuar.
+- PR #4 sigue abierto y en borrador. La rama de integración que alimenta su propuesta está en la cabeza `05fb37aef40288e0e419819f0850cc98cd9b75cc`; la comparación con `main` informa 369 commits por delante y 73 por detrás. No se encontraron ejecuciones de Actions ni estados combinados para esa cabeza. No se modifica PR #4 ni `main`.
+- PR #8 continúa abierto y dirigido a `integration/athun-multisave-main-20261116`. Su rama de trabajo, `work/athun-storage-migration-atomic-20261120`, está 39 commits por delante y 7 por detrás de la integración actual. La comparación desde su punto común muestra que los siete commits posteriores de la integración solo modificaron `app/css/style.css` y `app/js/app.js`; no se han rebasado ramas ni fusionado PR.
+- Se revisó la última validación de almacenamiento previa: ejecución 44883980979, sobre el checkpoint anterior de 68/68. No cubría los cambios nuevos de esta tanda.
+
+### Hallazgo y corrección
+
+`Save.activate(id)` verificaba la escritura de la selección activa, pero si el almacenamiento escribía el nuevo identificador y después fallaba la verificación o lanzaba una excepción, el método devolvía `false` sin restaurar necesariamente la selección anterior. La interfaz podía informar de un fallo mientras el puntero activo ya había cambiado.
+
+- La función conserva ahora el valor bruto anterior de `athun_active_save_v1`.
+- Si la nueva selección no se puede verificar, intenta restaurar exactamente el valor previo (o mantener la clave ausente si inicialmente no existía) y verifica la restauración.
+- La función sigue validando que el identificador figure en el índice y que su registro exista antes de intentar activarlo.
+- Se añadieron dos regresiones: escritura seguida de excepción y lectura de verificación que devuelve temporalmente el valor anterior. Ambas comprueban que la partida activa y los datos personales permanecen intactos y que después se puede activar la otra partida.
+
+### Ajuste del harness del prólogo
+
+La ejecución de CI sobre la rama de trabajo incorporó la revisión base de integración, cuya pantalla secundaria usa `document.body.classList` y `app.classList`. El harness antiguo del prólogo no simulaba esos elementos del DOM.
+
+- Se añadieron stubs mínimos de `body.classList` y `app.classList`.
+- La prueba que verifica el texto y la continuación del prólogo sustituye `prepareSecondaryLayout()` por un no-op, porque la composición secundaria se valida en las pruebas visuales y no forma parte del objetivo de esta prueba unitaria.
+- No se modificó el prólogo aprobado ni el comportamiento de producción.
+
+### Archivos y respaldos
+
+Archivos de código/pruebas modificados:
+- `app/js/core/save.js`
+- `tests/storage.test.js`
+- `tests/prologue.test.js`
+
+Respaldos previos creados en la misma rama:
+- `app/js/core/save.js.bak-20261122-activate-slot-rollback`
+- `tests/storage.test.js.bak-20261122-activate-slot-rollback`
+- `tests/prologue.test.js.bak-20261122-secondary-layout-harness`
+- `tests/prologue.test.js.bak-20261122-secondary-layout-harness2`
+- `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-activate-slot-rollback`
+
+### Validación automatizada
+
+- Primera ejecución tras añadir las dos regresiones: [45004217243](https://github.com/crowley80/Cosmopolis/actions/runs/45004217243). La sintaxis pasó; 69/70 pruebas pasaron. Falló el harness del prólogo porque no simulaba `document.body.classList`.
+- Segunda ejecución tras añadir los stubs DOM: [45004337597](https://github.com/crowley80/Cosmopolis/actions/runs/45004337597). La sintaxis pasó; 69/70 pruebas pasaron. El diagnóstico mostró que `prepareSecondaryLayout()` también consultaba `app.classList.contains`; se aisló esa composición en la prueba del prólogo, sin alterar código de producción.
+- Validación final [45004396968](https://github.com/crowley80/Cosmopolis/actions/runs/45004396968): comprobación de sintaxis correcta y **70/70 pruebas aprobadas**, 0 fallos.
+- Ejecución paralela [45004396223](https://github.com/crowley80/Cosmopolis/actions/runs/45004396223): también correcta.
+- Las dos regresiones nuevas de activación aparecen aprobadas como pruebas 69 y 70.
+
+### Commits
+
+- Respaldos de `save.js` y `storage.test.js`: `9bac9826`, `749d29bf`.
+- Corrección de activación: `a616a674`.
+- Regresiones del selector: `b1cfc2ff`.
+- Respaldo y adaptación inicial del harness: `a20e08cf`, `ed048cdd`.
+- Respaldo y aislamiento de la prueba del prólogo: `cdf08384`, `91a705be`.
+- La actualización de este documento se registra en un commit separado.
+
+### Pendientes
+
+- PR #8 sigue abierto y sin fusionar; su rama aún está 7 commits por detrás de la integración. Se debe sincronizar de forma selectiva y revisar la comparación final antes de considerar la propuesta lista.
+- PR #4 sigue divergente respecto a `main`; no hay validación de CI localizada para su cabeza actual. No se intenta rebase ni fusión.
+- La prueba táctil en Chrome Android con partidas antiguas y nuevas sigue pendiente. Tampoco se ha probado aquí la inferencia con el modelo local real.
+- No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
+- `main) permanece intacta; ningún PR se ha fusionado.
