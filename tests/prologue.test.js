@@ -60,6 +60,8 @@ function createHarness(options = {}) {
 
 test('presenta el prólogo aprobado y registra que ya se mostró al continuar', () => {
     const harness = createHarness();
+    // Esta prueba verifica el prólogo; la composición secundaria se valida por separado.
+    harness.Athun.prepareSecondaryLayout = () => {};
     let formShown = 0;
     harness.Athun.showForm = () => { formShown += 1; };
 
