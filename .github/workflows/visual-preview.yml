@@ -93,7 +93,7 @@ jobs:
             await secondaryPage.locator('#characterForm').waitFor();
             await secondaryPage.screenshot({ path: 'artifacts/athun-character-creation-mobile.png', fullPage: true });
             await secondaryPage.locator('#characterForm input[name="name"]').fill('Prueba visual');
-            await secondaryPage.locator('#characterForm button[type="submit"]').click();
+            await secondaryPage.locator('.secondary-actions button[form="characterForm"][type="submit"]').click();
             await secondaryPage.locator('#startAdventure').waitFor();
             await secondaryPage.screenshot({ path: 'artifacts/athun-profile-mobile.png', fullPage: true });
             await secondaryPage.evaluate(() => Athun.showSaveSelection());
