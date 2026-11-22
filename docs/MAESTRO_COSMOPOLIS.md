@@ -2509,6 +2509,13 @@ Se confirma como referencia visual única para todas las pantallas el archivo `a
 - Se añadieron aserciones Playwright para comprobar la transparencia del panel de Pista y de los textos del atlas. Las ejecuciones `45079988713` y `45079991489` están pendientes de resultado; no se declara todavía superada esta última revisión.
 - No se han cambiado textos narrativos, contenido del mundo, reglas de juego ni datos de partidas.
 
+## Resultado de la comprobación funcional de paneles — 22/11/2026
+
+- La ejecución Playwright `45080250424` terminó con resultado satisfactorio.
+- Quedaron verificadas las aperturas de Historial, Inventario y Opciones, la transparencia de sus paneles, la presencia de Athun en el inventario y las acciones de guardar y consultar la ficha.
+- La ejecución de pantallas secundarias `45080158187` y la comprobación del atlas `45079991489` también finalizaron correctamente.
+- Estas pruebas cubren los recorridos automatizados indicados; no sustituyen una inspección manual en el dispositivo Android.
+
 ## Comprobación funcional de paneles y opciones — 22/11/2026
 
 - Se amplió Playwright para verificar que Historial, Inventario y Opciones muestran sus textos sin fondos, bordes ni sombras de tarjeta.
