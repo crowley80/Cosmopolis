@@ -2377,3 +2377,8 @@ La tercera ejecución confirmó que el propio `.player-panel` seguía intercepta
 ### Corrección del test de exploración oculto — 22/11/2026
 
 La ejecución 45024700037 confirma que las pruebas de regresión narrativa, migración y aislamiento de partidas pasan hasta el paso visual posterior. El fallo ya no es la barra inferior: Playwright intenta tocar `#openExplore`, que deliberadamente está recortado/oculto para no duplicar controles impresos en la plantilla. El test invoca ese manejador interno mediante `HTMLElement.click()`, sin simular una zona táctil inexistente. Los botones visibles (Historial, Mapa, Inventario, Opciones y Pista) siguen comprobándose mediante clics reales de Playwright. Respaldos: `.github/workflows/visual-preview.yml.bak-20261122-hidden-explore-test` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-hidden-explore-test`. Se debe repetir la ejecución; esto no equivale aún a validación táctil en Android.
+
+
+## Ajuste de la prueba de ciclo de objetivos — 22/11/2026
+
+La ejecución visual #493 generó correctamente la captura móvil y superó la regresión narrativa de apertura, descubrimiento gradual y permanencia de Athun. El fallo restante estaba en el propio escenario de prueba del ciclo de objetivos: el texto narrativo simulado no incluía el motivo ni el nombre del personaje, por lo que el filtro de evidencia —correctamente estricto— rechazaba el cambio. Se ajustó el texto simulado para que contenga literalmente el motivo asociado al cambio. No se ha relajado la validación narrativa ni se han modificado partidas, guardados o reglas del juego. Pendiente comprobar la nueva ejecución automatizada y revisar la captura en Chrome Android real.
