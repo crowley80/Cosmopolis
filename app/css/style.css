@@ -1242,3 +1242,190 @@ body.athun-secondary-mode {
 #app.athun-secondary-screen > .secondary-scroll > .character-creation::after {
   display:none;
 }
+
+/* Plantilla principal oficial de Athun: fondo de pergamino sin rosas. */
+.adventure-screen {
+  background-color:#d8b477;
+  background-image:url('../assets/athun-plantilla-principal-sin-rosas.webp');
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:100% 100%;
+}
+.adventure-screen::before { content:none; display:none; }
+.adventure-screen::after { display:none; }
+.story-content,.manuscript-meta,.current-action { color:#321b0b; }
+.story-content { text-shadow:0 1px rgba(255,248,226,.72); }
+.manuscript-meta { text-shadow:0 1px rgba(255,248,226,.65); }
+.current-action { background:rgba(255,244,218,.72); border-left-color:#805021; }
+.player-panel textarea { color:#321b0b; background:rgba(255,246,224,.94); border-color:#704017; }
+
+/* ATHUN — ajuste de la plantilla principal: marcos fijos y contenido con scroll propio. */
+.adventure-screen {
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr) auto auto;
+  gap:0;
+  min-height:0;
+  overflow:hidden;
+}
+.manuscript-header {
+  min-width:0;
+  min-height:clamp(78px,11dvh,104px);
+  grid-template-columns:minmax(0,1fr) minmax(0,.92fr);
+  align-items:center;
+  gap:clamp(5px,1.5vw,10px);
+  padding:5px clamp(8px,2.5vw,15px);
+}
+.wordmark { min-width:0; }
+.wordmark h1 {
+  overflow-wrap:anywhere;
+  font-size:clamp(1.25rem,5.5vw,2.35rem);
+  line-height:1.02;
+}
+.wordmark p { font-size:clamp(.66rem,2.7vw,.95rem); }
+.manuscript-meta {
+  min-width:0;
+  width:100%;
+  padding:clamp(5px,1.5vw,9px);
+  font-size:clamp(.58rem,2.55vw,.86rem);
+  line-height:1.2;
+  overflow-wrap:anywhere;
+}
+.manuscript-meta span { min-width:0; }
+.story-panel {
+  min-width:0;
+  min-height:0;
+  height:100%;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+  -webkit-overflow-scrolling:touch;
+}
+.narrative-panel {
+  min-height:100%;
+  padding:clamp(14px,4vw,24px) clamp(13px,4vw,22px) clamp(18px,5vw,28px);
+}
+.story-content {
+  min-width:0;
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+.player-panel {
+  min-width:0;
+  flex:none;
+  margin:0;
+  padding:7px clamp(7px,2.5vw,13px) 8px;
+  overflow:visible;
+}
+.player-heading {
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:5px;
+  min-width:0;
+  margin:2px 2px 7px;
+  text-align:center;
+  font-size:clamp(.72rem,3vw,.9rem);
+}
+.player-heading > span {
+  min-width:0;
+  text-align:center;
+  line-height:1.15;
+}
+.player-heading button,
+.player-heading #openExplore {
+  position:static;
+  min-width:0;
+  max-width:100%;
+  padding:3px 6px;
+  white-space:nowrap;
+  font-size:clamp(.58rem,2.5vw,.72rem);
+}
+.player-panel form {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) clamp(68px,19vw,82px);
+  align-items:stretch;
+  gap:7px;
+  min-width:0;
+}
+.player-panel textarea {
+  min-width:0;
+  width:100%;
+  min-height:clamp(58px,9dvh,78px);
+  max-height:clamp(90px,15dvh,125px);
+  margin:0;
+  overflow-y:auto;
+  resize:none;
+}
+.player-panel form > button {
+  min-width:0;
+  min-height:clamp(54px,8dvh,68px);
+  margin:0;
+  padding:6px 4px;
+  overflow-wrap:anywhere;
+}
+.player-panel #actionStatus {
+  margin:3px 4px 0;
+  max-height:2.4em;
+  overflow-y:auto;
+}
+.manuscript-toolbar {
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  align-items:stretch;
+  flex:none;
+  min-width:0;
+  min-height:clamp(58px,8.5dvh,78px);
+  margin:3px clamp(7px,2vw,12px) max(5px,env(safe-area-inset-bottom));
+  padding:4px 5px;
+  overflow:hidden;
+}
+.manuscript-toolbar .toolbar-divider { display:none; }
+.toolbar-button {
+  min-width:0;
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:3px 1px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:2px;
+  white-space:normal;
+  font-size:clamp(.55rem,2.5vw,.76rem);
+  line-height:1.05;
+}
+.toolbar-button svg {
+  width:clamp(21px,6vw,29px);
+  height:clamp(21px,6vw,29px);
+}
+.toolbar-button > span:last-child {
+  max-width:100%;
+  overflow-wrap:anywhere;
+  text-align:center;
+}
+@media (max-width:390px) {
+  .manuscript-header {
+    min-height:clamp(76px,10.5dvh,92px);
+    grid-template-columns:minmax(0,1fr) minmax(0,.9fr);
+    padding:4px 8px;
+  }
+  .manuscript-meta { font-size:clamp(.55rem,2.45vw,.68rem); }
+  .player-panel { padding:6px 7px 7px; }
+  .player-heading { gap:3px; margin-bottom:5px; }
+  .player-heading button,.player-heading #openExplore { padding:3px 4px; }
+  .player-panel form { gap:5px; grid-template-columns:minmax(0,1fr) 68px; }
+  .player-panel textarea { padding:7px; font-size:.9rem; }
+  .player-panel form > button { font-size:.88rem; }
+  .manuscript-toolbar { margin-left:6px; margin-right:6px; padding:3px; }
+  .toolbar-button { font-size:.55rem; }
+}
+@media (max-height:700px) {
+  .manuscript-header { min-height:70px; }
+  .player-panel { padding-top:5px; padding-bottom:5px; }
+  .player-panel textarea { min-height:52px; }
+  .player-panel form > button { min-height:48px; }
+  .manuscript-toolbar { min-height:50px; margin-top:2px; }
+  .toolbar-button svg { width:20px; height:20px; }
+}
