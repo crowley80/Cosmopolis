@@ -732,8 +732,8 @@ jobs:
             assert.ok(mobile.document.width <= mobile.viewport.width, 'La interfaz móvil no debe desbordarse horizontalmente');
             assert.ok(mobile.story.y + mobile.story.height <= mobile.player.y + 1, 'La narración no debe invadir el panel de escritura');
             assert.ok(mobile.player.y + mobile.player.height <= mobile.toolbar.y + 1, 'La escritura no debe invadir la barra inferior');
-            assert.ok(mobile.toolbar.y + mobile.toolbar.height <= mobile.viewport.height + 1, 'La barra inferior debe quedar dentro de la pantalla');
             console.log('MOBILE_LAYOUT', JSON.stringify(mobile));
+            assert.ok(mobile.toolbar.y + mobile.toolbar.height <= mobile.viewport.height + 1, 'La barra inferior debe quedar dentro de la pantalla');
             await context.close();
             const desktop = await browser.newContext({ viewport: { width: 1024, height: 900 }, deviceScaleFactor: 1 });
             await desktop.addInitScript(({ character, adventure }) => {
