@@ -256,7 +256,13 @@ jobs:
             assert.equal(switched.character, 'Bruno', 'Cambiar de partida debe activar el personaje elegido');
             assert.equal(switched.action, 'Acción exclusiva de Bruno', 'El historial debe pertenecer a la partida elegida');
             assert.equal(switched.active, optionSwitchIds.secondId, 'El identificador activo debe corresponder a Bruno');
-            await page.evaluate(() => Save.activate(Save.list().find(item => item.name === 'Ariadna').id));
+            await page.evaluate(() => {
+              const ari = Save.list().find(item => item.name === 'Ariadna');
+              if (!ari || !Save.activate(ari.id)) throw new Error('No se pudo restaurar la partida de Ariadna para las pruebas siguientes');
+              const saved = Save.load();
+              Athun.showAdventure(saved.character, saved.adventure);
+            });
+            await page.locator('.adventure-screen').waitFor();
 
             // Regresión narrativa: apertura aprobada, descubrimientos graduales y Athun permanente.
             await page.evaluate(async () => {
