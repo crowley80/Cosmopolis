@@ -7,7 +7,7 @@ on:
       - 'index.html'
       - '.github/workflows/visual-preview.yml'
   pull_request:
-    branches: [main]
+    branches: [main, integration/athun-multisave-main-20261116]
     paths:
       - 'app/**'
       - 'index.html'
