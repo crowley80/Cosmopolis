@@ -362,7 +362,7 @@ jobs:
               const originalFetch = window.fetch;
               const originalAvailability = Narrator.isAvailable;
               const responseFor = goalUpdate => ({
-                reply: 'La historia deja claro el siguiente paso.',
+                reply: `Elia comprende lo ocurrido: ${goalUpdate.reason}` ,
                 event: 'Un objetivo personal ha cambiado con fundamento.',
                 category: 'dialogue',
                 location: 'Plaza del pozo',
