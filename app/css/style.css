@@ -1866,385 +1866,26 @@ body.athun-secondary-mode {
   color:transparent !important;
 }
 
-
-/* ATHUN — corrección definitiva: el único fondo es el papiro universal en blanco.
-   Toda la interfaz (cabecera, narración, campo, envío y cinco accesos) es HTML/CSS. */
+/* ATHUN — composición visual unificada y definitiva del narrador. */
+:root {
+  --athun-heading-burgundy:#713B32;
+  --athun-body-ink:#17100a;
+}
 html, body {
-  background-color:#ead9b5;
-}
-body,
-body.athun-secondary-mode {
-  background-image:url('../assets/athun-papiro-universal.webp') !important;
-  background-position:center top;
-  background-repeat:no-repeat;
-  background-size:100% 100%;
-  background-attachment:scroll;
-}
-.adventure-screen {
-  background-color:transparent !important;
-  background-image:url('../assets/athun-papiro-universal.webp') !important;
-  background-position:center top;
-  background-repeat:no-repeat;
-  background-size:100% 100% !important;
-  border:0 !important;
-  box-shadow:none !important;
-}
-.adventure-screen::before,
-.adventure-screen::after {
-  content:none !important;
-  display:none !important;
-}
-.adventure-screen .manuscript-header {
-  border:0 !important;
-  outline:0 !important;
-  background:transparent !important;
-  box-shadow:none !important;
-}
-.adventure-screen .manuscript-meta {
-  border:0 !important;
-  outline:0 !important;
-  background:transparent !important;
-  box-shadow:none !important;
-}
-.adventure-screen .story-panel,
-.adventure-screen .narrative-panel {
-  background:transparent !important;
-  border:0 !important;
-  box-shadow:none !important;
-}
-.adventure-screen .player-panel {
-  margin:0 !important;
-  padding:4px 10px !important;
-  border:0 !important;
-  outline:0 !important;
-  border-radius:0 !important;
-  background:transparent !important;
-  box-shadow:none !important;
-}
-.adventure-screen .player-panel::before,
-.adventure-screen .player-panel::after,
-.adventure-screen .player-heading,
-.adventure-screen .quill-inkwell {
-  display:none !important;
-  content:none !important;
-}
-.adventure-screen .player-panel form {
-  display:grid !important;
-  grid-template-columns:minmax(0,1fr) clamp(68px,19vw,84px) !important;
-  gap:7px !important;
-  margin:0 !important;
-  padding:0 !important;
-}
-.adventure-screen .player-panel textarea {
-  min-height:clamp(58px,9dvh,82px) !important;
-  max-height:120px !important;
-  padding:9px 11px !important;
-  color:#24170d !important;
-  background:rgba(255,247,226,.82) !important;
-  border:1px solid rgba(54,35,17,.8) !important;
-  border-radius:3px !important;
-  box-shadow:none !important;
-  font-size:1rem !important;
-}
-.adventure-screen .player-panel textarea::placeholder {
-  color:rgba(36,23,13,.72) !important;
-}
-.adventure-screen .player-panel form > button[type="submit"] {
-  min-height:58px !important;
-  margin:0 !important;
-  padding:6px 4px !important;
-  color:#17100a !important;
-  background:rgba(239,220,184,.94) !important;
-  border:1px solid rgba(36,23,13,.82) !important;
-  border-radius:3px !important;
-  box-shadow:none !important;
-  font-size:.92rem !important;
-  text-shadow:none !important;
-}
-.adventure-screen .manuscript-toolbar {
-  display:grid !important;
-  grid-template-columns:repeat(5,minmax(0,1fr)) !important;
-  min-height:clamp(58px,8.5dvh,78px) !important;
-  margin:2px 6px max(5px,env(safe-area-inset-bottom)) !important;
-  padding:2px !important;
-  background:transparent !important;
-  border:0 !important;
-  box-shadow:none !important;
-}
-.adventure-screen .toolbar-button {
-  position:static !important;
-  display:flex !important;
-  width:100% !important;
-  height:100% !important;
-  min-width:0 !important;
-  margin:0 !important;
-  padding:3px 1px !important;
-  flex-direction:column !important;
-  align-items:center !important;
-  justify-content:center !important;
-  gap:2px !important;
-  color:#17100a !important;
-  background:rgba(239,220,184,.76) !important;
-  border:1px solid rgba(36,23,13,.62) !important;
-  border-radius:3px !important;
-  box-shadow:none !important;
-  font-size:clamp(.55rem,2.5vw,.76rem) !important;
-  line-height:1.05 !important;
-}
-.adventure-screen .toolbar-button svg,
-.adventure-screen .toolbar-button > span[aria-hidden="true"] {
-  display:block !important;
-  width:clamp(20px,5.5vw,27px) !important;
-  height:clamp(20px,5.5vw,27px) !important;
-  opacity:1 !important;
-}
-.adventure-screen .toolbar-button > span:last-child {
-  position:static !important;
-  width:auto !important;
-  height:auto !important;
-  margin:0 !important;
-  padding:0 !important;
-  overflow:visible !important;
-  clip-path:none !important;
-  color:#17100a !important;
-  font-size:inherit !important;
-  white-space:normal !important;
-}
-#app.athun-secondary-screen > .secondary-scroll > .character-creation,
-#app.athun-secondary-screen > .character-creation {
-  background:transparent !important;
-  border:0 !important;
-  outline:0 !important;
-  box-shadow:none !important;
-}
-@media (max-width:390px) {
-  .adventure-screen .player-panel form {
-    grid-template-columns:minmax(0,1fr) 64px !important;
-    gap:5px !important;
-  }
-  .adventure-screen .player-panel textarea {
-    min-height:54px !important;
-    padding:7px !important;
-    font-size:.9rem !important;
-  }
-  .adventure-screen .player-panel form > button[type="submit"] {
-    min-height:54px !important;
-    font-size:.82rem !important;
-  }
-  .adventure-screen .toolbar-button { font-size:.53rem !important; }
-}
-
-
-/* ATHUN — autoridad visual final: papiro universal en su proporción original. */
-body,
-body.athun-secondary-mode {
-  background-image:url('../assets/athun-papiro-universal.webp') !important;
+  min-height:100%;
+  margin:0;
   background-color:#ead9b5 !important;
+}
+body {
+  color:var(--athun-body-ink);
+  background-image:url('../assets/athun-papiro-universal.webp') !important;
   background-position:center top !important;
   background-repeat:no-repeat !important;
   background-size:100% 100% !important;
   background-attachment:scroll !important;
 }
-.adventure-screen {
-  position:relative !important;
-  inset:auto !important;
-  left:auto !important;
-  width:min(100%,760px) !important;
-  height:auto !important;
-  min-height:0 !important;
-  aspect-ratio:1024 / 1535 !important;
-  margin:0 auto !important;
-  padding:3px 5px max(5px, env(safe-area-inset-bottom)) !important;
-  overflow:hidden !important;
-  transform:none !important;
-  background-image:url('../assets/athun-papiro-universal.webp') !important;
-  background-position:center top !important;
-  background-repeat:no-repeat !important;
-  background-size:100% 100% !important;
-  border:0 !important;
-  box-shadow:none !important;
-}
-.adventure-screen > * { min-width:0; }
-.adventure-screen .manuscript-header {
-  flex:0 0 auto;
-  min-height:clamp(62px,12%,92px);
-}
-.adventure-screen .story-panel {
-  flex:1 1 auto;
-  min-height:0;
-  overflow-y:auto;
-}
-.adventure-screen .player-panel {
-  flex:0 0 auto;
-}
-.adventure-screen .player-panel form {
-  margin:0 !important;
-}
-.adventure-screen .manuscript-toolbar {
-  flex:0 0 auto;
-}
-@media (max-width:390px) {
-  .adventure-screen {
-    padding-left:4px !important;
-    padding-right:4px !important;
-  }
-}
-
-
-/* ATHUN — la escritura se integra en el papiro; no se encierra en paneles coloreados. */
-.tool-panel,
-.tool-panel-content,
-.tool-entry {
-  color:#24170d !important;
-  background:transparent !important;
-  background-image:none !important;
-  border:0 !important;
-  outline:0 !important;
-  border-radius:0 !important;
-  box-shadow:none !important;
-}
-.tool-entry {
-  margin:0 0 16px !important;
-  padding:4px 0 10px !important;
-  border-bottom:1px solid rgba(70,43,20,.28) !important;
-  border-left:0 !important;
-}
-
-
-/* Evitar duplicar el papiro en escritorio: la aventura dibuja su propia plantilla centrada.
-   Las pantallas auxiliares mantienen el mismo fondo aplicado al body. */
-body:not(.athun-secondary-mode) {
-  background-image:none !important;
-  background-color:#ead9b5 !important;
-}
-
-
-/* La plantilla se pinta una sola vez en el viewport completo; la interfaz ocupa toda su altura. */
-body:not(.athun-secondary-mode) {
-  background-image:url('../assets/athun-papiro-universal.webp') !important;
-  background-position:center top !important;
-  background-repeat:no-repeat !important;
-  background-size:100% 100% !important;
-}
-.adventure-screen {
-  position:fixed !important;
-  inset:0 auto 0 50% !important;
-  z-index:10 !important;
-  width:min(100%,760px) !important;
-  height:100vh !important;
-  height:100dvh !important;
-  min-height:100dvh !important;
-  aspect-ratio:auto !important;
-  margin:0 !important;
-  transform:translateX(-50%) !important;
-  background-image:none !important;
-  background-color:transparent !important;
-}
-
-
-/* ATHUN — los paneles de lectura no deben formar una tarjeta sobre el papiro. */
-.tool-overlay {
-  background:transparent !important;
-  backdrop-filter:none !important;
-  -webkit-backdrop-filter:none !important;
-}
-.tool-panel {
-  width:100% !important;
-  background:transparent !important;
-  background-image:none !important;
-  border:0 !important;
-  outline:0 !important;
-  box-shadow:none !important;
-}
-.tool-panel-heading {
-  background:transparent !important;
-  background-image:none !important;
-  border:0 !important;
-  box-shadow:none !important;
-}
-.tool-panel-content h3 {
-  border:0 !important;
-  box-shadow:none !important;
-}
-
-
-/* La información del atlas también se escribe directamente sobre el papiro.
-   Se conserva el dibujo del mapa como elemento gráfico y los botones como controles. */
-.atlas-place,
-.atlas-place-current {
-  background:transparent !important;
-  border:0 !important;
-  border-radius:0 !important;
-  box-shadow:none !important;
-}
-.atlas-frontier {
-  background:transparent !important;
-  border:0 !important;
-  box-shadow:none !important;
-}
-
-
-/* ATHUN — jerarquía cromática aprobada: encabezados granate y texto negro. */
-:root {
-  --athun-heading-burgundy:#713B32;
-  --athun-body-ink:#17100a;
-}
-body,
-body p,
-body label,
-body li,
-body small,
-body span,
-.adventure-screen .story-content,
-.adventure-screen .manuscript-meta,
-.adventure-screen .player-panel,
-#app.athun-secondary-screen,
-#app.athun-secondary-screen p,
-#app.athun-secondary-screen label,
-#app.athun-secondary-screen li,
-#app.athun-secondary-screen small {
-  color:var(--athun-body-ink);
-}
-.wordmark h1,
-.main-header h1,
-.main-header h2,
-.welcome h2,
-.section-heading h2,
-#app.athun-secondary-screen h1,
-#app.athun-secondary-screen h2,
-#app.athun-secondary-screen h3,
-.tool-panel-heading h2,
-.tool-panel-content h3 {
-  color:var(--athun-heading-burgundy) !important;
-  text-shadow:0 1px rgba(255,248,226,.58);
-}
-/* El campo de escritura queda integrado en el papel, sin marco ni caja. */
-.adventure-screen .player-panel textarea {
-  color:var(--athun-body-ink) !important;
-  background:transparent !important;
-  border:0 !important;
-  outline:0 !important;
-  border-radius:0 !important;
-  box-shadow:none !important;
-}
-.adventure-screen .player-panel textarea:focus {
-  border:0 !important;
-  outline:0 !important;
-  box-shadow:none !important;
-}
-
-
-/* ATHUN — pantalla del narrador: plantilla universal en blanco, sin marcos duplicados. */
-html, body, #app {
-  min-height:100%;
-  background-color:#ead9b5 !important;
-}
 body:not(.athun-secondary-mode) {
   padding:0 !important;
-  background-image:url('../assets/athun-papiro-universal.webp') !important;
-  background-position:center top !important;
-  background-repeat:no-repeat !important;
-  background-size:100% 100% !important;
 }
 body:not(.athun-secondary-mode) #app {
   width:100%;
@@ -2256,14 +1897,17 @@ body:not(.athun-secondary-mode) .adventure-screen {
   position:relative !important;
   inset:auto !important;
   left:auto !important;
-  transform:none !important;
+  z-index:auto !important;
   width:min(100%,760px) !important;
+  min-width:0 !important;
   min-height:100dvh !important;
   height:100dvh !important;
   margin:0 auto !important;
-  padding:clamp(8px,2.2vh,18px) clamp(12px,3.5vw,24px) max(8px,env(safe-area-inset-bottom)) !important;
+  padding:clamp(9px,2.2vh,18px) clamp(12px,3.5vw,24px) max(9px,env(safe-area-inset-bottom)) !important;
   display:flex !important;
   flex-direction:column !important;
+  overflow:hidden !important;
+  transform:none !important;
   background:transparent !important;
   background-image:none !important;
   border:0 !important;
@@ -2271,6 +1915,7 @@ body:not(.athun-secondary-mode) .adventure-screen {
   border-radius:0 !important;
   box-shadow:none !important;
 }
+.adventure-screen > * { min-width:0; }
 .adventure-screen::before,
 .adventure-screen::after,
 .adventure-screen .manuscript-header::before,
@@ -2303,31 +1948,27 @@ body:not(.athun-secondary-mode) .adventure-screen {
   display:flex !important;
   flex-direction:column !important;
   gap:5px !important;
-  padding:4px 2px 8px !important;
+  padding:5px 2px 8px !important;
 }
 .adventure-screen .wordmark h1 {
   margin:0 !important;
-  color:#713B32 !important;
+  color:var(--athun-heading-burgundy) !important;
   font-family:Georgia,'Palatino Linotype',serif !important;
   font-size:clamp(1.45rem,6vw,2.15rem) !important;
   line-height:1.04 !important;
   letter-spacing:.01em !important;
   text-shadow:0 1px rgba(255,248,226,.58) !important;
 }
-.adventure-screen .manuscript-meta,
-.adventure-screen .manuscript-meta span,
-.adventure-screen .story-content,
-.adventure-screen .player-panel,
-.adventure-screen .player-panel p {
-  color:#17100a !important;
-}
 .adventure-screen .manuscript-meta {
   display:flex !important;
   flex-wrap:wrap !important;
   gap:3px 12px !important;
   padding:0 !important;
+  color:var(--athun-body-ink) !important;
   font-size:clamp(.65rem,2.5vw,.82rem) !important;
+  line-height:1.25 !important;
 }
+.adventure-screen .manuscript-meta span { color:var(--athun-body-ink) !important; }
 .adventure-screen .story-panel {
   flex:1 1 auto !important;
   min-height:0 !important;
@@ -2341,7 +1982,7 @@ body:not(.athun-secondary-mode) .adventure-screen {
 }
 .adventure-screen .story-content,
 .adventure-screen .story-content p {
-  color:#17100a !important;
+  color:var(--athun-body-ink) !important;
   background:transparent !important;
   border:0 !important;
   box-shadow:none !important;
@@ -2352,6 +1993,13 @@ body:not(.athun-secondary-mode) .adventure-screen {
   flex:0 0 auto !important;
   margin:0 !important;
   padding:7px 0 4px !important;
+  color:var(--athun-body-ink) !important;
+}
+.adventure-screen .player-heading,
+.adventure-screen .quill-inkwell,
+.adventure-screen .toolbar-divider,
+.adventure-screen #actionStatus:empty {
+  display:none !important;
 }
 .adventure-screen .player-panel form {
   display:grid !important;
@@ -2364,11 +2012,12 @@ body:not(.athun-secondary-mode) .adventure-screen {
   box-shadow:none !important;
 }
 .adventure-screen .player-panel textarea {
+  display:block !important;
   min-width:0 !important;
   min-height:58px !important;
   max-height:112px !important;
   padding:7px 2px !important;
-  color:#17100a !important;
+  color:var(--athun-body-ink) !important;
   background:transparent !important;
   border:0 !important;
   outline:0 !important;
@@ -2377,16 +2026,23 @@ body:not(.athun-secondary-mode) .adventure-screen {
   resize:vertical !important;
   font:inherit !important;
 }
-.adventure-screen .player-panel textarea::placeholder { color:rgba(23,16,10,.62) !important; }
-.adventure-screen .player-panel textarea:focus { border:0 !important; outline:0 !important; box-shadow:none !important; }
+.adventure-screen .player-panel textarea::placeholder {
+  color:rgba(23,16,10,.62) !important;
+}
+.adventure-screen .player-panel textarea:focus {
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+}
 .adventure-screen .player-panel form > button[type="submit"] {
   align-self:stretch !important;
   min-width:66px !important;
   padding:7px 10px !important;
-  color:#17100a !important;
-  background:rgba(239,220,184,.72) !important;
-  border:1px solid rgba(36,23,13,.55) !important;
-  border-radius:3px !important;
+  color:var(--athun-body-ink) !important;
+  background:transparent !important;
+  border:0 !important;
+  border-bottom:1px solid rgba(36,23,13,.55) !important;
+  border-radius:0 !important;
   box-shadow:none !important;
 }
 .adventure-screen .manuscript-toolbar {
@@ -2405,12 +2061,14 @@ body:not(.athun-secondary-mode) .adventure-screen {
   align-items:center !important;
   justify-content:center !important;
   gap:3px !important;
-  color:#17100a !important;
-  background:rgba(239,220,184,.62) !important;
-  border:1px solid rgba(36,23,13,.48) !important;
-  border-radius:3px !important;
+  padding:3px 1px !important;
+  color:var(--athun-body-ink) !important;
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
   box-shadow:none !important;
   font-size:clamp(.55rem,2.4vw,.76rem) !important;
+  line-height:1.1 !important;
 }
 .adventure-screen .toolbar-button svg,
 .adventure-screen .toolbar-button > span[aria-hidden="true"] {
@@ -2422,26 +2080,93 @@ body:not(.athun-secondary-mode) .adventure-screen {
   stroke:currentColor !important;
   stroke-width:2 !important;
 }
-.adventure-screen .toolbar-button > span:last-child { position:static !important; width:auto !important; height:auto !important; margin:0 !important; overflow:visible !important; clip-path:none !important; color:#17100a !important; }
-.adventure-screen .toolbar-divider,
-.adventure-screen .player-heading,
-.adventure-screen .quill-inkwell,
-.adventure-screen #actionStatus:empty { display:none !important; }
-.tool-overlay,.tool-panel,.tool-panel-heading,.tool-panel-content {
+.adventure-screen .toolbar-button > span:last-child {
+  position:static !important;
+  width:auto !important;
+  height:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:visible !important;
+  clip-path:none !important;
+  color:var(--athun-body-ink) !important;
+  white-space:normal !important;
+}
+.tool-overlay,
+.tool-panel,
+.tool-panel-heading,
+.tool-panel-content,
+.tool-entry {
+  color:var(--athun-body-ink) !important;
   background:transparent !important;
+  background-image:none !important;
   border:0 !important;
   outline:0 !important;
   border-radius:0 !important;
   box-shadow:none !important;
-  color:#17100a !important;
 }
-.tool-panel-heading h2,.tool-panel-content h3 { color:#713B32 !important; }
-.tool-panel-content p,.tool-entry,.tool-entry p,.tool-entry small { color:#17100a !important; }
+.tool-overlay {
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+.tool-panel { width:100% !important; }
+.tool-panel-heading h2,
+.tool-panel-content h3,
+#app.athun-secondary-screen h1,
+#app.athun-secondary-screen h2,
+#app.athun-secondary-screen h3 {
+  color:var(--athun-heading-burgundy) !important;
+  text-shadow:0 1px rgba(255,248,226,.45);
+}
+.tool-panel-content p,
+.tool-entry,
+.tool-entry p,
+.tool-entry small,
+#app.athun-secondary-screen,
+#app.athun-secondary-screen p,
+#app.athun-secondary-screen label,
+#app.athun-secondary-screen li {
+  color:var(--athun-body-ink) !important;
+}
+.tool-entry {
+  margin:0 0 16px !important;
+  padding:4px 0 10px !important;
+}
+.atlas-place,
+.atlas-place-current,
+.atlas-frontier {
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+}
+body.athun-secondary-mode,
+body.athun-secondary-mode #app {
+  background-color:#ead9b5 !important;
+  background-image:url('../assets/athun-papiro-universal.webp') !important;
+  background-position:center top !important;
+  background-repeat:no-repeat !important;
+  background-size:100% 100% !important;
+}
 @media (max-width:390px) {
-  body:not(.athun-secondary-mode) .adventure-screen { padding-left:10px !important; padding-right:10px !important; }
+  body:not(.athun-secondary-mode) .adventure-screen {
+    padding-left:10px !important;
+    padding-right:10px !important;
+  }
   .adventure-screen .manuscript-header { padding-top:6px !important; }
-  .adventure-screen .player-panel form { grid-template-columns:minmax(0,1fr) 62px !important; gap:5px !important; }
-  .adventure-screen .player-panel textarea { min-height:52px !important; font-size:.9rem !important; }
-  .adventure-screen .player-panel form > button[type="submit"] { min-width:62px !important; padding:5px !important; }
-  .adventure-screen .toolbar-button { min-height:50px !important; font-size:.52rem !important; }
+  .adventure-screen .player-panel form {
+    grid-template-columns:minmax(0,1fr) 62px !important;
+    gap:5px !important;
+  }
+  .adventure-screen .player-panel textarea {
+    min-height:52px !important;
+    font-size:.9rem !important;
+  }
+  .adventure-screen .player-panel form > button[type="submit"] {
+    min-width:62px !important;
+    padding:5px !important;
+  }
+  .adventure-screen .toolbar-button {
+    min-height:50px !important;
+    font-size:.52rem !important;
+  }
 }
