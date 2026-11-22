@@ -2462,3 +2462,17 @@ La revisión de la captura móvil confirmó que las plantillas no son intercambi
 - Se actualizó la versión de caché de JavaScript.
 
 **Vista previa automatizada:** Chromium generó capturas móviles de aventura, prólogo, creación, ficha y selector. Las comprobaciones de uso del papiro en blanco, transparencia del contenedor auxiliar y ausencia de errores JavaScript en esas pantallas pasaron. La ejecución completa continúa fallando más adelante en una espera de una regresión de progreso narrativo ajena a la composición visual; no se declara verde la suite completa. La revisión final con el original principal de 1054 × 1492 px y Chrome Android físico sigue pendiente.
+
+
+## Rectificación de la plantilla única en blanco — 22/11/2026
+
+Se corrige la interpretación anterior: la imagen que debe utilizarse como fondo de todas las pantallas es exclusivamente `app/assets/athun-papiro-universal.webp`, el papiro vertical completamente en blanco. No se debe utilizar `athun-plantilla-principal-sin-rosas.webp` como fondo de juego ni como guía para añadir marcos, botones, iconos o zonas impresas.
+
+- El fondo universal se mantiene sin dibujos ni elementos de interfaz añadidos.
+- Cabecera, ubicación/fecha, narración, campo de escritura, botón Enviar y los cinco accesos inferiores son elementos HTML/CSS independientes, colocados sobre el papiro.
+- Se eliminan visualmente los marcos y fondos artificiales que imitaban una plantilla ilustrada.
+- El campo, Enviar y los cinco accesos vuelven a ser controles visibles y funcionales; no se ocultan sus etiquetas ni sus iconos.
+- Se mantiene la separación funcional de pantallas auxiliares y de aventura, compartiendo el mismo recurso de fondo.
+- No se modifican textos narrativos, lógica de juego, partidas guardadas ni migraciones.
+
+La revisión se ha guardado en la rama de trabajo. Queda pendiente comprobar la composición real en Chromium/Chrome móvil; el cambio de CSS por sí solo no se presenta como prueba visual superada.
