@@ -1,7 +1,7 @@
 name: Visual preview
 on:
   push:
-    branches: [main]
+    branches: [main, work/athun-papiro-universal-20261122]
     paths:
       - 'app/**'
       - 'index.html'
