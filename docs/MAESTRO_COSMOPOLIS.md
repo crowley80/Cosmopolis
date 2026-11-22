@@ -1,3 +1,17 @@
+# Estado de trabajo de interfaz — 22 de noviembre de 2026
+
+> Nombre vigente: **Athun: el grimorio oscuro**. El nombre histórico del repositorio no debe trasladarse a la interfaz ni a textos nuevos.
+
+- Rama de trabajo aislada: `work/athun-papiro-universal-20261122`. No se ha fusionado con la rama principal.
+- Se han eliminado de la pantalla de entrada y de varias vistas las frases promocionales no aprobadas.
+- Se han restaurado los controles inferiores de la pantalla de juego: botones, iconos y etiquetas vuelven a tener contraste y área táctil visible.
+- Se han ocultado las dos rosas de los extremos que no forman parte de la plantilla aprobada.
+- No se han modificado datos de partidas, guardados ni migraciones.
+- Pendiente de integración real: el archivo de papiro universal `athun-papiro-universal.webp` está conservado en la Biblioteca de ChatGPT, pero todavía no está dentro de esta rama del repositorio. No declarar la plantilla universal integrada hasta subir el archivo y verificar su ruta.
+- Pendiente para el 23/11/2026 a las 19:00 (Europe/Madrid): crear las animaciones del grimorio y de la calavera e integrarlas respetando el momento de aparición de esta última.
+
+---
+
 # ATHUN: EL GRIMORIO OSCURO — DOCUMENTO MAESTRO
 
 Última actualización: 12 de noviembre de 2026.
