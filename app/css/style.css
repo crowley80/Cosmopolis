@@ -2113,3 +2113,26 @@ body:not(.athun-secondary-mode) {
   background-image:none !important;
   background-color:#ead9b5 !important;
 }
+
+
+/* La plantilla se pinta una sola vez en el viewport completo; la interfaz ocupa toda su altura. */
+body:not(.athun-secondary-mode) {
+  background-image:url('../assets/athun-papiro-universal.webp') !important;
+  background-position:center top !important;
+  background-repeat:no-repeat !important;
+  background-size:100% 100% !important;
+}
+.adventure-screen {
+  position:fixed !important;
+  inset:0 auto 0 50% !important;
+  z-index:10 !important;
+  width:min(100%,760px) !important;
+  height:100vh !important;
+  height:100dvh !important;
+  min-height:100dvh !important;
+  aspect-ratio:auto !important;
+  margin:0 !important;
+  transform:translateX(-50%) !important;
+  background-image:none !important;
+  background-color:transparent !important;
+}
