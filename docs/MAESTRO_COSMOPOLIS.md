@@ -2428,3 +2428,15 @@ En paralelo, se añadió a la fixture de la segunda interacción la frase que vi
 - Se reforzó el contraste de texto narrativo, metadatos, campo de escritura, botón de envío y herramientas inferiores con tonos de tinta y papel, sin introducir una paleta nueva.
 - Se añadieron ajustes para anchos móviles pequeños.
 - No se han ejecutado pruebas visuales en Chrome Android. El CSS referencia `app/assets/athun-papiro-universal.webp`, pero el recurso todavía debe incorporarse a GitHub; hasta entonces no puede considerarse validada la apariencia final.
+
+
+## Corrección de pantallas secundarias sobre el papiro universal — 22/11/2026
+
+- Se sustituyó la referencia CSS antigua de las pantallas secundarias por `app/assets/athun-papiro-universal.webp`.
+- Se eliminaron visualmente el fondo opaco, el borde y la sombra del contenedor general de creación/selección, para que el papiro siga visible detrás del contenido.
+- Las acciones inferiores mantienen sus controles funcionales, pero su fondo vuelve a ser transparente; los botones usan tinta oscura y tonos de papel.
+- Los campos de formulario conservan superficies claras y bordes oscuros para que sigan siendo legibles y utilizables.
+- Se actualizó la versión de CSS en `index.html` para evitar estilos antiguos en caché.
+- No se modificaron textos, lógica de navegación, almacenamiento, migraciones ni partidas guardadas.
+
+**Validación:** cambios guardados en la rama de trabajo. Falta comprobar las capturas de la vista previa automatizada y revisar el resultado en Chrome Android; no se declara todavía terminada la validación visual.
