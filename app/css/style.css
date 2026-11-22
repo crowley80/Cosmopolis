@@ -2114,6 +2114,22 @@ body:not(.athun-secondary-mode) .adventure-screen {
   color:var(--athun-body-ink) !important;
   white-space:normal !important;
 }
+
+/* El acceso de Pista conserva su etiqueta visible como los otros cuatro. */
+.adventure-screen #openHint > span:last-child {
+  display:block !important;
+  position:static !important;
+  width:auto !important;
+  height:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:visible !important;
+  clip-path:none !important;
+  color:var(--athun-body-ink) !important;
+  font-size:inherit !important;
+  line-height:1.1 !important;
+  text-align:center !important;
+}
 .tool-overlay,
 .tool-panel,
 .tool-panel-heading,
