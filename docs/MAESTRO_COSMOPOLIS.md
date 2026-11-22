@@ -2411,3 +2411,11 @@ Se comprobó el recurso binario que realmente está versionado y referenciado po
 ### Evidencia narrativa de objetivos en la segunda interacción de Playwright — 22/11/2026
 
 En paralelo, se añadió a la fixture de la segunda interacción la frase que vincula explícitamente a Tomás con el motivo de su cambio de objetivo, requisito de `Narrator.filterGoalUpdates()`. La ejecución #498 confirmó que el primer bloqueo estaba antes de llegar a ese segundo intercambio; por eso se corrigió ahora la evidencia de adquisición, memoria y actitud del primer turno. La ejecución nueva tras estos ajustes queda pendiente.
+
+
+## Integración visual — 22 de noviembre de 2026 (continuación)
+
+- La pantalla de aventura y las pantallas auxiliares pasan a referenciar el papiro universal en `app/assets/athun-papiro-universal.webp`, sin crear paneles de fondo alternativos.
+- Se eliminan del HTML generado las dos rosas de los extremos del encabezado; el título y los datos de ubicación/tiempo permanecen.
+- Se desactivan las capas CSS que dibujaban un papiro sustituto sobre la plantilla.
+- **Comprobación pendiente:** incorporar el archivo binario a esa ruta y verificar el resultado en navegador. No se declara aún aplicado hasta que el recurso exista en el repositorio.
