@@ -2372,3 +2372,8 @@ La segunda ejecución visual confirmó que el texto ya no interceptaba el toque,
 ### Separación de capas táctiles del panel del jugador — 22/11/2026
 
 La tercera ejecución confirmó que el propio `.player-panel` seguía interceptando el toque destinado a Mapa, aunque el rótulo ya no lo hacía. El contenedor del panel pasa a ser transparente a los eventos de puntero; solo el formulario, el campo de escritura y Enviar reciben interacción. Así se evita que el marco visual del jugador cubra los cinco accesos inferiores. Respaldos: `app/css/style.css.bak-20261122-player-pointer-events` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-player-pointer-events`. Pendiente revalidar en Playwright; no se altera la lógica de guardado ni el texto narrativo.
+
+
+### Corrección del test de exploración oculto — 22/11/2026
+
+La ejecución 45024700037 confirma que las pruebas de regresión narrativa, migración y aislamiento de partidas pasan hasta el paso visual posterior. El fallo ya no es la barra inferior: Playwright intenta tocar `#openExplore`, que deliberadamente está recortado/oculto para no duplicar controles impresos en la plantilla. El test invoca ese manejador interno mediante `HTMLElement.click()`, sin simular una zona táctil inexistente. Los botones visibles (Historial, Mapa, Inventario, Opciones y Pista) siguen comprobándose mediante clics reales de Playwright. Respaldos: `.github/workflows/visual-preview.yml.bak-20261122-hidden-explore-test` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-hidden-explore-test`. Se debe repetir la ejecución; esto no equivale aún a validación táctil en Android.
