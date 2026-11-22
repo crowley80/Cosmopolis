@@ -2326,3 +2326,14 @@ La integración se prepara directamente sobre la revisión actual de `integratio
 - Se actualiza la versión de CSS para evitar que Chrome reutilice estilos anteriores.
 
 **Seguridad:** se conserva el `app.js` actual de la rama de integración, incluido el cambio que elimina «EL GRIMORIO TE RECUERDA». Solo se añade el recurso gráfico y se ajustan CSS, caché y documentación. No se modifica almacenamiento, migraciones ni partidas guardadas. No se fusiona en `main`.
+
+
+## Diagnóstico de vista previa visual — 22/11/2026
+
+- Se revisó el PR #14 sobre la cabeza `2f8ab71c29afaef10969ca322d9374beaad8d5e7`, basada en la integración vigente `05fb37aef40288e0e419819f0850cc98cd9b75cc`. La propuesta no modifica `app.js`, conserva la eliminación de «EL GRIMORIO TE RECUERDA» y limita su alcance a recurso visual, CSS, caché, workflow y documentación.
+- El recurso `app/assets/athun-plantilla-principal-sin-rosas.webp` se inspeccionó directamente: es un WebP VP8 de 400 × 566 px. Contiene ya el marco superior, el área de narración, el campo del jugador y la barra inferior dibujados en la propia imagen; por tanto, la composición HTML/CSS debe alinearse con esos marcos y no duplicarlos.
+- La ejecución visual 44968513797 (job 137042876538) falla después de renderizar y tomar las capturas, en una aserción de progresión de metas narrativas: esperaba archivar «Descubrir el origen de la campana.» y abrir «Investigar quién construyó la cámara bajo el pozo.», pero el resultado conserva la meta anterior completada. No es una aserción de geometría visual. El workflow omitía subir las capturas al fallar.
+- Se cambió únicamente el paso de subida de artefactos para que se ejecute también cuando una aserción posterior falla (`if: always()`); los archivos ausentes ahora generan advertencia, no ocultan el fallo principal. Esto permite inspeccionar las capturas reales de la interfaz y separar defectos visuales de regresiones narrativas.
+- Respaldos previos exactos: `.github/workflows/visual-preview.yml.bak-20261122-artifact-on-failure` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-artifact-on-failure`.
+
+**Estado:** el ajuste del workflow está guardado; todavía no hay una nueva ejecución que confirme la publicación del artefacto. No se declara aprobada la vista previa ni la validación táctil en Chrome Android. No se modifican `main`, PR #4, almacenamiento ni partidas guardadas.
