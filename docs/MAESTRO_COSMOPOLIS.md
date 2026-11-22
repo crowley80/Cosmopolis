@@ -2499,3 +2499,8 @@ Se confirma como referencia visual única para todas las pantallas el archivo `a
 - No se modifican textos narrativos, datos de partidas ni reglas de juego por este ajuste visual.
 
 **Comprobaciones:** la suite Playwright del 22/11 confirmó las pantallas auxiliares, la transparencia de los contenedores de texto y las interacciones de navegación/partidas en la ejecución `45079022671`. La captura de escritorio mostró una duplicación del papiro a ambos lados; se añadió una corrección CSS específica y la nueva ejecución `45079242111` debe terminar antes de considerar resuelto ese defecto. La prueba en Chrome Android físico sigue pendiente.
+
+
+## Ajuste de altura de la aventura — 22/11/2026
+
+La revisión de la captura móvil mostró que la aventura conservaba la proporción de la imagen como altura del contenedor y dejaba espacio vacío debajo. Se cambió la composición para que el fondo universal se pinte una sola vez en el viewport y la interfaz ocupe toda la altura visible del dispositivo. La pantalla auxiliar sigue utilizando el mismo recurso en su modo correspondiente. La validación automatizada de este último ajuste queda pendiente de la ejecución `Visual preview` del commit `b273809`.
