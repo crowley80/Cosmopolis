@@ -166,10 +166,17 @@ jobs:
             }
             await page.locator('#closeToolPanel').click();
 
-            // Prueba real del panel de mapa y su primer nodo (posición actual).
+            // El mapa conserva su dibujo, pero la información textual no debe aparecer en tarjetas.
             await page.locator('#openMap').click();
             await page.locator('.atlas-map').waitFor();
             if (await page.locator('.atlas-map-node').count() < 1) throw new Error('El mapa no representa la ubicación actual');
+            const atlasTextStyles = await page.locator('.tool-overlay, .tool-panel, .tool-panel-heading, .atlas-place, .atlas-frontier').evaluateAll(nodes => nodes.map(node => {
+              const style = getComputedStyle(node);
+              return { background: style.backgroundColor, image: style.backgroundImage, border: style.borderTopWidth, shadow: style.boxShadow };
+            }));
+            if (atlasTextStyles.some(style => style.background !== 'rgba(0, 0, 0, 0)' || style.image !== 'none' || style.border !== '0px' || style.shadow !== 'none')) {
+              throw new Error('El atlas conserva cajas de fondo alrededor de los textos');
+            }
             await page.locator('#closeToolPanel').click();
 
             // Cada acceso debe abrir su panel correcto, no el de otro botón.
