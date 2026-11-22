@@ -48,6 +48,7 @@ http.createServer((req, res) => {
 
     fs.createReadStream(file).pipe(res);
   });
-}).listen(8080, '127.0.0.1', () => {
-  console.log('Athun disponible en http://127.0.0.1:8080');
+}).listen(Number(process.env.PORT) || 8080, '127.0.0.1', () => {
+  const port = Number(process.env.PORT) || 8080;
+  console.log(`Athun disponible en http://127.0.0.1:${port}`);
 });
