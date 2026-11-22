@@ -27,6 +27,8 @@ http.createServer((req, res) => {
     return res.end('Solicitud incorrecta');
   }
 
+  if (pathname === '/') pathname = '/index.html';
+
   const file = path.resolve(root, '.' + pathname);
 
   if (file !== root && !file.startsWith(root + path.sep)) {
@@ -47,5 +49,5 @@ http.createServer((req, res) => {
     fs.createReadStream(file).pipe(res);
   });
 }).listen(8080, '127.0.0.1', () => {
-  console.log('Cosmópolis disponible en http://127.0.0.1:8080');
+  console.log('Athun disponible en http://127.0.0.1:8080');
 });
