@@ -30,14 +30,14 @@ Ruta:
 Servidor local:
 http://127.0.0.1:8080/index.html
 
-Cosmopolis es una aventura narrativa en la que el jugador crea un
+Athun: el grimorio oscuro es una aventura narrativa en la que el jugador crea un
 personaje y vive acontecimientos que dependen de su naturaleza,
 pasado, capacidades, personalidad y decisiones.
 
 El universo debe ser original, con personajes, lugares e historias
 propios.
 
-No cambiar el nombre Cosmopolis sin autorización del usuario.
+El nombre oficial del proyecto es Athun: el grimorio oscuro. Cosmopolis se conserva únicamente como nombre histórico de la carpeta local y del repositorio GitHub.
 
 ## 2. ENTORNO DE TRABAJO
 
@@ -54,7 +54,7 @@ cd ~/storage/shared/Download/Cosmopolis && node server.js
 
 Mensaje esperado:
 
-Cosmópolis disponible en http://127.0.0.1:8080
+Servidor de Athun disponible en http://127.0.0.1:8080
 
 La dirección /index.html se ha comprobado que funciona.
 
