@@ -1587,3 +1587,6 @@ body.athun-secondary-mode {
   .manuscript-toolbar { min-height:50px; margin-top:2px; }
   .toolbar-button svg { width:20px; height:20px; }
 }
+
+/* Las dos rosas de los extremos no forman parte de la plantilla aprobada. */
+.compass { display:none !important; }
