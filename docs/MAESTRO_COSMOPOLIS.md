@@ -2392,3 +2392,8 @@ La ejecución visual #494 completó la apertura, el descubrimiento gradual y la 
 ### Auditoría de resolución del fondo principal — 22/11/2026
 
 Se comprobó el recurso binario que realmente está versionado y referenciado por `app/css/style.css`: `app/assets/athun-plantilla-principal-sin-rosas.webp`. Su cabecera WebP VP8 confirma 400 × 566 píxeles (23.199 bytes), no la resolución 1054 × 1492 del original de alta resolución verificado previamente. Por tanto, la rama todavía contiene la variante reducida y no cumple el requisito de conservar la resolución. No se sustituye por una conversión improvisada ni se declara corregido. La sustitución binaria queda pendiente; antes de cerrarla hay que subir el WebP original y volver a comprobar sus dimensiones desde el propio repositorio. La búsqueda exacta de «el grimorio te recuerda» en `app/js/app.js` y `app/js/game/narrator.js` de esta rama no encontró esa frase.
+
+
+### Evidencia narrativa de objetivos en la segunda interacción de Playwright — 22/11/2026
+
+La ejecución #498 se prepara tras aislar una condición omitida en la fixture del segundo intercambio: el cambio del objetivo de Tomás indicaba como motivo que la generosidad de Ariadna le anima a implicarse en la seguridad del pueblo, pero la respuesta simulada no expresaba ese motivo en una frase que nombrase a Tomás. `Narrator.filterGoalUpdates()` exige que personaje y motivo estén respaldados por la misma frase narrativa. Se ha añadido esa frase a la respuesta ficticia de prueba, sin modificar el filtro ni las reglas del juego. Pendiente el resultado completo de Playwright en móvil simulado y escritorio.
