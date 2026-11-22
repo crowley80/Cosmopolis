@@ -339,7 +339,7 @@ jobs:
             await page.locator('#toolFeedback').getByText('La partida se ha guardado correctamente.').waitFor();
             await page.locator('#closeToolPanel').click();
 
-            await page.locator('#openExplore').click();
+            await page.locator('#openExplore').evaluate(button => button.click()); // Control interno oculto; no representa una zona táctil visible.
             await page.locator('[data-explore-index="0"]').click();
             await page.locator('#storyContent .current-action').waitFor();
             const firstNarrative = await page.locator('#storyContent').textContent();
