@@ -2550,6 +2550,8 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 
 
 ## Validación integral de navegación y servidor local — 23/11/2026
+- Se inspeccionaron también las capturas PNG del artefacto de la ejecución 45081285699: móvil y escritorio muestran un único papiro de fondo, con la narración directamente sobre el papel y sin panel de lectura opaco. El campo de acción y los accesos de navegación conservan sus superficies de control. La inspección de capturas no permite certificar la respuesta táctil ni sustituye Chrome Android físico.
+
 - La ejecución posterior **45081285699**, que valida el cambio para permitir un puerto alternativo en `server.js`, también terminó correctamente: servidor, renderizados y comprobaciones Playwright completados.
 
 
