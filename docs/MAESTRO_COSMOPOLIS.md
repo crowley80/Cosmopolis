@@ -2476,3 +2476,15 @@ Se corrige la interpretación anterior: la imagen que debe utilizarse como fondo
 - No se modifican textos narrativos, lógica de juego, partidas guardadas ni migraciones.
 
 La revisión se ha guardado en la rama de trabajo. Queda pendiente comprobar la composición real en Chromium/Chrome móvil; el cambio de CSS por sí solo no se presenta como prueba visual superada.
+
+
+## Corrección de la composición sobre el papiro universal — 22/11/2026
+
+Se confirma como referencia visual única para todas las pantallas el archivo `app/assets/athun-papiro-universal.webp`, el papiro completamente en blanco. No se utiliza la plantilla ilustrada ni se consideran impresos en el fondo marcos, campos, botones, iconos o accesos.
+
+- La pantalla de aventura construye por HTML/CSS la cabecera, metadatos, narración, campo de escritura, botón Enviar y cinco accesos inferiores.
+- El fondo de aventura apunta al papiro universal en blanco.
+- Se elimina la posición fija y el estiramiento del fondo de la pantalla de aventura: el contenedor conserva la proporción vertical original 1024 × 1535.
+- Se mantienen los controles funcionales existentes y no se cambia la lógica de partidas ni el contenido narrativo.
+
+**Validación pendiente:** comprobar la composición visual y las zonas táctiles en Chromium y Chrome Android. El cambio CSS está guardado en esta rama; no se declara todavía validación visual/táctil superada.
