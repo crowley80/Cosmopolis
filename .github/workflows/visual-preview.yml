@@ -263,7 +263,7 @@ jobs:
                 await route.fulfill({ status: 200, headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'ok' }) });
               } else {
                 const result = narrativeCall++ === 0 ? {
-                  reply: 'La observación revela una pequeña marca de cobre entre las piedras. Junto a ella encuentras un medallón de cobre. Elia se inclina para examinar la marca de cobre junto a Ariadna. La marca recién descubierta aporta una pista nueva para Elia. Tomás se acerca desde la entrada de la plaza y observa el hallazgo.',
+                  reply: 'La observación revela una pequeña marca de cobre entre las piedras. Junto a ella encuentras y guardas un medallón de cobre. Elia recuerda que Ariadna encontró un medallón de cobre junto al pozo. Elia se inclina para examinar la marca de cobre junto a Ariadna. Elia se muestra más confiada después de este hallazgo. La marca recién descubierta aporta una pista nueva para Elia. Tomás se acerca desde la entrada de la plaza y observa el hallazgo.',
                   event: 'Ariadna ha encontrado un medallón de cobre junto al pozo.',
                   category: 'investigation',
                   location: 'Plaza del pozo',
