@@ -2452,3 +2452,13 @@ La revisión de la captura móvil confirmó que las plantillas no son intercambi
 - La versión actualmente versionada de la plantilla principal en GitHub es una miniatura de 400 × 566 px. El original conservado en la Biblioteca mide 1054 × 1492 px y debe sustituirla en la misma ruta antes de cerrar la integración.
 
 **Validación:** la vista previa automatizada confirmó las primeras aserciones de composición y la regresión narrativa de apertura; una prueba posterior de progreso narrativo agotó su espera. La captura generada se inspeccionó y permitió detectar el uso incorrecto de la plantilla en la pantalla de aventura. La revisión con el original de alta resolución y la prueba final en Chrome Android siguen pendientes. No se modifican textos, lógica de juego ni partidas guardadas.
+
+
+### Limpieza de superposiciones y textos auxiliares — 22/11/2026
+
+- Se oculta el encabezado auxiliar del panel del jugador y el placeholder del campo, porque no forman parte de la plantilla principal impresa.
+- El campo de escritura y su zona táctil se alinean con el rectángulo de escritura y el botón Enviar ya dibujados en la plantilla.
+- En prólogo, selector, creación y ficha se retiraron subtítulos, rótulos promocionales y pies de página no aprobados. Se conservan el texto de prólogo aprobado, el título del proyecto, los nombres funcionales de secciones, las etiquetas de formulario y las acciones necesarias.
+- Se actualizó la versión de caché de JavaScript.
+
+**Vista previa automatizada:** Chromium generó capturas móviles de aventura, prólogo, creación, ficha y selector. Las comprobaciones de uso del papiro en blanco, transparencia del contenedor auxiliar y ausencia de errores JavaScript en esas pantallas pasaron. La ejecución completa continúa fallando más adelante en una espera de una regresión de progreso narrativo ajena a la composición visual; no se declara verde la suite completa. La revisión final con el original principal de 1054 × 1492 px y Chrome Android físico sigue pendiente.
