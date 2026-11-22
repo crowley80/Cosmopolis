@@ -2382,3 +2382,8 @@ La ejecución 45024700037 confirma que las pruebas de regresión narrativa, migr
 ## Ajuste de la prueba de ciclo de objetivos — 22/11/2026
 
 La ejecución visual #493 generó correctamente la captura móvil y superó la regresión narrativa de apertura, descubrimiento gradual y permanencia de Athun. El fallo restante estaba en el propio escenario de prueba del ciclo de objetivos: el texto narrativo simulado no incluía el motivo ni el nombre del personaje, por lo que el filtro de evidencia —correctamente estricto— rechazaba el cambio. Se ajustó el texto simulado para que contenga literalmente el motivo asociado al cambio. No se ha relajado la validación narrativa ni se han modificado partidas, guardados o reglas del juego. Pendiente comprobar la nueva ejecución automatizada y revisar la captura en Chrome Android real.
+
+
+### Fixtures narrativos compatibles con validación estricta — 22/11/2026
+
+La ejecución visual #494 completó la apertura, el descubrimiento gradual y la protección de Athun, pero el escenario de interacción agotó el tiempo de espera al comprobar el segundo intercambio. El diagnóstico apunta a los datos simulados de Playwright: varias actualizaciones estructuradas (objetivos, recuerdos, relaciones y acciones de personajes) no tenían su evidencia textual explícita en la misma frase narrativa que identifica al personaje. Se han ampliado únicamente las respuestas ficticias del ensayo para incluir esa evidencia. Se mantiene intacto el filtro de validación del juego; no se rebajan sus controles ni se alteran los guardados. Pendiente una nueva ejecución completa.
