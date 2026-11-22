@@ -72,6 +72,7 @@ jobs:
             await page.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
             const continueSave = page.locator('[data-load-save]').first();
             if (await continueSave.count()) await continueSave.click();
+            const assert = require('node:assert/strict');
             await page.locator('.adventure-screen').waitFor();
 
             // Regresión de composición: un único campo de acción y cinco accesos, sin adornos duplicados.
@@ -215,7 +216,6 @@ jobs:
             await page.screenshot({ path: 'artifacts/cosmopolis-mobile.png', fullPage: true });
 
             // Prueba de interacción: los cuatro paneles y las ayudas de exploración.
-            const assert = require('node:assert/strict');
             const pageErrors = [];
             page.on('pageerror', error => pageErrors.push(error.message));
             page.on('console', message => { if (message.type() === 'error') console.error('BROWSER_CONSOLE_ERROR:', message.text()); });
