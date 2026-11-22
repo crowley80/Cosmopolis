@@ -1553,3 +1553,6 @@ body.athun-secondary-mode {
   white-space:nowrap;
   border:0;
 }
+
+/* El rótulo del separador es decorativo y no debe interceptar los botones inferiores. */
+.player-heading > span { pointer-events:none; }
