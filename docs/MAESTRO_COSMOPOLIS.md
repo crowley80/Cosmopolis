@@ -2509,6 +2509,14 @@ Se confirma como referencia visual única para todas las pantallas el archivo `a
 - Se añadieron aserciones Playwright para comprobar la transparencia del panel de Pista y de los textos del atlas. Las ejecuciones `45079988713` y `45079991489` están pendientes de resultado; no se declara todavía superada esta última revisión.
 - No se han cambiado textos narrativos, contenido del mundo, reglas de juego ni datos de partidas.
 
+## Comprobación funcional de paneles y opciones — 22/11/2026
+
+- Se amplió Playwright para verificar que Historial, Inventario y Opciones muestran sus textos sin fondos, bordes ni sombras de tarjeta.
+- La prueba comprueba además que Inventario incluye la pertenencia permanente Athun.
+- En Opciones se ejercitan los controles «Guardar ahora» y «Consultar mi ficha»: el primero debe confirmar el guardado y el segundo abrir la ficha del protagonista activo.
+- La nueva ejecución automatizada queda pendiente de resultado; no se considera validada hasta que termine correctamente.
+- No se modifican textos narrativos ni estado de las partidas reales: las pruebas usan datos aislados del navegador de CI.
+
 ## Verificación de pantallas secundarias — 22/11/2026
 
 - Se amplió la suite Playwright para comprobar que creación de personaje, ficha y selector de partidas mantienen transparentes los contenedores de contenido sobre el papiro universal.
