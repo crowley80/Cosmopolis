@@ -2115,24 +2115,18 @@ body:not(.athun-secondary-mode) .adventure-screen {
   white-space:normal !important;
 }
 
-/* El acceso de Pista conserva su etiqueta visible como los otros cuatro. */
-.adventure-screen #openHint > span:last-child {
+/* La etiqueta de Pista se dibuja de forma consistente bajo su icono. */
+.adventure-screen #openHint::after {
+  content:"Pista";
   display:block !important;
-  position:static !important;
-  width:auto !important;
-  min-width:30px !important;
-  height:auto !important;
-  min-height:10px !important;
-  margin:0 !important;
-  padding:0 !important;
-  overflow:visible !important;
-  clip-path:none !important;
-  opacity:1 !important;
-  visibility:visible !important;
   color:#17100a !important;
   font-size:clamp(.55rem,2.4vw,.76rem) !important;
+  font-family:inherit !important;
+  font-weight:600 !important;
   line-height:1.1 !important;
   text-align:center !important;
+  opacity:1 !important;
+  visibility:visible !important;
 }
 .tool-overlay,
 .tool-panel,
