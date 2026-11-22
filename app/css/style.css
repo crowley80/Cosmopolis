@@ -2120,13 +2120,17 @@ body:not(.athun-secondary-mode) .adventure-screen {
   display:block !important;
   position:static !important;
   width:auto !important;
+  min-width:30px !important;
   height:auto !important;
+  min-height:10px !important;
   margin:0 !important;
   padding:0 !important;
   overflow:visible !important;
   clip-path:none !important;
-  color:var(--athun-body-ink) !important;
-  font-size:inherit !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  color:#17100a !important;
+  font-size:clamp(.55rem,2.4vw,.76rem) !important;
   line-height:1.1 !important;
   text-align:center !important;
 }
