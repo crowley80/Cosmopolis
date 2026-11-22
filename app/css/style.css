@@ -2043,3 +2043,54 @@ body.athun-secondary-mode {
   }
   .adventure-screen .toolbar-button { font-size:.53rem !important; }
 }
+
+
+/* ATHUN — autoridad visual final: papiro universal en su proporción original. */
+body:not(.athun-secondary-mode) {
+  background-image:none !important;
+  background-color:#ead9b5 !important;
+}
+.adventure-screen {
+  position:relative !important;
+  inset:auto !important;
+  left:auto !important;
+  width:min(100%,760px) !important;
+  height:auto !important;
+  min-height:0 !important;
+  aspect-ratio:1024 / 1535 !important;
+  margin:0 auto !important;
+  padding:3px 5px max(5px, env(safe-area-inset-bottom)) !important;
+  overflow:hidden !important;
+  transform:none !important;
+  background-image:url('../assets/athun-papiro-universal.webp') !important;
+  background-position:center top !important;
+  background-repeat:no-repeat !important;
+  background-size:100% 100% !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+.adventure-screen > * { min-width:0; }
+.adventure-screen .manuscript-header {
+  flex:0 0 auto;
+  min-height:clamp(62px,12%,92px);
+}
+.adventure-screen .story-panel {
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+}
+.adventure-screen .player-panel {
+  flex:0 0 auto;
+}
+.adventure-screen .player-panel form {
+  margin:0 !important;
+}
+.adventure-screen .manuscript-toolbar {
+  flex:0 0 auto;
+}
+@media (max-width:390px) {
+  .adventure-screen {
+    padding-left:4px !important;
+    padding-right:4px !important;
+  }
+}
