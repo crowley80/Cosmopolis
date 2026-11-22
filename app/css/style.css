@@ -1652,3 +1652,158 @@ body {
   .manuscript-header { grid-template-columns:minmax(0,1fr) minmax(104px,.82fr); }
   .manuscript-meta { font-size:clamp(.46rem,1.8vw,.62rem); }
 }
+
+
+/* ATHUN — pantallas auxiliares sobre el mismo papiro universal. */
+body.athun-secondary-mode {
+  min-height:100dvh;
+  height:auto;
+  margin:0;
+  padding:0;
+  overflow-x:hidden;
+  overflow-y:auto;
+  background-color:#ead9b5;
+  background-image:url('../assets/athun-papiro-universal.webp');
+  background-position:center top;
+  background-repeat:no-repeat;
+  background-size:100% 100%;
+  background-attachment:scroll;
+}
+#app.athun-secondary-screen {
+  width:100%;
+  max-width:760px;
+  height:100dvh;
+  min-height:100dvh;
+  margin:0 auto;
+  padding:clamp(8px,2.5vw,18px) clamp(8px,3vw,22px) max(8px,env(safe-area-inset-bottom));
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  color:#24170d;
+  background:transparent;
+}
+#app.athun-secondary-screen > .main-header {
+  flex:0 0 auto;
+  padding:clamp(8px,2vh,18px) 8px 10px;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+}
+#app.athun-secondary-screen > .main-header h1 {
+  margin:0;
+  color:#17100a;
+  font-family:Georgia,'Palatino Linotype',serif;
+  font-size:clamp(1.55rem,6vw,2.45rem);
+  line-height:1.12;
+  letter-spacing:.015em;
+  text-shadow:0 1px rgba(255,248,226,.82);
+}
+#app.athun-secondary-screen > .welcome,
+#app.athun-secondary-screen > .secondary-scroll,
+#app.athun-secondary-screen > .secondary-scroll > .welcome,
+#app.athun-secondary-screen > .secondary-scroll > .character-creation {
+  background:transparent;
+}
+#app.athun-secondary-screen > .secondary-scroll {
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+#app.athun-secondary-screen > .secondary-scroll > .character-creation,
+#app.athun-secondary-screen > .character-creation {
+  width:100%;
+  max-width:none;
+  min-height:min-content;
+  margin:4px 0 12px;
+  padding:clamp(8px,2vw,16px) clamp(8px,2.5vw,18px);
+  overflow:visible;
+  color:#24170d;
+  background:transparent !important;
+  border:0 !important;
+  outline:0 !important;
+  border-radius:0;
+  box-shadow:none !important;
+}
+#app.athun-secondary-screen .character-creation::before,
+#app.athun-secondary-screen .character-creation::after {
+  content:none !important;
+  display:none !important;
+}
+#app.athun-secondary-screen .section-heading { margin:4px 0 14px; }
+#app.athun-secondary-screen .section-heading h2,
+#app.athun-secondary-screen .section-heading p,
+#app.athun-secondary-screen .character-creation h2,
+#app.athun-secondary-screen .character-creation h3,
+#app.athun-secondary-screen .character-creation p,
+#app.athun-secondary-screen .character-creation label,
+#app.athun-secondary-screen .character-creation legend,
+#app.athun-secondary-screen .character-creation .eyebrow {
+  color:#17100a;
+  text-shadow:0 1px rgba(255,248,226,.7);
+}
+#app.athun-secondary-screen .character-creation .profile-section {
+  margin:8px 0;
+  padding:8px 2px;
+  background:transparent;
+  border:0;
+  border-bottom:1px solid rgba(36,23,13,.48);
+  border-radius:0;
+  box-shadow:none;
+}
+#app.athun-secondary-screen fieldset {
+  margin:8px 0 14px;
+  padding:8px 4px;
+  background:transparent;
+  border:0;
+  border-top:1px solid rgba(36,23,13,.48);
+  border-radius:0;
+  box-shadow:none;
+}
+#app.athun-secondary-screen input,
+#app.athun-secondary-screen textarea {
+  color:#17100a;
+  background:rgba(255,247,226,.78);
+  border:1px solid rgba(36,23,13,.72);
+  border-radius:2px;
+}
+#app.athun-secondary-screen button,
+#app.athun-secondary-screen > .secondary-actions button {
+  color:#17100a;
+  background:rgba(239,220,184,.88);
+  border:1px solid rgba(36,23,13,.82);
+  border-radius:2px;
+  box-shadow:none;
+}
+#app.athun-secondary-screen > .secondary-actions {
+  flex:0 0 auto;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:7px;
+  padding:8px 2px max(8px,env(safe-area-inset-bottom));
+  background:transparent;
+  border:0;
+  box-shadow:none;
+}
+#app.athun-secondary-screen > .secondary-actions:has(> :only-child) {
+  grid-template-columns:minmax(0,1fr);
+}
+#app.athun-secondary-screen > .secondary-actions button {
+  min-height:42px;
+  margin:0;
+  padding:8px 10px;
+  font-size:.88rem;
+  line-height:1.2;
+}
+#app.athun-secondary-screen > footer {
+  flex:0 0 auto;
+  color:#17100a;
+  background:transparent;
+  border:0;
+}
+@media (max-width:380px) {
+  #app.athun-secondary-screen { padding-left:7px; padding-right:7px; }
+  #app.athun-secondary-screen > .secondary-actions { gap:5px; }
+  #app.athun-secondary-screen > .secondary-actions button { padding:7px 5px; font-size:.8rem; }
+}
