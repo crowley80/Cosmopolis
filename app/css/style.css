@@ -2232,3 +2232,216 @@ body span,
   outline:0 !important;
   box-shadow:none !important;
 }
+
+
+/* ATHUN — pantalla del narrador: plantilla universal en blanco, sin marcos duplicados. */
+html, body, #app {
+  min-height:100%;
+  background-color:#ead9b5 !important;
+}
+body:not(.athun-secondary-mode) {
+  padding:0 !important;
+  background-image:url('../assets/athun-papiro-universal.webp') !important;
+  background-position:center top !important;
+  background-repeat:no-repeat !important;
+  background-size:100% 100% !important;
+}
+body:not(.athun-secondary-mode) #app {
+  width:100%;
+  min-height:100dvh;
+  margin:0 auto;
+  background:transparent !important;
+}
+body:not(.athun-secondary-mode) .adventure-screen {
+  position:relative !important;
+  inset:auto !important;
+  left:auto !important;
+  transform:none !important;
+  width:min(100%,760px) !important;
+  min-height:100dvh !important;
+  height:100dvh !important;
+  margin:0 auto !important;
+  padding:clamp(8px,2.2vh,18px) clamp(12px,3.5vw,24px) max(8px,env(safe-area-inset-bottom)) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  background:transparent !important;
+  background-image:none !important;
+  border:0 !important;
+  outline:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+}
+.adventure-screen::before,
+.adventure-screen::after,
+.adventure-screen .manuscript-header::before,
+.adventure-screen .manuscript-header::after,
+.adventure-screen .story-panel::before,
+.adventure-screen .story-panel::after,
+.adventure-screen .narrative-panel::before,
+.adventure-screen .narrative-panel::after,
+.adventure-screen .player-panel::before,
+.adventure-screen .player-panel::after {
+  content:none !important;
+  display:none !important;
+}
+.adventure-screen .manuscript-header,
+.adventure-screen .manuscript-meta,
+.adventure-screen .story-panel,
+.adventure-screen .narrative-panel,
+.adventure-screen .story-content,
+.adventure-screen .player-panel,
+.adventure-screen .manuscript-toolbar {
+  background:transparent !important;
+  background-image:none !important;
+  border:0 !important;
+  outline:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+}
+.adventure-screen .manuscript-header {
+  flex:0 0 auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:5px !important;
+  padding:4px 2px 8px !important;
+}
+.adventure-screen .wordmark h1 {
+  margin:0 !important;
+  color:#713B32 !important;
+  font-family:Georgia,'Palatino Linotype',serif !important;
+  font-size:clamp(1.45rem,6vw,2.15rem) !important;
+  line-height:1.04 !important;
+  letter-spacing:.01em !important;
+  text-shadow:0 1px rgba(255,248,226,.58) !important;
+}
+.adventure-screen .manuscript-meta,
+.adventure-screen .manuscript-meta span,
+.adventure-screen .story-content,
+.adventure-screen .player-panel,
+.adventure-screen .player-panel p {
+  color:#17100a !important;
+}
+.adventure-screen .manuscript-meta {
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:3px 12px !important;
+  padding:0 !important;
+  font-size:clamp(.65rem,2.5vw,.82rem) !important;
+}
+.adventure-screen .story-panel {
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow-y:auto !important;
+  padding:8px 2px !important;
+}
+.adventure-screen .narrative-panel,
+.adventure-screen .story-content {
+  padding:0 !important;
+  margin:0 !important;
+}
+.adventure-screen .story-content,
+.adventure-screen .story-content p {
+  color:#17100a !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  text-shadow:0 1px rgba(255,248,226,.35);
+  line-height:1.48 !important;
+}
+.adventure-screen .player-panel {
+  flex:0 0 auto !important;
+  margin:0 !important;
+  padding:7px 0 4px !important;
+}
+.adventure-screen .player-panel form {
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  gap:8px !important;
+  margin:0 !important;
+  padding:0 !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+.adventure-screen .player-panel textarea {
+  min-width:0 !important;
+  min-height:58px !important;
+  max-height:112px !important;
+  padding:7px 2px !important;
+  color:#17100a !important;
+  background:transparent !important;
+  border:0 !important;
+  outline:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  resize:vertical !important;
+  font:inherit !important;
+}
+.adventure-screen .player-panel textarea::placeholder { color:rgba(23,16,10,.62) !important; }
+.adventure-screen .player-panel textarea:focus { border:0 !important; outline:0 !important; box-shadow:none !important; }
+.adventure-screen .player-panel form > button[type="submit"] {
+  align-self:stretch !important;
+  min-width:66px !important;
+  padding:7px 10px !important;
+  color:#17100a !important;
+  background:rgba(239,220,184,.72) !important;
+  border:1px solid rgba(36,23,13,.55) !important;
+  border-radius:3px !important;
+  box-shadow:none !important;
+}
+.adventure-screen .manuscript-toolbar {
+  flex:0 0 auto !important;
+  display:grid !important;
+  grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+  gap:5px !important;
+  margin:5px 0 0 !important;
+  padding:4px 0 !important;
+}
+.adventure-screen .toolbar-button {
+  min-width:0 !important;
+  min-height:54px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:3px !important;
+  color:#17100a !important;
+  background:rgba(239,220,184,.62) !important;
+  border:1px solid rgba(36,23,13,.48) !important;
+  border-radius:3px !important;
+  box-shadow:none !important;
+  font-size:clamp(.55rem,2.4vw,.76rem) !important;
+}
+.adventure-screen .toolbar-button svg,
+.adventure-screen .toolbar-button > span[aria-hidden="true"] {
+  display:block !important;
+  width:22px !important;
+  height:22px !important;
+  opacity:1 !important;
+  fill:none !important;
+  stroke:currentColor !important;
+  stroke-width:2 !important;
+}
+.adventure-screen .toolbar-button > span:last-child { position:static !important; width:auto !important; height:auto !important; margin:0 !important; overflow:visible !important; clip-path:none !important; color:#17100a !important; }
+.adventure-screen .toolbar-divider,
+.adventure-screen .player-heading,
+.adventure-screen .quill-inkwell,
+.adventure-screen #actionStatus:empty { display:none !important; }
+.tool-overlay,.tool-panel,.tool-panel-heading,.tool-panel-content {
+  background:transparent !important;
+  border:0 !important;
+  outline:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  color:#17100a !important;
+}
+.tool-panel-heading h2,.tool-panel-content h3 { color:#713B32 !important; }
+.tool-panel-content p,.tool-entry,.tool-entry p,.tool-entry small { color:#17100a !important; }
+@media (max-width:390px) {
+  body:not(.athun-secondary-mode) .adventure-screen { padding-left:10px !important; padding-right:10px !important; }
+  .adventure-screen .manuscript-header { padding-top:6px !important; }
+  .adventure-screen .player-panel form { grid-template-columns:minmax(0,1fr) 62px !important; gap:5px !important; }
+  .adventure-screen .player-panel textarea { min-height:52px !important; font-size:.9rem !important; }
+  .adventure-screen .player-panel form > button[type="submit"] { min-width:62px !important; padding:5px !important; }
+  .adventure-screen .toolbar-button { min-height:50px !important; font-size:.52rem !important; }
+}
