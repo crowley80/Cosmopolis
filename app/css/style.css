@@ -1860,3 +1860,9 @@ body.athun-secondary-mode {
   font-size:clamp(.6rem,2.3vw,.72rem);
   line-height:1.18;
 }
+
+
+/* No se superpone texto auxiliar ni botones que no están impresos en la plantilla aprobada. */
+.adventure-screen .player-heading {
+  display:none !important;
+}
