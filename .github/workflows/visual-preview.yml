@@ -497,13 +497,24 @@ jobs:
             assert.deepEqual(contextProbe, { knowledgeBoundaryRules: true, eventCount: 20, memoryCount: 8, eliaGoal: 'Averiguar por qué suenan las campanas.', completedGoalCount: 8, lastCompletedGoal: 'Meta cumplida 9', historyCount: 6, savedMemoryCount: 12, savedCompletedGoalCount: 10 },
               'El contexto debe limitarse sin borrar recuerdos e incluir límites de conocimiento');
 
-            await page.waitForFunction(() => {
-              const data = Save.load();
-              if (!data) return false;
-              return data.actions && data.actions.length === 1 &&
-                data.adventure.state.inventory.includes('Medallón de cobre') &&
-                data.adventure.state.visitedLocations.includes('Plaza del pozo');
-            });
+            try {
+              await page.waitForFunction(() => {
+                const data = Save.load();
+                if (!data) return false;
+                return data.actions && data.actions.length === 1 &&
+                  data.adventure.state.inventory.includes('Medallón de cobre') &&
+                  data.adventure.state.visitedLocations.includes('Plaza del pozo');
+              }, { timeout: 10000 });
+            } catch (error) {
+              const diagnostic = await page.evaluate(() => ({
+                saved: Save.load(),
+                actionStatus: document.querySelector('#actionStatus')?.textContent || '',
+                alertText: document.querySelector('[role="alert"]')?.textContent || '',
+                story: document.querySelector('#storyContent')?.textContent || '',
+                overlay: document.querySelector('#toolOverlay')?.textContent || ''
+              }));
+              throw new Error('La primera acción no quedó guardada. Estado observado: ' + JSON.stringify(diagnostic) + '. Causa original: ' + error.message);
+            }
             assert.equal(pageErrors.length, 0, 'No deben producirse errores JavaScript: ' + pageErrors.join('; '));
             await page.locator('#openInventory').click();
             await page.locator('#toolOverlay').getByText('Medallón de cobre').waitFor();
