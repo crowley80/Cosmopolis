@@ -1243,16 +1243,7 @@ body.athun-secondary-mode {
   display:none;
 }
 
-/* Plantilla principal oficial de Athun: fondo de pergamino sin rosas. */
-.adventure-screen {
-  background-color:#d8b477;
-  background-image:url('../assets/athun-plantilla-principal-sin-rosas.webp');
-  background-position:center;
-  background-repeat:no-repeat;
-  background-size:100% 100%;
-}
-.adventure-screen::before { content:none; display:none; }
-.adventure-screen::after { display:none; }
+/* El fondo de todas las pantallas se define en el bloque final del papiro universal. */
 .story-content,.manuscript-meta,.current-action { color:#321b0b; }
 .story-content { text-shadow:0 1px rgba(255,248,226,.72); }
 .manuscript-meta { text-shadow:0 1px rgba(255,248,226,.65); }
