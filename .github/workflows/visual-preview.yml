@@ -223,6 +223,41 @@ jobs:
               }
             }
 
+            // Cambiar de partida desde Opciones debe abrir el selector y activar el guardado elegido.
+            const slotIds = await page.evaluate(() => {
+              const firstId = Save.getActiveId();
+              const secondCharacter = {
+                name: 'Bruno', nature: 'Humano', appearance: 'Personaje de prueba',
+                history: 'Ficha aislada de prueba', abilities: 'Ninguna', personality: 'Sereno'
+              };
+              const secondAdventure = {
+                id: 'preview-second', title: 'Partida aislada de prueba',
+                location: 'Punto de partida de Bruno',
+                text: 'Esta partida de prueba debe permanecer separada.',
+                state: { currentLocation: 'Punto de partida de Bruno', inventory: [] }
+              };
+              const secondId = Save.createSlot(secondCharacter, secondAdventure, {
+                actions: [{ text: 'Acción exclusiva de Bruno', response: 'Respuesta de Bruno' }]
+              });
+              if (!secondId || !Save.activate(firstId)) throw new Error('No se pudieron preparar dos partidas independientes');
+              return { firstId, secondId };
+            });
+            await page.locator('#openOptions').click();
+            await page.locator('#switchSaveFromOptions').click();
+            await page.getByRole('heading', { name: 'Tus partidas' }).waitFor();
+            assert.equal(await page.locator('[data-load-save]').count(), 2, 'El selector debe mostrar las dos partidas');
+            await page.locator('[data-load-save]').filter({ hasText: 'Bruno' }).click();
+            await page.locator('.adventure-screen').waitFor();
+            const switched = await page.evaluate(() => ({
+              character: Save.load().character.name,
+              action: Save.load().actions[0].text,
+              active: Save.getActiveId()
+            }));
+            assert.equal(switched.character, 'Bruno', 'Cambiar de partida debe activar el personaje elegido');
+            assert.equal(switched.action, 'Acción exclusiva de Bruno', 'El historial debe pertenecer a la partida elegida');
+            assert.equal(switched.active, slotIds.secondId, 'El identificador activo debe corresponder a Bruno');
+            await page.evaluate(() => Save.activate(Save.list().find(item => item.name === 'Ariadna').id));
+
             // Regresión narrativa: apertura aprobada, descubrimientos graduales y Athun permanente.
             await page.evaluate(async () => {
               const player = { name: 'Ariadna' };
