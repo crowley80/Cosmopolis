@@ -159,6 +159,18 @@ jobs:
             if (await page.locator('.atlas-map-node').count() < 1) throw new Error('El mapa no representa la ubicación actual');
             await page.locator('#closeToolPanel').click();
 
+            // Cada acceso debe abrir su panel correcto, no el de otro botón.
+            for (const [button, expected] of [
+              ['#openHistory', 'Crónica de tus decisiones'],
+              ['#openInventory', 'Tus pertenencias'],
+              ['#openOptions', 'Opciones de la partida']
+            ]) {
+              await page.locator(button).click();
+              await page.locator('#toolPanelTitle').waitFor();
+              assert.equal((await page.locator('#toolPanelTitle').innerText()).trim(), expected, button + ' debe abrir ' + expected);
+              await page.locator('#closeToolPanel').click();
+            }
+
             // Regresión narrativa: apertura aprobada, descubrimientos graduales y Athun permanente.
             await page.evaluate(async () => {
               const player = { name: 'Ariadna' };
