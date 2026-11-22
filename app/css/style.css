@@ -1807,3 +1807,40 @@ body.athun-secondary-mode {
   #app.athun-secondary-screen > .secondary-actions { gap:5px; }
   #app.athun-secondary-screen > .secondary-actions button { padding:7px 5px; font-size:.8rem; }
 }
+
+
+/* Los marcos, el campo y los cinco accesos ya están impresos en la plantilla principal.
+   Los elementos HTML conservan interacción y accesibilidad sin dibujar duplicados. */
+.adventure-screen .player-panel textarea {
+  color:#24170d;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+.adventure-screen .player-panel form > button[type="submit"] {
+  color:transparent !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  font-size:0 !important;
+}
+.adventure-screen .toolbar-button {
+  color:transparent !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+.adventure-screen .toolbar-button svg,
+.adventure-screen .toolbar-button > span[aria-hidden="true"] {
+  opacity:0 !important;
+}
+.adventure-screen .toolbar-button > span:last-child {
+  position:absolute !important;
+  width:1px;
+  height:1px;
+  margin:-1px;
+  padding:0;
+  overflow:hidden;
+  clip-path:inset(50%);
+  white-space:nowrap;
+}
