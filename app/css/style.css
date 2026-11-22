@@ -1590,3 +1590,42 @@ body.athun-secondary-mode {
 
 /* Las dos rosas de los extremos no forman parte de la plantilla aprobada. */
 .compass { display:none !important; }
+
+
+/* ATHUN — base común de papiro; el archivo se incorpora en app/assets/. */
+html, body {
+  min-height: 100%;
+  background: #ead9b5;
+}
+body {
+  padding: 0;
+  background-image: url('../assets/athun-papiro-universal.webp');
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: 100% 100vh;
+  background-attachment: fixed;
+  color: #321907;
+}
+#app { min-height: 100vh; }
+.athun-secondary-mode {
+  min-height: 100vh;
+  background-image: url('../assets/athun-papiro-universal.webp');
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: 100% 100vh;
+  background-attachment: fixed;
+}
+.athun-secondary-screen { min-height: 100vh; }
+.adventure-screen {
+  background-color: transparent;
+  background-image: url('../assets/athun-papiro-universal.webp');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+.adventure-screen::before,
+.adventure-screen::after { content: none; display: none; }
+.manuscript-header {
+  grid-template-columns: minmax(0,1fr) minmax(118px,.96fr);
+}
+.compass { display: none !important; }
