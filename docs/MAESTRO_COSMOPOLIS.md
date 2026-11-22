@@ -2355,3 +2355,10 @@ La captura móvil recuperada de la ejecución 45023756290 mostró defectos concr
 Respaldos previos de esta tanda: `app/css/style.css.bak-20261122-overlay-alignment`, `.github/workflows/visual-preview.yml.bak-20261122-overlay-alignment` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-overlay-alignment`.
 
 **Pendiente:** ejecutar de nuevo Playwright y revisar la captura corregida; incorporar el original WebP de alta resolución al repositorio; validar visual y táctilmente en Chrome Android. No se modifica `app.js`, no se recupera el rótulo «EL GRIMORIO TE RECUERDA», no se toca el almacenamiento ni se modifica `main`.
+
+
+### Ajuste del área táctil inferior — 22/11/2026
+
+La captura de la revisión visual 45024177228 confirma que el campo de acción y los cinco accesos ya quedan alineados con los marcos dibujados y que no se duplican «Enviar», iconos ni etiquetas. La ejecución detectó además que el texto decorativo «Tu turno · Escribe tu acción» interceptaba el clic automatizado sobre el acceso Mapa. Se desactivan únicamente los eventos de puntero en ese rótulo; los cinco botones mantienen sus áreas táctiles y manejadores. Respaldos: `app/css/style.css.bak-20261122-pointer-hitbox` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-pointer-hitbox`.
+
+La misma ejecución sigue sin ser verde porque el clic sobre Mapa expiró por esa intercepción; se debe repetir Playwright después de este ajuste. El fallo anterior de progresión de metas narrativas sigue siendo independiente y no se oculta.
