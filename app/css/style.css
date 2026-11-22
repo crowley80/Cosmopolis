@@ -806,9 +806,10 @@ body {
   padding: 8px;
   color: #321907;
   background-color: #1b1009;
-  background-image:
-    radial-gradient(ellipse at 50% 18%, rgba(245, 225, 190, .96) 0%, rgba(205, 165, 108, .91) 58%, rgba(75, 42, 19, .96) 100%),
-    repeating-linear-gradient(0deg, rgba(91, 55, 24, .045) 0 1px, transparent 1px 5px);
+  background-image: url("../assets/athun-papiro-universal.webp");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
   background-attachment: fixed;
 }
 #app { min-height: calc(100vh - 16px); }
@@ -832,10 +833,7 @@ fieldset { background:rgba(255,242,211,.42); }
   outline:0;
 }
 .adventure-screen {
-  background-color:#160b05;
-  background-image:
-    radial-gradient(ellipse at 50% 14%, rgba(121, 78, 42, .24), transparent 66%),
-    linear-gradient(180deg, #2b1a0e 0%, #160b05 100%);
+  background: transparent;
 }
 .adventure-screen::before { content:none; display:none; }
 .adventure-screen::after { display:none; }
@@ -865,9 +863,10 @@ fieldset { background:rgba(255,242,211,.42); }
 .player-panel form { grid-template-columns:minmax(0,1fr) 78px; gap:7px; }
 .player-panel textarea {
   min-height:64px;
-  background:rgba(255,239,207,.82);
-  border:1px solid #704017;
-  border-radius:5px;
+  background:transparent;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
 }
 .player-panel form > button { min-height:54px; }
 .manuscript-toolbar {
@@ -890,6 +889,11 @@ fieldset { background:rgba(255,242,211,.42); }
   .manuscript-meta { font-size:.57rem; }
   .manuscript-toolbar { margin:2px 7px 6px; padding:3px 5px; }
   .toolbar-button { font-size:.56rem; }
+}
+.player-panel textarea:focus {
+  outline: none;
+  border: 0;
+  box-shadow: none;
 }
 
 
