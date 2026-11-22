@@ -1951,8 +1951,14 @@ body:not(.athun-secondary-mode) .adventure-screen {
   gap:5px !important;
   padding:5px 2px 8px !important;
 }
+.adventure-screen .wordmark {
+  width:100% !important;
+  align-self:flex-start !important;
+  text-align:left !important;
+}
 .adventure-screen .wordmark h1 {
   margin:0 !important;
+  text-align:left !important;
   color:var(--athun-heading-burgundy) !important;
   font-family:Georgia,'Palatino Linotype',serif !important;
   font-size:clamp(1.45rem,6vw,2.15rem) !important;
@@ -2033,7 +2039,7 @@ body:not(.athun-secondary-mode) .adventure-screen {
   outline:0 !important;
   border-radius:0 !important;
   box-shadow:none !important;
-  resize:vertical !important;
+  resize:none !important;
   font:inherit !important;
 }
 .adventure-screen .player-panel textarea::placeholder {
