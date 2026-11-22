@@ -2581,3 +2581,12 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - La ejecución completa de GitHub Actions terminó correctamente: run `45083751624` (commit `c4ec9e8735226a68502ded9cd8d348bc3c8a9f3d`). Incluye pruebas de render móvil/escritorio, controles Pista/Historial/Mapa/Inventario/Opciones, respuesta del narrador, guardado/recarga y aislamiento de partidas.
 - Artefacto de vista generado por el propio entorno de pruebas: `cosmopolis-visual-preview` (ID `14777294620`). La captura móvil confirma el papiro universal, texto narrativo directo sobre el papel, título granate, texto negro, campo sin marco y cinco accesos inferiores.
 - Esta validación automatizada no sustituye una comprobación en Chrome Android físico; el dispositivo local aún debe sincronizar esta rama para mostrar los cambios.
+
+
+### Ajustes finales de accesibilidad y lectura — 23/11/2026
+
+- La captura automatizada permitió detectar que la etiqueta visible de Pista no aparecía de forma fiable aunque el botón respondía. Se simplificó su marcado accesible y se añadió una etiqueta visual explícita bajo el icono.
+- La prueba Playwright comprueba ahora que la etiqueta Pista tiene contenido y dimensiones visibles, además de verificar que abre su panel correcto.
+- Se elevó el tamaño mínimo de los metadatos de ubicación, momento y día para mejorar su lectura en móvil.
+- Nueva ejecución completa satisfactoria: GitHub Actions run `45084573340`, commit `6c63c9fcd34a7c063e6ad0fac7f20efdf79cb01d`. Incluye renderizado móvil/escritorio, navegación de herramientas, paneles transparentes, guardado/recuperación, pruebas narrativas y comprobación de etiqueta Pista.
+- Artefacto visual actualizado: `cosmopolis-visual-preview`, ID `14778825686`.
