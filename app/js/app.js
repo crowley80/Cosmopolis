@@ -536,9 +536,6 @@ const Athun = {
                 '<section class="player-panel">' +
                     '<div class="player-heading"><button id="openExplore" type="button">Explorar</button><span>Tu turno · Escribe tu acción</span><button id="backToProfile" type="button">Mi ficha</button></div>' +
                     '<form id="actionForm">' +
-                        '<div class="quill-inkwell" aria-hidden="true">' +
-                            '<svg viewBox="0 0 120 140" role="presentation"><defs><linearGradient id="featherTone" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f0d18e"/><stop offset=".38" stop-color="#9b672e"/><stop offset="1" stop-color="#3b1d09"/></linearGradient><linearGradient id="inkGlass" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#170b05"/><stop offset=".28" stop-color="#71431e"/><stop offset=".52" stop-color="#241006"/><stop offset=".8" stop-color="#8b5b2b"/><stop offset="1" stop-color="#1a0b04"/></linearGradient></defs><path d="M48 12 C25 17 10 42 14 72 C17 91 31 101 39 108 C39 83 46 48 48 12Z" fill="url(#featherTone)" stroke="#321705" stroke-width="2"/><path d="M47 14 C53 36 48 68 39 108" fill="none" stroke="#f0d39a" stroke-width="2.4"/><g fill="none" stroke="#4b260d" stroke-width="1.4"><path d="M43 28L23 35 M43 38L18 49 M42 49L17 62 M41 60L20 75 M40 72L26 87 M49 29L61 35 M48 40L59 48 M46 52L56 62 M44 65L51 76 M42 78L47 88"/></g><path d="M39 108L79 24" fill="none" stroke="#2c1508" stroke-width="2.5"/><path d="M76 22L83 10L82 28L78 34Z" fill="#d8b574" stroke="#4a250c" stroke-width="1.5"/><path d="M23 100 Q15 108 19 124 Q40 137 66 125 Q73 112 61 100Z" fill="url(#inkGlass)" stroke="#1c0b03" stroke-width="3"/><path d="M29 100L29 91Q40 86 53 91L54 101" fill="#4b2810" stroke="#1d0b03" stroke-width="2"/><path d="M25 109Q42 117 64 109 M23 120Q42 130 66 120" fill="none" stroke="#c18a48" stroke-width="2"/><path d="M32 105Q27 114 32 122" fill="none" stroke="#e5c17e" stroke-width="2" opacity=".75"/><ellipse cx="41" cy="91" rx="15" ry="4" fill="#a9783d" stroke="#321705" stroke-width="2"/><path d="M31 89L31 83Q41 79 51 83L51 89" fill="#5a3215" stroke="#321705" stroke-width="2"/></svg>' +
-                        '</div>' +
                         '<textarea id="playerAction" required placeholder="Escribe aquí tu acción..."></textarea>' +
                         '<button type="submit">Enviar</button>' +
                     '</form>' +
@@ -546,12 +543,12 @@ const Athun = {
                 '</section>' +
 
                 '<nav class="manuscript-toolbar" aria-label="Herramientas de aventura">' +
-                    '<button class="toolbar-button" id="openHint" type="button"><span aria-hidden="true">✦</span><span>Pista</span></button><span class="toolbar-divider" aria-hidden="true"></span><button class="toolbar-button" id="openHistory" type="button"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M5 10q10-4 19 4v28q-9-8-19-4zM43 10q-10-4-19 4v28q9-8 19-4z"/><path d="M24 14v28M9 16q6-2 11 2M9 23q6-2 11 2M39 16q-6-2-11 2M39 23q-6-2-11 2"/><path d="M5 10l3-4 16 7 16-7 3 4M5 38l3 3 16-4 16 4 3-3"/></svg><span>Historial</span></button>' +
-                    '<span class="toolbar-divider" aria-hidden="true"></span>' +
+                    '<button class="toolbar-button" id="openHint" type="button"><span aria-hidden="true">✦</span><span>Pista</span></button><button class="toolbar-button" id="openHistory" type="button"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M5 10q10-4 19 4v28q-9-8-19-4zM43 10q-10-4-19 4v28q9-8 19-4z"/><path d="M24 14v28M9 16q6-2 11 2M9 23q6-2 11 2M39 16q-6-2-11 2M39 23q-6-2-11 2"/><path d="M5 10l3-4 16 7 16-7 3 4M5 38l3 3 16-4 16 4 3-3"/></svg><span>Historial</span></button>' +
+                    '' +
                     '<button class="toolbar-button" id="openMap" type="button"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 12q-4-1-4 4v25q0 3 4 2l10-5 12 5 10-5q4-1 4-5V9q0-3-4-2l-10 5-12-5z"/><path d="M18 8v30M30 12v31"/><path d="M20 17q0-5 5-5t5 5q0 5-5 11-5-6-5-11z"/><path d="M4 13q4-4 8 0M36 9q5-4 8 0M4 40q3 4 8 0M36 42q5 3 8-1"/><circle cx="25" cy="17" r="1.5"/></svg><span>Mapa</span></button>' +
-                    '<span class="toolbar-divider" aria-hidden="true"></span>' +
+                    '' +
                     '<button class="toolbar-button" id="openInventory" type="button"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M15 15q0-9 9-9t9 9l7 5 3 22H5l3-22z"/><path d="M15 15l9 6 9-6M8 22l9 5v15M40 22l-9 5v15M17 27h14v9H17z"/><path d="M20 11q4-4 8 0M21 21l3 3 3-3"/></svg><span>Inventario</span></button>' +
-                    '<span class="toolbar-divider" aria-hidden="true"></span>' +
+                    '' +
                     '<button class="toolbar-button" id="openOptions" type="button"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M20 4h8l2 7 5 2 6-3 5 7-5 5v6l5 5-5 7-6-3-5 2-2 7h-8l-2-7-5-2-6 3-5-7 5-5v-6l-5-5 5-7 6 3 5-2z"/><circle cx="24" cy="25" r="8"/><circle cx="24" cy="25" r="3"/><path d="M24 1v4M24 45v2M2 25h4M42 25h4"/></svg><span>Opciones</span></button>' +
                 '</nav>' +
             '</div>';
