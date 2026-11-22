@@ -1972,6 +1972,7 @@ body:not(.athun-secondary-mode) .adventure-screen {
 .adventure-screen .manuscript-meta span { color:var(--athun-body-ink) !important; }
 .adventure-screen .story-panel {
   flex:1 1 auto !important;
+  height:auto !important;
   min-height:0 !important;
   overflow-y:auto !important;
   padding:8px 2px !important;
@@ -1998,6 +1999,8 @@ body:not(.athun-secondary-mode) .adventure-screen {
 }
 .adventure-screen .player-panel {
   flex:0 0 auto !important;
+  height:auto !important;
+  min-height:0 !important;
   margin:0 !important;
   padding:7px 0 4px !important;
   color:var(--athun-body-ink) !important;
@@ -2057,7 +2060,10 @@ body:not(.athun-secondary-mode) .adventure-screen {
   text-shadow:none !important;
 }
 .adventure-screen .manuscript-toolbar {
-  flex:0 0 auto !important;
+  flex:0 0 clamp(58px,8dvh,72px) !important;
+  height:clamp(58px,8dvh,72px) !important;
+  min-height:clamp(58px,8dvh,72px) !important;
+  max-height:clamp(58px,8dvh,72px) !important;
   display:grid !important;
   grid-template-columns:repeat(5,minmax(0,1fr)) !important;
   gap:5px !important;
