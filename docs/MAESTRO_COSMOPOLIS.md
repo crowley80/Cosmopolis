@@ -2419,3 +2419,12 @@ En paralelo, se añadió a la fixture de la segunda interacción la frase que vi
 - Se eliminan del HTML generado las dos rosas de los extremos del encabezado; el título y los datos de ubicación/tiempo permanecen.
 - Se desactivan las capas CSS que dibujaban un papiro sustituto sobre la plantilla.
 - **Comprobación pendiente:** incorporar el archivo binario a esa ruta y verificar el resultado en navegador. No se declara aún aplicado hasta que el recurso exista en el repositorio.
+
+
+### Ajuste responsivo de las pantallas sobre el papiro — 22/11/2026
+
+- Se refinó la composición CSS para que el fondo vertical se escale proporcionalmente en el documento y no se fuerce a cubrir una altura fija de pantalla en las pantallas auxiliares.
+- La pantalla de aventura conserva el fondo transparente de sus zonas de contenido y usa el mismo recurso universal como fondo, sin pseudoelementos decorativos superpuestos.
+- Se reforzó el contraste de texto narrativo, metadatos, campo de escritura, botón de envío y herramientas inferiores con tonos de tinta y papel, sin introducir una paleta nueva.
+- Se añadieron ajustes para anchos móviles pequeños.
+- No se han ejecutado pruebas visuales en Chrome Android. El CSS referencia `app/assets/athun-papiro-universal.webp`, pero el recurso todavía debe incorporarse a GitHub; hasta entonces no puede considerarse validada la apariencia final.
