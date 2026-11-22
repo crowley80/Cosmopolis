@@ -203,7 +203,24 @@ jobs:
               await page.locator(button).click();
               await page.locator('#toolPanelTitle').waitFor();
               assert.equal((await page.locator('#toolPanelTitle').innerText()).trim(), expected, button + ' debe abrir ' + expected);
-              await page.locator('#closeToolPanel').click();
+              const panelStyles = await page.locator('.tool-overlay, .tool-panel, .tool-panel-heading, .tool-panel-content').evaluateAll(nodes => nodes.map(node => {
+                const style = getComputedStyle(node);
+                return { background: style.backgroundColor, image: style.backgroundImage, border: style.borderTopWidth, shadow: style.boxShadow };
+              }));
+              assert.ok(panelStyles.every(style => style.background === 'rgba(0, 0, 0, 0)' && style.image === 'none' && style.border === '0px' && style.shadow === 'none'), button + ' debe mostrar texto sin caja visual');
+              if (button === '#openInventory') {
+                assert.ok(await page.locator('#toolOverlay').getByText('Athun — grimorio consciente').count(), 'El inventario debe mostrar Athun');
+              }
+              if (button === '#openOptions') {
+                await page.locator('#saveNow').click();
+                assert.match(await page.locator('#toolFeedback').innerText(), /guardado correctamente/, 'Guardar ahora debe confirmar el guardado');
+                await page.locator('#profileFromOptions').click();
+                await page.locator('#startAdventure').waitFor();
+                assert.equal((await page.locator('.character-creation h2').first().innerText()).trim(), 'Ariadna', 'Consultar mi ficha debe abrir la ficha del protagonista');
+                await page.evaluate(() => Athun.showAdventure(Save.load().character, Save.load().adventure));
+              } else {
+                await page.locator('#closeToolPanel').click();
+              }
             }
 
             // Regresión narrativa: apertura aprobada, descubrimientos graduales y Athun permanente.
