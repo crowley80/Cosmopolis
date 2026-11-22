@@ -691,7 +691,7 @@ jobs:
             const liveMeta = await page.locator('.manuscript-meta').textContent();
             assert.ok(liveMeta.includes('Momento: Mediodía'), 'La cabecera debe actualizarse sin recargar: ' + liveMeta);
             await page.reload({ waitUntil: 'networkidle' });
-            const reloadContinue = page.locator('[data-load-save]').first();
+            const reloadContinue = page.locator('.profile-section').filter({ hasText: 'Ariadna' }).locator('[data-load-save]');
             if (await reloadContinue.count()) await reloadContinue.click();
             await page.waitForFunction(() => {
               const story = document.querySelector('#storyContent');
