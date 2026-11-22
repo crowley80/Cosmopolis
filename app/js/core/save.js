@@ -471,12 +471,30 @@ const Save = {
         const index = this.readJSON(this.indexKey);
         if (!index || !Array.isArray(index.saves) || !index.saves.some(entry => entry.id === id)) return false;
         if (!this.readSlot(id)) return false;
+
+        const originalActive = localStorage.getItem(this.activeKey);
+        let failure = null;
         try {
-            return this.writeVerified(this.activeKey, { id });
+            if (this.writeVerified(this.activeKey, { id })) return true;
+            failure = new Error('No se pudo verificar la nueva selección de partida.');
         } catch (error) {
-            console.error('No se pudo activar la partida:', error);
-            return false;
+            failure = error;
         }
+
+        // Una escritura puede cambiar el valor y aun así fallar al verificarlo.
+        // En ese caso, la selección anterior debe quedar exactamente como estaba.
+        try {
+            if (originalActive === null) localStorage.removeItem(this.activeKey);
+            else localStorage.setItem(this.activeKey, originalActive);
+            if (localStorage.getItem(this.activeKey) !== originalActive) {
+                throw new Error('No se pudo verificar la restauración de la partida activa anterior.');
+            }
+        } catch (rollbackError) {
+            console.error('No se pudo restaurar la partida activa anterior:', rollbackError);
+        }
+
+        console.error('No se pudo activar la partida:', failure);
+        return false;
     },
 
     deleteSlot(id) {
