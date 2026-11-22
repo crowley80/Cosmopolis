@@ -224,7 +224,7 @@ jobs:
             }
 
             // Cambiar de partida desde Opciones debe abrir el selector y activar el guardado elegido.
-            const slotIds = await page.evaluate(() => {
+            const optionSwitchIds = await page.evaluate(() => {
               const firstId = Save.getActiveId();
               const secondCharacter = {
                 name: 'Bruno', nature: 'Humano', appearance: 'Personaje de prueba',
@@ -255,7 +255,7 @@ jobs:
             }));
             assert.equal(switched.character, 'Bruno', 'Cambiar de partida debe activar el personaje elegido');
             assert.equal(switched.action, 'Acción exclusiva de Bruno', 'El historial debe pertenecer a la partida elegida');
-            assert.equal(switched.active, slotIds.secondId, 'El identificador activo debe corresponder a Bruno');
+            assert.equal(switched.active, optionSwitchIds.secondId, 'El identificador activo debe corresponder a Bruno');
             await page.evaluate(() => Save.activate(Save.list().find(item => item.name === 'Ariadna').id));
 
             // Regresión narrativa: apertura aprobada, descubrimientos graduales y Athun permanente.
