@@ -2537,4 +2537,4 @@ Respaldos previos creados en la misma rama:
 - PR #4 sigue divergente respecto a `main`; no hay validación de CI localizada para su cabeza actual. No se intenta rebase ni fusión.
 - La prueba táctil en Chrome Android con partidas antiguas y nuevas sigue pendiente. Tampoco se ha probado aquí la inferencia con el modelo local real.
 - No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
-- `main) permanece intacta; ningún PR se ha fusionado.
+- `main` permanece intacta; ningún PR se ha fusionado.
