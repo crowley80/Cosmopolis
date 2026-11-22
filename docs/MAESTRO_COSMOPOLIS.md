@@ -2547,3 +2547,13 @@ Se confirma como referencia visual única para todas las pantallas el archivo `a
 ## Ajuste de altura de la aventura — 22/11/2026
 
 La revisión de la captura móvil mostró que la aventura conservaba la proporción de la imagen como altura del contenedor y dejaba espacio vacío debajo. Se cambió la composición para que el fondo universal se pinte una sola vez en el viewport y la interfaz ocupe toda la altura visible del dispositivo. La pantalla auxiliar sigue utilizando el mismo recurso en su modo correspondiente. La validación automatizada de este último ajuste queda pendiente de la ejecución `Visual preview` del commit `b273809`.
+
+
+## Validación integral de navegación y servidor local — 23/11/2026
+
+- La ejecución Playwright **45081138717** terminó correctamente.
+- La prueba generó las vistas móviles y de escritorio y completó las regresiones narrativas y las interacciones de Historial, Mapa, Inventario (incluida la retirada de objetos), Opciones, exploración, respuesta de IA local, guardado y recarga.
+- También se verificó el cambio de partida desde Opciones entre dos protagonistas, la conservación de los datos de cada partida y la restauración del guardado de Ariadna al continuar la prueba.
+- El servidor server.js arrancó en CI y sirvió la ruta raíz / con el título correcto de Athun. Se corrigió la resolución de / para servir index.html.
+- Artefacto de capturas: cosmopolis-visual-preview, ejecución 45081138717.
+- Esta validación automatizada no sustituye la prueba táctil y visual en Chrome Android físico, que sigue pendiente.
