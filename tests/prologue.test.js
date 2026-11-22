@@ -12,7 +12,11 @@ function createHarness(options = {}) {
         getItem(key) { return values.has(key) ? values.get(key) : null; },
         setItem(key, value) { values.set(String(key), String(value)); }
     };
-    const app = { innerHTML: '' };
+    const app = {
+        innerHTML: '',
+        classList: { toggle() {} }
+    };
+    const body = { classList: { toggle() {} } };
     let continueHandler = null;
     const continueButton = {
         addEventListener(event, handler) {
@@ -20,6 +24,7 @@ function createHarness(options = {}) {
         }
     };
     const document = {
+        body,
         getElementById(id) {
             if (id === 'app') return app;
             if (id === 'continueFromPrologue') return continueButton;
