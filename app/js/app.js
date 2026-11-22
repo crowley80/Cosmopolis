@@ -295,7 +295,6 @@ const Athun = {
             <section class="character-creation">
                 <button type="button" id="continueFromPrologue">Continuar</button>
             </section>
-            <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
         `;
 
         this.prepareSecondaryLayout();
@@ -352,7 +351,6 @@ const Athun = {
         app.innerHTML = `
             <header class="main-header">
                 <h1>Athun: el grimorio oscuro</h1>
-                <p>Un mundo compartido. Historias que pertenecen a cada protagonista.</p>
             </header>
             <section class="character-creation">
                 <div class="section-heading">
@@ -388,7 +386,6 @@ const Athun = {
             <header class="main-header">
                 <p class="eyebrow">UNIVERSO DE AVENTURAS</p>
                 <h1>Athun: el grimorio oscuro</h1>
-                <p>Un universo. Infinitas posibilidades.</p>
             </header>
             <section class="welcome">
                 <h2>El universo te espera</h2>
@@ -544,7 +541,7 @@ const Athun = {
                 
                 '<header class="manuscript-header">' +
                     '<div class="compass compass-left" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true"><defs><linearGradient id="roseGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f2d18a"/><stop offset=".48" stop-color="#9b6128"/><stop offset="1" stop-color="#321506"/></linearGradient></defs><circle cx="60" cy="60" r="56" fill="none" stroke="#3a1a07" stroke-width="2.4"/><circle cx="60" cy="60" r="51" fill="none" stroke="#d4a45e" stroke-width="1.4"/><circle cx="60" cy="60" r="43" fill="none" stroke="#6b3b14" stroke-width="1.2" stroke-dasharray="1.8 3.1"/><g stroke="#542909" stroke-width="1.3"><path d="M60 5V18 M60 102V115 M5 60H18 M102 60H115 M21 21L30 30 M90 90L99 99 M99 21L90 30 M30 90L21 99"/></g><path d="M60 8 L69 48 L110 60 L69 72 L60 112 L51 72 L10 60 L51 48Z" fill="url(#roseGold)" stroke="#351604" stroke-width="2"/><path d="M60 19 L64 55 L101 60 L64 65 L60 101 L56 65 L19 60 L56 55Z" fill="#e8c47d" stroke="#4a2309" stroke-width="1.5"/><path d="M60 8L60 112 M10 60H110 M21 21L99 99 M99 21L21 99" stroke="#4b240b" stroke-width="1.4"/><path d="M60 28 L66 55 L92 60 L66 65 L60 92 L54 65 L28 60 L54 55Z" fill="#713c13" stroke="#e4bd77" stroke-width="1.5"/><circle cx="60" cy="60" r="8" fill="#321506" stroke="#e7c27a" stroke-width="2"/><circle cx="60" cy="60" r="2.5" fill="#f4d99e"/><path d="M60 2L63 12L60 9L57 12Z M118 60L108 63L111 60L108 57Z M60 118L57 108L60 111L63 108Z M2 60L12 57L9 60L12 63Z" fill="#321506" stroke="#d9ad69" stroke-width=".8"/></svg><span class="north">N</span><span class="east">E</span><span class="south">S</span><span class="west">O</span></div>' +
-                    '<div class="wordmark"><h1>Athun: el grimorio oscuro</h1><p>Una aventura sin límites</p></div>' +
+                    '<div class="wordmark"><h1>Athun: el grimorio oscuro</h1></div>' +
                     '<div class="manuscript-meta" id="manuscriptMeta"><span>Ubicación: ' + this.escape(worldState.currentLocation || adventure.location || 'Tierras desconocidas') + '</span><span>Momento: ' + clock + '</span><span>Día de aventura: ' + dayLabel + '</span></div>' +
                     '<div class="compass compass-right" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true"><defs><linearGradient id="roseGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f2d18a"/><stop offset=".48" stop-color="#9b6128"/><stop offset="1" stop-color="#321506"/></linearGradient></defs><circle cx="60" cy="60" r="56" fill="none" stroke="#3a1a07" stroke-width="2.4"/><circle cx="60" cy="60" r="51" fill="none" stroke="#d4a45e" stroke-width="1.4"/><circle cx="60" cy="60" r="43" fill="none" stroke="#6b3b14" stroke-width="1.2" stroke-dasharray="1.8 3.1"/><g stroke="#542909" stroke-width="1.3"><path d="M60 5V18 M60 102V115 M5 60H18 M102 60H115 M21 21L30 30 M90 90L99 99 M99 21L90 30 M30 90L21 99"/></g><path d="M60 8 L69 48 L110 60 L69 72 L60 112 L51 72 L10 60 L51 48Z" fill="url(#roseGold)" stroke="#351604" stroke-width="2"/><path d="M60 19 L64 55 L101 60 L64 65 L60 101 L56 65 L19 60 L56 55Z" fill="#e8c47d" stroke="#4a2309" stroke-width="1.5"/><path d="M60 8L60 112 M10 60H110 M21 21L99 99 M99 21L21 99" stroke="#4b240b" stroke-width="1.4"/><path d="M60 28 L66 55 L92 60 L66 65 L60 92 L54 65 L28 60 L54 55Z" fill="#713c13" stroke="#e4bd77" stroke-width="1.5"/><circle cx="60" cy="60" r="8" fill="#321506" stroke="#e7c27a" stroke-width="2"/><circle cx="60" cy="60" r="2.5" fill="#f4d99e"/><path d="M60 2L63 12L60 9L57 12Z M118 60L108 63L111 60L108 57Z M60 118L57 108L60 111L63 108Z M2 60L12 57L9 60L12 63Z" fill="#321506" stroke="#d9ad69" stroke-width=".8"/></svg><span class="north">N</span><span class="east">E</span><span class="south">S</span><span class="west">O</span></div>' +
                     
