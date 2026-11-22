@@ -2550,6 +2550,8 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 
 
 ## Validación integral de navegación y servidor local — 23/11/2026
+- La ejecución posterior **45081285699**, que valida el cambio para permitir un puerto alternativo en `server.js`, también terminó correctamente: servidor, renderizados y comprobaciones Playwright completados.
+
 
 - La ejecución Playwright **45081138717** terminó correctamente.
 - La prueba generó las vistas móviles y de escritorio y completó las regresiones narrativas y las interacciones de Historial, Mapa, Inventario (incluida la retirada de objetos), Opciones, exploración, respuesta de IA local, guardado y recarga.
