@@ -2362,3 +2362,8 @@ Respaldos previos de esta tanda: `app/css/style.css.bak-20261122-overlay-alignme
 La captura de la revisión visual 45024177228 confirma que el campo de acción y los cinco accesos ya quedan alineados con los marcos dibujados y que no se duplican «Enviar», iconos ni etiquetas. La ejecución detectó además que el texto decorativo «Tu turno · Escribe tu acción» interceptaba el clic automatizado sobre el acceso Mapa. Se desactivan únicamente los eventos de puntero en ese rótulo; los cinco botones mantienen sus áreas táctiles y manejadores. Respaldos: `app/css/style.css.bak-20261122-pointer-hitbox` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-pointer-hitbox`.
 
 La misma ejecución sigue sin ser verde porque el clic sobre Mapa expiró por esa intercepción; se debe repetir Playwright después de este ajuste. El fallo anterior de progresión de metas narrativas sigue siendo independiente y no se oculta.
+
+
+### Corrección del contenedor del rótulo táctil — 22/11/2026
+
+La segunda ejecución visual confirmó que el texto ya no interceptaba el toque, pero el contenedor completo `.player-heading` seguía cubriendo parte de la barra inferior. Se desactivan los eventos de puntero en el contenedor decorativo; los controles reales de la barra conservan sus propios eventos. Respaldos: `app/js/core/save.js` no se modifica; copias previas de CSS y documento: `app/css/style.css.bak-20261122-heading-hitbox` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-heading-hitbox`. Pendiente repetir la vista previa para confirmar que Mapa y los demás accesos reciben el toque.
