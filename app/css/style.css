@@ -2044,6 +2044,10 @@ body:not(.athun-secondary-mode) .adventure-screen {
   border-bottom:1px solid rgba(36,23,13,.55) !important;
   border-radius:0 !important;
   box-shadow:none !important;
+  font-size:clamp(.78rem,2.8vw,.96rem) !important;
+  font-family:inherit !important;
+  font-weight:600 !important;
+  text-shadow:none !important;
 }
 .adventure-screen .manuscript-toolbar {
   flex:0 0 auto !important;
