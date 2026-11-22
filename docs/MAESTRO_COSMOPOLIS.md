@@ -2561,3 +2561,13 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - El servidor server.js arrancó en CI y sirvió la ruta raíz / con el título correcto de Athun. Se corrigió la resolución de / para servir index.html.
 - Artefacto de capturas: cosmopolis-visual-preview, ejecución 45081138717.
 - Esta validación automatizada no sustituye la prueba táctil y visual en Chrome Android físico, que sigue pendiente.
+
+
+## Unificación visual de la pantalla del narrador — 23/11/2026
+
+- Se sustituyó la acumulación de bloques CSS contradictorios por una única definición final para la pantalla de aventura.
+- El fondo se dibuja una sola vez desde `athun-papiro-universal.webp`; la pantalla del narrador queda transparente y ocupa el viewport.
+- El título y los encabezamientos usan granate `#713B32`; narración, metadatos y texto general usan negro `#17100a`.
+- El campo de acción queda sin fondo, borde, contorno ni sombra. El botón Enviar y los cinco accesos inferiores conservan su función, sin cajas coloreadas alrededor.
+- Los paneles auxiliares y el contenido del atlas permanecen transparentes sobre el mismo papiro.
+- Este cambio es una corrección de estilos; todavía requiere ejecución automatizada y revisión de la vista generada. No equivale a una validación en Chrome Android físico.
