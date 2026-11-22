@@ -1556,3 +1556,6 @@ body.athun-secondary-mode {
 
 /* El rótulo del separador es decorativo y no debe interceptar los botones inferiores. */
 .player-heading > span { pointer-events:none; }
+
+/* El contenedor del rótulo tampoco debe cubrir las zonas táctiles inferiores. */
+.player-heading { pointer-events:none; }
