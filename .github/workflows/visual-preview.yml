@@ -75,6 +75,33 @@ jobs:
             const assert = require('node:assert/strict');
             await page.locator('.adventure-screen').waitFor();
 
+            // Capturas de las pantallas auxiliares sobre el papiro en blanco.
+            const secondaryContext = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+            const secondaryPage = await secondaryContext.newPage();
+            const secondaryErrors = [];
+            secondaryPage.on('pageerror', error => secondaryErrors.push(error.message));
+            await secondaryPage.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
+            await secondaryPage.locator('#continueFromPrologue').waitFor();
+            const prologueBackground = await secondaryPage.evaluate(() => ({
+              image: getComputedStyle(document.body).backgroundImage,
+              parchment: getComputedStyle(document.querySelector('.secondary-scroll > .character-creation')).backgroundColor
+            }));
+            assert.ok(prologueBackground.image.includes('athun-papiro-universal.webp'), 'El prólogo debe usar el papiro universal en blanco');
+            assert.equal(prologueBackground.parchment, 'rgba(0, 0, 0, 0)', 'El prólogo no debe quedar dentro de un rectángulo opaco');
+            await secondaryPage.screenshot({ path: 'artifacts/athun-prologue-mobile.png', fullPage: true });
+            await secondaryPage.locator('#continueFromPrologue').click();
+            await secondaryPage.locator('#characterForm').waitFor();
+            await secondaryPage.screenshot({ path: 'artifacts/athun-character-creation-mobile.png', fullPage: true });
+            await secondaryPage.locator('#characterForm input[name="name"]').fill('Prueba visual');
+            await secondaryPage.locator('#characterForm button[type="submit"]').click();
+            await secondaryPage.locator('#startAdventure').waitFor();
+            await secondaryPage.screenshot({ path: 'artifacts/athun-profile-mobile.png', fullPage: true });
+            await secondaryPage.evaluate(() => Athun.showSaveSelection());
+            await secondaryPage.locator('[data-load-save]').waitFor();
+            await secondaryPage.screenshot({ path: 'artifacts/athun-save-selection-mobile.png', fullPage: true });
+            assert.equal(secondaryErrors.length, 0, 'Las pantallas auxiliares no deben producir errores JavaScript: ' + secondaryErrors.join('; '));
+            await secondaryContext.close();
+
             // Regresión de composición: un único campo de acción y cinco accesos, sin adornos duplicados.
             const toolbarButtons = page.locator('.manuscript-toolbar .toolbar-button');
             assert.equal(await toolbarButtons.count(), 5, 'La barra inferior debe contener exactamente cinco accesos');
