@@ -2182,3 +2182,53 @@ body:not(.athun-secondary-mode) {
   border:0 !important;
   box-shadow:none !important;
 }
+
+
+/* ATHUN — jerarquía cromática aprobada: encabezados granate y texto negro. */
+:root {
+  --athun-heading-burgundy:#713B32;
+  --athun-body-ink:#17100a;
+}
+body,
+body p,
+body label,
+body li,
+body small,
+body span,
+.adventure-screen .story-content,
+.adventure-screen .manuscript-meta,
+.adventure-screen .player-panel,
+#app.athun-secondary-screen,
+#app.athun-secondary-screen p,
+#app.athun-secondary-screen label,
+#app.athun-secondary-screen li,
+#app.athun-secondary-screen small {
+  color:var(--athun-body-ink);
+}
+.wordmark h1,
+.main-header h1,
+.main-header h2,
+.welcome h2,
+.section-heading h2,
+#app.athun-secondary-screen h1,
+#app.athun-secondary-screen h2,
+#app.athun-secondary-screen h3,
+.tool-panel-heading h2,
+.tool-panel-content h3 {
+  color:var(--athun-heading-burgundy) !important;
+  text-shadow:0 1px rgba(255,248,226,.58);
+}
+/* El campo de escritura queda integrado en el papel, sin marco ni caja. */
+.adventure-screen .player-panel textarea {
+  color:var(--athun-body-ink) !important;
+  background:transparent !important;
+  border:0 !important;
+  outline:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+}
+.adventure-screen .player-panel textarea:focus {
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+}
