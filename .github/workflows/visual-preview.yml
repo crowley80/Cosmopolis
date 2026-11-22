@@ -91,13 +91,28 @@ jobs:
             await secondaryPage.screenshot({ path: 'artifacts/athun-prologue-mobile.png', fullPage: true });
             await secondaryPage.locator('#continueFromPrologue').click();
             await secondaryPage.locator('#characterForm').waitFor();
+            const characterScreenStyles = await secondaryPage.locator('.character-creation, #characterForm fieldset').evaluateAll(nodes => nodes.map(node => {
+              const style = getComputedStyle(node);
+              return { background: style.backgroundColor, image: style.backgroundImage, shadow: style.boxShadow };
+            }));
+            assert.ok(characterScreenStyles.every(style => style.background === 'rgba(0, 0, 0, 0)' && style.image === 'none' && style.shadow === 'none'), 'La creación de personaje debe escribirse directamente sobre el papiro');
             await secondaryPage.screenshot({ path: 'artifacts/athun-character-creation-mobile.png', fullPage: true });
             await secondaryPage.locator('#characterForm input[name="name"]').fill('Prueba visual');
             await secondaryPage.locator('.secondary-actions button[form="characterForm"][type="submit"]').click();
             await secondaryPage.locator('#startAdventure').waitFor();
+            const profileScreenStyles = await secondaryPage.locator('.character-creation, .profile-section').evaluateAll(nodes => nodes.map(node => {
+              const style = getComputedStyle(node);
+              return { background: style.backgroundColor, image: style.backgroundImage, shadow: style.boxShadow };
+            }));
+            assert.ok(profileScreenStyles.every(style => style.background === 'rgba(0, 0, 0, 0)' && style.image === 'none' && style.shadow === 'none'), 'La ficha debe mostrar sus textos sin tarjetas de fondo');
             await secondaryPage.screenshot({ path: 'artifacts/athun-profile-mobile.png', fullPage: true });
             await secondaryPage.evaluate(() => Athun.showSaveSelection());
             await secondaryPage.locator('[data-load-save]').waitFor();
+            const saveScreenStyles = await secondaryPage.locator('.character-creation, .profile-section').evaluateAll(nodes => nodes.map(node => {
+              const style = getComputedStyle(node);
+              return { background: style.backgroundColor, image: style.backgroundImage, shadow: style.boxShadow };
+            }));
+            assert.ok(saveScreenStyles.every(style => style.background === 'rgba(0, 0, 0, 0)' && style.image === 'none' && style.shadow === 'none'), 'La selección de partidas debe evitar cajas artificiales');
             await secondaryPage.screenshot({ path: 'artifacts/athun-save-selection-mobile.png', fullPage: true });
             assert.equal(secondaryErrors.length, 0, 'Las pantallas auxiliares no deben producir errores JavaScript: ' + secondaryErrors.join('; '));
             await secondaryContext.close();
