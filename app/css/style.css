@@ -2162,3 +2162,19 @@ body:not(.athun-secondary-mode) {
   border:0 !important;
   box-shadow:none !important;
 }
+
+
+/* La información del atlas también se escribe directamente sobre el papiro.
+   Se conserva el dibujo del mapa como elemento gráfico y los botones como controles. */
+.atlas-place,
+.atlas-place-current {
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+}
+.atlas-frontier {
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
