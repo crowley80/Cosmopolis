@@ -246,7 +246,7 @@ jobs:
             await page.locator('#switchSaveFromOptions').click();
             await page.getByRole('heading', { name: 'Tus partidas' }).waitFor();
             assert.equal(await page.locator('[data-load-save]').count(), 2, 'El selector debe mostrar las dos partidas');
-            await page.locator('[data-load-save]').filter({ hasText: 'Bruno' }).click();
+            await page.locator('.profile-section').filter({ hasText: 'Bruno' }).locator('[data-load-save]').click();
             await page.locator('.adventure-screen').waitFor();
             const switched = await page.evaluate(() => ({
               character: Save.load().character.name,
