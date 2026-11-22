@@ -2488,3 +2488,14 @@ Se confirma como referencia visual única para todas las pantallas el archivo `a
 - Se mantienen los controles funcionales existentes y no se cambia la lógica de partidas ni el contenido narrativo.
 
 **Validación pendiente:** comprobar la composición visual y las zonas táctiles en Chromium y Chrome Android. El cambio CSS está guardado en esta rama; no se declara todavía validación visual/táctil superada.
+
+
+## Regla visual vigente: escritura directa y un solo fondo — 22/11/2026
+
+- La única imagen de fondo autorizada en todas las pantallas es `app/assets/athun-papiro-universal.webp`. No recuperar recursos de plantilla anteriores.
+- Los textos de narración y los textos informativos de paneles se dibujan directamente sobre el papiro: sin cajas coloreadas, bordes de contenedor ni sombras de panel. La separación se consigue con márgenes y espaciado.
+- Los campos editables, botones y controles mantienen su tratamiento visual propio para que sigan siendo reconocibles y utilizables; esta regla no elimina sus áreas táctiles ni los indicadores de foco.
+- En la pantalla de aventura el fondo pertenece al contenedor de aventura. El `body` no debe volver a pintar una segunda copia detrás en escritorio. Las pantallas auxiliares conservan el mismo recurso como fondo común.
+- No se modifican textos narrativos, datos de partidas ni reglas de juego por este ajuste visual.
+
+**Comprobaciones:** la suite Playwright del 22/11 confirmó las pantallas auxiliares, la transparencia de los contenedores de texto y las interacciones de navegación/partidas en la ejecución `45079022671`. La captura de escritorio mostró una duplicación del papiro a ambos lados; se añadió una corrección CSS específica y la nueva ejecución `45079242111` debe terminar antes de considerar resuelto ese defecto. La prueba en Chrome Android físico sigue pendiente.
