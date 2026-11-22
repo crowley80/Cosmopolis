@@ -1056,7 +1056,7 @@ body.athun-secondary-mode {
   padding:8px;
   overflow:hidden;
   background-color:#28180d;
-  background-image:url('../assets/plantillas/athun-papiro-interfaz.webp');
+  background-image:url('../assets/athun-papiro-universal.webp');
   background-position:center center;
   background-repeat:no-repeat;
   background-size:100% 100%;
@@ -2032,9 +2032,14 @@ body.athun-secondary-mode {
 
 
 /* ATHUN — autoridad visual final: papiro universal en su proporción original. */
-body:not(.athun-secondary-mode) {
-  background-image:none !important;
+body,
+body.athun-secondary-mode {
+  background-image:url('../assets/athun-papiro-universal.webp') !important;
   background-color:#ead9b5 !important;
+  background-position:center top !important;
+  background-repeat:no-repeat !important;
+  background-size:100% 100% !important;
+  background-attachment:scroll !important;
 }
 .adventure-screen {
   position:relative !important;
