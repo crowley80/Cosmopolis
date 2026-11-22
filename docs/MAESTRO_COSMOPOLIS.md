@@ -2501,6 +2501,14 @@ Se confirma como referencia visual única para todas las pantallas el archivo `a
 **Comprobaciones:** la suite Playwright del 22/11 confirmó las pantallas auxiliares, la transparencia de los contenedores de texto y las interacciones de navegación/partidas en la ejecución `45079022671`. La captura de escritorio mostró una duplicación del papiro a ambos lados; se añadió una corrección CSS específica y la nueva ejecución `45079242111` debe terminar antes de considerar resuelto ese defecto. La prueba en Chrome Android físico sigue pendiente.
 
 
+## Revisión de paneles auxiliares — 22/11/2026
+
+- Los paneles de Pista, Historial, Mapa, Inventario y Opciones se abren mediante sus manejadores específicos; las pruebas verifican el título correcto de cada panel. La comprobación específica de Pista terminó correctamente en la ejecución `45079854687`.
+- El fondo oscuro de la capa superpuesta y el marco/fondo del panel se han retirado. El contenido informativo queda transparente sobre el papiro; los campos y botones conservan su apariencia funcional.
+- En el atlas se mantiene el dibujo esquemático como elemento gráfico, pero se eliminan los fondos, bordes y sombras de las filas y del texto de cierre. Se conservan los botones de exploración como controles interactivos.
+- Se añadieron aserciones Playwright para comprobar la transparencia del panel de Pista y de los textos del atlas. Las ejecuciones `45079988713` y `45079991489` están pendientes de resultado; no se declara todavía superada esta última revisión.
+- No se han cambiado textos narrativos, contenido del mundo, reglas de juego ni datos de partidas.
+
 ## Ajuste de altura de la aventura — 22/11/2026
 
 La revisión de la captura móvil mostró que la aventura conservaba la proporción de la imagen como altura del contenedor y dejaba espacio vacío debajo. Se cambió la composición para que el fondo universal se pinte una sola vez en el viewport y la interfaz ocupe toda la altura visible del dispositivo. La pantalla auxiliar sigue utilizando el mismo recurso en su modo correspondiente. La validación automatizada de este último ajuste queda pendiente de la ejecución `Visual preview` del commit `b273809`.
