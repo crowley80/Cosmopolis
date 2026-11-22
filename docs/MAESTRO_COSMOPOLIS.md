@@ -2387,3 +2387,8 @@ La ejecución visual #493 generó correctamente la captura móvil y superó la r
 ### Fixtures narrativos compatibles con validación estricta — 22/11/2026
 
 La ejecución visual #494 completó la apertura, el descubrimiento gradual y la protección de Athun, pero el escenario de interacción agotó el tiempo de espera al comprobar el segundo intercambio. El diagnóstico apunta a los datos simulados de Playwright: varias actualizaciones estructuradas (objetivos, recuerdos, relaciones y acciones de personajes) no tenían su evidencia textual explícita en la misma frase narrativa que identifica al personaje. Se han ampliado únicamente las respuestas ficticias del ensayo para incluir esa evidencia. Se mantiene intacto el filtro de validación del juego; no se rebajan sus controles ni se alteran los guardados. Pendiente una nueva ejecución completa.
+
+
+### Auditoría de resolución del fondo principal — 22/11/2026
+
+Se comprobó el recurso binario que realmente está versionado y referenciado por `app/css/style.css`: `app/assets/athun-plantilla-principal-sin-rosas.webp`. Su cabecera WebP VP8 confirma 400 × 566 píxeles (23.199 bytes), no la resolución 1054 × 1492 del original de alta resolución verificado previamente. Por tanto, la rama todavía contiene la variante reducida y no cumple el requisito de conservar la resolución. No se sustituye por una conversión improvisada ni se declara corregido. La sustitución binaria queda pendiente; antes de cerrarla hay que subir el WebP original y volver a comprobar sus dimensiones desde el propio repositorio. La búsqueda exacta de «el grimorio te recuerda» en `app/js/app.js` y `app/js/game/narrator.js` de esta rama no encontró esa frase.
