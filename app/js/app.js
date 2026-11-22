@@ -418,7 +418,6 @@ const Athun = {
                     <button type="submit">Dar vida a mi personaje</button>
                 </form>
             </section>
-            <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
         `;
 
         this.prepareSecondaryLayout();
@@ -472,7 +471,6 @@ const Athun = {
                 <button id="editCharacter">Editar mi personaje</button>
                 <button id="changeSave">Cambiar de personaje o partida</button>
             </section>
-            <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
         `;
 
         this.prepareSecondaryLayout();
