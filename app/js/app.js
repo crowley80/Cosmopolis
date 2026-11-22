@@ -543,7 +543,7 @@ const Athun = {
                 '</section>' +
 
                 '<nav class="manuscript-toolbar" aria-label="Herramientas de aventura">' +
-                    '<button class="toolbar-button" id="openHint" type="button"><span aria-hidden="true">✦</span><span>Pista</span></button><button class="toolbar-button" id="openHistory" type="button"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M5 10q10-4 19 4v28q-9-8-19-4zM43 10q-10-4-19 4v28q9-8 19-4z"/><path d="M24 14v28M9 16q6-2 11 2M9 23q6-2 11 2M39 16q-6-2-11 2M39 23q-6-2-11 2"/><path d="M5 10l3-4 16 7 16-7 3 4M5 38l3 3 16-4 16 4 3-3"/></svg><span>Historial</span></button>' +
+                    '<button class="toolbar-button" id="openHint" type="button" aria-label="Pista"><span aria-hidden="true">✦</span></button><button class="toolbar-button" id="openHistory" type="button"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M5 10q10-4 19 4v28q-9-8-19-4zM43 10q-10-4-19 4v28q9-8 19-4z"/><path d="M24 14v28M9 16q6-2 11 2M9 23q6-2 11 2M39 16q-6-2-11 2M39 23q-6-2-11 2"/><path d="M5 10l3-4 16 7 16-7 3 4M5 38l3 3 16-4 16 4 3-3"/></svg><span>Historial</span></button>' +
                     '' +
                     '<button class="toolbar-button" id="openMap" type="button"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 12q-4-1-4 4v25q0 3 4 2l10-5 12 5 10-5q4-1 4-5V9q0-3-4-2l-10 5-12-5z"/><path d="M18 8v30M30 12v31"/><path d="M20 17q0-5 5-5t5 5q0 5-5 11-5-6-5-11z"/><path d="M4 13q4-4 8 0M36 9q5-4 8 0M4 40q3 4 8 0M36 42q5 3 8-1"/><circle cx="25" cy="17" r="1.5"/></svg><span>Mapa</span></button>' +
                     '' +
