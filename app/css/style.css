@@ -1846,12 +1846,7 @@ body.athun-secondary-mode {
 }
 
 
-/* La pantalla de juego usa su plantilla principal impresa; el papiro en blanco
-   queda reservado para las pantallas auxiliares. */
-.adventure-screen {
-  background-image:url('../assets/athun-plantilla-principal-sin-rosas.webp') !important;
-  background-size:100% 100%;
-}
+/* La aventura y las pantallas auxiliares utilizan el papiro universal en blanco. */
 .wordmark h1 {
   font-size:clamp(.95rem,4.1vw,1.2rem);
   line-height:1.04;
