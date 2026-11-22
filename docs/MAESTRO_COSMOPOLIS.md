@@ -2571,3 +2571,13 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - El campo de acción queda sin fondo, borde, contorno ni sombra. El botón Enviar y los cinco accesos inferiores conservan su función, sin cajas coloreadas alrededor.
 - Los paneles auxiliares y el contenido del atlas permanecen transparentes sobre el mismo papiro.
 - Este cambio es una corrección de estilos; todavía requiere ejecución automatizada y revisión de la vista generada. No equivale a una validación en Chrome Android físico.
+
+
+### Validación automatizada de la composición — 23/11/2026
+
+- La vista móvil y de escritorio se ha renderizado con Chromium mediante Playwright.
+- Se corrigió la altura de la barra inferior: una regla heredada la expandía y comprimía el área narrativa. La barra queda ahora limitada a una altura táctil compacta y el relato ocupa el espacio restante.
+- Se recuperó la etiqueta visible del botón Enviar, se alineó el título a la izquierda y se eliminó el control de redimensionado del campo.
+- La ejecución completa de GitHub Actions terminó correctamente: run `45083751624` (commit `c4ec9e8735226a68502ded9cd8d348bc3c8a9f3d`). Incluye pruebas de render móvil/escritorio, controles Pista/Historial/Mapa/Inventario/Opciones, respuesta del narrador, guardado/recarga y aislamiento de partidas.
+- Artefacto de vista generado por el propio entorno de pruebas: `cosmopolis-visual-preview` (ID `14777294620`). La captura móvil confirma el papiro universal, texto narrativo directo sobre el papel, título granate, texto negro, campo sin marco y cinco accesos inferiores.
+- Esta validación automatizada no sustituye una comprobación en Chrome Android físico; el dispositivo local aún debe sincronizar esta rama para mostrar los cambios.
