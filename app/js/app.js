@@ -472,7 +472,6 @@ const Athun = {
             <header class="main-header">
                 <p class="eyebrow">EXPEDIENTE DE EXISTENCIA</p>
                 <h1>Athun: el grimorio oscuro</h1>
-                <p>El universo ya sabe que existes.</p>
             </header>
             <section class="character-creation">
                 <div class="section-heading">
