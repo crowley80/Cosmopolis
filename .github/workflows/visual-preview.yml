@@ -585,7 +585,7 @@ jobs:
             await page.locator('#toolOverlay').getByText('Athun — grimorio consciente').waitFor();
             await page.locator('#closeToolPanel').click();
             await page.locator('#openHistory').click();
-            await page.locator('#toolOverlay').getByText('Entregas el medallón a Elia. Ella lo guarda con cuidado en su tubo de mapas.').waitFor();
+            await page.locator('#toolOverlay').getByText('Entregas el medallón de cobre a Elia. Ella lo guarda con cuidado en su tubo de mapas.').waitFor();
             await page.locator('#closeToolPanel').click();
 
             console.log('INTERACTION_TESTS_OK: history, map, inventory add/remove, options, exploration, AI response, save and reload');
