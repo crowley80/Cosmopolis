@@ -1944,6 +1944,11 @@ body:not(.athun-secondary-mode) .adventure-screen {
   border-radius:0 !important;
   box-shadow:none !important;
 }
+.adventure-screen .manuscript-meta {
+  font-size:clamp(.66rem,2.8vw,.82rem) !important;
+  line-height:1.25 !important;
+  gap:4px 10px !important;
+}
 .adventure-screen .manuscript-header {
   flex:0 0 auto !important;
   display:flex !important;
