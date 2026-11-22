@@ -7,7 +7,7 @@ on:
       - 'index.html'
       - '.github/workflows/visual-preview.yml'
   pull_request:
-    branches: [main]
+    branches: [main, integration/athun-multisave-main-20261116]
     paths:
       - 'app/**'
       - 'index.html'
@@ -72,7 +72,16 @@ jobs:
             await page.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
             const continueSave = page.locator('[data-load-save]').first();
             if (await continueSave.count()) await continueSave.click();
+            const assert = require('node:assert/strict');
             await page.locator('.adventure-screen').waitFor();
+
+            // Regresión de composición: un único campo de acción y cinco accesos, sin adornos duplicados.
+            const toolbarButtons = page.locator('.manuscript-toolbar .toolbar-button');
+            assert.equal(await toolbarButtons.count(), 5, 'La barra inferior debe contener exactamente cinco accesos');
+            assert.equal(await page.locator('.manuscript-toolbar .toolbar-divider:visible').count(), 0, 'Los separadores no deben ocupar espacio ni crear una segunda fila');
+            assert.equal(await page.locator('.player-panel textarea').count(), 1, 'Debe existir un único campo de acción');
+            assert.equal(await page.locator('.player-panel form > button[type="submit"]').count(), 1, 'Debe existir un único botón Enviar');
+            assert.equal(await page.locator('.player-panel .quill-inkwell:visible').count(), 0, 'La pluma decorativa no debe invadir el formulario compacto');
 
             // Prueba real del panel de mapa y su primer nodo (posición actual).
             await page.locator('#openMap').click();
@@ -207,7 +216,6 @@ jobs:
             await page.screenshot({ path: 'artifacts/cosmopolis-mobile.png', fullPage: true });
 
             // Prueba de interacción: los cuatro paneles y las ayudas de exploración.
-            const assert = require('node:assert/strict');
             const pageErrors = [];
             page.on('pageerror', error => pageErrors.push(error.message));
             page.on('console', message => { if (message.type() === 'error') console.error('BROWSER_CONSOLE_ERROR:', message.text()); });
