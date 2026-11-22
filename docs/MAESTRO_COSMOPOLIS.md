@@ -7,7 +7,7 @@
 - Se han restaurado los controles inferiores de la pantalla de juego: botones, iconos y etiquetas vuelven a tener contraste y área táctil visible.
 - Se han ocultado las dos rosas de los extremos que no forman parte de la plantilla aprobada.
 - No se han modificado datos de partidas, guardados ni migraciones.
-- Pendiente de integración real: el archivo de papiro universal `athun-papiro-universal.webp` está conservado en la Biblioteca de ChatGPT, pero todavía no está dentro de esta rama del repositorio. No declarar la plantilla universal integrada hasta subir el archivo y verificar su ruta.
+- Plantilla universal verificada en esta rama: `app/assets/athun-papiro-universal.webp` (316.424 bytes). La ruta coincide con CSS y las pruebas visuales comprueban su uso en las pantallas secundarias y de aventura.
 - Pendiente para el 23/11/2026 a las 19:00 (Europe/Madrid): crear las animaciones del grimorio y de la calavera e integrarlas respetando el momento de aparición de esta última.
 
 ---
@@ -2508,6 +2508,12 @@ Se confirma como referencia visual única para todas las pantallas el archivo `a
 - En el atlas se mantiene el dibujo esquemático como elemento gráfico, pero se eliminan los fondos, bordes y sombras de las filas y del texto de cierre. Se conservan los botones de exploración como controles interactivos.
 - Se añadieron aserciones Playwright para comprobar la transparencia del panel de Pista y de los textos del atlas. Las ejecuciones `45079988713` y `45079991489` están pendientes de resultado; no se declara todavía superada esta última revisión.
 - No se han cambiado textos narrativos, contenido del mundo, reglas de juego ni datos de partidas.
+
+## Verificación de cambio de partida desde Opciones — 22/11/2026
+
+- Se ha ampliado la prueba Playwright para crear dos partidas de prueba independientes, abrir «Cambiar de partida» desde Opciones y seleccionar la segunda.
+- La prueba comprueba que el selector muestra ambas partidas y que el personaje, el historial y el identificador activo corresponden al guardado elegido.
+- Resultado pendiente de la ejecución automática de GitHub Actions.
 
 ## Resultado de la comprobación funcional de paneles — 22/11/2026
 
