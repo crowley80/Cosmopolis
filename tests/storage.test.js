@@ -1631,3 +1631,79 @@ test('si falla la publicación global, la acción personal queda guardada y el m
     assert.equal(Save.load().actions[0].text, 'Camino hacia la plaza');
     assert.equal(JSON.stringify(Save.getGlobalWorld()), before);
 });
+
+test('restaura la selección anterior si activar otra partida escribe y después falla', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia A', state: { inventory: ['Llave'] }
+    });
+    const second = Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia B', state: { inventory: ['Mapa'] }
+    });
+    assert.ok(first);
+    assert.ok(second);
+    assert.equal(Save.activate(first), true);
+
+    const originalActive = localStorage.getItem(Save.activeKey);
+    const originalIndex = localStorage.getItem(Save.indexKey);
+    const originalFirst = localStorage.getItem(Save.slotPrefix + first);
+    const originalSecond = localStorage.getItem(Save.slotPrefix + second);
+    const setItem = localStorage.setItem.bind(localStorage);
+    let failAfterWrite = true;
+
+    localStorage.setItem = (key, value) => {
+        if (key === Save.activeKey && JSON.parse(String(value)).id === second && failAfterWrite) {
+            setItem(key, value);
+            failAfterWrite = false;
+            throw new Error('Fallo simulado después de escribir la selección');
+        }
+        return setItem(key, value);
+    };
+
+    assert.equal(Save.activate(second), false);
+    localStorage.setItem = setItem;
+
+    assert.equal(localStorage.getItem(Save.activeKey), originalActive);
+    assert.equal(localStorage.getItem(Save.indexKey), originalIndex);
+    assert.equal(localStorage.getItem(Save.slotPrefix + first), originalFirst);
+    assert.equal(localStorage.getItem(Save.slotPrefix + second), originalSecond);
+    assert.equal(Save.getActiveId(), first);
+    assert.equal(Save.load().character.name, 'Ariadna');
+
+    assert.equal(Save.activate(second), true);
+    assert.equal(Save.load().character.name, 'Darian');
+});
+
+
+test('restaura la selección anterior si la verificación de activación devuelve un valor antiguo', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia A', state: { inventory: ['Llave'] }
+    });
+    const second = Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia B', state: { inventory: ['Mapa'] }
+    });
+    assert.ok(first);
+    assert.ok(second);
+    assert.equal(Save.activate(first), true);
+
+    const originalActive = localStorage.getItem(Save.activeKey);
+    const getItem = localStorage.getItem.bind(localStorage);
+    const setItem = localStorage.setItem.bind(localStorage);
+    let activeReads = 0;
+
+    localStorage.getItem = key => {
+        if (key === Save.activeKey) {
+            activeReads += 1;
+            if (activeReads === 2) return originalActive;
+        }
+        return getItem(key);
+    };
+
+    assert.equal(Save.activate(second), false);
+    localStorage.getItem = getItem;
+    localStorage.setItem = setItem;
+
+    assert.equal(localStorage.getItem(Save.activeKey), originalActive);
+    assert.equal(Save.getActiveId(), first);
+    assert.equal(Save.load().character.name, 'Ariadna');
+    assert.equal(Save.list().length, 2);
+});
