@@ -83,6 +83,35 @@ jobs:
             assert.equal(await page.locator('.player-panel form > button[type="submit"]').count(), 1, 'Debe existir un único botón Enviar');
             assert.equal(await page.locator('.player-panel .quill-inkwell:visible').count(), 0, 'La pluma decorativa no debe invadir el formulario compacto');
 
+            const overlayMetrics = await page.evaluate(() => {
+              const rect = element => { const r = element.getBoundingClientRect(); return { x:r.x, right:r.right, y:r.y, bottom:r.bottom, width:r.width, height:r.height }; };
+              const style = element => getComputedStyle(element);
+              const title = document.querySelector('.wordmark h1');
+              const meta = document.querySelector('.manuscript-meta');
+              const story = document.querySelector('.story-panel');
+              const player = document.querySelector('.player-panel');
+              const input = document.querySelector('#playerAction');
+              const send = document.querySelector('.player-panel form > button[type="submit"]');
+              const toolbarIcon = document.querySelector('.manuscript-toolbar .toolbar-button svg');
+              const toolbarLabel = document.querySelector('.manuscript-toolbar .toolbar-button > span:last-child');
+              return {
+                title:rect(title), meta:rect(meta), story:rect(story), player:rect(player), input:rect(input),
+                inputBackground:style(input).backgroundColor, inputBorder:style(input).borderTopWidth,
+                sendFontSize:style(send).fontSize, sendBackground:style(send).backgroundColor,
+                toolbarIconOpacity:style(toolbarIcon).opacity, toolbarLabelPosition:style(toolbarLabel).position,
+                storyOverflow:style(story).overflowY
+              };
+            });
+            assert.ok(overlayMetrics.title.right <= overlayMetrics.meta.x + 2, 'El título y los metadatos no deben solaparse');
+            assert.equal(overlayMetrics.inputBackground, 'rgba(0, 0, 0, 0)', 'El campo debe dejar visible el marco dibujado en el pergamino');
+            assert.equal(overlayMetrics.inputBorder, '0px', 'El campo no debe dibujar un segundo rectángulo');
+            assert.equal(overlayMetrics.sendFontSize, '0px', 'No debe duplicarse la etiqueta Enviar ya impresa en la plantilla');
+            assert.equal(overlayMetrics.sendBackground, 'rgba(0, 0, 0, 0)', 'El botón debe ser una zona táctil transparente sobre Enviar');
+            assert.equal(overlayMetrics.toolbarIconOpacity, '0', 'No deben duplicarse los iconos impresos en la barra');
+            assert.equal(overlayMetrics.toolbarLabelPosition, 'absolute', 'Las etiquetas accesibles no deben duplicar el texto impreso');
+            assert.equal(overlayMetrics.storyOverflow, 'auto', 'La narración debe desplazarse dentro de su área');
+            assert.ok(overlayMetrics.input.x >= overlayMetrics.player.x + 40, 'El campo del jugador debe respetar el espacio de la pluma');
+
             // Prueba real del panel de mapa y su primer nodo (posición actual).
             await page.locator('#openMap').click();
             await page.locator('.atlas-map').waitFor();
