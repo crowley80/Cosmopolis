@@ -5,6 +5,7 @@ on:
     paths:
       - 'app/**'
       - 'index.html'
+      - 'server.js'
       - '.github/workflows/visual-preview.yml'
   pull_request:
     branches: [main, integration/athun-multisave-main-20261116]
@@ -33,12 +34,12 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Start local server
         run: |
-          python3 -m http.server 8080 --bind 127.0.0.1 > /tmp/cosmopolis-http.log 2>&1 &
+          node server.js > /tmp/athun-http.log 2>&1 &
           for i in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:8080/index.html >/dev/null; then exit 0; fi
+            if curl -fsS http://127.0.0.1:8080/ | grep -q '<title>Athun: el grimorio oscuro</title>'; then exit 0; fi
             sleep 1
           done
-          cat /tmp/cosmopolis-http.log
+          cat /tmp/athun-http.log
           exit 1
       - name: Render adventure on mobile and desktop
         run: |
