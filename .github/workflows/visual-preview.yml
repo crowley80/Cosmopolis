@@ -186,7 +186,7 @@ jobs:
               const rect = node.getBoundingClientRect();
               return { display: style.display, visibility: style.visibility, color: style.color, width: rect.width, height: rect.height };
             });
-            assert.ok(hintLabelStyle.display !== 'none' && hintLabelStyle.visibility !== 'hidden' && hintLabelStyle.width > 0 && hintLabelStyle.height > 0 && hintLabelStyle.color !== 'rgba(0, 0, 0, 0)', 'La etiqueta Pista debe verse en la barra inferior: ' + JSON.stringify(hintLabelStyle));
+            assert.ok(hintLabelStyle.display !== 'none' && hintLabelStyle.visibility !== 'hidden' && hintLabelStyle.width >= 30 && hintLabelStyle.height >= 10 && hintLabelStyle.color !== 'rgba(0, 0, 0, 0)', 'La etiqueta Pista debe verse en la barra inferior: ' + JSON.stringify(hintLabelStyle));
             await page.locator('#openHint').click();
             await page.locator('#toolPanelTitle').waitFor();
             assert.equal((await page.locator('#toolPanelTitle').innerText()).trim(), 'Una pista del grimorio', 'Pista debe abrir su panel correspondiente');
