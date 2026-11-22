@@ -1866,3 +1866,12 @@ body.athun-secondary-mode {
 .adventure-screen .player-heading {
   display:none !important;
 }
+
+
+/* Alinear el campo y el área táctil de Enviar con sus marcos impresos. */
+.adventure-screen .player-panel form {
+  margin-top:clamp(40px,6vh,52px);
+}
+.adventure-screen .player-panel textarea::placeholder {
+  color:transparent !important;
+}
