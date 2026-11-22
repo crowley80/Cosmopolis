@@ -153,6 +153,19 @@ jobs:
               probe.remove(); panel.remove();
             });
 
+            // Pista debe abrir su propio panel; el cierre no espera a la respuesta asíncrona.
+            await page.locator('#openHint').click();
+            await page.locator('#toolPanelTitle').waitFor();
+            assert.equal((await page.locator('#toolPanelTitle').innerText()).trim(), 'Una pista del grimorio', 'Pista debe abrir su panel correspondiente');
+            const hintStyles = await page.locator('.tool-panel, .tool-panel-heading, .tool-panel-content').evaluateAll(nodes => nodes.map(node => {
+              const style = getComputedStyle(node);
+              return { background: style.backgroundColor, image: style.backgroundImage, border: style.borderTopWidth, shadow: style.boxShadow };
+            }));
+            if (hintStyles.some(style => style.background !== 'rgba(0, 0, 0, 0)' || style.image !== 'none' || style.border !== '0px' || style.shadow !== 'none')) {
+              throw new Error('El panel de Pista conserva una caja visual sobre el papiro');
+            }
+            await page.locator('#closeToolPanel').click();
+
             // Prueba real del panel de mapa y su primer nodo (posición actual).
             await page.locator('#openMap').click();
             await page.locator('.atlas-map').waitFor();
