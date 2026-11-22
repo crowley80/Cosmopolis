@@ -139,6 +139,20 @@ jobs:
             assert.equal(overlayMetrics.storyOverflow, 'auto', 'La narración debe desplazarse dentro de su área');
             assert.ok(overlayMetrics.input.x >= overlayMetrics.player.x - 1 && overlayMetrics.input.right <= overlayMetrics.player.right + 1, 'El campo del jugador debe quedar dentro de su panel');
 
+            // La escritura de paneles auxiliares debe integrarse en el papiro, sin cajas coloreadas.
+            await page.evaluate(() => {
+              const probe = document.createElement('article');
+              probe.className = 'tool-entry';
+              document.querySelector('.adventure-screen').appendChild(probe);
+              const panel = document.createElement('div');
+              panel.className = 'tool-panel';
+              document.querySelector('.adventure-screen').appendChild(panel);
+              const styles = [getComputedStyle(probe), getComputedStyle(panel)];
+              const transparent = value => value === 'rgba(0, 0, 0, 0)' || value === 'transparent';
+              if (styles.some(style => !transparent(style.backgroundColor) || style.backgroundImage !== 'none' || style.boxShadow !== 'none')) throw new Error('Los textos auxiliares aún tienen un fondo artificial');
+              probe.remove(); panel.remove();
+            });
+
             // Prueba real del panel de mapa y su primer nodo (posición actual).
             await page.locator('#openMap').click();
             await page.locator('.atlas-map').waitFor();
