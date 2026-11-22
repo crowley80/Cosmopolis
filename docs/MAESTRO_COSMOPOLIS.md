@@ -2313,3 +2313,16 @@ La normalización de partidas ya eliminaba las entradas de inventario cuyo texto
 - Sigue pendiente la prueba táctil real en Chrome para Android físico. Las pruebas automatizadas de navegador no la sustituyen.
 
 No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
+
+## Corrección unificada de la pantalla de aventura — 22/11/2026
+
+La integración se prepara directamente sobre la revisión actual de `integration/athun-multisave-main-20261116`, posterior a la eliminación del rótulo «EL GRIMORIO TE RECUERDA». Se evita recuperar versiones anteriores de `app.js` o alterar esa corrección.
+
+- Se incorpora la plantilla gráfica principal aprobada sin rosas como fondo de la pantalla de aventura.
+- Se refuerza la tinta de narración, ubicación, momento y acción actual para mantener contraste sobre el pergamino.
+- Cabecera, relato, panel de acción y barra inferior quedan en cuatro filas estables; solo el relato tiene desplazamiento vertical propio.
+- El formulario se limita al campo de texto y al botón Enviar; la pluma decorativa queda fuera de la composición compacta.
+- Los cinco accesos inferiores se distribuyen en cinco columnas iguales; los separadores no consumen espacio ni generan una fila adicional.
+- Se actualiza la versión de CSS para evitar que Chrome reutilice estilos anteriores.
+
+**Seguridad:** se conserva el `app.js` actual de la rama de integración, incluido el cambio que elimina «EL GRIMORIO TE RECUERDA». Solo se añade el recurso gráfico y se ajustan CSS, caché y documentación. No se modifica almacenamiento, migraciones ni partidas guardadas. No se fusiona en `main`.
