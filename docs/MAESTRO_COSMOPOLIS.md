@@ -2337,3 +2337,21 @@ La integración se prepara directamente sobre la revisión actual de `integratio
 - Respaldos previos exactos: `.github/workflows/visual-preview.yml.bak-20261122-artifact-on-failure` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-artifact-on-failure`.
 
 **Estado:** el ajuste del workflow está guardado; todavía no hay una nueva ejecución que confirme la publicación del artefacto. No se declara aprobada la vista previa ni la validación táctil en Chrome Android. No se modifican `main`, PR #4, almacenamiento ni partidas guardadas.
+
+
+## Alineación real de narración y panel del jugador — 22/11/2026
+
+La captura móvil recuperada de la ejecución 45023756290 mostró defectos concretos que las comprobaciones anteriores no detectaban: la narración alcanzaba el separador ornamental, el panel del jugador superponía controles auxiliares, el campo dibujaba un segundo rectángulo y las etiquetas/iconos HTML duplicaban los que ya están impresos en la plantilla.
+
+- Se ajustan las cuatro zonas de la pantalla para que el relato termine antes del panel del jugador y mantenga su propio desplazamiento.
+- Se reduce el encabezado para que el título y los metadatos quepan sin solaparse.
+- El campo de escritura pasa a ser transparente y se desplaza a la zona libre situada a la derecha de la pluma.
+- El botón Enviar y los cinco accesos inferiores conservan sus zonas táctiles HTML, pero dejan de dibujar texto, iconos o fondos duplicados sobre los elementos ya impresos en la plantilla.
+- Los botones auxiliares del encabezado del jugador quedan visualmente ocultos para no invadir el marco; sus manejadores no se eliminan.
+- Se añaden aserciones Playwright para contraste estructural, solapamiento del encabezado, transparencia del campo/botón, duplicación de iconos y desplazamiento narrativo.
+- Se inspeccionó el recurso correcto de alta resolución localizado en la Biblioteca: `Interfaz RPG en pergamino antiguo.webp`, 1054 × 1492 px. El recurso actualmente versionado en el repositorio mide solo 400 × 566 px y es una versión reducida. La sustitución binaria por el original de alta resolución queda pendiente; no se ha degradado ni sobrescrito el original de la Biblioteca.
+- La ejecución 45023756290 confirmó que la captura se genera y ahora se conserva incluso si falla una aserción posterior. La ejecución falló en una regresión independiente de progresión de metas narrativas; no se presenta como validación visual aprobada.
+
+Respaldos previos de esta tanda: `app/css/style.css.bak-20261122-overlay-alignment`, `.github/workflows/visual-preview.yml.bak-20261122-overlay-alignment` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-overlay-alignment`.
+
+**Pendiente:** ejecutar de nuevo Playwright y revisar la captura corregida; incorporar el original WebP de alta resolución al repositorio; validar visual y táctilmente en Chrome Android. No se modifica `app.js`, no se recupera el rótulo «EL GRIMORIO TE RECUERDA», no se toca el almacenamiento ni se modifica `main`.
