@@ -2105,3 +2105,11 @@ body.athun-secondary-mode {
   border-bottom:1px solid rgba(70,43,20,.28) !important;
   border-left:0 !important;
 }
+
+
+/* Evitar duplicar el papiro en escritorio: la aventura dibuja su propia plantilla centrada.
+   Las pantallas auxiliares mantienen el mismo fondo aplicado al body. */
+body:not(.athun-secondary-mode) {
+  background-image:none !important;
+  background-color:#ead9b5 !important;
+}
