@@ -2509,6 +2509,13 @@ Se confirma como referencia visual única para todas las pantallas el archivo `a
 - Se añadieron aserciones Playwright para comprobar la transparencia del panel de Pista y de los textos del atlas. Las ejecuciones `45079988713` y `45079991489` están pendientes de resultado; no se declara todavía superada esta última revisión.
 - No se han cambiado textos narrativos, contenido del mundo, reglas de juego ni datos de partidas.
 
+## Verificación de pantallas secundarias — 22/11/2026
+
+- Se amplió la suite Playwright para comprobar que creación de personaje, ficha y selector de partidas mantienen transparentes los contenedores de contenido sobre el papiro universal.
+- La prueba conserva los controles de formulario y botones; solo verifica que los paneles estructurales no incorporen fondos ni sombras de tarjeta.
+- Las comprobaciones del atlas y del acceso Pista ya finalizaron correctamente en las ejecuciones `45079991489` y `45079854687`. La nueva ampliación para las tres pantallas secundarias queda pendiente de su ejecución automatizada.
+- No se han modificado datos, textos ni reglas de juego.
+
 ## Ajuste de altura de la aventura — 22/11/2026
 
 La revisión de la captura móvil mostró que la aventura conservaba la proporción de la imagen como altura del contenedor y dejaba espacio vacío debajo. Se cambió la composición para que el fondo universal se pinte una sola vez en el viewport y la interfaz ocupe toda la altura visible del dispositivo. La pantalla auxiliar sigue utilizando el mismo recurso en su modo correspondiente. La validación automatizada de este último ajuste queda pendiente de la ejecución `Visual preview` del commit `b273809`.
