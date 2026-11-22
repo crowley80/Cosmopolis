@@ -130,14 +130,14 @@ jobs:
               };
             });
             assert.ok(overlayMetrics.title.right <= overlayMetrics.meta.x + 2, 'El título y los metadatos no deben solaparse');
-            assert.equal(overlayMetrics.inputBackground, 'rgba(0, 0, 0, 0)', 'El campo debe dejar visible el marco dibujado en el pergamino');
-            assert.equal(overlayMetrics.inputBorder, '0px', 'El campo no debe dibujar un segundo rectángulo');
-            assert.equal(overlayMetrics.sendFontSize, '0px', 'No debe duplicarse la etiqueta Enviar ya impresa en la plantilla');
-            assert.equal(overlayMetrics.sendBackground, 'rgba(0, 0, 0, 0)', 'El botón debe ser una zona táctil transparente sobre Enviar');
-            assert.equal(overlayMetrics.toolbarIconOpacity, '0', 'No deben duplicarse los iconos impresos en la barra');
-            assert.equal(overlayMetrics.toolbarLabelPosition, 'absolute', 'Las etiquetas accesibles no deben duplicar el texto impreso');
+            assert.equal(overlayMetrics.inputBackground, 'rgba(255, 247, 226, 0.82)', 'El campo debe conservar un fondo claro y legible');
+            assert.equal(overlayMetrics.inputBorder, '1px', 'El campo debe conservar un borde visible');
+            assert.notEqual(overlayMetrics.sendFontSize, '0px', 'El botón Enviar debe mostrar su etiqueta');
+            assert.equal(overlayMetrics.sendBackground, 'rgba(239, 220, 184, 0.94)', 'El botón Enviar debe tener un fondo visible');
+            assert.equal(overlayMetrics.toolbarIconOpacity, '1', 'Los iconos de los cinco accesos deben ser visibles');
+            assert.equal(overlayMetrics.toolbarLabelPosition, 'static', 'Las etiquetas de los cinco accesos deben estar visibles');
             assert.equal(overlayMetrics.storyOverflow, 'auto', 'La narración debe desplazarse dentro de su área');
-            assert.ok(overlayMetrics.input.x >= overlayMetrics.player.x + 40, 'El campo del jugador debe respetar el espacio de la pluma');
+            assert.ok(overlayMetrics.input.x >= overlayMetrics.player.x - 1 && overlayMetrics.input.right <= overlayMetrics.player.right + 1, 'El campo del jugador debe quedar dentro de su panel');
 
             // Prueba real del panel de mapa y su primer nodo (posición actual).
             await page.locator('#openMap').click();
