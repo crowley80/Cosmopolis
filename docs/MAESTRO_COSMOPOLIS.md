@@ -2509,6 +2509,13 @@ Se confirma como referencia visual única para todas las pantallas el archivo `a
 - Se añadieron aserciones Playwright para comprobar la transparencia del panel de Pista y de los textos del atlas. Las ejecuciones `45079988713` y `45079991489` están pendientes de resultado; no se declara todavía superada esta última revisión.
 - No se han cambiado textos narrativos, contenido del mundo, reglas de juego ni datos de partidas.
 
+## Preparación de prueba completa en navegador — 22/11/2026
+
+- La prueba de cambio de partida desde Opciones se amplió para comprobar dos guardados independientes, selección del segundo personaje y aislamiento de su historial.
+- La primera ejecución detectó un error de sintaxis en el propio guion de prueba (nombre de variable duplicado), no un fallo del juego. Se corrigió el identificador y se lanzó una nueva ejecución.
+- No se considera validada esta ampliación hasta que la nueva ejecución finalice correctamente.
+- Objetivo inmediato: cerrar la validación automatizada de botones y navegación, y facilitar después una prueba visual real en Chrome Android.
+
 ## Verificación de cambio de partida desde Opciones — 22/11/2026
 
 - Se ha ampliado la prueba Playwright para crear dos partidas de prueba independientes, abrir «Cambiar de partida» desde Opciones y seleccionar la segunda.
