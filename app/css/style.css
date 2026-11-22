@@ -1592,40 +1592,63 @@ body.athun-secondary-mode {
 .compass { display:none !important; }
 
 
-/* ATHUN — base común de papiro; el archivo se incorpora en app/assets/. */
-html, body {
-  min-height: 100%;
-  background: #ead9b5;
-}
+/* ATHUN — composición común sobre la plantilla vertical. */
+html, body { min-height:100%; background:#ead9b5; }
 body {
-  padding: 0;
-  background-image: url('../assets/athun-papiro-universal.webp');
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-size: 100% 100vh;
-  background-attachment: fixed;
-  color: #321907;
+  margin:0;
+  color:#321907;
+  background-color:#ead9b5;
+  background-image:url('../assets/athun-papiro-universal.webp');
+  background-position:center top;
+  background-repeat:no-repeat;
+  background-size:100% auto;
+  background-attachment:scroll;
 }
-#app { min-height: 100vh; }
-.athun-secondary-mode {
-  min-height: 100vh;
-  background-image: url('../assets/athun-papiro-universal.webp');
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-size: 100% 100vh;
-  background-attachment: fixed;
+#app { min-height:100vh; }
+#app.athun-secondary-screen {
+  min-height:100svh;
+  background:transparent;
 }
-.athun-secondary-screen { min-height: 100vh; }
+#app.athun-secondary-screen > .main-header,
+#app.athun-secondary-screen > .secondary-scroll,
+#app.athun-secondary-screen > .secondary-actions {
+  background-color:transparent;
+}
 .adventure-screen {
-  background-color: transparent;
-  background-image: url('../assets/athun-papiro-universal.webp');
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
+  min-height:100svh;
+  background-color:transparent;
+  background-image:url('../assets/athun-papiro-universal.webp');
+  background-position:center top;
+  background-repeat:no-repeat;
+  background-size:100% 100%;
 }
 .adventure-screen::before,
-.adventure-screen::after { content: none; display: none; }
-.manuscript-header {
-  grid-template-columns: minmax(0,1fr) minmax(118px,.96fr);
+.adventure-screen::after { content:none !important; display:none !important; }
+.manuscript-header { grid-template-columns:minmax(0,1fr) minmax(118px,.96fr); }
+.compass { display:none !important; }
+
+/* Lectura y controles: conservar contraste sin tapar el fondo de la plantilla. */
+.story-content,.manuscript-meta,.current-action { color:#321b0b; }
+.story-content { text-shadow:0 1px rgba(255,248,226,.78); }
+.manuscript-meta { text-shadow:0 1px rgba(255,248,226,.72); }
+.current-action { color:#321b0b; background:rgba(255,244,218,.76); border-left-color:#805021; }
+.player-panel textarea {
+  color:#24170d;
+  background:rgba(255,247,226,.94);
+  border:1px solid rgba(85,51,22,.82);
 }
-.compass { display: none !important; }
+.player-panel textarea::placeholder { color:rgba(50,29,12,.68); }
+.player-panel form > button[type="submit"] {
+  color:#24170d;
+  background:rgba(226,202,160,.96);
+  border:1px solid #704017;
+}
+.toolbar-button {
+  color:#24170d;
+  background:rgba(239,220,184,.92);
+  border-color:rgba(89,57,27,.72);
+}
+@media (max-width:380px) {
+  .manuscript-header { grid-template-columns:minmax(0,1fr) minmax(104px,.82fr); }
+  .manuscript-meta { font-size:clamp(.46rem,1.8vw,.62rem); }
+}
