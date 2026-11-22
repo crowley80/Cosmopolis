@@ -145,7 +145,7 @@ jobs:
                 storyOverflow:style(story).overflowY
               };
             });
-            assert.ok(overlayMetrics.title.right <= overlayMetrics.meta.x + 2, 'El título y los metadatos no deben solaparse');
+            assert.ok(overlayMetrics.title.y + overlayMetrics.title.height <= overlayMetrics.meta.y + 2, 'El título y los metadatos no deben solaparse verticalmente');
             const visualPalette = await page.evaluate(() => ({
               parchment: getComputedStyle(document.body).backgroundImage,
               heading: getComputedStyle(document.querySelector('.wordmark h1')).color,
