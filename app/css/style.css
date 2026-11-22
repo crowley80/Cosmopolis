@@ -1559,3 +1559,9 @@ body.athun-secondary-mode {
 
 /* El contenedor del rótulo tampoco debe cubrir las zonas táctiles inferiores. */
 .player-heading { pointer-events:none; }
+
+/* El panel del jugador es decorativo fuera de sus controles reales. */
+.player-panel { pointer-events:none; }
+.player-panel form,
+.player-panel textarea,
+.player-panel form > button { pointer-events:auto; }
