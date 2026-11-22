@@ -311,7 +311,7 @@ jobs:
                   time: 'Media mañana',
                   day: 2
                 } : {
-                  reply: 'Entregas el medallón a Elia. Ella lo guarda con cuidado en su tubo de mapas. Elia recuerda que Ariadna le entregó el medallón de cobre. Tomás vio a Ariadna entregar el medallón a Elia. Tomás ha visto que Ariadna ha actuado con generosidad. Tomás piensa que la generosidad de Ariadna le anima a implicarse en la seguridad del pueblo. Elia aprecia que Ariadna le haya entregado el medallón. Tomás se desplaza hasta la Entrada de la posada y permanece atento. Tomás observa desde la entrada y decide no interrumpir.',
+                  reply: 'Entregas el medallón de cobre a Elia. Ella lo guarda con cuidado en su tubo de mapas. Elia recuerda que Ariadna le entregó el medallón de cobre. Tomás vio a Ariadna entregar el medallón a Elia. Tomás ha visto que Ariadna ha actuado con generosidad. Tomás piensa que la generosidad de Ariadna le anima a implicarse en la seguridad del pueblo. Elia aprecia que Ariadna le haya entregado el medallón. Tomás se desplaza hasta la Entrada de la posada y permanece atento. Tomás observa desde la entrada y decide no interrumpir.',
                   event: 'Ariadna ha entregado el medallón de cobre a Elia.',
                   category: 'offer',
                   location: 'Plaza del pozo',
