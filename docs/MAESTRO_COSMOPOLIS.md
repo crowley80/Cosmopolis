@@ -2367,3 +2367,8 @@ La misma ejecución sigue sin ser verde porque el clic sobre Mapa expiró por es
 ### Corrección del contenedor del rótulo táctil — 22/11/2026
 
 La segunda ejecución visual confirmó que el texto ya no interceptaba el toque, pero el contenedor completo `.player-heading` seguía cubriendo parte de la barra inferior. Se desactivan los eventos de puntero en el contenedor decorativo; los controles reales de la barra conservan sus propios eventos. Respaldos: `app/js/core/save.js` no se modifica; copias previas de CSS y documento: `app/css/style.css.bak-20261122-heading-hitbox` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-heading-hitbox`. Pendiente repetir la vista previa para confirmar que Mapa y los demás accesos reciben el toque.
+
+
+### Separación de capas táctiles del panel del jugador — 22/11/2026
+
+La tercera ejecución confirmó que el propio `.player-panel` seguía interceptando el toque destinado a Mapa, aunque el rótulo ya no lo hacía. El contenedor del panel pasa a ser transparente a los eventos de puntero; solo el formulario, el campo de escritura y Enviar reciben interacción. Así se evita que el marco visual del jugador cubra los cinco accesos inferiores. Respaldos: `app/css/style.css.bak-20261122-player-pointer-events` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-player-pointer-events`. Pendiente revalidar en Playwright; no se altera la lógica de guardado ni el texto narrativo.
