@@ -284,12 +284,9 @@ const Athun = {
 
         app.innerHTML = `
             <header class="main-header">
-                <p class="eyebrow">UNA HISTORIA QUE COMIENZA</p>
                 <h1>Athun: el grimorio oscuro</h1>
-                <p>Antes de abrir sus páginas, debes conocer su historia.</p>
             </header>
             <section class="welcome">
-                <h2>El origen de Athun</h2>
                 ${paragraphs.map(paragraph => `<p>${this.escape(paragraph)}</p>`).join('')}
             </section>
             <section class="character-creation">
@@ -355,12 +352,10 @@ const Athun = {
             <section class="character-creation">
                 <div class="section-heading">
                     <h2>Tus partidas</h2>
-                    <p>Elige qué historia deseas continuar o crea un nuevo protagonista.</p>
                 </div>
                 ${entries || '<p>Aún no hay partidas guardadas.</p>'}
                 <button type="button" id="createNewCharacter">Crear un personaje nuevo</button>
             </section>
-            <footer><p>Athun: el grimorio oscuro · Proyecto original</p></footer>
         `;
         this.prepareSecondaryLayout();
         app.querySelectorAll('[data-load-save]').forEach(button => {
@@ -387,13 +382,10 @@ const Athun = {
                 <h1>Athun: el grimorio oscuro</h1>
             </header>
             <section class="welcome">
-                <p>Antes de comenzar tu aventura, necesitamos conocerte.</p>
             </section>
             <section class="character-creation">
                 <div class="section-heading">
-                    <span class="eyebrow">TU HISTORIA COMIENZA AQUÍ</span>
                     <h2>Creación del personaje</h2>
-                    <p>Describe libremente quién eres. No existen razas, clases ni destinos predeterminados.</p>
                 </div>
                 <form id="characterForm">
                     <fieldset>
@@ -468,14 +460,11 @@ const Athun = {
 
         app.innerHTML = `
             <header class="main-header">
-                <p class="eyebrow">EXPEDIENTE DE EXISTENCIA</p>
                 <h1>Athun: el grimorio oscuro</h1>
             </header>
             <section class="character-creation">
                 <div class="section-heading">
-                    <span class="eyebrow">FICHA PERSONAL</span>
                     <h2>${this.escape(character.name)}</h2>
-                    <p>Este es el comienzo de tu historia.</p>
                 </div>
                 ${sections}
                 <button id="startAdventure">${saved && saved.adventure ? 'Continuar aventura guardada' : 'Comenzar aventura'}</button>
