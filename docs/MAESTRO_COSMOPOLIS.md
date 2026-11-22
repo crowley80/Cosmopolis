@@ -2440,3 +2440,15 @@ En paralelo, se añadió a la fixture de la segunda interacción la frase que vi
 - No se modificaron textos, lógica de navegación, almacenamiento, migraciones ni partidas guardadas.
 
 **Validación:** cambios guardados en la rama de trabajo. Falta comprobar las capturas de la vista previa automatizada y revisar el resultado en Chrome Android; no se declara todavía terminada la validación visual.
+
+
+### Aclaración de uso de las dos plantillas — 22/11/2026
+
+La revisión de la captura móvil confirmó que las plantillas no son intercambiables:
+
+- La pantalla de aventura debe usar `app/assets/athun-plantilla-principal-sin-rosas.webp`, que ya contiene el marco de cabecera, el área narrativa, el campo de acción, Enviar y los cinco accesos inferiores.
+- Las pantallas auxiliares (selección, creación, ficha y opciones) usan `app/assets/athun-papiro-universal.webp`, que es el papiro en blanco.
+- El CSS ya separa ambas referencias y mantiene transparentes las zonas HTML que coinciden con elementos impresos, para no duplicarlos.
+- La versión actualmente versionada de la plantilla principal en GitHub es una miniatura de 400 × 566 px. El original conservado en la Biblioteca mide 1054 × 1492 px y debe sustituirla en la misma ruta antes de cerrar la integración.
+
+**Validación:** la vista previa automatizada confirmó las primeras aserciones de composición y la regresión narrativa de apertura; una prueba posterior de progreso narrativo agotó su espera. La captura generada se inspeccionó y permitió detectar el uso incorrecto de la plantilla en la pantalla de aventura. La revisión con el original de alta resolución y la prueba final en Chrome Android siguen pendientes. No se modifican textos, lógica de juego ni partidas guardadas.
