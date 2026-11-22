@@ -2386,7 +2386,7 @@ La ejecución visual #493 generó correctamente la captura móvil y superó la r
 
 ### Fixtures narrativos compatibles con validación estricta — 22/11/2026
 
-La ejecución visual #494 completó la apertura, el descubrimiento gradual y la protección de Athun, pero el escenario de interacción agotó el tiempo de espera al comprobar el segundo intercambio. El diagnóstico apunta a los datos simulados de Playwright: varias actualizaciones estructuradas (objetivos, recuerdos, relaciones y acciones de personajes) no tenían su evidencia textual explícita en la misma frase narrativa que identifica al personaje. Se han ampliado únicamente las respuestas ficticias del ensayo para incluir esa evidencia. Se mantiene intacto el filtro de validación del juego; no se rebajan sus controles ni se alteran los guardados. Pendiente una nueva ejecución completa.
+La ejecución visual #494 agotó el tiempo de espera en la primera acción interactiva, no en el segundo intercambio. La regresión narrativa previa sí pasó. El diagnóstico posterior de la misma espera en #498 mostró que la fixture pedía añadir «Medallón de cobre» al inventario, pero su texto solo decía «encuentras»; el filtro real exige una fórmula de adquisición admitida, como «encuentras y guardas». También faltaban frases explícitas para respaldar una memoria y un cambio de actitud de Elia. Se ajustó únicamente la respuesta simulada de Playwright para incluir esas evidencias. No se modificó ni relajó el filtro del juego.
 
 
 ### Auditoría de resolución del fondo principal — 22/11/2026
@@ -2396,4 +2396,4 @@ Se comprobó el recurso binario que realmente está versionado y referenciado po
 
 ### Evidencia narrativa de objetivos en la segunda interacción de Playwright — 22/11/2026
 
-La ejecución #498 se prepara tras aislar una condición omitida en la fixture del segundo intercambio: el cambio del objetivo de Tomás indicaba como motivo que la generosidad de Ariadna le anima a implicarse en la seguridad del pueblo, pero la respuesta simulada no expresaba ese motivo en una frase que nombrase a Tomás. `Narrator.filterGoalUpdates()` exige que personaje y motivo estén respaldados por la misma frase narrativa. Se ha añadido esa frase a la respuesta ficticia de prueba, sin modificar el filtro ni las reglas del juego. Pendiente el resultado completo de Playwright en móvil simulado y escritorio.
+En paralelo, se añadió a la fixture de la segunda interacción la frase que vincula explícitamente a Tomás con el motivo de su cambio de objetivo, requisito de `Narrator.filterGoalUpdates()`. La ejecución #498 confirmó que el primer bloqueo estaba antes de llegar a ese segundo intercambio; por eso se corrigió ahora la evidencia de adquisición, memoria y actitud del primer turno. La ejecución nueva tras estos ajustes queda pendiente.
