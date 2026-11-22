@@ -384,11 +384,9 @@ const Athun = {
 
         app.innerHTML = `
             <header class="main-header">
-                <p class="eyebrow">UNIVERSO DE AVENTURAS</p>
                 <h1>Athun: el grimorio oscuro</h1>
             </header>
             <section class="welcome">
-                <h2>El universo te espera</h2>
                 <p>Antes de comenzar tu aventura, necesitamos conocerte.</p>
             </section>
             <section class="character-creation">
