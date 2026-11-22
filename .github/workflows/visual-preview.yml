@@ -522,7 +522,8 @@ jobs:
 
             await page.locator('#playerAction').fill('Entrego el medallón de cobre a Elia.');
             await page.locator('#actionForm button[type="submit"]').click();
-            await page.waitForFunction(() => {
+            try {
+              await page.waitForFunction(() => {
               const data = Save.load();
               if (!data) return false;
               return data.actions && data.actions.length === 2 &&
@@ -548,7 +549,25 @@ jobs:
                 data.adventure.state.characters.Tomás.location === 'Entrada de la posada' &&
                 !data.adventure.state.characters.Tomás.lastAutonomousAction &&
                 data.adventure.state.time === 'Mediodía' && data.adventure.state.day === 2;
-            });
+              }, { timeout: 10000 });
+            } catch (error) {
+              const diagnostic = await page.evaluate(() => {
+                const data = Save.load();
+                const state = data && data.adventure && data.adventure.state || {};
+                const people = state.characters || {};
+                return {
+                  actionCount: data && data.actions && data.actions.length,
+                  inventory: state.inventory,
+                  time: state.time,
+                  day: state.day,
+                  elia: people.Elia,
+                  tomas: people.Tomás,
+                  actionStatus: document.querySelector('#actionStatus')?.textContent || '',
+                  story: document.querySelector('#storyContent')?.textContent || ''
+                };
+              });
+              throw new Error('La segunda acción no produjo el estado esperado. Diagnóstico: ' + JSON.stringify(diagnostic) + '. Causa original: ' + error.message);
+            }
             const liveMeta = await page.locator('.manuscript-meta').textContent();
             assert.ok(liveMeta.includes('Momento: Mediodía'), 'La cabecera debe actualizarse sin recargar: ' + liveMeta);
             await page.reload({ waitUntil: 'networkidle' });
