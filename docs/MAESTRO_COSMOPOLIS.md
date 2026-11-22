@@ -2403,3 +2403,15 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - No se ha podido hacer la prueba visual en Chrome Android desde este entorno; requiere que el archivo correcto esté en el repositorio local y que se abra en el teléfono.
 - La última ejecución automatizada verificada antes de esta corrección fue el commit `1e22f6a`: sintaxis correcta y **67/67 pruebas** superadas. La nueva revisión debe completar CI de nuevo.
 - No se han leído, modificado ni eliminado partidas guardadas.
+
+## Integración unificada de plantilla y distribución móvil — 22/11/2026
+
+Se crea la rama `work/athun-interfaz-unificada-20261122` desde la revisión que incorpora la plantilla principal aprobada y se integra en ella el ajuste responsive de la pantalla de aventura que estaba separado en otra rama.
+
+- La pantalla de aventura conserva el fondo oficial de pergamino sin rosas y el tratamiento de contraste de narración, metadatos y campo de acción.
+- La cabecera, el área narrativa, el panel del jugador y la barra inferior quedan distribuidos en cuatro filas; solo el relato tiene desplazamiento vertical propio.
+- El formulario del jugador se limita a dos columnas (campo y envío); la pluma decorativa queda fuera de la composición compacta para evitar que reduzca el espacio de escritura.
+- Los cinco accesos inferiores se distribuyen en cinco columnas iguales; los cuatro separadores decorativos no ocupan columnas.
+- Se actualiza la versión de CSS para invalidar la caché de Chrome.
+
+**Seguridad:** solo se modifican CSS, la referencia de caché en HTML y esta documentación. No se toca JavaScript de juego, almacenamiento, migraciones ni partidas guardadas. La rama no se fusiona en `main`. La captura del dispositivo confirma que la revisión anterior no estaba bien compuesta; esta integración aún requiere comprobarse en Chrome Android antes de considerarla validada visualmente.
