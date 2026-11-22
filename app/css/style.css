@@ -2085,3 +2085,23 @@ body.athun-secondary-mode {
     padding-right:4px !important;
   }
 }
+
+
+/* ATHUN — la escritura se integra en el papiro; no se encierra en paneles coloreados. */
+.tool-panel,
+.tool-panel-content,
+.tool-entry {
+  color:#24170d !important;
+  background:transparent !important;
+  background-image:none !important;
+  border:0 !important;
+  outline:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+}
+.tool-entry {
+  margin:0 0 16px !important;
+  padding:4px 0 10px !important;
+  border-bottom:1px solid rgba(70,43,20,.28) !important;
+  border-left:0 !important;
+}
