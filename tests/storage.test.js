@@ -198,6 +198,20 @@ test('repara el selector activo si apunta a una partida inexistente o está corr
     assert.deepEqual(JSON.parse(localStorage.getItem(Save.activeKey)), { id: first });
 });
 
+test('selecciona otra partida legible si el guardado activo está corrupto', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia dañada', state: { inventory: [] }
+    });
+    const second = Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia recuperable', state: { inventory: [] }
+    });
+
+    localStorage.setItem(Save.slotPrefix + first, '{partida-corrupta');
+    assert.equal(Save.getActiveId(), second);
+    assert.deepEqual(JSON.parse(localStorage.getItem(Save.activeKey)), { id: second });
+    assert.equal(Save.load().character.name, 'Darian');
+});
+
 test('reconstruye un índice ilegible sin perder partidas ni alterar el mundo compartido', () => {
     const first = Save.createSlot({ name: 'Ariadna' }, {
         title: 'Historia A', state: { inventory: ['Llave'] }
