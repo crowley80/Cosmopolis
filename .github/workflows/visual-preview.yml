@@ -336,7 +336,11 @@ jobs:
                     restored: restored ? { character: restored.character, adventure: restored.adventure } : null
                   }));
                 }
-                Athun.showAdventure(restored.character, restored.adventure);
+                try {
+                  Athun.showAdventure(restored.character, restored.adventure);
+                } catch (error) {
+                  throw new Error('Fallo interno de showAdventure: ' + (error && error.stack ? error.stack : String(error)));
+                }
               });
               } else {
                 await page.locator('#closeToolPanel').click();
