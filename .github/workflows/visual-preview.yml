@@ -948,6 +948,22 @@ jobs:
             assert.ok(darianState.adventure.state.inventory.includes('Mapa antiguo'), 'Darian debe conservar su inventario independiente');
             assert.ok(darianState.adventure.state.inventory.includes('Athun — grimorio consciente'), 'Athun debe existir también en la partida de Darian');
 
+            // Comprueba que cada acceso inferior abre su pantalla correspondiente.
+            const toolbarChecks = [
+              ['#openHint', 'Una pista del grimorio'],
+              ['#openHistory', 'Crónica de tus decisiones'],
+              ['#openMap', 'Atlas y niebla de exploración'],
+              ['#openInventory', 'Tus pertenencias'],
+              ['#openOptions', 'Opciones de la partida']
+            ];
+            for (const [selector, expectedTitle] of toolbarChecks) {
+              await desktopPage.locator(selector).click();
+              await desktopPage.locator('#toolPanelTitle').waitFor();
+              assert.equal(await desktopPage.locator('#toolPanelTitle').textContent(), expectedTitle, selector + ' debe abrir la pantalla correcta');
+              await desktopPage.locator('#closeToolPanel').click();
+              await desktopPage.locator('#toolOverlay').waitFor({ state: 'detached' });
+            }
+
             await browser.close();
           })().catch(error => { console.error(error); process.exit(1); });
           NODE
