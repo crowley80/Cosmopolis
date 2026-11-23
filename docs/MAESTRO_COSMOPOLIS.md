@@ -2655,3 +2655,13 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - Se actualizó la versión de caché de la hoja de estilos a `20261123-narrator-unified-14`.
 - Se añadió una aserción Playwright para comprobar el color calculado del pseudo-elemento `::after`.
 - Verificación realizada: lectura posterior de CSS, HTML y workflow confirma que los tres cambios están presentes. La ejecución de Playwright y la comprobación en Chrome Android siguen pendientes.
+
+### Integración de los campos secundarios en el papiro — 23 de noviembre de 2026
+
+- En las pantallas secundarias, los campos de texto, áreas de escritura y selectores dejan de mostrar fondos claros y marcos rectangulares. Conservan una línea inferior discreta para indicar dónde escribir, sin crear una tarjeta sobre el papiro.
+- El texto de etiquetas, títulos y campos utiliza la tinta granate aprobada `#713B32`; los botones de acción mantienen su tratamiento visual para seguir identificándose como controles.
+- Se añadió una comprobación Playwright específica para verificar que los campos del formulario de creación no tengan fondo opaco ni bordes laterales/superior, y que su escritura sea granate.
+- La versión de caché de estilos quedó en `20261123-narrator-unified-16`.
+- Verificación automática previa: el run 45180492204 terminó correctamente en móvil y escritorio, incluidas las comprobaciones de legibilidad de los accesos. La nueva prueba de los campos secundarios está pendiente de completar.
+- La inspección del archivo de fondo confirma proporción original de 1024 × 1535 (vertical, 2:3 aproximado). La deformación de escritorio y las zonas oscuras opacas de sus bordes siguen pendientes; no se ha alterado esa plantilla sin una solución visual contrastada.
+- Las pruebas con Chrome Android físico y las capturas del usuario quedan reservadas para la sesión de la tarde.
