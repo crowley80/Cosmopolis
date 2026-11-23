@@ -2756,3 +2756,13 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - La suite específica `tests/storage.test.js` ha terminado correctamente en GitHub Actions **45217744146** (commit `55876d4d0989fc94c811299cf44b7e24a99242bb`).
 - Validación completa: la ejecución **45217744146** terminó con `success`; además de la suite de almacenamiento, pasaron la instalación de Playwright, el servidor local, el renderizado móvil/escritorio y las aserciones de interacción.
 - La prueba usa almacenamiento aislado del navegador automatizado y no accede a guardados reales del teléfono.
+
+
+### Validación estructural y restauración entre protagonistas — 23 de noviembre de 2026
+
+- `Save.readSlot(id)` ya no considera válido cualquier JSON que pueda analizarse: exige un objeto de protagonista (`character`) con estructura de objeto y rechaza estructuras incompletas o incompatibles. El campo `adventure` sigue siendo opcional para mantener compatibilidad con guardados antiguos que todavía no han iniciado aventura.
+- Se añadieron regresiones para índices con entradas estructuralmente inválidas y para registros JSON legibles que no contienen una estructura de protagonista. En los casos dañados, el sistema no activa el registro inválido y conserva su contenido original.
+- Se corrigió el fixture de migración para que represente un guardado antiguo válido, en vez de un objeto incompleto que la validación debe rechazar.
+- Se reforzó el recorrido de interfaz que vuelve a activar a Ariadna después de cambiar a Bruno: la prueba comprueba explícitamente el resultado de `Save.activate()`, la lectura posterior con `Save.load()` y la restauración de la aventura, e informa del punto exacto si falla.
+- Validación completa: GitHub Actions **45221509054**, commit `64583a77ca94521487c11e3f8b7f8c2a0f38255f`, terminó con `success`. Pasaron las **57 pruebas** de `tests/storage.test.js` y el trabajo `mobile-preview`, incluidas las comprobaciones Playwright y el renderizado móvil/escritorio.
+- Las pruebas de corrupción y migración utilizan almacenamiento temporal; no modifican partidas reales, el mundo compartido ni textos narrativos. La comprobación final en Chrome Android físico sigue pendiente.
