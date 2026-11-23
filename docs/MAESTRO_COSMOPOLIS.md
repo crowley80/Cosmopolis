@@ -2742,3 +2742,10 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - Se añadieron pruebas para ambos escenarios: identificador inexistente y selector corrupto. Las pruebas verifican también que el selector persistido queda reparado.
 - Validación completa: GitHub Actions **45216744509**, commit `eb699a7f231b1644b192a00674bdff88df3d3ff8`, terminó con `success`. Pasaron la suite de almacenamiento, el servidor, el renderizado móvil/escritorio y las aserciones Playwright.
 - La corrección no modifica el contenido de las partidas ni el mundo compartido; las pruebas trabajan con almacenamiento temporal del navegador.
+
+### Recuperación si la partida activa está dañada — 23 de noviembre de 2026
+
+- Se amplió la recuperación para no quedarse con el primer registro del índice si ese guardado no se puede leer. El sistema busca el primer protagonista cuyo registro siga siendo legible y repara el selector activo hacia él.
+- La prueba activa expresamente la primera partida, daña su registro y comprueba que se recupera la segunda, que el selector persistido apunta a ella y que su contenido vuelve a cargarse.
+- Validación completa: GitHub Actions **45217206734**, commit `8fa00e153dfa17de2fbbb44706a9a2def2f4e0ec`, terminó con `success`. Pasaron la suite de almacenamiento y el flujo completo de vista previa móvil/escritorio con Playwright.
+- La recuperación no borra el registro dañado ni altera el mundo compartido; el caso se ejecuta en almacenamiento temporal de pruebas.
