@@ -848,6 +848,36 @@ jobs:
             console.log('PARCHMENT_SECONDARY_DESKTOP_BOTTOM', JSON.stringify(desktopSecondaryScroll));
             await desktopPage.screenshot({ path: 'artifacts/athun-save-selection-desktop-scroll-bottom.png', fullPage: false });
 
+            // Diagnóstico: una sola capa de papiro, sin duplicación entre body y #app.
+            const secondaryBackgroundTests = [
+              { name: 'single-layer-stretch', size: '100% 100%', note: 'Una sola capa, ocupa la ventana completa' },
+              { name: 'single-layer-natural-ratio', size: '100% auto', note: 'Una sola capa, conserva proporción original' }
+            ];
+            for (const variant of secondaryBackgroundTests) {
+              await desktopPage.addStyleTag({ content: `
+                body.athun-secondary-mode {
+                  background-image:none !important;
+                }
+                body.athun-secondary-mode #app {
+                  background-image:url('../assets/athun-papiro-universal.webp') !important;
+                  background-size:${variant.size} !important;
+                  background-position:center top !important;
+                  background-repeat:no-repeat !important;
+                }
+              ` });
+              await desktopPage.screenshot({ path: `artifacts/athun-save-selection-desktop-${variant.name}.png`, fullPage: false });
+              const dimensions = await desktopPage.evaluate(() => ({
+                viewport: { width: innerWidth, height: innerHeight },
+                bodyImage: getComputedStyle(document.body).backgroundImage,
+                app: { x: document.querySelector('#app').getBoundingClientRect().x, width: document.querySelector('#app').getBoundingClientRect().width, height: document.querySelector('#app').getBoundingClientRect().height, backgroundSize: getComputedStyle(document.querySelector('#app')).backgroundSize }
+              }));
+              console.log('PARCHMENT_SECONDARY_SINGLE_LAYER', variant.name, variant.note, JSON.stringify(dimensions));
+              await desktopPage.evaluate(() => {
+                const app = document.querySelector('#app');
+                app.style.removeProperty('background-size');
+              });
+            }
+
             // Comparativa temporal de escalado del papiro en escritorio. Solo afecta a estas capturas.
             const parchmentVariants = [
               { name: 'height-fit', size: 'auto 100dvh', position: 'center top', note: 'Altura completa, proporción original y márgenes laterales' },
