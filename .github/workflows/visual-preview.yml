@@ -84,7 +84,7 @@ jobs:
             await secondaryPage.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
             await secondaryPage.locator('#continueFromPrologue').waitFor();
             const prologueBackground = await secondaryPage.evaluate(() => ({
-              image: getComputedStyle(document.body).backgroundImage,
+              image: getComputedStyle(document.querySelector('#app')).backgroundImage,
               parchment: getComputedStyle(document.querySelector('.secondary-scroll > .character-creation')).backgroundColor
             }));
             assert.ok(prologueBackground.image.includes('athun-papiro-universal.webp'), 'El prólogo debe usar el papiro universal en blanco');
