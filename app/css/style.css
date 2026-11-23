@@ -1869,7 +1869,7 @@ body.athun-secondary-mode {
 /* ATHUN — composición visual unificada y definitiva del narrador. */
 :root {
   --athun-heading-burgundy:#713B32;
-  --athun-body-ink:#17100a;
+  --athun-body-ink:#713B32;
 }
 html, body {
   min-height:100%;
@@ -2095,7 +2095,7 @@ body:not(.athun-secondary-mode) .adventure-screen {
   border:0 !important;
   border-radius:0 !important;
   box-shadow:none !important;
-  font-size:clamp(.55rem,2.4vw,.76rem) !important;
+  font-size:clamp(.65rem,2.7vw,.82rem) !important;
   line-height:1.1 !important;
 }
 .adventure-screen .toolbar-button svg,
