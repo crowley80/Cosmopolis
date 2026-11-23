@@ -1505,4 +1505,4 @@ test('no activa un registro JSON legible pero sin estructura de protagonista', (
     assert.equal(Save.activate(damaged), false);
 });
 
-// La suite visual-preview usa este archivo como disparador de regresión de almacenamiento.
+// La suite visual-preview ejecuta esta batería junto con la prueba de restauración de interfaz.
