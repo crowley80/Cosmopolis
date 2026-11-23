@@ -2710,3 +2710,11 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - También se comprueba que borrar una partida secundaria no elimina los descubrimientos del mundo compartido.
 - Validación completa: GitHub Actions run **45190829142**, commit `04c7e40b3c448e8f08e901f2ac769bcf95b2df38`, terminó con `success`. El trabajo `mobile-preview` y el paso de renderizado con sus aserciones finalizaron correctamente.
 - Las operaciones se realizan sobre datos aislados de prueba. No se han borrado ni modificado partidas reales ni se ha añadido contenido narrativo.
+
+### Reversión segura si falla el borrado de una partida — 23 de noviembre de 2026
+
+- Se añadió una prueba Playwright que crea un guardado temporal, inicia su eliminación y provoca un fallo controlado al activar la partida superviviente, después de retirar el slot.
+- La prueba exige que la operación informe del fallo y restaure el contenido del guardado, el índice completo de partidas y el identificador de la partida activa; también comprueba que el guardado restaurado vuelve a poder leerse.
+- Tras comprobar la reversión, la prueba elimina correctamente el guardado temporal y verifica que la limpieza no deja residuos.
+- Validación completa: GitHub Actions run **45214878100**, commit `8becbcb6bae869c595bb59c1ff653f90f2668d86`, terminó con `success`. El trabajo `mobile-preview`, incluido el renderizado y las aserciones Playwright, finalizó correctamente.
+- La simulación de fallo se ejecuta únicamente sobre un guardado temporal de prueba. No modifica ni elimina partidas reales.
