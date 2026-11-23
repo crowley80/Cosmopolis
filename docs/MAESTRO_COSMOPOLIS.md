@@ -2590,3 +2590,12 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - Se elevó el tamaño mínimo de los metadatos de ubicación, momento y día para mejorar su lectura en móvil.
 - Nueva ejecución completa satisfactoria: GitHub Actions run `45084573340`, commit `6c63c9fcd34a7c063e6ad0fac7f20efdf79cb01d`. Incluye renderizado móvil/escritorio, navegación de herramientas, paneles transparentes, guardado/recuperación, pruebas narrativas y comprobación de etiqueta Pista.
 - Artefacto visual actualizado: `cosmopolis-visual-preview`, ID `14778825686`.
+
+
+### Eliminación del último fondo de texto en la aventura — 23/11/2026
+
+- La inspección directa del CSS detectó que `.current-action` conservaba una regla antigua con fondo translúcido y borde lateral.
+- Se añadió una sobrescritura final para que ese texto también aparezca directamente sobre el papiro, sin fondo, borde, contorno ni sombra de panel.
+- Se incrementó la versión de caché de la hoja de estilos.
+- No se modificaron textos, lógica, almacenamiento ni partidas.
+- **Validación pendiente:** repetir la vista previa automatizada y comprobar que la regla no afecta a la lectura ni a los controles.
