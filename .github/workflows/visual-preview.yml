@@ -986,6 +986,10 @@ jobs:
               return window.window.Save.save(stale);
             }, staleAriadna);
             assert.equal(staleWriteAccepted, false, 'Una escritura tardía de Ariadna no debe modificar la partida activa de Darian');
+            const staleActionAccepted = await desktopPage.evaluate(ariId => {
+              return Session.addAction('Acción tardía de Ariadna', 'Respuesta antigua', {}, ariId);
+            }, slotIds.ari);
+            assert.equal(staleActionAccepted, false, 'Una respuesta tardía de Ariadna debe descartarse al estar activa la partida de Darian');
             const darianState = await desktopPage.evaluate(() => window.window.Save.load());
             assert.equal(darianState.character.name, 'Darian', 'Debe poder alternarse al segundo protagonista');
             assert.ok(darianState.world.facts.includes('Recuerdo privado de Darian'), 'La segunda partida debe conservar sus recuerdos propios');
