@@ -1,4 +1,4 @@
-// La regresión visual verifica la reconstrucción de la aventura y el cambio de protagonista.
+// La regresión visual verifica la reconstrucción de la aventura, el cambio de protagonista y una migración heredada estructuralmente válida.
 'use strict';
 
 const test = require('node:test');
