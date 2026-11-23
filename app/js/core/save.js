@@ -160,7 +160,10 @@ const Save = {
             const rebuilt = { version: 1, saves: recovered };
             try {
                 this.writeVerified(this.indexKey, rebuilt);
-                if (!localStorage.getItem(this.activeKey)) this.writeVerified(this.activeKey, { id: recovered[0].id });
+                const active = this.readJSON(this.activeKey);
+                if (!active || !recovered.some(entry => entry.id === active.id)) {
+                    this.writeVerified(this.activeKey, { id: recovered[0].id });
+                }
                 return rebuilt;
             } catch (error) {
                 console.error('No se pudo reconstruir el índice de partidas:', error);
