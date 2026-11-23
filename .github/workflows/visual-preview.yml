@@ -387,12 +387,22 @@ jobs:
             assert.equal(switched.character, 'Bruno', 'Cambiar de partida debe activar el personaje elegido');
             assert.equal(switched.action, 'Acción exclusiva de Bruno', 'El historial debe pertenecer a la partida elegida');
             assert.equal(switched.active, optionSwitchIds.secondId, 'El identificador activo debe corresponder a Bruno');
-            await page.evaluate(() => {
+            const restoredAriadna = await page.evaluate(() => {
               const ari = Save.list().find(item => item.name === 'Ariadna');
-              if (!ari || !Save.activate(ari.id)) throw new Error('No se pudo restaurar la partida de Ariadna para las pruebas siguientes');
+              if (!ari) return { ok: false, reason: 'Ariadna no aparece en el índice', saves: Save.list() };
+              if (!Save.activate(ari.id)) return { ok: false, reason: 'Save.activate(Ariadna) devolvió false', id: ari.id };
               const saved = Save.load();
-              Athun.showAdventure(saved.character, saved.adventure);
+              if (!saved) return { ok: false, reason: 'Save.load() devolvió null después de activar Ariadna', id: ari.id, active: Save.getActiveId() };
+              if (!saved.adventure) return { ok: false, reason: 'Ariadna no contiene adventure', id: ari.id, character: saved.character && saved.character.name };
+              try {
+                Athun.showAdventure(saved.character, saved.adventure);
+                return { ok: true };
+              } catch (error) {
+                return { ok: false, reason: error && error.stack ? error.stack : String(error) };
+              }
             });
+            assert.equal(restoredAriadna.ok, true,
+              'Debe poder restaurarse Ariadna tras cambiar a Bruno: ' + JSON.stringify(restoredAriadna));
             await page.locator('.adventure-screen').waitFor();
 
             // Regresión narrativa: apertura aprobada, descubrimientos graduales y Athun permanente.
