@@ -1622,3 +1622,21 @@ test('crear una partida no sobrescribe un slot si coincide el identificador gene
         Math.random = originalRandom;
     }
 });
+
+
+test('normaliza arrays en campos de objeto sin perder la estructura de la partida', () => {
+    const id = Save.createSlot(
+        { name: 'Ariadna' },
+        { title: 'Historia válida', state: { inventory: ['Mapa'], athun: [] } },
+        { world: [], actions: [] }
+    );
+    assert.ok(id);
+    const saved = Save.load();
+    assert.ok(saved);
+    assert.deepEqual(saved.world, { events: [], facts: [], relationships: {} });
+    assert.deepEqual(saved.adventure.state.athun.memories, []);
+    assert.deepEqual(saved.adventure.state.athun.revelations, []);
+    assert.equal(saved.adventure.state.athun.permanent, true);
+    assert.ok(Array.isArray(saved.adventure.state.inventory));
+    assert.ok(saved.adventure.state.inventory.some(item => String(item).includes('Athun')));
+});
