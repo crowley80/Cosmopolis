@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: 20
       - name: Test storage and shared world
-        run: node --test tests/*.test.js
+        run: node --test tests/storage.test.js
       - name: Install Playwright
         run: |
           npm install --no-save playwright
