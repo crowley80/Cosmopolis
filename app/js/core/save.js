@@ -582,6 +582,15 @@ const Save = {
     },
 
     saveGlobalWorld(world) {
+        if (world !== undefined && world !== null &&
+            (typeof world !== 'object' || Array.isArray(world))) return false;
+        if (world && ['entities', 'relationships'].some(field =>
+            Object.prototype.hasOwnProperty.call(world, field) &&
+            (!world[field] || typeof world[field] !== 'object' || Array.isArray(world[field]))
+        )) return false;
+        if (world && ['locations', 'connections', 'facts', 'events', 'changes'].some(field =>
+            Object.prototype.hasOwnProperty.call(world, field) && !Array.isArray(world[field])
+        )) return false;
         const current = this.getGlobalWorld();
         const updated = {
             ...current,
