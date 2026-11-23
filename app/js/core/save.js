@@ -379,7 +379,15 @@ const Save = {
             (typeof adventure !== 'object' || Array.isArray(adventure))) return false;
         this.ensureReady();
         const now = new Date().toISOString();
-        const id = 'save-' + Date.now().toString(36) + '-' + Math.floor(Math.random() * 1000000).toString(36);
+        const index = this.readJSON(this.indexKey) || { version: 1, saves: [] };
+        let id;
+        let attempt = 0;
+        do {
+            const suffix = attempt ? '-' + attempt.toString(36) : '';
+            id = 'save-' + Date.now().toString(36) + '-' + Math.floor(Math.random() * 1000000).toString(36) + suffix;
+            attempt += 1;
+        } while (localStorage.getItem(this.slotPrefix + id) !== null ||
+            index.saves.some(entry => entry && entry.id === id));
         const slot = this.normalizeSlot({
             ...extra,
             character,
@@ -389,7 +397,6 @@ const Save = {
             createdAt: now,
             updatedAt: now
         });
-        const index = this.readJSON(this.indexKey) || { version: 1, saves: [] };
         const previousActive = localStorage.getItem(this.activeKey);
         try {
             if (!this.writeVerified(this.slotPrefix + id, slot)) {
