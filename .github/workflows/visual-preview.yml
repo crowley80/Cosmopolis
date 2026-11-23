@@ -1119,14 +1119,16 @@ jobs:
                 injected,
                 saves: window.Save.list().map(entry => entry.id),
                 active: window.Save.getActiveId(),
+                beforeSaves: before.saves,
+                beforeActive: before.active,
                 beforeSlotKeys: before.slotKeys,
                 slotKeys: Object.keys(localStorage).filter(key => key.startsWith(window.Save.slotPrefix)).sort()
               };
             });
             assert.equal(createRollback.injected, true, 'La prueba debe provocar el fallo de activación durante la creación');
             assert.equal(createRollback.created, false, 'La creación incompleta debe comunicarse como fallida');
-            assert.deepEqual(createRollback.saves, rollbackSetup.before, 'La creación fallida no debe alterar el índice de guardados');
-            assert.equal(createRollback.active, rollbackSetup.active, 'La creación fallida debe conservar el protagonista activo');
+            assert.deepEqual(createRollback.saves, createRollback.beforeSaves, 'La creación fallida no debe alterar el índice de guardados');
+            assert.equal(createRollback.active, createRollback.beforeActive, 'La creación fallida debe conservar el protagonista activo');
             assert.deepEqual(createRollback.slotKeys, createRollback.beforeSlotKeys,
               'La creación fallida no debe dejar un slot huérfano');
 
