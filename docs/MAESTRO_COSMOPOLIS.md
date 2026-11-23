@@ -2648,3 +2648,10 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - Se amplió el flujo Playwright para pulsar individualmente Pista, Historial, Mapa, Inventario y Opciones, y comprobar que cada uno abre el encabezado/pantalla que le corresponde antes de cerrarlo.
 - La prueba cubre los destinos reales de los listeners de `app/js/app.js`; no se limita a comprobar que los botones existan.
 - La nueva ejecución debe completarse para considerar validada esta comprobación. No se ha podido consultar desde las herramientas disponibles el listado de ejecuciones disparadas por push; los resultados de checks no aparecen en el endpoint de estados del commit.
+
+### Ajuste de color de la etiqueta Pista — 23 de noviembre de 2026
+
+- La etiqueta generada mediante `#openHint::after` ahora hereda `--athun-body-ink` (`#713B32`) en lugar de fijar el marrón oscuro `#17100a`.
+- Se actualizó la versión de caché de la hoja de estilos a `20261123-narrator-unified-14`.
+- Se añadió una aserción Playwright para comprobar el color calculado del pseudo-elemento `::after`.
+- Verificación realizada: lectura posterior de CSS, HTML y workflow confirma que los tres cambios están presentes. La ejecución de Playwright y la comprobación en Chrome Android siguen pendientes.
