@@ -2686,3 +2686,11 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - Se amplió Playwright para verificar que recuerdos del vínculo con Athun, localizaciones visitadas e inventario permanecen separados entre dos protagonistas; que el mundo compartido conserva las localizaciones descubiertas por ambos; y que una escritura o respuesta tardía del primer protagonista no modifica el segundo.
 - Validación automatizada completa satisfactoria: GitHub Actions run **45184431019**, commit `a754a4b967a8c6a5b56e1bf08bc956704b182a92`. El render móvil/escritorio, las regresiones funcionales y la nueva prueba de aislamiento finalizaron correctamente.
 - No se modificaron textos narrativos ni partidas reales. La prueba en Chrome Android físico sigue pendiente.
+
+## Aislamiento de partidas ante respuestas tardías — 23 de noviembre de 2026
+
+- `Save.save(data)` y `Save.replace(data)` rechazan datos que incluyen un identificador de partida distinto del protagonista activo. Esto evita que un objeto cargado antes de cambiar de protagonista sobrescriba la partida nueva.
+- `Session.addAction(action, response, details, expectedSaveId)` descarta la respuesta si el identificador de partida esperado ya no coincide con el activo.
+- Se amplió la prueba automatizada para cargar dos protagonistas, verificar la separación de inventario, visitas y recuerdos personales, comprobar la persistencia de localizaciones en el mundo compartido y simular una escritura y una respuesta tardías tras cambiar de protagonista.
+- Verificación: GitHub Actions `45184431019` terminó correctamente. La prueba de interfaz y las comprobaciones de aislamiento pasaron.
+- No se modificaron partidas reales ni textos narrativos.
