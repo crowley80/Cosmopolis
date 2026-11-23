@@ -2662,6 +2662,8 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - El texto de etiquetas, títulos y campos utiliza la tinta granate aprobada `#713B32`; los botones de acción mantienen su tratamiento visual para seguir identificándose como controles.
 - Se añadió una comprobación Playwright específica para verificar que los campos del formulario de creación no tengan fondo opaco ni bordes laterales/superior, y que su escritura sea granate.
 - La versión de caché de estilos quedó en `20261123-narrator-unified-16`.
-- Verificación automática previa: el run 45180492204 terminó correctamente en móvil y escritorio, incluidas las comprobaciones de legibilidad de los accesos. La nueva prueba de los campos secundarios está pendiente de completar.
+- Verificación automática: los runs 45181061364 (CSS), 45181077597 (caché) y 45181109752 (aserción de campos) terminaron con `success`. El último ejecutó la prueba móvil y escritorio y confirmó los estilos calculados de los campos de creación de personaje.
+- Inspección visual del artefacto 45181109752: en la captura móvil de creación, los campos aparecen integrados en el papiro, sin rectángulos claros detrás de la escritura; la línea inferior discreta se conserva. El botón principal sigue siendo un control claramente delimitado.
+- En la captura del narrador móvil, la tinta granate es visible y los accesos inferiores se distinguen. La composición general y el tamaño real de los elementos deberán revisarse contigo en Chrome Android a partir de las 19:00.
 - La inspección del archivo de fondo confirma proporción original de 1024 × 1535 (vertical, 2:3 aproximado). La deformación de escritorio y las zonas oscuras opacas de sus bordes siguen pendientes; no se ha alterado esa plantilla sin una solución visual contrastada.
 - Las pruebas con Chrome Android físico y las capturas del usuario quedan reservadas para la sesión de la tarde.
