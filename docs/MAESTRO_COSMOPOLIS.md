@@ -2632,3 +2632,12 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - Se añadió una aserción Playwright que exige un tamaño mínimo de 10 px en las etiquetas, incluida la etiqueta Pista. La ejecución de esta nueva prueba está pendiente; no se declara validada hasta ver el resultado de Actions.
 - No se modificaron textos narrativos, lógica de juego, datos ni partidas.
 - Sigue pendiente decidir cómo conservar la proporción vertical del papiro en escritorio y cómo tratar los bordes negros opacos del archivo WebP. La comprobación en Chrome Android físico también sigue pendiente.
+
+
+### Corrección del color de la narración — 23/11/2026
+
+- La inspección visual de la captura móvil mostró que el cuerpo de la narración y los metadatos seguían usando un marrón casi negro, aunque los encabezados sí tenían el granate aprobado.
+- Se cambió la variable común `--athun-body-ink` a `#713B32`, de modo que el texto de aventura, los metadatos y los accesos que heredan esa tinta utilicen el granate acordado.
+- Se aumentó también el tamaño mínimo de la etiqueta «Pista» para que no quede por debajo del umbral de legibilidad móvil.
+- Se actualizó la caché de estilos a `20261123-narrator-unified-13` y la aserción Playwright ahora exige el granate `rgb(113, 59, 50)` en la narración.
+- La ejecución automática posterior a estos cambios aún debe confirmarse. No se afirma que la corrección esté validada hasta revisar el resultado.
