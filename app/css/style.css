@@ -2231,3 +2231,41 @@ body.athun-secondary-mode #app {
   box-shadow:none !important;
   text-shadow:0 1px rgba(255,248,226,.35);
 }
+
+/* ATHUN — campos integrados en el papiro: sin paneles claros detrás de la escritura. */
+#app.athun-secondary-screen {
+  color:var(--athun-body-ink) !important;
+}
+#app.athun-secondary-screen h1,
+#app.athun-secondary-screen h2,
+#app.athun-secondary-screen h3,
+#app.athun-secondary-screen p,
+#app.athun-secondary-screen label,
+#app.athun-secondary-screen legend,
+#app.athun-secondary-screen small,
+#app.athun-secondary-screen li {
+  color:var(--athun-body-ink) !important;
+}
+#app.athun-secondary-screen input,
+#app.athun-secondary-screen textarea,
+#app.athun-secondary-screen select {
+  color:var(--athun-body-ink) !important;
+  background:transparent !important;
+  border:0 !important;
+  border-bottom:1px solid rgba(113,59,50,.58) !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  outline:0 !important;
+}
+#app.athun-secondary-screen input::placeholder,
+#app.athun-secondary-screen textarea::placeholder {
+  color:rgba(113,59,50,.68) !important;
+  opacity:1 !important;
+}
+#app.athun-secondary-screen input:focus,
+#app.athun-secondary-screen textarea:focus,
+#app.athun-secondary-screen select:focus {
+  border-bottom-color:#713B32 !important;
+  box-shadow:none !important;
+  outline:0 !important;
+}
