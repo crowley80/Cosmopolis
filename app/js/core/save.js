@@ -512,11 +512,11 @@ const Save = {
         const world = this.readJSON(this.worldKey) || this.emptyWorld();
         world.locations = Array.isArray(world.locations) ? world.locations : [];
         world.connections = Array.isArray(world.connections) ? world.connections : [];
-        world.entities = world.entities && typeof world.entities === 'object' ? world.entities : {};
+        world.entities = world.entities && typeof world.entities === 'object' && !Array.isArray(world.entities) ? world.entities : {};
         world.facts = Array.isArray(world.facts) ? world.facts : [];
         world.events = Array.isArray(world.events) ? world.events : [];
         world.changes = Array.isArray(world.changes) ? world.changes : [];
-        world.relationships = world.relationships && typeof world.relationships === 'object' ? world.relationships : {};
+        world.relationships = world.relationships && typeof world.relationships === 'object' && !Array.isArray(world.relationships) ? world.relationships : {};
         return world;
     },
 
