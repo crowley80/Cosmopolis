@@ -2675,7 +2675,7 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - El cierre por botón y por pulsación sobre el fondo exterior utiliza el mismo procedimiento y restaura el foco de forma segura.
 - Se añadió una prueba Playwright que comprueba el recorrido inverso del foco y el cierre con Escape en el panel de Opciones.
 - Se actualizó la versión de caché de `app/js/app.js` a `20261123-dialog-keyboard-1`.
-- La ejecución automática del cambio está pendiente de terminar; no se declara validado hasta revisar Actions.
+- Validación automatizada satisfactoria: GitHub Actions run **45182591778** terminó correctamente; la prueba de foco con Mayús+Tab y cierre con Escape pasó.
 - No se han modificado textos narrativos, lógica de partida, inventarios ni datos guardados.
 
 ### Aislamiento de respuestas asíncronas y progreso por protagonista — 23 de noviembre de 2026
@@ -2702,3 +2702,11 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - La prueba comprueba que solo desaparece el guardado seleccionado, que el protagonista activo no cambia y que las localizaciones descubiertas por ambos siguen presentes en el mundo compartido.
 - Validación completada: GitHub Actions run **45188394243** (commit `04e544c9ee9f47496c3d664c04c6c08d85467b80`) terminó con `success`. El trabajo `mobile-preview`, incluida la fase de renderizado y aserciones Playwright, finalizó correctamente.
 - La comprobación utiliza partidas aisladas de prueba; no elimina ni modifica guardados reales.
+
+
+### Protección al borrar partidas activas y el último guardado — 23 de noviembre de 2026
+
+- Se ampliaron las pruebas Playwright de gestión de partidas: borrar la partida activa cuando existe otra debe activar la superviviente; intentar borrar el único guardado debe rechazarse y conservarlo.
+- También se comprueba que borrar una partida secundaria no elimina los descubrimientos del mundo compartido.
+- Validación completa: GitHub Actions run **45190829142**, commit `04c7e40b3c448e8f08e901f2ac769bcf95b2df38`, terminó con `success`. El trabajo `mobile-preview` y el paso de renderizado con sus aserciones finalizaron correctamente.
+- Las operaciones se realizan sobre datos aislados de prueba. No se han borrado ni modificado partidas reales ni se ha añadido contenido narrativo.
