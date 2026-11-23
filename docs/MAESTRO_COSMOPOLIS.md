@@ -2667,3 +2667,13 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - En la captura del narrador móvil, la tinta granate es visible y los accesos inferiores se distinguen. La composición general y el tamaño real de los elementos deberán revisarse contigo en Chrome Android a partir de las 19:00.
 - La inspección del archivo de fondo confirma proporción original de 1024 × 1535 (vertical, 2:3 aproximado). La deformación de escritorio y las zonas oscuras opacas de sus bordes siguen pendientes; no se ha alterado esa plantilla sin una solución visual contrastada.
 - Las pruebas con Chrome Android físico y las capturas del usuario quedan reservadas para la sesión de la tarde.
+
+
+### Accesibilidad de los paneles de herramientas — 23 de noviembre de 2026
+
+- Se mejoró `Athun.openPanel()`: Escape cierra el diálogo, Tab y Mayús+Tab mantienen el foco dentro del panel y el cierre devuelve el foco al control que lo abrió.
+- El cierre por botón y por pulsación sobre el fondo exterior utiliza el mismo procedimiento y restaura el foco de forma segura.
+- Se añadió una prueba Playwright que comprueba el recorrido inverso del foco y el cierre con Escape en el panel de Opciones.
+- Se actualizó la versión de caché de `app/js/app.js` a `20261123-dialog-keyboard-1`.
+- La ejecución automática del cambio está pendiente de terminar; no se declara validado hasta revisar Actions.
+- No se han modificado textos narrativos, lógica de partida, inventarios ni datos guardados.
