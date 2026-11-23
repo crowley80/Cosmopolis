@@ -6,6 +6,7 @@ on:
       - 'app/**'
       - 'index.html'
       - 'server.js'
+      - 'tests/**'
       - '.github/workflows/visual-preview.yml'
   pull_request:
     branches: [main, integration/athun-multisave-main-20261116]
@@ -28,6 +29,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Test storage and shared world
+        run: node --test tests/*.test.js
       - name: Install Playwright
         run: |
           npm install --no-save playwright
