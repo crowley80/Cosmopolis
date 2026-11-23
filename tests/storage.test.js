@@ -1504,3 +1504,5 @@ test('no activa un registro JSON legible pero sin estructura de protagonista', (
     assert.equal(localStorage.getItem(Save.slotPrefix + damaged), damagedRaw);
     assert.equal(Save.activate(damaged), false);
 });
+
+// La suite visual-preview usa este archivo como disparador de regresión de almacenamiento.
