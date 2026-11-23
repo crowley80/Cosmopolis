@@ -181,6 +181,32 @@ test('reconstruye el índice si desaparece sin perder los registros de partidas'
     assert.ok(localStorage.getItem(Save.indexKey));
 });
 
+test('reconstruye un índice ilegible sin perder partidas ni alterar el mundo compartido', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia A', state: { inventory: ['Llave'] }
+    });
+    const second = Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia B', state: { inventory: ['Mapa'] }
+    });
+    Save.addGlobalLocation('Puerto', 'Ariadna');
+    const firstRaw = localStorage.getItem(Save.slotPrefix + first);
+    const secondRaw = localStorage.getItem(Save.slotPrefix + second);
+    const worldRaw = localStorage.getItem(Save.worldKey);
+    localStorage.setItem(Save.activeKey, JSON.stringify({ id: 'partida-que-no-existe' }));
+    localStorage.setItem(Save.indexKey, '{"version":1,"saves":');
+
+    const recovered = Save.list();
+    assert.equal(recovered.length, 2);
+    assert.deepEqual(recovered.map(entry => entry.name), ['Ariadna', 'Darian']);
+    assert.equal(Save.getActiveId(), first);
+    assert.equal(Save.activate(second), true);
+    assert.equal(Save.load().character.name, 'Darian');
+    assert.equal(localStorage.getItem(Save.slotPrefix + first), firstRaw);
+    assert.equal(localStorage.getItem(Save.slotPrefix + second), secondRaw);
+    assert.equal(localStorage.getItem(Save.worldKey), worldRaw);
+    assert.deepEqual(JSON.parse(localStorage.getItem(Save.indexKey)).saves.map(entry => entry.id), [first, second]);
+});
+
 test('Athun permanece en el inventario al guardar o normalizar una partida', () => {
     const id = Save.createSlot({ name: 'Ariadna' }, {
         title: 'Historia', state: { inventory: ['Moneda'] }
