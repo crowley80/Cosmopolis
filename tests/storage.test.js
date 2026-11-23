@@ -198,6 +198,23 @@ test('repara el selector activo si apunta a una partida inexistente o está corr
     assert.deepEqual(JSON.parse(localStorage.getItem(Save.activeKey)), { id: first });
 });
 
+test('no sobrescribe el único guardado si su contenido está corrupto', () => {
+    const only = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia original', state: { inventory: ['Athun'] }
+    });
+    const key = Save.slotPrefix + only;
+    const damagedRaw = '{registro-truncado';
+    localStorage.setItem(key, damagedRaw);
+
+    assert.equal(Save.getActiveId(), null);
+    assert.equal(Save.save({
+        character: { name: 'Personaje nuevo' },
+        adventure: { title: 'No debe sustituir el registro dañado' }
+    }), false);
+    assert.equal(localStorage.getItem(key), damagedRaw);
+    assert.equal(Save.load(), null);
+});
+
 test('selecciona otra partida legible si el guardado activo está corrupto', () => {
     const first = Save.createSlot({ name: 'Ariadna' }, {
         title: 'Historia dañada', state: { inventory: [] }
