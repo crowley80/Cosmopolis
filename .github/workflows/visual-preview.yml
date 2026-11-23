@@ -927,6 +927,13 @@ jobs:
             // Regresión de interfaz: dos protagonistas, alternancia y aislamiento personal.
             const slotIds = await desktopPage.evaluate(() => {
               const ari = Save.list().find(entry => entry.name === 'Ariadna');
+              if (!ari || !Save.activate(ari.id)) throw new Error('No se pudo preparar la partida de Ariadna');
+              const ariSlot = Save.load();
+              ariSlot.adventure.state.visitedLocations = ['Plaza del pozo'];
+              ariSlot.adventure.state.athun = ariSlot.adventure.state.athun || {};
+              ariSlot.adventure.state.athun.memories = ['Recuerdo privado del vínculo de Ariadna'];
+              if (!Save.save(ariSlot)) throw new Error('No se pudo preparar el progreso personal de Ariadna');
+              Save.addGlobalLocation('Plaza del pozo', 'Ariadna');
               const darian = Save.createSlot({
                 name: 'Darian',
                 nature: 'Humano',
@@ -965,6 +972,7 @@ jobs:
             assert.ok(!ariState.world.facts.includes('Recuerdo privado de Darian'), 'Los recuerdos personales de Darian no deben filtrarse a Ariadna');
             assert.ok(!ariState.adventure.state.athun.memories.includes('Recuerdo privado del vínculo de Darian'), 'Los recuerdos del vínculo de Athun deben permanecer en la partida de Darian');
             assert.ok(ariState.adventure.state.visitedLocations.includes('Plaza del pozo'), 'Ariadna debe conservar sus localizaciones personales');
+            assert.ok(ariState.adventure.state.athun.memories.includes('Recuerdo privado del vínculo de Ariadna'), 'Ariadna debe conservar sus recuerdos propios de Athun');
             assert.ok(!ariState.adventure.state.visitedLocations.includes('Puerto de Bruma'), 'Las localizaciones visitadas por Darian no deben mezclarse con Ariadna');
             assert.ok(ariState.adventure.state.inventory.includes('Athun — grimorio consciente'), 'Ariadna debe conservar a Athun');
             assert.ok(slotIds.globalLocations.includes('Puerto de Bruma'), 'El mundo compartido debe incorporar también los descubrimientos de Darian');
@@ -980,6 +988,7 @@ jobs:
             assert.ok(darianState.adventure.state.visitedLocations.includes('Puerto de Bruma'), 'Darian debe conservar sus localizaciones personales');
             assert.ok(!darianState.adventure.state.visitedLocations.includes('Plaza del pozo'), 'Las localizaciones visitadas por Ariadna no deben mezclarse con Darian');
             assert.ok(darianState.adventure.state.athun.memories.includes('Recuerdo privado del vínculo de Darian'), 'Darian debe conservar sus recuerdos propios de Athun');
+            assert.ok(!darianState.adventure.state.athun.memories.includes('Recuerdo privado del vínculo de Ariadna'), 'Los recuerdos de Athun de Ariadna no deben filtrarse a Darian');
             assert.ok(darianState.adventure.state.inventory.includes('Athun — grimorio consciente'), 'Athun debe existir también en la partida de Darian');
             const sharedAfterSwitch = Save.getGlobalWorld().locations.map(entry => typeof entry === 'string' ? entry : entry.name);
             assert.ok(sharedAfterSwitch.includes('Plaza del pozo') && sharedAfterSwitch.includes('Puerto de Bruma'), 'El mundo compartido debe conservar los descubrimientos de ambos protagonistas');
