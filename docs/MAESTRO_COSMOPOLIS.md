@@ -2839,3 +2839,13 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - GitHub Actions **45225796788**: **65 pruebas de almacenamiento superadas, 0 fallos**; Playwright y renderizado móvil/escritorio completados correctamente.
 - Scroll móvil del pergamino secundario comprobado hasta el final: 135 px.
 - Sigue pendiente la comprobación visual en Chrome Android físico.
+
+
+### Lectura segura de mapas del mundo global — 23 de noviembre de 2026
+
+- `getGlobalWorld()` ya normaliza `entities` y `relationships` a objetos vacíos cuando el registro persistido contiene arrays, en lugar de exponerlos como mapas válidos.
+- La lectura no reescribe el registro corrupto. `saveGlobalWorld()` sigue rechazando la actualización mientras el original tenga estructura inválida, evitando sustituirlo silenciosamente.
+- Prueba nueva: `expone un mundo normalizado sin reescribir arrays corruptos del registro global`.
+- GitHub Actions **45226050093**: **66 pruebas de almacenamiento superadas, 0 fallos**; Playwright y renderizado móvil/escritorio correctos.
+- El scroll del pergamino secundario en viewport móvil se mantiene completo: 135 px.
+- Chrome Android físico pendiente de revisión.
