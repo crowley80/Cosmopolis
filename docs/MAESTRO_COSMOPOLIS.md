@@ -2598,7 +2598,10 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - Se añadió una sobrescritura final para que ese texto también aparezca directamente sobre el papiro, sin fondo, borde, contorno ni sombra de panel.
 - Se incrementó la versión de caché de la hoja de estilos.
 - No se modificaron textos, lógica, almacenamiento ni partidas.
-- **Validación pendiente:** repetir la vista previa automatizada y comprobar que la regla no afecta a la lectura ni a los controles.
+- La validación automatizada posterior confirmó que la regla no afecta a la lectura ni a los controles.
 
 - La referencia de caché de `app/css/style.css` se elevó a `20261123-narrator-unified-11` para obligar al navegador a cargar la hoja corregida.
-- Se añadió a `.github/workflows/visual-preview.yml` una comprobación Playwright específica de `.current-action`: fondo transparente, sin borde, contorno ni sombra. La ejecución de esta nueva comprobación aún no consta como completada.
+- Se añadió a `.github/workflows/visual-preview.yml` una comprobación Playwright específica de `.current-action`: fondo transparente, sin borde, contorno ni sombra. La comprobación quedó superada en GitHub Actions run `45144761619`, job `mobile-preview`, sobre el commit `38cb4e5380b227d9c8d0a45118899c1b94ba0c79`.
+
+- Se inspeccionaron las capturas reales del artefacto móvil generado por esa ejecución: narrador, prólogo, creación de personaje y ficha. El papiro aparece como fondo y los textos narrativos no muestran el recuadro antiguo. La captura es una previsualización automatizada, no una prueba en el Chrome físico del usuario.
+- Artefacto visual de esta validación: `cosmopolis-visual-preview`, ID `14803656999` (seis capturas, retención de siete días).
