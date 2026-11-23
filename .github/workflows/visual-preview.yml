@@ -939,10 +939,18 @@ jobs:
                 title: 'La ruta del norte',
                 location: 'Puerto de Bruma',
                 text: 'Una historia distinta.',
-                state: { currentLocation: 'Puerto de Bruma', inventory: ['Mapa antiguo'], visitedLocations: ['Puerto de Bruma'], visibleLocations: [], characters: {} }
+                state: {
+                  currentLocation: 'Puerto de Bruma',
+                  inventory: ['Mapa antiguo'],
+                  visitedLocations: ['Puerto de Bruma'],
+                  visibleLocations: [],
+                  characters: {},
+                  athun: { memories: ['Recuerdo privado del vínculo de Darian'] }
+                }
               }, {
                 world: { facts: ['Recuerdo privado de Darian'], events: [], relationships: {} }
               });
+              Save.addGlobalLocation('Puerto de Bruma', 'Darian');
               return { ari: ari && ari.id, darian, globalLocations: Save.getGlobalWorld().locations.map(entry => typeof entry === 'string' ? entry : entry.name) };
             });
             assert.ok(slotIds.ari && slotIds.darian, 'Deben existir dos partidas independientes');
@@ -955,7 +963,11 @@ jobs:
             const ariState = await desktopPage.evaluate(() => Save.load());
             assert.equal(ariState.character.name, 'Ariadna', 'El selector debe abrir la partida elegida');
             assert.ok(!ariState.world.facts.includes('Recuerdo privado de Darian'), 'Los recuerdos personales de Darian no deben filtrarse a Ariadna');
+            assert.ok(!ariState.adventure.state.athun.memories.includes('Recuerdo privado del vínculo de Darian'), 'Los recuerdos del vínculo de Athun deben permanecer en la partida de Darian');
+            assert.ok(ariState.adventure.state.visitedLocations.includes('Plaza del pozo'), 'Ariadna debe conservar sus localizaciones personales');
+            assert.ok(!ariState.adventure.state.visitedLocations.includes('Puerto de Bruma'), 'Las localizaciones visitadas por Darian no deben mezclarse con Ariadna');
             assert.ok(ariState.adventure.state.inventory.includes('Athun — grimorio consciente'), 'Ariadna debe conservar a Athun');
+            assert.ok(slotIds.globalLocations.includes('Puerto de Bruma'), 'El mundo compartido debe incorporar también los descubrimientos de Darian');
 
             await desktopPage.locator('#openOptions').click();
             await desktopPage.locator('#toolOverlay #switchSaveFromOptions').click();
@@ -965,7 +977,12 @@ jobs:
             assert.ok(darianState.world.facts.includes('Recuerdo privado de Darian'), 'La segunda partida debe conservar sus recuerdos propios');
             assert.ok(!darianState.world.facts.includes('El personaje ha mostrado generosidad.'), 'El progreso personal de Ariadna no debe filtrarse a Darian');
             assert.ok(darianState.adventure.state.inventory.includes('Mapa antiguo'), 'Darian debe conservar su inventario independiente');
+            assert.ok(darianState.adventure.state.visitedLocations.includes('Puerto de Bruma'), 'Darian debe conservar sus localizaciones personales');
+            assert.ok(!darianState.adventure.state.visitedLocations.includes('Plaza del pozo'), 'Las localizaciones visitadas por Ariadna no deben mezclarse con Darian');
+            assert.ok(darianState.adventure.state.athun.memories.includes('Recuerdo privado del vínculo de Darian'), 'Darian debe conservar sus recuerdos propios de Athun');
             assert.ok(darianState.adventure.state.inventory.includes('Athun — grimorio consciente'), 'Athun debe existir también en la partida de Darian');
+            const sharedAfterSwitch = Save.getGlobalWorld().locations.map(entry => typeof entry === 'string' ? entry : entry.name);
+            assert.ok(sharedAfterSwitch.includes('Plaza del pozo') && sharedAfterSwitch.includes('Puerto de Bruma'), 'El mundo compartido debe conservar los descubrimientos de ambos protagonistas');
 
             // Comprueba que cada acceso inferior abre su pantalla correspondiente.
             const toolbarChecks = [
