@@ -2641,3 +2641,10 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - Se aumentó también el tamaño mínimo de la etiqueta «Pista» para que no quede por debajo del umbral de legibilidad móvil.
 - Se actualizó la caché de estilos a `20261123-narrator-unified-13` y la aserción Playwright ahora exige el granate `rgb(113, 59, 50)` en la narración.
 - La ejecución automática posterior a estos cambios aún debe confirmarse. No se afirma que la corrección esté validada hasta revisar el resultado.
+
+
+### Verificación funcional de los accesos inferiores — 23/11/2026
+
+- Se amplió el flujo Playwright para pulsar individualmente Pista, Historial, Mapa, Inventario y Opciones, y comprobar que cada uno abre el encabezado/pantalla que le corresponde antes de cerrarlo.
+- La prueba cubre los destinos reales de los listeners de `app/js/app.js`; no se limita a comprobar que los botones existan.
+- La nueva ejecución debe completarse para considerar validada esta comprobación. No se ha podido consultar desde las herramientas disponibles el listado de ejecuciones disparadas por push; los resultados de checks no aparecen en el endpoint de estados del commit.
