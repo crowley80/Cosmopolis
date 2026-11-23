@@ -134,7 +134,11 @@ const Save = {
 
     ensureReady() {
         let index = this.readJSON(this.indexKey);
-        if (index && Array.isArray(index.saves)) {
+        const validIndexEntries = index && Array.isArray(index.saves) && index.saves.every(entry =>
+            entry && typeof entry === 'object' && !Array.isArray(entry) &&
+            typeof entry.id === 'string' && entry.id.trim().length > 0
+        );
+        if (validIndexEntries) {
             const active = this.readJSON(this.activeKey);
             const activeSlotExists = active && index.saves.some(entry =>
                 entry && entry.id === active.id
