@@ -2793,3 +2793,13 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - GitHub Actions **45223218687**: **60 pruebas de almacenamiento superadas, 0 fallos**; `mobile-preview`, Playwright y renderizado móvil/escritorio completados correctamente.
 - La comprobación automatizada volvió a confirmar el desplazamiento interno del pergamino secundario en móvil (390×844; contenedor 645 px, contenido 780 px, desplazamiento máximo 135 px).
 - La revisión en Chrome Android físico sigue pendiente; estas comprobaciones no la sustituyen.
+
+
+### Protección de la migración heredada incompleta — 23 de noviembre de 2026
+
+- Antes de migrar la clave heredada, `ensureReady()` comprueba que sea un objeto de partida con `character` válido y que `adventure`, si existe, tenga tipo de objeto. Los registros incompletos no se convierten en slots que luego serían rechazados por `readSlot()`.
+- La clave heredada original se conserva byte por byte; no se crea un slot ni un selector activo para el registro incompleto.
+- Prueba nueva: `no migra una clave heredada sin estructura de protagonista y conserva el original`.
+- GitHub Actions **45223625283**: **61 pruebas de almacenamiento superadas, 0 fallos**; Playwright, servidor y renderizado móvil/escritorio correctos.
+- El scroll interno del pergamino secundario se mantiene verificado en móvil: 135 px de desplazamiento disponible y recorrido completo hasta el final.
+- La revisión visual en Chrome Android físico sigue pendiente.
