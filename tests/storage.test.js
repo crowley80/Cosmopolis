@@ -1507,3 +1507,17 @@ test('no activa un registro JSON legible pero sin estructura de protagonista', (
 });
 
 // La suite visual-preview ejecuta esta batería junto con la prueba de restauración de interfaz.
+
+
+test('rechaza crear partidas sin un objeto de protagonista y no deja registros huérfanos', () => {
+    Save.list();
+    const before = new Map(localStorage.data);
+
+    assert.equal(Save.createSlot(null, { title: 'Inválida' }), false);
+    assert.equal(Save.createSlot('Ariadna', { title: 'Inválida' }), false);
+    assert.equal(Save.createSlot([], { title: 'Inválida' }), false);
+
+    assert.deepEqual(localStorage.data, before);
+    assert.equal(Save.list().length, 0);
+    assert.equal(Save.getActiveId(), null);
+});
