@@ -2677,3 +2677,12 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - Se actualizó la versión de caché de `app/js/app.js` a `20261123-dialog-keyboard-1`.
 - La ejecución automática del cambio está pendiente de terminar; no se declara validado hasta revisar Actions.
 - No se han modificado textos narrativos, lógica de partida, inventarios ni datos guardados.
+
+### Aislamiento de respuestas asíncronas y progreso por protagonista — 23 de noviembre de 2026
+
+- Se detectó un riesgo de concurrencia: una respuesta del narrador podía terminar después de que el jugador cambiara de protagonista. La acción tardía podía llegar a aplicarse sobre el guardado que estuviera activo en ese momento.
+- El formulario de aventura captura el identificador de la partida al iniciar la petición y lo entrega a `Session.addAction()`. La sesión descarta la respuesta si ese identificador ya no coincide con la partida activa.
+- `Save.save()` y `Save.replace()` rechazan además objetos que contienen un identificador de otro guardado, como protección adicional contra escrituras atrasadas.
+- Se amplió Playwright para verificar que recuerdos del vínculo con Athun, localizaciones visitadas e inventario permanecen separados entre dos protagonistas; que el mundo compartido conserva las localizaciones descubiertas por ambos; y que una escritura o respuesta tardía del primer protagonista no modifica el segundo.
+- Validación automatizada completa satisfactoria: GitHub Actions run **45184431019**, commit `a754a4b967a8c6a5b56e1bf08bc956704b182a92`. El render móvil/escritorio, las regresiones funcionales y la nueva prueba de aislamiento finalizaron correctamente.
+- No se modificaron textos narrativos ni partidas reales. La prueba en Chrome Android físico sigue pendiente.
