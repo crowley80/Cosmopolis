@@ -822,6 +822,32 @@ jobs:
             assert.equal(desktopErrors.length, 0, 'No deben producirse errores JavaScript en escritorio: ' + desktopErrors.join('; '));
             await desktopPage.screenshot({ path: 'artifacts/cosmopolis-desktop.png', fullPage: true });
 
+            // Comparación de pantallas secundarias en escritorio, con su desplazamiento interno real.
+            await desktopPage.evaluate(() => Athun.showSaveSelection());
+            await desktopPage.locator('[data-load-save]').waitFor();
+            const secondaryDesktopMetrics = await desktopPage.evaluate(() => {
+              const app = document.querySelector('#app');
+              const scroll = app.querySelector('.secondary-scroll');
+              const bodyStyle = getComputedStyle(document.body);
+              const appStyle = getComputedStyle(app);
+              return {
+                viewport: { width: innerWidth, height: innerHeight },
+                app: { x: app.getBoundingClientRect().x, width: app.getBoundingClientRect().width, height: app.getBoundingClientRect().height, backgroundSize: appStyle.backgroundSize, backgroundPosition: appStyle.backgroundPosition },
+                body: { backgroundSize: bodyStyle.backgroundSize, backgroundPosition: bodyStyle.backgroundPosition },
+                scroll: scroll ? { clientHeight: scroll.clientHeight, scrollHeight: scroll.scrollHeight, overflowY: getComputedStyle(scroll).overflowY } : null
+              };
+            });
+            console.log('PARCHMENT_SECONDARY_DESKTOP', JSON.stringify(secondaryDesktopMetrics));
+            await desktopPage.screenshot({ path: 'artifacts/athun-save-selection-desktop.png', fullPage: false });
+            const desktopSecondaryScroll = await desktopPage.evaluate(() => {
+              const scroll = document.querySelector('#app .secondary-scroll');
+              if (!scroll) return { found: false };
+              scroll.scrollTop = scroll.scrollHeight;
+              return { found: true, scrollTop: scroll.scrollTop, maxScroll: scroll.scrollHeight - scroll.clientHeight };
+            });
+            console.log('PARCHMENT_SECONDARY_DESKTOP_BOTTOM', JSON.stringify(desktopSecondaryScroll));
+            await desktopPage.screenshot({ path: 'artifacts/athun-save-selection-desktop-scroll-bottom.png', fullPage: false });
+
             // Comparativa temporal de escalado del papiro en escritorio. Solo afecta a estas capturas.
             const parchmentVariants = [
               { name: 'height-fit', size: 'auto 100dvh', position: 'center top', note: 'Altura completa, proporción original y márgenes laterales' },
