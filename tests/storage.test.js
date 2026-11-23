@@ -1482,3 +1482,25 @@ test('reconstruye un índice con entradas estructuralmente inválidas antes de g
     assert.equal(Save.save(saved), true);
     assert.equal(Save.load().character.name, 'Ariadna recuperada');
 });
+
+
+test('no activa un registro JSON legible pero sin estructura de protagonista', () => {
+    const damaged = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Registro incompleto', state: { inventory: ['Llave'] }
+    });
+    const healthy = Save.createSlot({ name: 'Darian' }, {
+        title: 'Registro íntegro', state: { inventory: ['Mapa'] }
+    });
+    assert.ok(damaged);
+    assert.ok(healthy);
+    assert.equal(Save.activate(damaged), true);
+
+    const damagedRaw = JSON.stringify({ broken: true, adventure: { title: 'No es un guardado completo' } });
+    localStorage.setItem(Save.slotPrefix + damaged, damagedRaw);
+
+    assert.equal(Save.getActiveId(), healthy);
+    assert.deepEqual(JSON.parse(localStorage.getItem(Save.activeKey)), { id: healthy });
+    assert.equal(Save.load().character.name, 'Darian');
+    assert.equal(localStorage.getItem(Save.slotPrefix + damaged), damagedRaw);
+    assert.equal(Save.activate(damaged), false);
+});
