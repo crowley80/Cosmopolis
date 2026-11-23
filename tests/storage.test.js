@@ -205,6 +205,7 @@ test('selecciona otra partida legible si el guardado activo está corrupto', () 
     const second = Save.createSlot({ name: 'Darian' }, {
         title: 'Historia recuperable', state: { inventory: [] }
     });
+    assert.equal(Save.activate(first), true);
 
     localStorage.setItem(Save.slotPrefix + first, '{partida-corrupta');
     assert.equal(Save.getActiveId(), second);
