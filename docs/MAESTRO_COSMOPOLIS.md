@@ -2766,3 +2766,11 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - Se reforzó el recorrido de interfaz que vuelve a activar a Ariadna después de cambiar a Bruno: la prueba comprueba explícitamente el resultado de `Save.activate()`, la lectura posterior con `Save.load()` y la restauración de la aventura, e informa del punto exacto si falla.
 - Validación completa: GitHub Actions **45221509054**, commit `64583a77ca94521487c11e3f8b7f8c2a0f38255f`, terminó con `success`. Pasaron las **57 pruebas** de `tests/storage.test.js` y el trabajo `mobile-preview`, incluidas las comprobaciones Playwright y el renderizado móvil/escritorio.
 - Las pruebas de corrupción y migración utilizan almacenamiento temporal; no modifican partidas reales, el mundo compartido ni textos narrativos. La comprobación final en Chrome Android físico sigue pendiente.
+
+
+### Validación de creación de partidas — 23 de noviembre de 2026
+
+- `Save.createSlot()` rechaza ahora valores de protagonista ausentes, no-objeto o arrays antes de escribir ningún registro. Esto evita generar partidas que la validación de lectura rechazaría posteriormente.
+- Se añadió una prueba que intenta crear partidas con `null`, texto y una lista, y compara el almacenamiento completo antes y después para asegurar que no aparecen registros huérfanos ni cambia el selector activo.
+- Verificación GitHub Actions **45222175850**, commit `a1160476aef56bde2dc51afb0eb45ec13654eeb1`: `58` pruebas superadas, `0` fallos. El job `mobile-preview` terminó correctamente; Playwright y el renderizado móvil/escritorio pasaron. El pergamino secundario mantuvo scroll interno (`clientHeight 645`, `scrollHeight 780`, desplazamiento máximo `135` px).
+- La verificación de interfaz automatizada no sustituye la comprobación visual en Chrome Android físico, que sigue pendiente.
