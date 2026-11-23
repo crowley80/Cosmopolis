@@ -312,7 +312,7 @@ jobs:
                     { character: 'Tomás', memory: 'Tomás vio a Ariadna entregar el medallón a Elia.' }
                   ],
                   time: 'Mediodía',
-                  day: 1
+                  day: 2
                 };
                 await route.fulfill({
                   status: 200,
