@@ -2718,3 +2718,10 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - Tras comprobar la reversión, la prueba elimina correctamente el guardado temporal y verifica que la limpieza no deja residuos.
 - Validación completa: GitHub Actions run **45214878100**, commit `8becbcb6bae869c595bb59c1ff653f90f2668d86`, terminó con `success`. El trabajo `mobile-preview`, incluido el renderizado y las aserciones Playwright, finalizó correctamente.
 - La simulación de fallo se ejecuta únicamente sobre un guardado temporal de prueba. No modifica ni elimina partidas reales.
+
+### Reversión segura al fallar la creación de una partida — 23 de noviembre de 2026
+
+- Se añadió una prueba Playwright que simula un fallo al activar un protagonista nuevo, después de que se hayan escrito temporalmente su registro y el índice.
+- La prueba comprueba que la creación devuelve fallo, restaura el índice y el protagonista activo anteriores y no deja ningún registro de partida huérfano.
+- Validación completa: GitHub Actions run **45215504936**, commit `6758f8cb94972111c959b253e9461a76ed3680e6`, terminó con `success`. El trabajo `mobile-preview`, incluido el renderizado móvil/escritorio y las aserciones Playwright, finalizó correctamente.
+- El fallo se inyecta sobre un intento de creación temporal en el navegador de pruebas. No se modifican ni eliminan guardados reales.
