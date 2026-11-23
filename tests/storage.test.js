@@ -1540,3 +1540,28 @@ test('no reincorpora al índice registros incompletos al reconstruirlo', () => {
     assert.equal(localStorage.getItem(Save.slotPrefix + valid), validRaw);
     assert.equal(localStorage.getItem(Save.slotPrefix + invalidId), invalidRaw);
 });
+
+
+test('reconstruye índices con referencias a partidas inexistentes o dañadas', () => {
+    const valid = Save.createSlot({ name: 'Ariadna' }, { title: 'Partida conservada', state: { inventory: [] } });
+    assert.ok(valid);
+    const validRaw = localStorage.getItem(Save.slotPrefix + valid);
+    const brokenId = 'save-estructura-rota';
+    const brokenRaw = JSON.stringify({ broken: true });
+    localStorage.setItem(Save.slotPrefix + brokenId, brokenRaw);
+    const phantomId = 'save-que-no-existe';
+    const index = JSON.parse(localStorage.getItem(Save.indexKey));
+    index.saves.push(
+        { id: brokenId, name: 'Registro incompleto' },
+        { id: phantomId, name: 'Registro ausente' }
+    );
+    localStorage.setItem(Save.indexKey, JSON.stringify(index));
+
+    const entries = Save.list();
+    assert.deepEqual(entries.map(entry => entry.id), [valid]);
+    assert.equal(Save.getActiveId(), valid);
+    assert.equal(Save.load().character.name, 'Ariadna');
+    assert.equal(localStorage.getItem(Save.slotPrefix + valid), validRaw);
+    assert.equal(localStorage.getItem(Save.slotPrefix + brokenId), brokenRaw);
+    assert.equal(localStorage.getItem(Save.slotPrefix + phantomId), null);
+});
