@@ -2725,3 +2725,13 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - La prueba comprueba que la creación devuelve fallo, restaura el índice y el protagonista activo anteriores y no deja ningún registro de partida huérfano.
 - Validación completa: GitHub Actions run **45215504936**, commit `6758f8cb94972111c959b253e9461a76ed3680e6`, terminó con `success`. El trabajo `mobile-preview`, incluido el renderizado móvil/escritorio y las aserciones Playwright, finalizó correctamente.
 - El fallo se inyecta sobre un intento de creación temporal en el navegador de pruebas. No se modifican ni eliminan guardados reales.
+
+### Recuperación de un índice de partidas corrupto — 23 de noviembre de 2026
+
+- Se añadió una prueba de recuperación que corrompe deliberadamente el índice de guardados y deja un identificador activo que ya no existe.
+- La prueba comprueba que el índice se reconstruye a partir de los registros de partida, que ambos protagonistas siguen disponibles y que se puede activar el segundo sin perder el primero.
+- También verifica que los registros originales de ambos guardados permanecen intactos y que la clave del mundo compartido conserva exactamente su contenido.
+- La ejecución GitHub Actions **45216119015**, commit `69f6c616ef17549b09e8fcf8661e7f6d2c26d800`, terminó con `success`. Pasaron la suite específica `tests/storage.test.js`, el servidor local, el renderizado móvil/escritorio y las aserciones Playwright.
+- La prueba utiliza almacenamiento aislado del navegador automatizado; no toca partidas reales ni introduce cambios narrativos.
+- El flujo de vista previa ahora ejecuta también la suite de almacenamiento al cambiar `tests/**` en esta rama.
+
