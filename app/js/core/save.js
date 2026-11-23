@@ -119,7 +119,8 @@ const Save = {
             const key = localStorage.key(i);
             if (!key || !key.startsWith(this.slotPrefix)) continue;
             const id = key.slice(this.slotPrefix.length);
-            const slot = this.readJSON(key);
+            // Solo reconstruir el índice con partidas que superen la misma validación de lectura.
+            const slot = this.readSlot(id);
             if (!slot) continue;
             saves.push({
                 id,
