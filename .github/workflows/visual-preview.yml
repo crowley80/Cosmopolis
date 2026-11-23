@@ -107,6 +107,36 @@ jobs:
             }));
             assert.ok(profileScreenStyles.every(style => style.background === 'rgba(0, 0, 0, 0)' && style.image === 'none' && style.shadow === 'none'), 'La ficha debe mostrar sus textos sin tarjetas de fondo');
             await secondaryPage.screenshot({ path: 'artifacts/athun-profile-mobile.png', fullPage: true });
+            // Diagnóstico de continuidad del papiro al desplazarse en la ficha móvil.
+            const parchmentScroll = await secondaryPage.evaluate(() => {
+              const app = document.querySelector('#app');
+              const candidates = [document.scrollingElement, document.body, app, ...document.querySelectorAll('.secondary-scroll, main, .screen-content')].filter(Boolean);
+              const scrollables = [...new Set(candidates)].map(el => ({
+                tag: el.tagName, className: typeof el.className === 'string' ? el.className : '',
+                clientHeight: el.clientHeight, scrollHeight: el.scrollHeight,
+                overflowY: getComputedStyle(el).overflowY
+              })).filter(el => el.scrollHeight > el.clientHeight + 2);
+              const bodyStyle = getComputedStyle(document.body);
+              const appStyle = getComputedStyle(app);
+              return {
+                viewport: { width: innerWidth, height: innerHeight },
+                document: { clientHeight: document.documentElement.clientHeight, scrollHeight: document.documentElement.scrollHeight },
+                body: { height: document.body.getBoundingClientRect().height, backgroundSize: bodyStyle.backgroundSize, backgroundPosition: bodyStyle.backgroundPosition, backgroundAttachment: bodyStyle.backgroundAttachment },
+                app: { height: app.getBoundingClientRect().height, scrollHeight: app.scrollHeight, backgroundSize: appStyle.backgroundSize },
+                scrollables
+              };
+            });
+            console.log('PARCHMENT_MOBILE_SCROLL', JSON.stringify(parchmentScroll));
+            await secondaryPage.evaluate(() => {
+              const app = document.querySelector('#app');
+              const candidates = [document.scrollingElement, document.body, app, ...document.querySelectorAll('.secondary-scroll, main, .screen-content')].filter(Boolean);
+              const target = candidates.find(el => el.scrollHeight > el.clientHeight + 2);
+              if (target) target.scrollTop = target.scrollHeight;
+              else window.scrollTo(0, document.documentElement.scrollHeight);
+            });
+            await secondaryPage.waitForTimeout(150);
+            await secondaryPage.screenshot({ path: 'artifacts/athun-profile-mobile-scroll-bottom.png', fullPage: false });
+            await secondaryPage.evaluate(() => window.scrollTo(0, 0));
             await secondaryPage.evaluate(() => Athun.showSaveSelection());
             await secondaryPage.locator('[data-load-save]').waitFor();
             const saveScreenStyles = await secondaryPage.locator('.character-creation, .profile-section').evaluateAll(nodes => nodes.map(node => {
