@@ -800,7 +800,7 @@ jobs:
                   background-color: #ead9b5 !important;
                 }
               ` });
-              await desktopPage.screenshot({ path: 'artifacts/athun-desktop-parchment-${variant.name}.png', fullPage: true });
+              await desktopPage.screenshot({ path: `artifacts/athun-desktop-parchment-${variant.name}.png`, fullPage: true });
               const dimensions = await desktopPage.evaluate(() => {
                 const style = getComputedStyle(document.body);
                 return { viewport: { width: innerWidth, height: innerHeight }, backgroundSize: style.backgroundSize, backgroundPosition: style.backgroundPosition };
