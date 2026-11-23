@@ -1521,3 +1521,22 @@ test('rechaza crear partidas sin un objeto de protagonista y no deja registros h
     assert.equal(Save.list().length, 0);
     assert.equal(Save.getActiveId(), null);
 });
+
+
+test('no reincorpora al índice registros incompletos al reconstruirlo', () => {
+    const valid = Save.createSlot({ name: 'Darian' }, { title: 'Historia válida', state: { inventory: [] } });
+    assert.ok(valid);
+    const validRaw = localStorage.getItem(Save.slotPrefix + valid);
+    const invalidId = 'save-incompleta';
+    const invalidRaw = JSON.stringify({ broken: true, adventure: { title: 'No es una partida' } });
+    localStorage.setItem(Save.slotPrefix + invalidId, invalidRaw);
+    localStorage.setItem(Save.indexKey, '{índice dañado');
+    localStorage.removeItem(Save.activeKey);
+
+    const entries = Save.list();
+    assert.deepEqual(entries.map(entry => entry.id), [valid]);
+    assert.equal(Save.getActiveId(), valid);
+    assert.equal(Save.load().character.name, 'Darian');
+    assert.equal(localStorage.getItem(Save.slotPrefix + valid), validRaw);
+    assert.equal(localStorage.getItem(Save.slotPrefix + invalidId), invalidRaw);
+});
