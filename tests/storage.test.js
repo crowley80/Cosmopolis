@@ -1661,3 +1661,19 @@ test('rechaza estructuras inválidas del mundo compartido sin modificar el origi
     assert.equal(localStorage.getItem(Save.worldKey), original);
     assert.deepEqual(Save.getGlobalWorld(), validWorld);
 });
+
+
+test('expone un mundo normalizado sin reescribir arrays corruptos del registro global', () => {
+    const malformed = {
+        locations: [], connections: [], entities: [], facts: [], events: [], changes: [], relationships: []
+    };
+    const original = JSON.stringify(malformed);
+    localStorage.setItem(Save.worldKey, original);
+    const world = Save.getGlobalWorld();
+    assert.deepEqual(world.entities, {});
+    assert.deepEqual(world.relationships, {});
+    assert.deepEqual(world.locations, []);
+    assert.equal(localStorage.getItem(Save.worldKey), original);
+    assert.equal(Save.saveGlobalWorld(world), false);
+    assert.equal(localStorage.getItem(Save.worldKey), original);
+});
