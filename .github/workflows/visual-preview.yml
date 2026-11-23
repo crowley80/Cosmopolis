@@ -425,7 +425,7 @@ jobs:
               });
               try {
                 localStorage.clear();
-                const legacyRaw = JSON.stringify({ adventure: { state: { inventory: [] } }, actions: [] });
+                const legacyRaw = JSON.stringify({ character: { name: 'Ariadna', nature: 'Humana' }, adventure: { state: { inventory: [] } }, actions: [] });
                 localStorage.setItem(Save.key, legacyRaw);
                 const legacySave = Save.load();
                 if (!legacySave.adventure.state.inventory.some(item => String(item).toLowerCase().includes('athun'))) fail('la partida antigua no recibe a Athun');
