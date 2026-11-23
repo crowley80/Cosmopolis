@@ -1000,7 +1000,7 @@ jobs:
             assert.ok(darianState.adventure.state.athun.memories.includes('Recuerdo privado del vínculo de Darian'), 'Darian debe conservar sus recuerdos propios de Athun');
             assert.ok(!darianState.adventure.state.athun.memories.includes('Recuerdo privado del vínculo de Ariadna'), 'Los recuerdos de Athun de Ariadna no deben filtrarse a Darian');
             assert.ok(darianState.adventure.state.inventory.includes('Athun — grimorio consciente'), 'Athun debe existir también en la partida de Darian');
-            const sharedAfterSwitch = window.window.Save.getGlobalWorld().locations.map(entry => typeof entry === 'string' ? entry : entry.name);
+            const sharedAfterSwitch = await desktopPage.evaluate(() => window.window.Save.getGlobalWorld().locations.map(entry => typeof entry === 'string' ? entry : entry.name));
             assert.ok(sharedAfterSwitch.includes('Plaza del pozo') && sharedAfterSwitch.includes('Puerto de Bruma'), 'El mundo compartido debe conservar los descubrimientos de ambos protagonistas');
 
             // Comprueba que cada acceso inferior abre su pantalla correspondiente.
