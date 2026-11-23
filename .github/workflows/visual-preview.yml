@@ -325,14 +325,15 @@ jobs:
                 assert.equal((await page.locator('.character-creation h2').first().innerText()).trim(), 'Ariadna', 'Consultar mi ficha debe abrir la ficha del protagonista');
                 await page.evaluate(() => {
                 const restored = Save.load();
-                if (!restored) {
+                if (!restored || !restored.adventure) {
                   const activeId = Save.getActiveId();
-                  throw new Error('La partida desapareció al consultar la ficha. Diagnóstico: ' + JSON.stringify({
+                  throw new Error('La partida o su aventura desapareció al consultar la ficha. Diagnóstico: ' + JSON.stringify({
                     activeId,
                     saves: Save.list(),
                     activeRaw: localStorage.getItem(Save.activeKey),
                     indexRaw: localStorage.getItem(Save.indexKey),
-                    slotRaw: activeId ? localStorage.getItem(Save.slotPrefix + activeId) : null
+                    slotRaw: activeId ? localStorage.getItem(Save.slotPrefix + activeId) : null,
+                    restored: restored ? { character: restored.character, adventure: restored.adventure } : null
                   }));
                 }
                 Athun.showAdventure(restored.character, restored.adventure);
