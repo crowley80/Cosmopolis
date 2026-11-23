@@ -1578,3 +1578,23 @@ test('no migra una clave heredada sin estructura de protagonista y conserva el o
     assert.equal(localStorage.getItem(Save.activeKey), null);
     assert.equal(Array.from(localStorage.data.keys()).some(key => key.startsWith(Save.slotPrefix)), false);
 });
+
+
+test('rechaza estructuras inválidas de protagonista o aventura sin alterar guardados', () => {
+    const beforeInvalidCreation = Array.from(localStorage.data.entries());
+    assert.equal(Save.createSlot({ name: 'Ariadna' }, 'aventura no válida'), false);
+    assert.deepEqual(Array.from(localStorage.data.entries()), beforeInvalidCreation);
+
+    const id = Save.createSlot({ name: 'Ariadna' }, { title: 'Historia válida', state: {} });
+    assert.ok(id);
+    const originalRaw = localStorage.getItem(Save.slotPrefix + id);
+    const originalIndex = localStorage.getItem(Save.indexKey);
+    const originalActive = localStorage.getItem(Save.activeKey);
+
+    assert.equal(Save.replace({ character: { name: 'Ariadna' }, adventure: ['no válida'] }), false);
+    assert.equal(Save.save({ id, character: 'no es un protagonista' }), false);
+    assert.equal(localStorage.getItem(Save.slotPrefix + id), originalRaw);
+    assert.equal(localStorage.getItem(Save.indexKey), originalIndex);
+    assert.equal(localStorage.getItem(Save.activeKey), originalActive);
+    assert.equal(Save.load().character.name, 'Ariadna');
+});
