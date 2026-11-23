@@ -311,7 +311,10 @@ const Save = {
 
     save(data) {
         const id = this.getActiveId();
-        if (!id || !data || typeof data !== 'object') return false;
+        if (!id || !data || typeof data !== 'object' || Array.isArray(data)) return false;
+        if (data.character !== undefined && (!data.character || typeof data.character !== 'object' || Array.isArray(data.character))) return false;
+        if (data.adventure !== undefined && data.adventure !== null &&
+            (typeof data.adventure !== 'object' || Array.isArray(data.adventure))) return false;
         // Impide que una respuesta asíncrona de una partida antigua sobrescriba al protagonista activo.
         if (data.id && data.id !== id) return false;
         const current = this.readSlot(id) || {};
@@ -337,6 +340,10 @@ const Save = {
     },
 
     replace(data) {
+        if (!data || typeof data !== 'object' || Array.isArray(data)) return false;
+        if (data.character !== undefined && (!data.character || typeof data.character !== 'object' || Array.isArray(data.character))) return false;
+        if (data.adventure !== undefined && data.adventure !== null &&
+            (typeof data.adventure !== 'object' || Array.isArray(data.adventure))) return false;
         const id = this.getActiveId();
         if (data && data.id && data.id !== id) return false;
         if (!id) return this.createSlot(data.character, data.adventure, data);
@@ -368,6 +375,8 @@ const Save = {
     createSlot(character, adventure = null, extra = {}) {
         // No crear registros que después readSlot() tendría que rechazar.
         if (!character || typeof character !== 'object' || Array.isArray(character)) return false;
+        if (adventure !== null && adventure !== undefined &&
+            (typeof adventure !== 'object' || Array.isArray(adventure))) return false;
         this.ensureReady();
         const now = new Date().toISOString();
         const id = 'save-' + Date.now().toString(36) + '-' + Math.floor(Math.random() * 1000000).toString(36);
