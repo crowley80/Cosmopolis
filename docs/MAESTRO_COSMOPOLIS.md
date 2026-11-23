@@ -2397,3 +2397,11 @@ Se comprobó el recurso binario que realmente está versionado y referenciado po
 ### Evidencia narrativa de objetivos en la segunda interacción de Playwright — 22/11/2026
 
 En paralelo, se añadió a la fixture de la segunda interacción la frase que vincula explícitamente a Tomás con el motivo de su cambio de objetivo, requisito de `Narrator.filterGoalUpdates()`. La ejecución #498 confirmó que el primer bloqueo estaba antes de llegar a ese segundo intercambio; por eso se corrigió ahora la evidencia de adquisición, memoria y actitud del primer turno. La ejecución nueva tras estos ajustes queda pendiente.
+
+## Revisión técnica y visual — 23/11/2026
+
+- La ejecución Playwright del 23/11 completó correctamente las comprobaciones de regresión narrativa, interacción, inventario, guardado/recarga y aislamiento entre dos protagonistas. También confirmó que la vista móvil de 390×844 no desborda horizontalmente y que los paneles mantienen sus límites geométricos.
+- Se retiró de la cabecera el subtítulo no aprobado «Una aventura sin límites» y se ocultaron las dos brújulas superpuestas, respetando la plantilla principal aprobada sin rosas.
+- La captura automatizada muestra la plantilla principal cargada, pero también confirma que app/assets/plantillas/athun-papiro-interfaz.webp devuelve HTTP 404. La plantilla secundaria de pergamino aún no está integrada en esta rama; no considerar terminadas las pantallas que dependen de ella.
+- La ejecución CI puede finalizar en verde aunque ese recurso 404 quede registrado como error de consola; hay que corregir la presencia del archivo y convertir los 404 de recursos en una aserción de prueba antes de dar por validada la interfaz.
+- No se ha fusionado PR ni modificado main. La revisión visual real en Chrome Android sigue pendiente de las capturas del usuario.
