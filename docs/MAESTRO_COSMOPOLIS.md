@@ -2803,3 +2803,12 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - GitHub Actions **45223625283**: **61 pruebas de almacenamiento superadas, 0 fallos**; Playwright, servidor y renderizado móvil/escritorio correctos.
 - El scroll interno del pergamino secundario se mantiene verificado en móvil: 135 px de desplazamiento disponible y recorrido completo hasta el final.
 - La revisión visual en Chrome Android físico sigue pendiente.
+
+
+### Validación de estructura al crear y actualizar guardados — 23 de noviembre de 2026
+
+- `createSlot()` rechaza aventuras que no sean objeto o `null`; `replace()` y `save()` rechazan datos de protagonista o aventura con tipos inválidos antes de escribir.
+- La prueba verifica que una creación inválida no añade claves y que una actualización inválida conserva exactamente el contenido del slot, el índice y el selector activo, manteniendo la partida legible.
+- GitHub Actions **45224127401**: **62 pruebas de almacenamiento superadas, 0 fallos**; Playwright y renderizado móvil/escritorio completados correctamente.
+- La prueba de scroll móvil vuelve a confirmar el recorrido completo del pergamino secundario (135 px).
+- La revisión visual en Chrome Android físico continúa pendiente.
