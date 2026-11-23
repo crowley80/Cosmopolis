@@ -515,11 +515,18 @@ jobs:
             assert.ok(liveMeta.includes('Momento: Mediodía'), 'La cabecera debe actualizarse sin recargar: ' + liveMeta);
             await page.reload({ waitUntil: 'networkidle' });
             const reloadContinue = page.locator('[data-load-save]').first();
-            if (await reloadContinue.count()) await reloadContinue.click();
+            const reloadSaveState = await page.evaluate(() => ({
+              saves: Save.list().map(entry => ({ id: entry.id, name: entry.name, active: entry.active })),
+              activeId: Save.getActiveId(),
+              screen: document.querySelector('#app')?.innerText || ''
+            }));
+            assert.equal(await reloadContinue.count(), 1,
+              'Tras recargar debe aparecer exactamente una partida para continuar. Estado: ' + JSON.stringify(reloadSaveState));
+            await reloadContinue.click();
             await page.waitForFunction(() => {
               const story = document.querySelector('#storyContent');
               return story && story.textContent.trim().length > 0;
-            });
+            }, { timeout: 10000 });
             const restoredAction = await page.locator('#storyContent').textContent();
             const restoredMeta = await page.locator('.manuscript-meta').textContent();
             assert.ok(restoredAction.includes('Entrego el medallón de cobre a Elia.'), 'La última acción debe recuperarse tras recargar: ' + restoredAction);
