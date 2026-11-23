@@ -2754,5 +2754,5 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 
 - Se añadió una regresión para el caso límite en que el único guardado registrado contiene JSON truncado. La prueba comprueba que no existe una partida activa recuperable, que `Save.save()` devuelve `false` y que el contenido dañado se conserva byte por byte en lugar de ser sustituido por una partida vacía o nueva.
 - La suite específica `tests/storage.test.js` ha terminado correctamente en GitHub Actions **45217744146** (commit `55876d4d0989fc94c811299cf44b7e24a99242bb`).
-- La ejecución completa de vista previa sigue en curso; no se da por validado todavía el renderizado Playwright de este commit.
+- Validación completa: la ejecución **45217744146** terminó con `success`; además de la suite de almacenamiento, pasaron la instalación de Playwright, el servidor local, el renderizado móvil/escritorio y las aserciones de interacción.
 - La prueba usa almacenamiento aislado del navegador automatizado y no accede a guardados reales del teléfono.
