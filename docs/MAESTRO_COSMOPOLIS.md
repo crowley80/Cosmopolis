@@ -2694,3 +2694,11 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - Se amplió la prueba automatizada para cargar dos protagonistas, verificar la separación de inventario, visitas y recuerdos personales, comprobar la persistencia de localizaciones en el mundo compartido y simular una escritura y una respuesta tardías tras cambiar de protagonista.
 - Verificación: GitHub Actions `45184431019` terminó correctamente. La prueba de interfaz y las comprobaciones de aislamiento pasaron.
 - No se modificaron partidas reales ni textos narrativos.
+
+
+### Protección del mundo compartido al eliminar una partida — 23 de noviembre de 2026
+
+- Se añadió una prueba automatizada que elimina una partida secundaria de prueba mientras otra permanece activa.
+- La prueba comprueba que solo desaparece el guardado seleccionado, que el protagonista activo no cambia y que las localizaciones descubiertas por ambos siguen presentes en el mundo compartido.
+- Validación completada: GitHub Actions run **45188394243** (commit `04e544c9ee9f47496c3d664c04c6c08d85467b80`) terminó con `success`. El trabajo `mobile-preview`, incluida la fase de renderizado y aserciones Playwright, finalizó correctamente.
+- La comprobación utiliza partidas aisladas de prueba; no elimina ni modifica guardados reales.
