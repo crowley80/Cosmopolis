@@ -346,6 +346,8 @@ const Save = {
     },
 
     createSlot(character, adventure = null, extra = {}) {
+        // No crear registros que después readSlot() tendría que rechazar.
+        if (!character || typeof character !== 'object' || Array.isArray(character)) return false;
         this.ensureReady();
         const now = new Date().toISOString();
         const id = 'save-' + Date.now().toString(36) + '-' + Math.floor(Math.random() * 1000000).toString(36);
