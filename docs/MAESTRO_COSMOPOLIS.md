@@ -2749,3 +2749,10 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - La prueba activa expresamente la primera partida, daña su registro y comprueba que se recupera la segunda, que el selector persistido apunta a ella y que su contenido vuelve a cargarse.
 - Validación completa: GitHub Actions **45217206734**, commit `8fa00e153dfa17de2fbbb44706a9a2def2f4e0ec`, terminó con `success`. Pasaron la suite de almacenamiento y el flujo completo de vista previa móvil/escritorio con Playwright.
 - La recuperación no borra el registro dañado ni altera el mundo compartido; el caso se ejecuta en almacenamiento temporal de pruebas.
+
+### Protección del único guardado si está corrupto — 23 de noviembre de 2026
+
+- Se añadió una regresión para el caso límite en que el único guardado registrado contiene JSON truncado. La prueba comprueba que no existe una partida activa recuperable, que `Save.save()` devuelve `false` y que el contenido dañado se conserva byte por byte en lugar de ser sustituido por una partida vacía o nueva.
+- La suite específica `tests/storage.test.js` ha terminado correctamente en GitHub Actions **45217744146** (commit `55876d4d0989fc94c811299cf44b7e24a99242bb`).
+- La ejecución completa de vista previa sigue en curso; no se da por validado todavía el renderizado Playwright de este commit.
+- La prueba usa almacenamiento aislado del navegador automatizado y no accede a guardados reales del teléfono.
