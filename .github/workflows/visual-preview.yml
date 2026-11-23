@@ -97,6 +97,23 @@ jobs:
               return { background: style.backgroundColor, image: style.backgroundImage, shadow: style.boxShadow };
             }));
             assert.ok(characterScreenStyles.every(style => style.background === 'rgba(0, 0, 0, 0)' && style.image === 'none' && style.shadow === 'none'), 'La creación de personaje debe escribirse directamente sobre el papiro');
+            const characterFieldStyles = await secondaryPage.locator('#characterForm input, #characterForm textarea, #characterForm select').evaluateAll(nodes => nodes.map(node => {
+              const style = getComputedStyle(node);
+              return {
+                background: style.backgroundColor,
+                top: style.borderTopWidth,
+                right: style.borderRightWidth,
+                bottom: style.borderBottomWidth,
+                left: style.borderLeftWidth,
+                shadow: style.boxShadow,
+                color: style.color
+              };
+            }));
+            assert.ok(characterFieldStyles.length > 0 && characterFieldStyles.every(style =>
+              style.background === 'rgba(0, 0, 0, 0)' &&
+              style.top === '0px' && style.right === '0px' && style.left === '0px' &&
+              style.shadow === 'none' && style.color === 'rgb(113, 59, 50)'
+            ), 'Los campos de creación deben quedar integrados en el papiro, sin recuadros y con escritura granate: ' + JSON.stringify(characterFieldStyles));
             await secondaryPage.screenshot({ path: 'artifacts/athun-character-creation-mobile.png', fullPage: true });
             await secondaryPage.locator('#characterForm input[name="name"]').fill('Prueba visual');
             await secondaryPage.locator('.secondary-actions button[form="characterForm"][type="submit"]').click();
