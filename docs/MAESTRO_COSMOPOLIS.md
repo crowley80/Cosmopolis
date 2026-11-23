@@ -2615,3 +2615,10 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - La prueba Playwright recorre los cinco accesos inferiores y comprueba sus destinos: Pista abre «Una pista del grimorio», Historial abre «Crónica de tus decisiones», Mapa abre el atlas, Inventario abre «Tus pertenencias» y Opciones abre «Opciones de la partida».
 - También comprueba guardar ahora, consultar ficha, cambiar de partida, y las operaciones de inventario y recuperación del historial tras recargar.
 - Estas comprobaciones corresponden a Chromium automatizado. Queda pendiente la inspección en el Chrome físico Android y confirmar allí la escala de los textos y controles.
+
+
+### Revisión adicional de capturas pendientes — 23/11/2026
+
+- Inspeccionada la captura móvil de selección de partidas: el papiro universal está presente; el texto de las partidas aparece directamente sobre el papel. Los botones «Continuar esta historia» y «Crear un personaje nuevo» mantienen fondo y borde para conservar su identificación como controles interactivos.
+- Inspeccionada la captura de escritorio (1024 × 900): el narrador mantiene el texto sin tarjetas, los cinco accesos inferiores son visibles y el campo de acción queda integrado en el papel.
+- Incidencia visual pendiente de decisión: en escritorio el fondo se adapta estirando el papiro a todo el ancho y alto de la ventana (`background-size: 100% 100%`), por lo que pierde la proporción vertical de la plantilla. En las capturas también se ve el fondo oscuro a través de las zonas transparentes de los bordes rasgados. No se modifica todavía: requiere decidir el comportamiento visual deseado en escritorio y si se conserva ese contraste exterior.
