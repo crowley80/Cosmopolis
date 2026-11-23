@@ -178,6 +178,8 @@ jobs:
                 inputBackground:style(input).backgroundColor, inputBorder:style(input).borderTopWidth,
                 sendFontSize:style(send).fontSize, sendBackground:style(send).backgroundColor,
                 toolbarIconOpacity:style(toolbarIcon).opacity, toolbarLabelPosition:style(toolbarLabel).position,
+                toolbarLabelFontSize:style(toolbarLabel).fontSize, toolbarButtonFontSize:style(document.querySelector('.manuscript-toolbar .toolbar-button')).fontSize,
+                hintLabelFontSize:getComputedStyle(document.querySelector('#openHint'),'::after').fontSize,
                 storyOverflow:style(story).overflowY
               };
             });
@@ -226,6 +228,7 @@ jobs:
             assert.equal(overlayMetrics.sendBackground, 'rgba(0, 0, 0, 0)', 'El botón Enviar no debe formar una caja coloreada');
             assert.equal(overlayMetrics.toolbarIconOpacity, '1', 'Los iconos de los cinco accesos deben ser visibles');
             assert.equal(overlayMetrics.toolbarLabelPosition, 'static', 'Las etiquetas de los cinco accesos deben estar visibles');
+            assert.ok(parseFloat(overlayMetrics.toolbarLabelFontSize) >= 10 && parseFloat(overlayMetrics.toolbarButtonFontSize) >= 10 && parseFloat(overlayMetrics.hintLabelFontSize) >= 10, 'Las etiquetas de los cinco accesos deben tener al menos 10 px para leerse en móvil');
             assert.equal(overlayMetrics.storyOverflow, 'auto', 'La narración debe desplazarse dentro de su área');
             assert.ok(overlayMetrics.input.x >= overlayMetrics.player.x - 1 && overlayMetrics.input.right <= overlayMetrics.player.right + 1, 'El campo del jugador debe quedar dentro de su panel');
 
