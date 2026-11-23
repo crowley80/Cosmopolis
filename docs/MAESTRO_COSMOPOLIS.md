@@ -2735,3 +2735,10 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - La prueba utiliza almacenamiento aislado del navegador automatizado; no toca partidas reales ni introduce cambios narrativos.
 - El flujo de vista previa ahora ejecuta también la suite de almacenamiento al cambiar `tests/**` en esta rama.
 
+### Recuperación del selector de protagonista activo — 23 de noviembre de 2026
+
+- Se detectó que un selector activo con JSON ilegible o con un identificador que ya no existe podía dejar almacenada una referencia inválida, aunque el juego recurriera internamente al primer guardado.
+- `ensureReady()` ahora comprueba que el identificador activo pertenece al índice y que el registro de esa partida se puede leer. Si no es válido, intenta activar el primer guardado recuperable.
+- Se añadieron pruebas para ambos escenarios: identificador inexistente y selector corrupto. Las pruebas verifican también que el selector persistido queda reparado.
+- Validación completa: GitHub Actions **45216744509**, commit `eb699a7f231b1644b192a00674bdff88df3d3ff8`, terminó con `success`. Pasaron la suite de almacenamiento, el servidor, el renderizado móvil/escritorio y las aserciones Playwright.
+- La corrección no modifica el contenido de las partidas ni el mundo compartido; las pruebas trabajan con almacenamiento temporal del navegador.
