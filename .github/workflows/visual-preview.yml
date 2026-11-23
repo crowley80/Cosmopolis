@@ -786,6 +786,29 @@ jobs:
             assert.equal(desktopErrors.length, 0, 'No deben producirse errores JavaScript en escritorio: ' + desktopErrors.join('; '));
             await desktopPage.screenshot({ path: 'artifacts/cosmopolis-desktop.png', fullPage: true });
 
+            // Comparativa temporal de escalado del papiro en escritorio. Solo afecta a estas capturas.
+            const parchmentVariants = [
+              { name: 'height-fit', size: 'auto 100dvh', position: 'center top', note: 'Altura completa, proporción original y márgenes laterales' },
+              { name: 'width-fit', size: '100% auto', position: 'center top', note: 'Ancho completo, proporción original y posible desplazamiento vertical' },
+              { name: 'cover', size: 'cover', position: 'center center', note: 'Ventana cubierta, proporción original y recorte de papel' }
+            ];
+            for (const variant of parchmentVariants) {
+              await desktopPage.addStyleTag({ content: `
+                body {
+                  background-size: ${variant.size} !important;
+                  background-position: ${variant.position} !important;
+                  background-color: #ead9b5 !important;
+                }
+              ` });
+              await desktopPage.screenshot({ path: 'artifacts/athun-desktop-parchment-${variant.name}.png', fullPage: true });
+              const dimensions = await desktopPage.evaluate(() => {
+                const style = getComputedStyle(document.body);
+                return { viewport: { width: innerWidth, height: innerHeight }, backgroundSize: style.backgroundSize, backgroundPosition: style.backgroundPosition };
+              });
+              console.log('PARCHMENT_DESKTOP_VARIANT', variant.name, variant.note, JSON.stringify(dimensions));
+            }
+            // La comparativa no modifica ningún archivo CSS ni la captura base de escritorio.
+
             // Regresión de interfaz: dos protagonistas, alternancia y aislamiento personal.
             const slotIds = await desktopPage.evaluate(() => {
               const ari = Save.list().find(entry => entry.name === 'Ariadna');
