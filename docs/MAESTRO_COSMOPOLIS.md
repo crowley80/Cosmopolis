@@ -2605,3 +2605,13 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 
 - Se inspeccionaron las capturas reales del artefacto móvil generado por esa ejecución: narrador, prólogo, creación de personaje y ficha. El papiro aparece como fondo y los textos narrativos no muestran el recuadro antiguo. La captura es una previsualización automatizada, no una prueba en el Chrome físico del usuario.
 - Artefacto visual de esta validación: `cosmopolis-visual-preview`, ID `14803656999` (seis capturas, retención de siete días).
+
+
+### Revisión de capturas y correspondencia de accesos — 23/11/2026
+
+- Inspección visual de las capturas móviles del artefacto 14803656999: narrador, creación de personaje y ficha.
+- En el narrador, el pergamino queda como fondo continuo; el texto narrativo aparece directamente sobre él y el encabezado usa el granate aprobado. No se aprecia el antiguo panel coloreado detrás del texto.
+- En creación de personaje se mantienen campos de formulario visibles para poder introducir datos; no son paneles de narración. La ficha presenta sus apartados como texto sobre el papiro, sin tarjetas opacas.
+- La prueba Playwright recorre los cinco accesos inferiores y comprueba sus destinos: Pista abre «Una pista del grimorio», Historial abre «Crónica de tus decisiones», Mapa abre el atlas, Inventario abre «Tus pertenencias» y Opciones abre «Opciones de la partida».
+- También comprueba guardar ahora, consultar ficha, cambiar de partida, y las operaciones de inventario y recuperación del historial tras recargar.
+- Estas comprobaciones corresponden a Chromium automatizado. Queda pendiente la inspección en el Chrome físico Android y confirmar allí la escala de los textos y controles.
