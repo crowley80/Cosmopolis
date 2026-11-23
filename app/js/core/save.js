@@ -193,8 +193,9 @@ const Save = {
     ensureReady() {
         let index = this.readJSON(this.indexKey);
         if (index && Array.isArray(index.saves) && index.saves.length) {
-            if (!localStorage.getItem(this.activeKey) && index.saves.length) {
-                this.activate(index.saves[0].id);
+            if (!localStorage.getItem(this.activeKey)) {
+                const firstAvailable = this.availableEntries(index)[0];
+                if (firstAvailable) this.activate(firstAvailable.id);
             }
             return index;
         }
@@ -295,17 +296,33 @@ const Save = {
         return this.ensureReady();
     },
 
+    availableEntries(index) {
+        if (!index || !Array.isArray(index.saves)) return [];
+        const seen = new Set();
+        return index.saves.filter(entry => {
+            const id = entry && typeof entry.id === 'string' ? entry.id : '';
+            if (!id.trim() || seen.has(id) || !this.readSlot(id)) return false;
+            seen.add(id);
+            return true;
+        });
+    },
+
     getActiveId() {
-        this.ensureReady();
+        const index = this.ensureReady();
+        const available = this.availableEntries(index);
         const active = this.readJSON(this.activeKey);
-        const index = this.readJSON(this.indexKey);
-        if (active && index && index.saves.some(entry => entry.id === active.id)) return active.id;
-        return index && index.saves.length ? index.saves[0].id : null;
+        if (active && available.some(entry => entry.id === active.id)) return active.id;
+        return available.length ? available[0].id : null;
     },
 
     list() {
         const index = this.ensureReady();
-        return index.saves.map(entry => ({ ...entry, active: entry.id === this.getActiveId() }));
+        const available = this.availableEntries(index);
+        const active = this.readJSON(this.activeKey);
+        const activeId = active && available.some(entry => entry.id === active.id)
+            ? active.id
+            : (available.length ? available[0].id : null);
+        return available.map(entry => ({ ...entry, active: entry.id === activeId }));
     },
 
     readSlot(id) {

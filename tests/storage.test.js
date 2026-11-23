@@ -126,6 +126,55 @@ test('mantiene independientes dos protagonistas y permite alternar entre partida
     assert.ok(Save.load().adventure.state.inventory.includes('Mapa'));
 });
 
+test('omite partidas sin registro y recupera una partida válida sin reescribir el índice ni la selección', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia conservada', state: { inventory: ['Llave'] }
+    });
+    const second = Save.createSlot({ name: 'Darian' }, {
+        title: 'Registro ausente', state: { inventory: ['Mapa'] }
+    });
+    assert.ok(first);
+    assert.ok(second);
+
+    const originalIndex = localStorage.getItem(Save.indexKey);
+    const originalActive = localStorage.getItem(Save.activeKey);
+    localStorage.removeItem(Save.slotPrefix + second);
+
+    assert.equal(Save.getActiveId(), first);
+    assert.equal(Save.load().character.name, 'Ariadna');
+    assert.deepEqual(Save.list().map(entry => entry.id), [first]);
+    assert.equal(Save.list()[0].active, true);
+    assert.equal(localStorage.getItem(Save.indexKey), originalIndex);
+    assert.equal(localStorage.getItem(Save.activeKey), originalActive);
+});
+
+test('si faltan todos los registros, conserva el índice huérfano y permite crear una partida nueva', () => {
+    const missing = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Registro perdido', state: { inventory: ['Llave'] }
+    });
+    assert.ok(missing);
+
+    const originalIndex = localStorage.getItem(Save.indexKey);
+    const originalActive = localStorage.getItem(Save.activeKey);
+    localStorage.removeItem(Save.slotPrefix + missing);
+
+    assert.equal(Save.getActiveId(), null);
+    assert.equal(Save.load(), null);
+    assert.deepEqual(Save.list(), []);
+    assert.equal(localStorage.getItem(Save.indexKey), originalIndex);
+    assert.equal(localStorage.getItem(Save.activeKey), originalActive);
+
+    const recovered = Save.createSlot({ name: 'Celia' }, {
+        title: 'Nueva historia', state: { inventory: ['Mapa'] }
+    });
+    assert.ok(recovered);
+    assert.equal(Save.load().character.name, 'Celia');
+    assert.deepEqual(Save.list().map(entry => entry.id), [recovered]);
+    const updatedIndex = Save.readJSON(Save.indexKey);
+    assert.ok(updatedIndex.saves.some(entry => entry.id === missing));
+    assert.ok(updatedIndex.saves.some(entry => entry.id === recovered));
+});
+
 test('las localizaciones descubiertas se comparten, pero las acciones siguen siendo personales', () => {
     const first = Save.createSlot({ name: 'Ariadna' }, {
         title: 'Historia A', location: 'Valdebruma',

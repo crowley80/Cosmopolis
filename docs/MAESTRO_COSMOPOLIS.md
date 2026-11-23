@@ -2538,3 +2538,34 @@ Respaldos previos creados en la misma rama:
 - La prueba táctil en Chrome Android con partidas antiguas y nuevas sigue pendiente. Tampoco se ha probado aquí la inferencia con el modelo local real.
 - No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - `main` permanece intacta; ningún PR se ha fusionado.
+
+
+## INTEGRIDAD DEL SELECTOR ANTE REGISTROS HUÉRFANOS — 23 DE NOVIEMBRE DE 2026
+
+### Auditoría previa de ramas y propuestas
+
+- PR #4 continúa abierto y en borrador, con cabeza 05fb37aef40288e0e419819f0850cc98cd9b75cc. La comparación de su rama de integración con main muestra 369 commits por delante y 73 por detrás; GitHub informa que no es fusionable. La cabeza actual no tiene comprobaciones de estado ni ejecuciones de Actions asociadas. No se ha modificado PR #4 ni main.
+- PR #8 continúa abierto y en borrador, dirigido a integration/athun-multisave-main-20261116. Antes de este cambio, su rama tenía 43 commits por delante y 7 por detrás de la integración. La ejecución de almacenamiento 45004520090, sobre 493065c936d5ce79602c25f103a9501a3dc37aec, terminó correctamente: sintaxis aprobada y 70/70 pruebas aprobadas.
+- Los siete commits de la integración que todavía no están en PR #8 solo afectan a app/css/style.css y app/js/app.js. No se incorporan todavía: la CSS de esa revisión referencia app/assets/plantillas/athun-papiro-interfaz.webp, y la ruta devuelve 404 en la rama de integración. Evitamos importar una pantalla secundaria cuyo fondo no está disponible.
+- La validación visual de PR #14 no está aprobada: la ejecución 45029026446 pasó la regresión narrativa inicial, pero Playwright terminó por timeout de 30 segundos en page.waitForFunction (línea 441 del escenario). La comprobación táctil en Chrome Android sigue pendiente.
+
+### Defecto de integridad detectado y corrección
+
+- Si el índice contenía una entrada cuyo registro de partida ya no existía, Save.getActiveId() podía devolver ese identificador y Save.load() quedaba sin partida, aunque hubiera otros registros válidos.
+- El selector también podía presentar entradas huérfanas como si fueran partidas utilizables.
+- Se añade Save.availableEntries(index), que construye una vista de entradas con registro legible, identificadores válidos y sin duplicados. No modifica ni elimina el índice original.
+- Save.getActiveId() elige una partida existente; Save.list() solo presenta registros disponibles y marca como activa la selección válida o, si esta falta, la primera partida íntegra.
+- Cuando falta la selección activa, ensureReady() intenta activar la primera partida disponible, no una entrada huérfana.
+- Se añaden dos regresiones: selección activa apuntando a un registro ausente con otra partida válida disponible, y ausencia de todos los registros seguida de creación de una partida nueva. Ambas verifican que los metadatos huérfanos no se sobrescriben ni se eliminan.
+
+### Archivos y respaldos
+
+- Modificados: app/js/core/save.js, tests/storage.test.js y este documento.
+- Respaldos exactos previos: app/js/core/save.js.bak-20261123-orphan-slot-integrity, tests/storage.test.js.bak-20261123-orphan-slot-integrity y docs/MAESTRO_COSMOPOLIS.md.bak-20261123-orphan-slot-integrity.
+- No se han leído ni modificado partidas del teléfono, no se ha ejecutado ninguna migración sobre datos reales y no se han eliminado archivos .bak.
+
+### Validación y pendientes
+
+- La ejecución anterior 45004520090 acredita 70/70 pruebas antes de esta corrección. Las dos nuevas pruebas y el cambio de código requieren una nueva ejecución de CI; no se declaran aprobados hasta obtenerla.
+- PR #8 sigue sin fusionarse. La sincronización con la rama de integración queda pendiente hasta disponer del recurso de papiro secundario y revisar de nuevo las dos modificaciones visuales.
+- Siguen pendientes Chrome Android táctil, el flujo con llama-server real y la revisión visual de las pantallas secundaria y de aventura. main permanece intacta.
