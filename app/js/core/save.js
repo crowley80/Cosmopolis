@@ -271,6 +271,8 @@ const Save = {
     save(data) {
         const id = this.getActiveId();
         if (!id || !data || typeof data !== 'object') return false;
+        // Impide que una respuesta asíncrona de una partida antigua sobrescriba al protagonista activo.
+        if (data.id && data.id !== id) return false;
         const current = this.readSlot(id) || {};
         const updated = this.normalizeSlot({
             ...current,
@@ -295,6 +297,7 @@ const Save = {
 
     replace(data) {
         const id = this.getActiveId();
+        if (data && data.id && data.id !== id) return false;
         if (!id) return this.createSlot(data.character, data.adventure, data);
         const current = this.readSlot(id) || {};
         const updated = this.normalizeSlot({
