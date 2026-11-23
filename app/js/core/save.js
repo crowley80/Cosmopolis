@@ -135,7 +135,11 @@ const Save = {
     ensureReady() {
         let index = this.readJSON(this.indexKey);
         if (index && Array.isArray(index.saves)) {
-            if (!localStorage.getItem(this.activeKey) && index.saves.length) {
+            const active = this.readJSON(this.activeKey);
+            const activeSlotExists = active && index.saves.some(entry =>
+                entry && entry.id === active.id
+            ) && !!this.readSlot(active.id);
+            if (!activeSlotExists && index.saves.length) {
                 this.activate(index.saves[0].id);
             }
             return index;
