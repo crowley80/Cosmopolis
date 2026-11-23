@@ -76,13 +76,13 @@ const Save = {
     normalizeSlot(data) {
         const slot = { ...(data || {}) };
         slot.actions = Array.isArray(slot.actions) ? slot.actions : [];
-        slot.world = slot.world && typeof slot.world === 'object' ? slot.world : {};
+        slot.world = slot.world && typeof slot.world === 'object' && !Array.isArray(slot.world) ? slot.world : {};
         slot.world.events = Array.isArray(slot.world.events) ? slot.world.events : [];
         slot.world.facts = Array.isArray(slot.world.facts) ? slot.world.facts : [];
-        slot.world.relationships = slot.world.relationships && typeof slot.world.relationships === 'object'
+        slot.world.relationships = slot.world.relationships && typeof slot.world.relationships === 'object' && !Array.isArray(slot.world.relationships)
             ? slot.world.relationships : {};
         if (slot.adventure && typeof slot.adventure === 'object') {
-            slot.adventure.state = slot.adventure.state && typeof slot.adventure.state === 'object'
+            slot.adventure.state = slot.adventure.state && typeof slot.adventure.state === 'object' && !Array.isArray(slot.adventure.state)
                 ? slot.adventure.state : {};
             const inventory = Array.isArray(slot.adventure.state.inventory)
                 ? slot.adventure.state.inventory : [];
@@ -91,7 +91,7 @@ const Save = {
             slot.adventure.state.inventory = ['Athun — grimorio consciente', ...withoutAthun];
 
             // La migración de partidas múltiples conserva también el vínculo y los recuerdos del grimorio.
-            const previousAthun = slot.adventure.state.athun && typeof slot.adventure.state.athun === 'object'
+            const previousAthun = slot.adventure.state.athun && typeof slot.adventure.state.athun === 'object' && !Array.isArray(slot.adventure.state.athun)
                 ? slot.adventure.state.athun : {};
             slot.adventure.state.athun = {
                 ...previousAthun,
