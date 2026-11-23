@@ -240,7 +240,12 @@ const Save = {
     readSlot(id) {
         if (!id) return null;
         const raw = this.readJSON(this.slotPrefix + id);
-        return raw ? this.normalizeSlot(raw) : null;
+        // Un JSON válido no siempre es una partida válida: evita activar objetos truncados o de otro formato.
+        if (!raw || typeof raw !== 'object' || Array.isArray(raw) ||
+            !raw.character || typeof raw.character !== 'object' || Array.isArray(raw.character)) return null;
+        if (raw.adventure !== undefined && raw.adventure !== null &&
+            (typeof raw.adventure !== 'object' || Array.isArray(raw.adventure))) return null;
+        return this.normalizeSlot(raw);
     },
 
     load() {
