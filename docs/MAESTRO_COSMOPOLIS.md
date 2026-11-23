@@ -2812,3 +2812,12 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - GitHub Actions **45224127401**: **62 pruebas de almacenamiento superadas, 0 fallos**; Playwright y renderizado móvil/escritorio completados correctamente.
 - La prueba de scroll móvil vuelve a confirmar el recorrido completo del pergamino secundario (135 px).
 - La revisión visual en Chrome Android físico continúa pendiente.
+
+
+### Protección frente a colisiones al crear partidas — 23 de noviembre de 2026
+
+- `createSlot()` comprueba que el identificador generado no exista ni como clave de slot ni en el índice. Si encuentra una colisión, genera una variante con sufijo incremental antes de escribir.
+- Prueba determinista con reloj y aleatoriedad fijados: ocupa previamente el primer identificador candidato, crea una partida nueva y verifica que el slot previo permanece byte por byte intacto y que la nueva partida queda activa y legible.
+- GitHub Actions **45225046895**: **63 pruebas de almacenamiento superadas, 0 fallos**; Playwright y renderizado móvil/escritorio correctos.
+- Scroll interno del pergamino secundario confirmado de nuevo: 135 px hasta el final.
+- Pendiente la revisión visual real en Chrome Android.
