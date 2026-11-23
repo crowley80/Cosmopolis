@@ -1055,7 +1055,7 @@ jobs:
             });
             assert.ok(rollbackSetup.id, 'Debe crearse el guardado aislado para probar la reversión');
             const rollbackResult = await desktopPage.evaluate(id => {
-              const key = 'athun_save_' + id;
+              const key = 'athun_save_v1_' + id;
               const originalRemove = localStorage.removeItem;
               let injected = false;
               localStorage.removeItem = function (candidate) {
