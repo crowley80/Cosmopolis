@@ -2774,3 +2774,12 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - Se añadió una prueba que intenta crear partidas con `null`, texto y una lista, y compara el almacenamiento completo antes y después para asegurar que no aparecen registros huérfanos ni cambia el selector activo.
 - Verificación GitHub Actions **45222175850**, commit `a1160476aef56bde2dc51afb0eb45ec13654eeb1`: `58` pruebas superadas, `0` fallos. El job `mobile-preview` terminó correctamente; Playwright y el renderizado móvil/escritorio pasaron. El pergamino secundario mantuvo scroll interno (`clientHeight 645`, `scrollHeight 780`, desplazamiento máximo `135` px).
 - La verificación de interfaz automatizada no sustituye la comprobación visual en Chrome Android físico, que sigue pendiente.
+
+
+### Reconstrucción del índice con validación estructural — 23 de noviembre de 2026
+
+- La reconstrucción del índice ya no incorpora cualquier JSON encontrado bajo el prefijo de partidas: ahora pasa cada registro por `readSlot(id)`, la misma validación estructural utilizada por la carga normal.
+- Se añadió una prueba con un guardado válido y un registro incompleto junto a un índice corrupto. La recuperación conserva y activa el guardado válido, excluye el registro incompleto y deja intactos los dos datos originales.
+- Verificación GitHub Actions: ejecución **45222569392** (58 pruebas de almacenamiento, 0 fallos) y **45222577923** (59 pruebas de almacenamiento, 0 fallos); ambas completaron `mobile-preview`, Playwright y renderizado móvil/escritorio correctamente.
+- La comprobación automatizada de pergamino secundario en móvil volvió a confirmar scroll interno: viewport 390×844, contenedor 645 px de alto, contenido 780 px y desplazamiento máximo 135 px.
+- Estas pruebas automatizadas no sustituyen la comprobación visual en Chrome Android físico, que sigue pendiente.
