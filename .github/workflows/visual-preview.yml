@@ -246,9 +246,10 @@ jobs:
 
             // Prueba de interacción: los cuatro paneles y las ayudas de exploración.
             const pageErrors = [];
+            const resourceErrors = [];
             page.on('pageerror', error => pageErrors.push(error.message));
             page.on('console', message => { if (message.type() === 'error') console.error('BROWSER_CONSOLE_ERROR:', message.text()); });
-            page.on('response', response => { if (response.status() === 404) console.error('RESOURCE_404_URL:', response.url()); });
+            page.on('response', response => { if (response.status() >= 400) resourceErrors.push(response.status() + ' ' + response.url()); });
             let narrativeCall = 0;
             await page.route('http://127.0.0.1:8081/**', async route => {
               const request = route.request();
@@ -478,6 +479,7 @@ jobs:
                 data.adventure.state.visitedLocations.includes('Plaza del pozo');
             });
             assert.equal(pageErrors.length, 0, 'No deben producirse errores JavaScript: ' + pageErrors.join('; '));
+            assert.equal(resourceErrors.length, 0, 'No deben faltar recursos visuales ni de aplicación: ' + resourceErrors.join('; '));
             await page.locator('#openInventory').click();
             await page.locator('#toolOverlay').getByText('Medallón de cobre').waitFor();
             await page.locator('#closeToolPanel').click();
@@ -580,8 +582,9 @@ jobs:
             }, { character, adventure });
             const desktopPage = await desktop.newPage();
             const desktopErrors = [];
+            const desktopResourceErrors = [];
             desktopPage.on('pageerror', error => desktopErrors.push(error.message));
-            desktopPage.on('response', response => { if (response.status() === 404) console.error('RESOURCE_404_URL:', response.url()); });
+            desktopPage.on('response', response => { if (response.status() >= 400) desktopResourceErrors.push(response.status() + ' ' + response.url()); });
             await desktopPage.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
             const desktopContinue = desktopPage.locator('[data-load-save]').first();
             if (await desktopContinue.count()) await desktopContinue.click();
@@ -589,6 +592,7 @@ jobs:
             const desktopWidth = await desktopPage.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth }));
             assert.ok(desktopWidth.document <= desktopWidth.viewport, 'La interfaz de escritorio no debe desbordarse horizontalmente');
             assert.equal(desktopErrors.length, 0, 'No deben producirse errores JavaScript en escritorio: ' + desktopErrors.join('; '));
+            assert.equal(desktopResourceErrors.length, 0, 'No deben faltar recursos en escritorio: ' + desktopResourceErrors.join('; '));
             await desktopPage.screenshot({ path: 'artifacts/cosmopolis-desktop.png', fullPage: true });
 
             // Regresión de interfaz: dos protagonistas, alternancia y aislamiento personal.
