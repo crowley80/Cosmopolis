@@ -926,15 +926,15 @@ jobs:
 
             // Regresión de interfaz: dos protagonistas, alternancia y aislamiento personal.
             const slotIds = await desktopPage.evaluate(() => {
-              const ari = Save.list().find(entry => entry.name === 'Ariadna');
-              if (!ari || !Save.activate(ari.id)) throw new Error('No se pudo preparar la partida de Ariadna');
-              const ariSlot = Save.load();
+              const ari = window.Save.list().find(entry => entry.name === 'Ariadna');
+              if (!ari || !window.Save.activate(ari.id)) throw new Error('No se pudo preparar la partida de Ariadna');
+              const ariSlot = window.Save.load();
               ariSlot.adventure.state.visitedLocations = ['Plaza del pozo'];
               ariSlot.adventure.state.athun = ariSlot.adventure.state.athun || {};
               ariSlot.adventure.state.athun.memories = ['Recuerdo privado del vínculo de Ariadna'];
-              if (!Save.save(ariSlot)) throw new Error('No se pudo preparar el progreso personal de Ariadna');
-              Save.addGlobalLocation('Plaza del pozo', 'Ariadna');
-              const darian = Save.createSlot({
+              if (!window.Save.save(ariSlot)) throw new Error('No se pudo preparar el progreso personal de Ariadna');
+              window.Save.addGlobalLocation('Plaza del pozo', 'Ariadna');
+              const darian = window.Save.createSlot({
                 name: 'Darian',
                 nature: 'Humano',
                 appearance: 'Viajero de ojos claros.',
@@ -957,8 +957,8 @@ jobs:
               }, {
                 world: { facts: ['Recuerdo privado de Darian'], events: [], relationships: {} }
               });
-              Save.addGlobalLocation('Puerto de Bruma', 'Darian');
-              return { ari: ari && ari.id, darian, globalLocations: Save.getGlobalWorld().locations.map(entry => typeof entry === 'string' ? entry : entry.name) };
+              window.Save.addGlobalLocation('Puerto de Bruma', 'Darian');
+              return { ari: ari && ari.id, darian, globalLocations: window.Save.getGlobalWorld().locations.map(entry => typeof entry === 'string' ? entry : entry.name) };
             });
             assert.ok(slotIds.ari && slotIds.darian, 'Deben existir dos partidas independientes');
             assert.ok(slotIds.globalLocations.includes('Plaza del pozo'), 'El mundo común debe conservar el lugar descubierto por Ariadna');
@@ -967,7 +967,7 @@ jobs:
             await desktopPage.locator('[data-load-save]').first().waitFor();
             assert.equal(await desktopPage.locator('[data-load-save]').count(), 2, 'El selector debe mostrar ambos protagonistas');
             await desktopPage.locator('[data-load-save="' + slotIds.ari + '"]').click();
-            const ariState = await desktopPage.evaluate(() => Save.load());
+            const ariState = await desktopPage.evaluate(() => window.Save.load());
             assert.equal(ariState.character.name, 'Ariadna', 'El selector debe abrir la partida elegida');
             assert.ok(!ariState.world.facts.includes('Recuerdo privado de Darian'), 'Los recuerdos personales de Darian no deben filtrarse a Ariadna');
             assert.ok(!ariState.adventure.state.athun.memories.includes('Recuerdo privado del vínculo de Darian'), 'Los recuerdos del vínculo de Athun deben permanecer en la partida de Darian');
@@ -977,16 +977,16 @@ jobs:
             assert.ok(ariState.adventure.state.inventory.includes('Athun — grimorio consciente'), 'Ariadna debe conservar a Athun');
             assert.ok(slotIds.globalLocations.includes('Puerto de Bruma'), 'El mundo compartido debe incorporar también los descubrimientos de Darian');
 
-            const staleAriadna = await desktopPage.evaluate(() => Save.load());
+            const staleAriadna = await desktopPage.evaluate(() => window.Save.load());
             await desktopPage.locator('#openOptions').click();
             await desktopPage.locator('#toolOverlay #switchSaveFromOptions').click();
             await desktopPage.locator('[data-load-save="' + slotIds.darian + '"]').click();
             const staleWriteAccepted = await desktopPage.evaluate(stale => {
               stale.actions = [...(stale.actions || []), { text: 'Escritura tardía de Ariadna', response: '' }];
-              return Save.save(stale);
+              return window.Save.save(stale);
             }, staleAriadna);
             assert.equal(staleWriteAccepted, false, 'Una escritura tardía de Ariadna no debe modificar la partida activa de Darian');
-            const darianState = await desktopPage.evaluate(() => Save.load());
+            const darianState = await desktopPage.evaluate(() => window.Save.load());
             assert.equal(darianState.character.name, 'Darian', 'Debe poder alternarse al segundo protagonista');
             assert.ok(darianState.world.facts.includes('Recuerdo privado de Darian'), 'La segunda partida debe conservar sus recuerdos propios');
             assert.ok(!darianState.world.facts.includes('El personaje ha mostrado generosidad.'), 'El progreso personal de Ariadna no debe filtrarse a Darian');
@@ -996,7 +996,7 @@ jobs:
             assert.ok(darianState.adventure.state.athun.memories.includes('Recuerdo privado del vínculo de Darian'), 'Darian debe conservar sus recuerdos propios de Athun');
             assert.ok(!darianState.adventure.state.athun.memories.includes('Recuerdo privado del vínculo de Ariadna'), 'Los recuerdos de Athun de Ariadna no deben filtrarse a Darian');
             assert.ok(darianState.adventure.state.inventory.includes('Athun — grimorio consciente'), 'Athun debe existir también en la partida de Darian');
-            const sharedAfterSwitch = Save.getGlobalWorld().locations.map(entry => typeof entry === 'string' ? entry : entry.name);
+            const sharedAfterSwitch = window.Save.getGlobalWorld().locations.map(entry => typeof entry === 'string' ? entry : entry.name);
             assert.ok(sharedAfterSwitch.includes('Plaza del pozo') && sharedAfterSwitch.includes('Puerto de Bruma'), 'El mundo compartido debe conservar los descubrimientos de ambos protagonistas');
 
             // Comprueba que cada acceso inferior abre su pantalla correspondiente.
