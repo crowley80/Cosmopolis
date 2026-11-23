@@ -181,6 +181,23 @@ test('reconstruye el índice si desaparece sin perder los registros de partidas'
     assert.ok(localStorage.getItem(Save.indexKey));
 });
 
+test('repara el selector activo si apunta a una partida inexistente o está corrupto', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia A', state: { inventory: [] }
+    });
+    Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia B', state: { inventory: [] }
+    });
+
+    localStorage.setItem(Save.activeKey, JSON.stringify({ id: 'partida-inexistente' }));
+    assert.equal(Save.getActiveId(), first);
+    assert.deepEqual(JSON.parse(localStorage.getItem(Save.activeKey)), { id: first });
+
+    localStorage.setItem(Save.activeKey, '{selector-corrupto');
+    assert.equal(Save.getActiveId(), first);
+    assert.deepEqual(JSON.parse(localStorage.getItem(Save.activeKey)), { id: first });
+});
+
 test('reconstruye un índice ilegible sin perder partidas ni alterar el mundo compartido', () => {
     const first = Save.createSlot({ name: 'Ariadna' }, {
         title: 'Historia A', state: { inventory: ['Llave'] }
