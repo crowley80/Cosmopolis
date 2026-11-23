@@ -1,3 +1,4 @@
+// La regresión visual también verifica la reconstrucción de la aventura.
 'use strict';
 
 const test = require('node:test');
