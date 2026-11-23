@@ -2181,7 +2181,10 @@ body:not(.athun-secondary-mode) .adventure-screen {
   border-radius:0 !important;
   box-shadow:none !important;
 }
-body.athun-secondary-mode,
+body.athun-secondary-mode {
+  background-color:#ead9b5 !important;
+  background-image:none !important;
+}
 body.athun-secondary-mode #app {
   background-color:#ead9b5 !important;
   background-image:url('../assets/athun-papiro-universal.webp') !important;
