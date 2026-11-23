@@ -182,6 +182,21 @@ const Save = {
             return empty;
         }
 
+        // Una clave heredada solo se migra si conserva la estructura mínima de una partida.
+        // Si está incompleta, se deja intacta como respaldo y no se crea un slot que readSlot() rechazaría.
+        if (!legacy || typeof legacy !== 'object' || Array.isArray(legacy) ||
+            !legacy.character || typeof legacy.character !== 'object' || Array.isArray(legacy.character) ||
+            (legacy.adventure !== undefined && legacy.adventure !== null &&
+                (typeof legacy.adventure !== 'object' || Array.isArray(legacy.adventure)))) {
+            const empty = { version: 1, saves: [] };
+            try {
+                this.writeVerified(this.indexKey, empty);
+            } catch (error) {
+                console.error('No se pudo inicializar el índice tras descartar una migración heredada incompleta:', error);
+            }
+            return empty;
+        }
+
         // La clave heredada nunca se borra ni se modifica: se conserva como respaldo íntegro.
         const id = 'legacy-' + String(legacy.createdAt || legacy.updatedAt || 'original')
             .replace(/[^a-zA-Z0-9-]/g, '').slice(0, 40);
