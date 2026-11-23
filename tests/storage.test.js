@@ -1565,3 +1565,16 @@ test('reconstruye índices con referencias a partidas inexistentes o dañadas', 
     assert.equal(localStorage.getItem(Save.slotPrefix + brokenId), brokenRaw);
     assert.equal(localStorage.getItem(Save.slotPrefix + phantomId), null);
 });
+
+
+test('no migra una clave heredada sin estructura de protagonista y conserva el original', () => {
+    const malformed = { broken: true, adventure: { title: 'Registro incompleto' } };
+    const original = JSON.stringify(malformed);
+    localStorage.setItem(Save.key, original);
+
+    assert.deepEqual(Save.list(), []);
+    assert.equal(Save.getActiveId(), null);
+    assert.equal(localStorage.getItem(Save.key), original);
+    assert.equal(localStorage.getItem(Save.activeKey), null);
+    assert.equal(Array.from(localStorage.data.keys()).some(key => key.startsWith(Save.slotPrefix)), false);
+});
