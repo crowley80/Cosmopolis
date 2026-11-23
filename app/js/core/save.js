@@ -137,7 +137,8 @@ const Save = {
         let index = this.readJSON(this.indexKey);
         const validIndexEntries = index && Array.isArray(index.saves) && index.saves.every(entry =>
             entry && typeof entry === 'object' && !Array.isArray(entry) &&
-            typeof entry.id === 'string' && entry.id.trim().length > 0
+            typeof entry.id === 'string' && entry.id.trim().length > 0 &&
+            !!this.readSlot(entry.id)
         );
         if (validIndexEntries) {
             const active = this.readJSON(this.activeKey);
