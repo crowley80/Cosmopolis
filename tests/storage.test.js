@@ -1456,3 +1456,29 @@ test('las afirmaciones negativas no marcan el descubrimiento del pozo ni de la c
     assert.equal(state.wellDiscovered, undefined);
     assert.equal(state.bellDiscovered, undefined);
 });
+
+
+test('reconstruye un índice con entradas estructuralmente inválidas antes de guardar', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia A', state: { inventory: ['Llave'] }
+    });
+    const second = Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia B', state: { inventory: ['Mapa'] }
+    });
+    assert.ok(first);
+    assert.ok(second);
+
+    localStorage.setItem(Save.indexKey, JSON.stringify({
+        version: 1,
+        saves: [null, { id: '', name: 'Entrada inválida' }, { id: second, name: 'Darian' }]
+    }));
+
+    const entries = Save.list();
+    assert.deepEqual(entries.map(entry => entry.name), ['Ariadna', 'Darian']);
+    assert.equal(entries.some(entry => !entry.id), false);
+    assert.equal(Save.activate(first), true);
+    const saved = Save.load();
+    saved.character.name = 'Ariadna recuperada';
+    assert.equal(Save.save(saved), true);
+    assert.equal(Save.load().character.name, 'Ariadna recuperada');
+});
