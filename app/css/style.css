@@ -2212,3 +2212,19 @@ body.athun-secondary-mode #app {
     font-size:.52rem !important;
   }
 }
+
+
+/* ATHUN — la acción actual también se integra en la escritura directa sobre el papiro. */
+.adventure-screen .current-action {
+  margin:0 0 16px !important;
+  padding:0 0 12px !important;
+  color:var(--athun-body-ink) !important;
+  background:transparent !important;
+  background-image:none !important;
+  border:0 !important;
+  border-left:0 !important;
+  border-radius:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+  text-shadow:0 1px rgba(255,248,226,.35);
+}
