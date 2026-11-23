@@ -648,6 +648,7 @@ const Athun = {
             if (!action) return;
 
             const saved = Save.load();
+            const expectedSaveId = saved && saved.id;
             const currentAdventure = saved && saved.adventure
                 ? saved.adventure
                 : adventure;
@@ -666,7 +667,7 @@ const Athun = {
                     Session.getActions()
                 );
 
-                if (Session.addAction(action, response.reply, response)) {
+                if (Session.addAction(action, response.reply, response, expectedSaveId)) {
                     form.reset();
                     updateManuscriptMeta();
                     showStory();
