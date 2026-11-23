@@ -35,7 +35,9 @@ const Session = {
         }
     },
 
-    addAction(action, response = '', details = {}) {
+    addAction(action, response = '', details = {}, expectedSaveId = null) {
+        // Una respuesta tardía no puede modificar la partida que se haya activado mientras el narrador pensaba.
+        if (expectedSaveId && Save.getActiveId() !== expectedSaveId) return false;
         const saved = Save.load();
         if (!saved || !saved.character || !saved.adventure) return false;
 
