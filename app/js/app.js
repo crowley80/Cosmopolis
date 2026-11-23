@@ -64,6 +64,7 @@ const Athun = {
         const screen = document.querySelector('.adventure-screen');
         const previous = document.getElementById('toolOverlay');
         if (previous) previous.remove();
+        const returnFocus = document.activeElement;
 
         const overlay = document.createElement('section');
         overlay.id = 'toolOverlay';
@@ -81,9 +82,42 @@ const Athun = {
             </div>
         `;
         screen.appendChild(overlay);
-        overlay.querySelector('#closeToolPanel').addEventListener('click', () => overlay.remove());
+
+        const close = () => {
+            if (!overlay.isConnected) return;
+            overlay.remove();
+            if (returnFocus && returnFocus.isConnected && typeof returnFocus.focus === 'function') {
+                returnFocus.focus();
+            }
+        };
+        overlay.querySelector('#closeToolPanel').addEventListener('click', close);
         overlay.addEventListener('click', event => {
-            if (event.target === overlay) overlay.remove();
+            if (event.target === overlay) close();
+        });
+        overlay.addEventListener('keydown', event => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                close();
+                return;
+            }
+            if (event.key !== 'Tab') return;
+            const focusable = Array.from(overlay.querySelectorAll(
+                'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            )).filter(element => element.getClientRects().length > 0);
+            if (!focusable.length) {
+                event.preventDefault();
+                overlay.querySelector('#closeToolPanel').focus();
+                return;
+            }
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (event.shiftKey && (document.activeElement === first || !overlay.contains(document.activeElement))) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && (document.activeElement === last || !overlay.contains(document.activeElement))) {
+                event.preventDefault();
+                first.focus();
+            }
         });
         if (typeof setup === 'function') setup(overlay);
         overlay.querySelector('#closeToolPanel').focus();
