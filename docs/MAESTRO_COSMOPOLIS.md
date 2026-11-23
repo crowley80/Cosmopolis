@@ -1,3 +1,13 @@
+## 2026-11-23 — Animaciones preparadas
+
+- Se han creado dos recursos animados y se ha generado un paquete ZIP:
+  - `athun-grimorio-animado.gif`: 436 × 390 px, 9 fotogramas, 180 ms por fotograma, bucle continuo.
+  - `athun-calavera-animada.webp`: 640 × 900 px, 9 fotogramas, fondo transparente, WebP animado de una sola pasada con fotograma final prolongado.
+- Ambos archivos y el paquete se conservan en la Biblioteca de ChatGPT en `/Athun/Animaciones` (el ZIP está disponible; la carga individual de los binarios a Biblioteca no se completó).
+- **Integración en el repositorio pendiente:** el conector GitHub disponible no permitió subir los binarios a esta rama, así que no se han añadido referencias de imagen a la interfaz que quedarían rotas.
+- **Secuencia de muerte pendiente:** en el código actual de esta rama no existe todavía un controlador/evento explícito de muerte ni un evento de fin de narración asociado. No se ha inventado uno. La calavera debe activarse únicamente desde el punto real en que la narración haya terminado.
+- Rama de trabajo: `work/athun-papiro-universal-20261122`. Sin fusión a la rama principal y sin cambios en partidas guardadas.
+
 # Estado de trabajo de interfaz — 22 de noviembre de 2026
 
 > Nombre vigente: **Athun: el grimorio oscuro**. El nombre histórico del repositorio no debe trasladarse a la interfaz ni a textos nuevos.
