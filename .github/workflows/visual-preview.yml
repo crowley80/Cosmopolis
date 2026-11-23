@@ -1016,6 +1016,34 @@ jobs:
             assert.equal(deleteAriadna.active, 'Darian', 'La partida activa debe seguir siendo Darian');
             assert.ok(deleteAriadna.globalLocations.includes('Plaza del pozo') && deleteAriadna.globalLocations.includes('Puerto de Bruma'),
               'Eliminar una partida no debe borrar el mundo compartido ni sus descubrimientos');
+            const activeDeleteSetup = await desktopPage.evaluate(() => {
+              const id = window.Save.createSlot(
+                { name: 'Temporal de prueba' },
+                { title: 'Guardado temporal', state: { inventory: [] } }
+              );
+              return { id, active: window.Save.getActiveId() };
+            });
+            assert.ok(activeDeleteSetup.id, 'Debe poder crearse una partida temporal aislada');
+            assert.equal(activeDeleteSetup.active, activeDeleteSetup.id, 'La partida temporal recién creada debe quedar activa');
+            const activeDeleteResult = await desktopPage.evaluate(id => {
+              const removed = window.Save.deleteSlot(id);
+              return {
+                removed,
+                saves: window.Save.list().map(entry => entry.name),
+                active: window.Save.load()?.character?.name
+              };
+            }, activeDeleteSetup.id);
+            assert.equal(activeDeleteResult.removed, true, 'Debe poder eliminarse la partida activa cuando existe otra');
+            assert.deepEqual(activeDeleteResult.saves, ['Darian'], 'Al borrar la partida activa solo debe quedar la otra');
+            assert.equal(activeDeleteResult.active, 'Darian', 'Al borrar la partida activa debe seleccionarse la superviviente');
+            const refuseLastDelete = await desktopPage.evaluate(id => ({
+              removed: window.Save.deleteSlot(id),
+              saves: window.Save.list().map(entry => entry.name),
+              active: window.Save.load()?.character?.name
+            }), activeDeleteSetup.id ? (await desktopPage.evaluate(() => window.Save.getActiveId())) : null);
+            assert.equal(refuseLastDelete.removed, false, 'No debe permitirse borrar la última partida');
+            assert.deepEqual(refuseLastDelete.saves, ['Darian'], 'El último guardado debe permanecer intacto');
+            assert.equal(refuseLastDelete.active, 'Darian', 'La partida activa no debe quedar vacía');
 
             // Comprueba que cada acceso inferior abre su pantalla correspondiente.
             const toolbarChecks = [
