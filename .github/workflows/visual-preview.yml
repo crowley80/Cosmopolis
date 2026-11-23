@@ -1089,6 +1089,46 @@ jobs:
             const rollbackCleanup = await desktopPage.evaluate(id => window.Save.deleteSlot(id), rollbackSetup.id);
             assert.equal(rollbackCleanup, true, 'El guardado temporal debe poder eliminarse después de restaurar el almacenamiento');
 
+            // Una creación que no puede activar la nueva partida debe revertir slot, índice y protagonista activo.
+            const createRollback = await desktopPage.evaluate(() => {
+              const before = {
+                saves: window.Save.list().map(entry => entry.id),
+                active: window.Save.getActiveId(),
+                slotKeys: Object.keys(localStorage).filter(key => key.startsWith(window.Save.slotPrefix)).sort()
+              };
+              const originalWriteVerified = window.Save.writeVerified;
+              let injected = false;
+              window.Save.writeVerified = function (candidate, value) {
+                if (candidate === window.Save.activeKey && !injected) {
+                  injected = true;
+                  throw new Error('Fallo simulado al activar el nuevo guardado');
+                }
+                return originalWriteVerified.call(this, candidate, value);
+              };
+              let created;
+              try {
+                created = window.Save.createSlot(
+                  { name: 'Temporal de creación fallida' },
+                  { title: 'No debe persistir', state: { inventory: [] } }
+                );
+              } finally {
+                window.Save.writeVerified = originalWriteVerified;
+              }
+              return {
+                created: Boolean(created),
+                injected,
+                saves: window.Save.list().map(entry => entry.id),
+                active: window.Save.getActiveId(),
+                slotKeys: Object.keys(localStorage).filter(key => key.startsWith(window.Save.slotPrefix)).sort()
+              };
+            });
+            assert.equal(createRollback.injected, true, 'La prueba debe provocar el fallo de activación durante la creación');
+            assert.equal(createRollback.created, false, 'La creación incompleta debe comunicarse como fallida');
+            assert.deepEqual(createRollback.saves, rollbackSetup.before, 'La creación fallida no debe alterar el índice de guardados');
+            assert.equal(createRollback.active, rollbackSetup.active, 'La creación fallida debe conservar el protagonista activo');
+            assert.deepEqual(createRollback.slotKeys, createRollback.slotKeys.filter(key => rollbackSetup.before.some(id => key === 'athun_save_v1_' + id)),
+              'La creación fallida no debe dejar un slot huérfano');
+
             // Comprueba que cada acceso inferior abre su pantalla correspondiente.
             const toolbarChecks = [
               ['#openHint', 'Una pista del grimorio'],
