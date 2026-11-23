@@ -983,6 +983,17 @@ jobs:
               await desktopPage.locator('#toolOverlay').waitFor({ state: 'detached' });
             }
 
+            // Accesibilidad de teclado: el foco queda dentro del diálogo, Escape lo cierra y lo devuelve al acceso de origen.
+            await desktopPage.locator('#openOptions').click();
+            await desktopPage.locator('#closeToolPanel').focus();
+            await desktopPage.keyboard.press('Shift+Tab');
+            assert.equal(await desktopPage.evaluate(() => document.activeElement.id), 'switchSaveFromOptions',
+              'Mayús+Tab desde el primer control debe recorrer el foco al último control del diálogo');
+            await desktopPage.keyboard.press('Escape');
+            await desktopPage.locator('#toolOverlay').waitFor({ state: 'detached' });
+            assert.equal(await desktopPage.evaluate(() => document.activeElement.id), 'openOptions',
+              'Escape debe devolver el foco al botón que abrió el diálogo');
+
             await browser.close();
           })().catch(error => { console.error(error); process.exit(1); });
           NODE
