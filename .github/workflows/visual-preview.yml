@@ -859,7 +859,7 @@ jobs:
                   background-image:none !important;
                 }
                 body.athun-secondary-mode #app {
-                  background-image:url('../assets/athun-papiro-universal.webp') !important;
+                  background-image:url('/app/assets/athun-papiro-universal.webp') !important;
                   background-size:${variant.size} !important;
                   background-position:center top !important;
                   background-repeat:no-repeat !important;
