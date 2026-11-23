@@ -139,8 +139,11 @@ const Save = {
             const activeSlotExists = active && index.saves.some(entry =>
                 entry && entry.id === active.id
             ) && !!this.readSlot(active.id);
-            if (!activeSlotExists && index.saves.length) {
-                this.activate(index.saves[0].id);
+            if (!activeSlotExists) {
+                const firstRecoverable = index.saves.find(entry =>
+                    entry && entry.id && !!this.readSlot(entry.id)
+                );
+                if (firstRecoverable) this.activate(firstRecoverable.id);
             }
             return index;
         }
@@ -216,8 +219,13 @@ const Save = {
         this.ensureReady();
         const active = this.readJSON(this.activeKey);
         const index = this.readJSON(this.indexKey);
-        if (active && index && index.saves.some(entry => entry.id === active.id)) return active.id;
-        return index && index.saves.length ? index.saves[0].id : null;
+        if (active && index && index.saves.some(entry =>
+            entry && entry.id === active.id
+        ) && this.readSlot(active.id)) return active.id;
+        const fallback = index && Array.isArray(index.saves)
+            ? index.saves.find(entry => entry && entry.id && !!this.readSlot(entry.id))
+            : null;
+        return fallback ? fallback.id : null;
     },
 
     list() {
