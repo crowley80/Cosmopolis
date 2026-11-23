@@ -2599,3 +2599,6 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - Se incrementó la versión de caché de la hoja de estilos.
 - No se modificaron textos, lógica, almacenamiento ni partidas.
 - **Validación pendiente:** repetir la vista previa automatizada y comprobar que la regla no afecta a la lectura ni a los controles.
+
+- La referencia de caché de `app/css/style.css` se elevó a `20261123-narrator-unified-11` para obligar al navegador a cargar la hoja corregida.
+- Se añadió a `.github/workflows/visual-preview.yml` una comprobación Playwright específica de `.current-action`: fondo transparente, sin borde, contorno ni sombra. La ejecución de esta nueva comprobación aún no consta como completada.
