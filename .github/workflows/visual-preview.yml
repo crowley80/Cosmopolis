@@ -1056,26 +1056,20 @@ jobs:
             assert.ok(rollbackSetup.id, 'Debe crearse el guardado aislado para probar la reversión');
             const rollbackResult = await desktopPage.evaluate(id => {
               const key = 'athun_save_v1_' + id;
-              const originalDescriptor = Object.getOwnPropertyDescriptor(Storage.prototype, 'removeItem');
-              const originalRemove = Storage.prototype.removeItem;
+              const originalWriteVerified = window.Save.writeVerified;
               let injected = false;
-              Object.defineProperty(Storage.prototype, 'removeItem', {
-                configurable: true,
-                writable: true,
-                value: function (candidate) {
-                  if (candidate === key && !injected) {
-                    injected = true;
-                    throw new Error('Fallo de almacenamiento simulado');
-                  }
-                  return originalRemove.call(this, candidate);
+              window.Save.writeVerified = function (candidate, value) {
+                if (candidate === window.Save.activeKey && !injected) {
+                  injected = true;
+                  throw new Error('Fallo simulado al activar la partida superviviente');
                 }
-              });
+                return originalWriteVerified.call(this, candidate, value);
+              };
               let removed;
               try {
                 removed = window.Save.deleteSlot(id);
               } finally {
-                if (originalDescriptor) Object.defineProperty(Storage.prototype, 'removeItem', originalDescriptor);
-                else delete Storage.prototype.removeItem;
+                window.Save.writeVerified = originalWriteVerified;
               }
               return {
                 removed,
@@ -1086,7 +1080,7 @@ jobs:
                 activeName: window.Save.load()?.character?.name
               };
             }, rollbackSetup.id);
-            assert.equal(rollbackResult.injected, true, 'La prueba debe provocar el fallo de borrado previsto');
+            assert.equal(rollbackResult.injected, true, 'La prueba debe provocar el fallo al activar la partida superviviente');
             assert.equal(rollbackResult.removed, false, 'Un fallo durante el borrado debe comunicarse como operación fallida');
             assert.equal(rollbackResult.slotRestored, true, 'La reversión debe restaurar el contenido de la partida');
             assert.deepEqual(rollbackResult.saves, rollbackSetup.before, 'La reversión debe restaurar el índice completo de guardados');
