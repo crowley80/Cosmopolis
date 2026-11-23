@@ -2095,7 +2095,7 @@ body:not(.athun-secondary-mode) .adventure-screen {
   border:0 !important;
   border-radius:0 !important;
   box-shadow:none !important;
-  font-size:clamp(.65rem,2.7vw,.82rem) !important;
+  font-size:12px !important;
   line-height:1.1 !important;
 }
 .adventure-screen .toolbar-button svg,
@@ -2125,7 +2125,7 @@ body:not(.athun-secondary-mode) .adventure-screen {
   content:"Pista";
   display:block !important;
   color:var(--athun-body-ink) !important;
-  font-size:clamp(.55rem,2.4vw,.76rem) !important;
+  font-size:12px !important;
   font-family:inherit !important;
   font-weight:600 !important;
   line-height:1.1 !important;
@@ -2212,7 +2212,7 @@ body.athun-secondary-mode #app {
   }
   .adventure-screen .toolbar-button {
     min-height:50px !important;
-    font-size:.65rem !important;
+    font-size:12px !important;
   }
 }
 
