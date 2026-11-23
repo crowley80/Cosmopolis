@@ -2566,6 +2566,7 @@ Respaldos previos creados en la misma rama:
 
 ### Validación y pendientes
 
-- La ejecución anterior 45004520090 acredita 70/70 pruebas antes de esta corrección. Las dos nuevas pruebas y el cambio de código requieren una nueva ejecución de CI; no se declaran aprobados hasta obtenerla.
-- PR #8 sigue sin fusionarse. La sincronización con la rama de integración queda pendiente hasta disponer del recurso de papiro secundario y revisar de nuevo las dos modificaciones visuales.
+- El checkpoint anterior 45004520090 había aprobado 70/70 pruebas. Tras esta corrección, las ejecuciones [45146621380](https://github.com/crowley80/Cosmopolis/actions/runs/45146621380) (pull request) y [45146610109](https://github.com/crowley80/Cosmopolis/actions/runs/45146610109) (push) terminaron correctamente: sintaxis aprobada y **72/72 pruebas aprobadas, 0 fallos**.
+- La cabeza actual de PR #8 es a09c0e713d41a1868278abe6e605274c3c09a33f. La rama tiene 44 commits por delante y 7 por detrás de la integración; GitHub informa que es fusionable, pero sigue abierta y en borrador. No se fusiona.
+- La sincronización visual con la rama de integración sigue pendiente hasta disponer del recurso de papiro secundario y revisar de nuevo las dos modificaciones visuales.
 - Siguen pendientes Chrome Android táctil, el flujo con llama-server real y la revisión visual de las pantallas secundaria y de aventura. main permanece intacta.
