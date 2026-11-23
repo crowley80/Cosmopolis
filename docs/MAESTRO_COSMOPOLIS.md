@@ -2821,3 +2821,12 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - GitHub Actions **45225046895**: **63 pruebas de almacenamiento superadas, 0 fallos**; Playwright y renderizado móvil/escritorio correctos.
 - Scroll interno del pergamino secundario confirmado de nuevo: 135 px hasta el final.
 - Pendiente la revisión visual real en Chrome Android.
+
+
+### Normalización de campos de objeto en guardados — 23 de noviembre de 2026
+
+- `normalizeSlot()` ya no acepta arrays como sustituto de objetos en `world`, `world.relationships`, `adventure.state` ni el estado previo de Athun. En esos casos aplica la estructura vacía/canónica prevista sin perder la partida.
+- Prueba nueva: `normaliza arrays en campos de objeto sin perder la estructura de la partida`; verifica estructura, inventario y permanencia de Athun.
+- GitHub Actions **45225290472**: **64 pruebas de almacenamiento superadas, 0 fallos**; Playwright y renderizado móvil/escritorio correctos.
+- En móvil, el pergamino secundario conserva 645 px de área visible, 780 px de contenido y 135 px de desplazamiento interno hasta el final.
+- La revisión visual en Chrome Android físico sigue pendiente.
