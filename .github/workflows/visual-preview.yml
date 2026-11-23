@@ -192,7 +192,7 @@ jobs:
             }));
             assert.ok(visualPalette.parchment.includes('athun-papiro-universal.webp'), 'El narrador debe usar el papiro universal en blanco');
             assert.equal(visualPalette.heading, 'rgb(113, 59, 50)', 'Los títulos deben usar el granate aprobado');
-            assert.equal(visualPalette.narrative, 'rgb(23, 16, 10)', 'La narración debe mostrarse en negro');
+            assert.equal(visualPalette.narrative, 'rgb(113, 59, 50)', 'La narración debe usar el granate aprobado');
             assert.equal(visualPalette.adventureBackground, 'none', 'El papiro debe pintarse una sola vez, sin fondo duplicado');
 
             // Regresión específica: la acción actual también debe quedar escrita directamente sobre el papiro.
