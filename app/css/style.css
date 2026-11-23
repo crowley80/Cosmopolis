@@ -2124,7 +2124,7 @@ body:not(.athun-secondary-mode) .adventure-screen {
 .adventure-screen #openHint::after {
   content:"Pista";
   display:block !important;
-  color:#17100a !important;
+  color:var(--athun-body-ink) !important;
   font-size:clamp(.55rem,2.4vw,.76rem) !important;
   font-family:inherit !important;
   font-weight:600 !important;
