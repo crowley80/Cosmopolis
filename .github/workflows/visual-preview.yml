@@ -1056,20 +1056,26 @@ jobs:
             assert.ok(rollbackSetup.id, 'Debe crearse el guardado aislado para probar la reversión');
             const rollbackResult = await desktopPage.evaluate(id => {
               const key = 'athun_save_v1_' + id;
-              const originalRemove = localStorage.removeItem;
+              const originalDescriptor = Object.getOwnPropertyDescriptor(Storage.prototype, 'removeItem');
+              const originalRemove = Storage.prototype.removeItem;
               let injected = false;
-              localStorage.removeItem = function (candidate) {
-                if (candidate === key && !injected) {
-                  injected = true;
-                  throw new Error('Fallo de almacenamiento simulado');
+              Object.defineProperty(Storage.prototype, 'removeItem', {
+                configurable: true,
+                writable: true,
+                value: function (candidate) {
+                  if (candidate === key && !injected) {
+                    injected = true;
+                    throw new Error('Fallo de almacenamiento simulado');
+                  }
+                  return originalRemove.call(this, candidate);
                 }
-                return originalRemove.call(this, candidate);
-              };
+              });
               let removed;
               try {
                 removed = window.Save.deleteSlot(id);
               } finally {
-                localStorage.removeItem = originalRemove;
+                if (originalDescriptor) Object.defineProperty(Storage.prototype, 'removeItem', originalDescriptor);
+                else delete Storage.prototype.removeItem;
               }
               return {
                 removed,
