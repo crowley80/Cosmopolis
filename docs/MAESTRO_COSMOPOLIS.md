@@ -2622,3 +2622,13 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - Inspeccionada la captura móvil de selección de partidas: el papiro universal está presente; el texto de las partidas aparece directamente sobre el papel. Los botones «Continuar esta historia» y «Crear un personaje nuevo» mantienen fondo y borde para conservar su identificación como controles interactivos.
 - Inspeccionada la captura de escritorio (1024 × 900): el narrador mantiene el texto sin tarjetas, los cinco accesos inferiores son visibles y el campo de acción queda integrado en el papel.
 - Incidencia visual pendiente de decisión: en escritorio el fondo se adapta estirando el papiro a todo el ancho y alto de la ventana (`background-size: 100% 100%`), por lo que pierde la proporción vertical de la plantilla. En las capturas se aprecian zonas oscuras junto a los bordes rasgados; el archivo WebP inspeccionado usa un bloque VP8 sin canal alfa, así que esas zonas no son transparencias reales del archivo. No se modifica todavía: requiere decidir el comportamiento visual deseado en escritorio y el tratamiento de esas zonas oscuras.
+
+
+### Legibilidad de los accesos inferiores — 23/11/2026
+
+- Se inspeccionaron directamente las seis capturas del artefacto Playwright `cosmopolis-visual-preview` del run 45144761619, incluida la vista del narrador a 390 × 844.
+- La revisión detectó que las etiquetas de los cinco accesos inferiores eran demasiado pequeñas en móvil (la regla final las fijaba en 0.52rem). Se aumentaron a 0.65rem, manteniendo iconos, distribución y destinos sin cambios.
+- Se actualizó la referencia de caché de `app/css/style.css` a `20261123-narrator-unified-12`.
+- Se añadió una aserción Playwright que exige un tamaño mínimo de 10 px en las etiquetas, incluida la etiqueta Pista. La ejecución de esta nueva prueba está pendiente; no se declara validada hasta ver el resultado de Actions.
+- No se modificaron textos narrativos, lógica de juego, datos ni partidas.
+- Sigue pendiente decidir cómo conservar la proporción vertical del papiro en escritorio y cómo tratar los bordes negros opacos del archivo WebP. La comprobación en Chrome Android físico también sigue pendiente.
