@@ -1598,3 +1598,27 @@ test('rechaza estructuras inválidas de protagonista o aventura sin alterar guar
     assert.equal(localStorage.getItem(Save.activeKey), originalActive);
     assert.equal(Save.load().character.name, 'Ariadna');
 });
+
+
+test('crear una partida no sobrescribe un slot si coincide el identificador generado', () => {
+    const originalNow = Date.now;
+    const originalRandom = Math.random;
+    const fixedTime = 123456789;
+    const fixedRandom = 0.25;
+    const firstId = 'save-' + fixedTime.toString(36) + '-' + Math.floor(fixedRandom * 1000000).toString(36);
+    const occupied = { character: { name: 'Guardado previo' }, adventure: { title: 'No sobrescribir', state: {} } };
+    const occupiedRaw = JSON.stringify(occupied);
+    localStorage.setItem(Save.slotPrefix + firstId, occupiedRaw);
+    try {
+        Date.now = () => fixedTime;
+        Math.random = () => fixedRandom;
+        const created = Save.createSlot({ name: 'Ariadna' }, { title: 'Partida nueva', state: {} });
+        assert.ok(created);
+        assert.notEqual(created, firstId);
+        assert.equal(localStorage.getItem(Save.slotPrefix + firstId), occupiedRaw);
+        assert.equal(Save.load().character.name, 'Ariadna');
+    } finally {
+        Date.now = originalNow;
+        Math.random = originalRandom;
+    }
+});
