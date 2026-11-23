@@ -1640,3 +1640,24 @@ test('normaliza arrays en campos de objeto sin perder la estructura de la partid
     assert.ok(Array.isArray(saved.adventure.state.inventory));
     assert.ok(saved.adventure.state.inventory.some(item => String(item).includes('Athun')));
 });
+
+
+test('rechaza estructuras inválidas del mundo compartido sin modificar el original', () => {
+    const validWorld = {
+        locations: [{ name: 'Puerto' }],
+        connections: [],
+        entities: { 'persona': { name: 'Persona' } },
+        facts: ['hecho'],
+        events: [],
+        changes: [],
+        relationships: { persona: { known: true } }
+    };
+    assert.equal(Save.saveGlobalWorld(validWorld), true);
+    const original = localStorage.getItem(Save.worldKey);
+    assert.equal(Save.saveGlobalWorld([]), false);
+    assert.equal(Save.saveGlobalWorld({ entities: [] }), false);
+    assert.equal(Save.saveGlobalWorld({ relationships: [] }), false);
+    assert.equal(Save.saveGlobalWorld({ locations: {} }), false);
+    assert.equal(localStorage.getItem(Save.worldKey), original);
+    assert.deepEqual(Save.getGlobalWorld(), validWorld);
+});
