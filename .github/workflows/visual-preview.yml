@@ -156,6 +156,34 @@ jobs:
             assert.equal(visualPalette.heading, 'rgb(113, 59, 50)', 'Los títulos deben usar el granate aprobado');
             assert.equal(visualPalette.narrative, 'rgb(23, 16, 10)', 'La narración debe mostrarse en negro');
             assert.equal(visualPalette.adventureBackground, 'none', 'El papiro debe pintarse una sola vez, sin fondo duplicado');
+
+            // Regresión específica: la acción actual también debe quedar escrita directamente sobre el papiro.
+            const currentActionStyle = await page.evaluate(() => {
+              const probe = document.createElement('p');
+              probe.className = 'current-action';
+              probe.textContent = 'Acción de comprobación visual';
+              document.querySelector('.adventure-screen').appendChild(probe);
+              const style = getComputedStyle(probe);
+              const result = {
+                background: style.backgroundColor,
+                backgroundImage: style.backgroundImage,
+                border: style.borderTopWidth,
+                borderLeft: style.borderLeftWidth,
+                outline: style.outlineStyle,
+                shadow: style.boxShadow
+              };
+              probe.remove();
+              return result;
+            });
+            assert.ok(
+              currentActionStyle.background === 'rgba(0, 0, 0, 0)' &&
+              currentActionStyle.backgroundImage === 'none' &&
+              currentActionStyle.border === '0px' &&
+              currentActionStyle.borderLeft === '0px' &&
+              currentActionStyle.outline === 'none' &&
+              currentActionStyle.shadow === 'none',
+              'La acción actual no debe conservar ningún recuadro: ' + JSON.stringify(currentActionStyle)
+            );
             assert.equal(overlayMetrics.inputBackground, 'rgba(0, 0, 0, 0)', 'El campo debe quedar integrado directamente en el papiro');
             assert.equal(overlayMetrics.inputBorder, '0px', 'El campo no debe mostrar marco ni borde');
             assert.notEqual(overlayMetrics.sendFontSize, '0px', 'El botón Enviar debe mostrar su etiqueta');
