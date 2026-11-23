@@ -336,12 +336,19 @@ jobs:
                 });
                 assert.ok(restoredState.hasSave && restoredState.hasAdventure,
                   'La partida debe seguir disponible tras consultar la ficha: ' + JSON.stringify(restoredState));
-                await page.evaluate(() => {
+                const adventureRender = await page.evaluate(() => {
                   const saved = Save.load();
-                  if (!saved || !saved.adventure) return false;
-                  Athun.showAdventure(saved.character, saved.adventure);
-                  return true;
+                  if (!saved) return { ok: false, reason: 'Save.load() devolvió null' };
+                  if (!saved.adventure) return { ok: false, reason: 'La partida no contiene adventure', character: saved.character && saved.character.name };
+                  try {
+                    Athun.showAdventure(saved.character, saved.adventure);
+                    return { ok: true };
+                  } catch (error) {
+                    return { ok: false, reason: error && error.stack ? error.stack : String(error) };
+                  }
                 });
+                assert.equal(adventureRender.ok, true,
+                  'La aventura debe reconstruirse al volver desde la ficha: ' + JSON.stringify(adventureRender));
               } else {
                 await page.locator('#closeToolPanel').click();
               }
