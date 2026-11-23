@@ -977,9 +977,15 @@ jobs:
             assert.ok(ariState.adventure.state.inventory.includes('Athun — grimorio consciente'), 'Ariadna debe conservar a Athun');
             assert.ok(slotIds.globalLocations.includes('Puerto de Bruma'), 'El mundo compartido debe incorporar también los descubrimientos de Darian');
 
+            const staleAriadna = await desktopPage.evaluate(() => Save.load());
             await desktopPage.locator('#openOptions').click();
             await desktopPage.locator('#toolOverlay #switchSaveFromOptions').click();
             await desktopPage.locator('[data-load-save="' + slotIds.darian + '"]').click();
+            const staleWriteAccepted = await desktopPage.evaluate(stale => {
+              stale.actions = [...(stale.actions || []), { text: 'Escritura tardía de Ariadna', response: '' }];
+              return Save.save(stale);
+            }, staleAriadna);
+            assert.equal(staleWriteAccepted, false, 'Una escritura tardía de Ariadna no debe modificar la partida activa de Darian');
             const darianState = await desktopPage.evaluate(() => Save.load());
             assert.equal(darianState.character.name, 'Darian', 'Debe poder alternarse al segundo protagonista');
             assert.ok(darianState.world.facts.includes('Recuerdo privado de Darian'), 'La segunda partida debe conservar sus recuerdos propios');
