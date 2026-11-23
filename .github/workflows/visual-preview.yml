@@ -127,16 +127,22 @@ jobs:
               };
             });
             console.log('PARCHMENT_MOBILE_SCROLL', JSON.stringify(parchmentScroll));
-            await secondaryPage.evaluate(() => {
-              const app = document.querySelector('#app');
-              const candidates = [document.scrollingElement, document.body, app, ...document.querySelectorAll('.secondary-scroll, main, .screen-content')].filter(Boolean);
+            const scrollResult = await secondaryPage.evaluate(() => {
+              const candidates = [document.scrollingElement, document.body, document.querySelector('#app'), ...document.querySelectorAll('.secondary-scroll, main, .screen-content')].filter(Boolean);
               const target = candidates.find(el => el.scrollHeight > el.clientHeight + 2);
-              if (target) target.scrollTop = target.scrollHeight;
-              else window.scrollTo(0, document.documentElement.scrollHeight);
+              if (!target) return { found: false };
+              target.scrollTop = target.scrollHeight;
+              return { found: true, className: target.className, scrollTop: target.scrollTop, maxScroll: target.scrollHeight - target.clientHeight };
             });
+            assert.ok(scrollResult.found && scrollResult.scrollTop > 0, 'La ficha secundaria debe permitir desplazarse dentro de su contenido');
+            console.log('PARCHMENT_MOBILE_SCROLL_BOTTOM', JSON.stringify(scrollResult));
             await secondaryPage.waitForTimeout(150);
             await secondaryPage.screenshot({ path: 'artifacts/athun-profile-mobile-scroll-bottom.png', fullPage: false });
-            await secondaryPage.evaluate(() => window.scrollTo(0, 0));
+            await secondaryPage.evaluate(() => {
+              const target = document.querySelector('.secondary-scroll');
+              if (target) target.scrollTop = 0;
+              window.scrollTo(0, 0);
+            });
             await secondaryPage.evaluate(() => Athun.showSaveSelection());
             await secondaryPage.locator('[data-load-save]').waitFor();
             const saveScreenStyles = await secondaryPage.locator('.character-creation, .profile-section').evaluateAll(nodes => nodes.map(node => {
@@ -824,7 +830,8 @@ jobs:
             ];
             for (const variant of parchmentVariants) {
               await desktopPage.addStyleTag({ content: `
-                body {
+                body,
+              body #app {
                   background-size: ${variant.size} !important;
                   background-position: ${variant.position} !important;
                   background-color: #ead9b5 !important;
