@@ -2830,3 +2830,12 @@ La revisión de la captura móvil mostró que la aventura conservaba la proporci
 - GitHub Actions **45225290472**: **64 pruebas de almacenamiento superadas, 0 fallos**; Playwright y renderizado móvil/escritorio correctos.
 - En móvil, el pergamino secundario conserva 645 px de área visible, 780 px de contenido y 135 px de desplazamiento interno hasta el final.
 - La revisión visual en Chrome Android físico sigue pendiente.
+
+
+### Validación de entrada al guardar el mundo compartido — 23 de noviembre de 2026
+
+- `saveGlobalWorld()` rechaza un mundo raíz que no sea objeto, arrays en los campos de tipo objeto (`entities`, `relationships`) y tipos incorrectos en los campos de lista. No mezcla estructuras inválidas con el mundo persistido.
+- Prueba nueva: `rechaza estructuras inválidas del mundo compartido sin modificar el original`; confirma que las entradas inválidas devuelven `false` y el JSON persistido permanece idéntico.
+- GitHub Actions **45225796788**: **65 pruebas de almacenamiento superadas, 0 fallos**; Playwright y renderizado móvil/escritorio completados correctamente.
+- Scroll móvil del pergamino secundario comprobado hasta el final: 135 px.
+- Sigue pendiente la comprobación visual en Chrome Android físico.
