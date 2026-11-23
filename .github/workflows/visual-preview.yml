@@ -1045,6 +1045,50 @@ jobs:
             assert.deepEqual(refuseLastDelete.saves, ['Darian'], 'El último guardado debe permanecer intacto');
             assert.equal(refuseLastDelete.active, 'Darian', 'La partida activa no debe quedar vacía');
 
+            // Simula un fallo de almacenamiento durante el borrado y verifica la restauración transaccional.
+            const rollbackSetup = await desktopPage.evaluate(() => {
+              const id = window.Save.createSlot(
+                { name: 'Temporal de rollback' },
+                { title: 'Guardado para rollback', state: { inventory: ['Objeto de prueba'] } }
+              );
+              return { id, active: window.Save.getActiveId(), before: window.Save.list().map(entry => entry.id) };
+            });
+            assert.ok(rollbackSetup.id, 'Debe crearse el guardado aislado para probar la reversión');
+            const rollbackResult = await desktopPage.evaluate(id => {
+              const key = 'athun_save_' + id;
+              const originalRemove = localStorage.removeItem;
+              let injected = false;
+              localStorage.removeItem = function (candidate) {
+                if (candidate === key && !injected) {
+                  injected = true;
+                  throw new Error('Fallo de almacenamiento simulado');
+                }
+                return originalRemove.call(this, candidate);
+              };
+              let removed;
+              try {
+                removed = window.Save.deleteSlot(id);
+              } finally {
+                localStorage.removeItem = originalRemove;
+              }
+              return {
+                removed,
+                injected,
+                slotRestored: localStorage.getItem(key) !== null,
+                saves: window.Save.list().map(entry => entry.id),
+                active: window.Save.getActiveId(),
+                activeName: window.Save.load()?.character?.name
+              };
+            }, rollbackSetup.id);
+            assert.equal(rollbackResult.injected, true, 'La prueba debe provocar el fallo de borrado previsto');
+            assert.equal(rollbackResult.removed, false, 'Un fallo durante el borrado debe comunicarse como operación fallida');
+            assert.equal(rollbackResult.slotRestored, true, 'La reversión debe restaurar el contenido de la partida');
+            assert.deepEqual(rollbackResult.saves, rollbackSetup.before, 'La reversión debe restaurar el índice completo de guardados');
+            assert.equal(rollbackResult.active, rollbackSetup.active, 'La reversión debe conservar la partida activa');
+            assert.equal(rollbackResult.activeName, 'Temporal de rollback', 'La partida activa debe seguir siendo legible tras la reversión');
+            const rollbackCleanup = await desktopPage.evaluate(id => window.Save.deleteSlot(id), rollbackSetup.id);
+            assert.equal(rollbackCleanup, true, 'El guardado temporal debe poder eliminarse después de restaurar el almacenamiento');
+
             // Comprueba que cada acceso inferior abre su pantalla correspondiente.
             const toolbarChecks = [
               ['#openHint', 'Una pista del grimorio'],
