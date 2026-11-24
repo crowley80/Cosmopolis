@@ -2337,3 +2337,11 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - Se ajusta `athun-storage-tests.yml` para ejecutar la suite al recibir cambios en la rama aislada de esta corrección.
 - Se añade también la rama de integración como destino de `pull_request`; esta regla quedará activa cuando el cambio del workflow llegue a la rama base, sin modificarla directamente.
 - La ejecución inmediata se obtendrá mediante el evento `push` de la rama de trabajo. Su resultado se registrará por separado; la modificación del workflow no se considera una prueba.
+
+
+### Diagnóstico de CI y aislamiento del harness del prólogo — 24 de noviembre de 2026
+- La primera ejecución [45354136134](https://github.com/crowley80/Cosmopolis/actions/runs/45354136134) confirmó que la nueva regresión del atlas pasa y que la sintaxis JavaScript pasa.
+- La suite global terminó con 62/63 pruebas: la única falla fue `tests/prologue.test.js`, cuyo DOM simulado no proporcionaba `document.body.classList` y ejecutaba la preparación de una pantalla ajena al objetivo de esa prueba.
+- Se adapta el harness con los stubs DOM y el aislamiento de composición ya contrastados en la rama del PR #8. No se modifica el prólogo aprobado ni el código de producción de la interfaz.
+- Respaldo previo: `tests/prologue.test.js.bak-20261124-pr15-prologue-harness`.
+- La nueva ejecución completa queda pendiente; el fallo inicial no se atribuye al cambio del atlas, cuya prueba específica sí pasó.
