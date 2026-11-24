@@ -1,13 +1,13 @@
 name: Visual preview
 on:
   push:
-    branches: [main]
+    branches: [main, work/athun-ui-current-integration-20261122]
     paths:
       - 'app/**'
       - 'index.html'
       - '.github/workflows/visual-preview.yml'
   pull_request:
-    branches: [main]
+    branches: [main, integration/athun-multisave-main-20261116]
     paths:
       - 'app/**'
       - 'index.html'
@@ -72,7 +72,45 @@ jobs:
             await page.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
             const continueSave = page.locator('[data-load-save]').first();
             if (await continueSave.count()) await continueSave.click();
+            const assert = require('node:assert/strict');
             await page.locator('.adventure-screen').waitFor();
+
+            // Regresión de composición: un único campo de acción y cinco accesos, sin adornos duplicados.
+            const toolbarButtons = page.locator('.manuscript-toolbar .toolbar-button');
+            assert.equal(await toolbarButtons.count(), 5, 'La barra inferior debe contener exactamente cinco accesos');
+            assert.equal(await page.locator('.manuscript-toolbar .toolbar-divider:visible').count(), 0, 'Los separadores no deben ocupar espacio ni crear una segunda fila');
+            assert.equal(await page.locator('.player-panel textarea').count(), 1, 'Debe existir un único campo de acción');
+            assert.equal(await page.locator('.player-panel form > button[type="submit"]').count(), 1, 'Debe existir un único botón Enviar');
+            assert.equal(await page.locator('.player-panel .quill-inkwell:visible').count(), 0, 'La pluma decorativa no debe invadir el formulario compacto');
+
+            const overlayMetrics = await page.evaluate(() => {
+              const rect = element => { const r = element.getBoundingClientRect(); return { x:r.x, right:r.right, y:r.y, bottom:r.bottom, width:r.width, height:r.height }; };
+              const style = element => getComputedStyle(element);
+              const title = document.querySelector('.wordmark h1');
+              const meta = document.querySelector('.manuscript-meta');
+              const story = document.querySelector('.story-panel');
+              const player = document.querySelector('.player-panel');
+              const input = document.querySelector('#playerAction');
+              const send = document.querySelector('.player-panel form > button[type="submit"]');
+              const toolbarIcon = document.querySelector('.manuscript-toolbar .toolbar-button svg');
+              const toolbarLabel = document.querySelector('.manuscript-toolbar .toolbar-button > span:last-child');
+              return {
+                title:rect(title), meta:rect(meta), story:rect(story), player:rect(player), input:rect(input),
+                inputBackground:style(input).backgroundColor, inputBorder:style(input).borderTopWidth,
+                sendFontSize:style(send).fontSize, sendBackground:style(send).backgroundColor,
+                toolbarIconOpacity:style(toolbarIcon).opacity, toolbarLabelPosition:style(toolbarLabel).position,
+                storyOverflow:style(story).overflowY
+              };
+            });
+            assert.ok(overlayMetrics.title.right <= overlayMetrics.meta.x + 2, 'El título y los metadatos no deben solaparse');
+            assert.equal(overlayMetrics.inputBackground, 'rgba(0, 0, 0, 0)', 'El campo debe dejar visible el marco dibujado en el pergamino');
+            assert.equal(overlayMetrics.inputBorder, '0px', 'El campo no debe dibujar un segundo rectángulo');
+            assert.equal(overlayMetrics.sendFontSize, '0px', 'No debe duplicarse la etiqueta Enviar ya impresa en la plantilla');
+            assert.equal(overlayMetrics.sendBackground, 'rgba(0, 0, 0, 0)', 'El botón debe ser una zona táctil transparente sobre Enviar');
+            assert.equal(overlayMetrics.toolbarIconOpacity, '0', 'No deben duplicarse los iconos impresos en la barra');
+            assert.equal(overlayMetrics.toolbarLabelPosition, 'absolute', 'Las etiquetas accesibles no deben duplicar el texto impreso');
+            assert.equal(overlayMetrics.storyOverflow, 'auto', 'La narración debe desplazarse dentro de su área');
+            assert.ok(overlayMetrics.input.x >= overlayMetrics.player.x + 40, 'El campo del jugador debe respetar el espacio de la pluma');
 
             // Prueba real del panel de mapa y su primer nodo (posición actual).
             await page.locator('#openMap').click();
@@ -204,14 +242,17 @@ jobs:
               return 'Apertura, descubrimientos graduales y protección de Athun: OK';
             }).then(result => console.log('NARRATIVE REGRESSION:', result));
 
+            const adventureTitleColor = await page.locator('.wordmark h1').evaluate(element => getComputedStyle(element).color);
+            assert.equal(adventureTitleColor, 'rgb(143, 31, 36)', 'El título principal de Athun debe mostrarse en rojo');
+
             await page.screenshot({ path: 'artifacts/cosmopolis-mobile.png', fullPage: true });
 
             // Prueba de interacción: los cuatro paneles y las ayudas de exploración.
-            const assert = require('node:assert/strict');
             const pageErrors = [];
+            const resourceErrors = [];
             page.on('pageerror', error => pageErrors.push(error.message));
             page.on('console', message => { if (message.type() === 'error') console.error('BROWSER_CONSOLE_ERROR:', message.text()); });
-            page.on('response', response => { if (response.status() === 404) console.error('RESOURCE_404_URL:', response.url()); });
+            page.on('response', response => { if (response.status() >= 400) resourceErrors.push(response.status() + ' ' + response.url()); });
             let narrativeCall = 0;
             await page.route('http://127.0.0.1:8081/**', async route => {
               const request = route.request();
@@ -226,7 +267,7 @@ jobs:
                 await route.fulfill({ status: 200, headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'ok' }) });
               } else {
                 const result = narrativeCall++ === 0 ? {
-                  reply: 'La observación revela una pequeña marca de cobre entre las piedras. Junto a ella encuentras un medallón de cobre. Elia se inclina para examinar la marca de cobre junto a Ariadna. Tomás se acerca desde la entrada de la plaza y observa el hallazgo.',
+                  reply: 'La observación revela una pequeña marca de cobre entre las piedras. Junto a ella encuentras y guardas un medallón de cobre. Elia recuerda que Ariadna encontró un medallón de cobre junto al pozo. Elia se inclina para examinar la marca de cobre junto a Ariadna. Elia se muestra más confiada después de este hallazgo. La marca recién descubierta aporta una pista nueva para Elia. Tomás se acerca desde la entrada de la plaza y observa el hallazgo.',
                   event: 'Ariadna ha encontrado un medallón de cobre junto al pozo.',
                   category: 'investigation',
                   location: 'Plaza del pozo',
@@ -247,7 +288,7 @@ jobs:
                   time: 'Media mañana',
                   day: 2
                 } : {
-                  reply: 'Entregas el medallón a Elia. Ella lo guarda con cuidado en su tubo de mapas.',
+                  reply: 'Entregas el medallón a Elia. Ella lo guarda con cuidado en su tubo de mapas. Elia recuerda que Ariadna le entregó el medallón de cobre. Tomás vio a Ariadna entregar el medallón a Elia. Tomás ha visto que Ariadna ha actuado con generosidad. Tomás piensa que la generosidad de Ariadna le anima a implicarse en la seguridad del pueblo. Elia aprecia que Ariadna le haya entregado el medallón. Tomás se desplaza hasta la Entrada de la posada y permanece atento. Tomás observa desde la entrada y decide no interrumpir.',
                   event: 'Ariadna ha entregado el medallón de cobre a Elia.',
                   category: 'offer',
                   location: 'Plaza del pozo',
@@ -275,7 +316,7 @@ jobs:
                     { character: 'Tomás', memory: 'Tomás vio a Ariadna entregar el medallón a Elia.' }
                   ],
                   time: 'Mediodía',
-                  day: 1
+                  day: 2
                 };
                 await route.fulfill({
                   status: 200,
@@ -302,7 +343,7 @@ jobs:
             await page.locator('#toolFeedback').getByText('La partida se ha guardado correctamente.').waitFor();
             await page.locator('#closeToolPanel').click();
 
-            await page.locator('#openExplore').click();
+            await page.locator('#openExplore').evaluate(button => button.click()); // Control interno oculto; no representa una zona táctil visible.
             await page.locator('[data-explore-index="0"]').click();
             await page.locator('#storyContent .current-action').waitFor();
             const firstNarrative = await page.locator('#storyContent').textContent();
@@ -325,7 +366,7 @@ jobs:
               const originalFetch = window.fetch;
               const originalAvailability = Narrator.isAvailable;
               const responseFor = goalUpdate => ({
-                reply: 'La historia deja claro el siguiente paso.',
+                reply: `Elia comprende lo ocurrido: ${goalUpdate.reason}` ,
                 event: 'Un objetivo personal ha cambiado con fundamento.',
                 category: 'dialogue',
                 location: 'Plaza del pozo',
@@ -441,13 +482,15 @@ jobs:
                 data.adventure.state.visitedLocations.includes('Plaza del pozo');
             });
             assert.equal(pageErrors.length, 0, 'No deben producirse errores JavaScript: ' + pageErrors.join('; '));
+            assert.equal(resourceErrors.length, 0, 'No deben faltar recursos visuales ni de aplicación: ' + resourceErrors.join('; '));
             await page.locator('#openInventory').click();
             await page.locator('#toolOverlay').getByText('Medallón de cobre').waitFor();
             await page.locator('#closeToolPanel').click();
 
             await page.locator('#playerAction').fill('Entrego el medallón de cobre a Elia.');
             await page.locator('#actionForm button[type="submit"]').click();
-            await page.waitForFunction(() => {
+            try {
+              await page.waitForFunction(() => {
               const data = Save.load();
               if (!data) return false;
               return data.actions && data.actions.length === 2 &&
@@ -473,16 +516,41 @@ jobs:
                 data.adventure.state.characters.Tomás.location === 'Entrada de la posada' &&
                 !data.adventure.state.characters.Tomás.lastAutonomousAction &&
                 data.adventure.state.time === 'Mediodía' && data.adventure.state.day === 2;
-            });
+              });
+            } catch (error) {
+              const deliveryDiagnostic = await page.evaluate(() => {
+                const data = Save.load();
+                const state = data && data.adventure && data.adventure.state;
+                return data && state ? {
+                  actionCount: data.actions && data.actions.length,
+                  inventory: state.inventory,
+                  time: state.time, day: state.day,
+                  characters: Object.fromEntries(Object.entries(state.characters || {}).map(([name, person]) => [name, {
+                    trust: person.trust, personalGoal: person.personalGoal, goalStatus: person.goalStatus,
+                    goalHistory: person.goalHistory, memories: person.memories,
+                    attitude: person.attitude, location: person.location, lastAutonomousAction: person.lastAutonomousAction
+                  }]))
+                } : data;
+              });
+              console.error('DELIVERY_DIAGNOSTIC:', JSON.stringify(deliveryDiagnostic));
+              throw error;
+            }
             const liveMeta = await page.locator('.manuscript-meta').textContent();
             assert.ok(liveMeta.includes('Momento: Mediodía'), 'La cabecera debe actualizarse sin recargar: ' + liveMeta);
             await page.reload({ waitUntil: 'networkidle' });
             const reloadContinue = page.locator('[data-load-save]').first();
-            if (await reloadContinue.count()) await reloadContinue.click();
+            const reloadSaveState = await page.evaluate(() => ({
+              saves: Save.list().map(entry => ({ id: entry.id, name: entry.name, active: entry.active })),
+              activeId: Save.getActiveId(),
+              screen: document.querySelector('#app')?.innerText || ''
+            }));
+            assert.equal(await reloadContinue.count(), 1,
+              'Tras recargar debe aparecer exactamente una partida para continuar. Estado: ' + JSON.stringify(reloadSaveState));
+            await reloadContinue.click();
             await page.waitForFunction(() => {
               const story = document.querySelector('#storyContent');
               return story && story.textContent.trim().length > 0;
-            });
+            }, { timeout: 10000 });
             const restoredAction = await page.locator('#storyContent').textContent();
             const restoredMeta = await page.locator('.manuscript-meta').textContent();
             assert.ok(restoredAction.includes('Entrego el medallón de cobre a Elia.'), 'La última acción debe recuperarse tras recargar: ' + restoredAction);
@@ -517,8 +585,9 @@ jobs:
             }, { character, adventure });
             const desktopPage = await desktop.newPage();
             const desktopErrors = [];
+            const desktopResourceErrors = [];
             desktopPage.on('pageerror', error => desktopErrors.push(error.message));
-            desktopPage.on('response', response => { if (response.status() === 404) console.error('RESOURCE_404_URL:', response.url()); });
+            desktopPage.on('response', response => { if (response.status() >= 400) desktopResourceErrors.push(response.status() + ' ' + response.url()); });
             await desktopPage.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle' });
             const desktopContinue = desktopPage.locator('[data-load-save]').first();
             if (await desktopContinue.count()) await desktopContinue.click();
@@ -526,6 +595,7 @@ jobs:
             const desktopWidth = await desktopPage.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth }));
             assert.ok(desktopWidth.document <= desktopWidth.viewport, 'La interfaz de escritorio no debe desbordarse horizontalmente');
             assert.equal(desktopErrors.length, 0, 'No deben producirse errores JavaScript en escritorio: ' + desktopErrors.join('; '));
+            assert.equal(desktopResourceErrors.length, 0, 'No deben faltar recursos en escritorio: ' + desktopResourceErrors.join('; '));
             await desktopPage.screenshot({ path: 'artifacts/cosmopolis-desktop.png', fullPage: true });
 
             // Regresión de interfaz: dos protagonistas, alternancia y aislamiento personal.
@@ -555,6 +625,29 @@ jobs:
             await desktopPage.reload({ waitUntil: 'networkidle' });
             await desktopPage.locator('[data-load-save]').first().waitFor();
             assert.equal(await desktopPage.locator('[data-load-save]').count(), 2, 'El selector debe mostrar ambos protagonistas');
+            const continueStoryButton = desktopPage.locator('[data-load-save]').first();
+            await continueStoryButton.focus();
+            const continueStoryStyle = await continueStoryButton.evaluate(button => {
+              const style = getComputedStyle(button);
+              return {
+                backgroundColor: style.backgroundColor,
+                backgroundImage: style.backgroundImage,
+                borderWidth: style.borderWidth,
+                boxShadow: style.boxShadow,
+                outlineStyle: style.outlineStyle,
+                textDecorationLine: style.textDecorationLine,
+                minHeight: parseFloat(style.minHeight)
+              };
+            });
+            console.log('SAVE_SELECTOR_BUTTON_STYLE', JSON.stringify(continueStoryStyle));
+            assert.equal(continueStoryStyle.backgroundColor, 'rgba(0, 0, 0, 0)', 'Continuar esta historia no debe tener fondo rectangular');
+            assert.equal(continueStoryStyle.backgroundImage, 'none', 'Continuar esta historia no debe dibujar una imagen de botón');
+            assert.equal(continueStoryStyle.borderWidth, '0px', 'Continuar esta historia no debe tener borde');
+            assert.equal(continueStoryStyle.boxShadow, 'none', 'Continuar esta historia no debe tener sombra');
+            assert.equal(continueStoryStyle.outlineStyle, 'none', 'Continuar esta historia no debe tener contorno rectangular');
+            assert.equal(continueStoryStyle.textDecorationLine, 'underline', 'El foco debe seguir siendo visible mediante subrayado textual');
+            assert.ok(continueStoryStyle.minHeight >= 44, 'El botón sin marco debe conservar una zona táctil de al menos 44 px');
+            await desktopPage.screenshot({ path: 'artifacts/cosmopolis-save-selector.png', fullPage: true });
             await desktopPage.locator('[data-load-save="' + slotIds.ari + '"]').click();
             const ariState = await desktopPage.evaluate(() => Save.load());
             assert.equal(ariState.character.name, 'Ariadna', 'El selector debe abrir la partida elegida');
@@ -574,10 +667,11 @@ jobs:
             await browser.close();
           })().catch(error => { console.error(error); process.exit(1); });
           NODE
-      - name: Upload rendered previews
+      - name: Upload rendered previews (also when a later assertion fails)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cosmopolis-visual-preview
           path: artifacts/
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 7

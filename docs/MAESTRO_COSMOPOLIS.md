@@ -2313,3 +2313,127 @@ La normalización de partidas ya eliminaba las entradas de inventario cuyo texto
 - Sigue pendiente la prueba táctil real en Chrome para Android físico. Las pruebas automatizadas de navegador no la sustituyen.
 
 No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
+
+## Corrección unificada de la pantalla de aventura — 22/11/2026
+
+La integración se prepara directamente sobre la revisión actual de `integration/athun-multisave-main-20261116`, posterior a la eliminación del rótulo «EL GRIMORIO TE RECUERDA». Se evita recuperar versiones anteriores de `app.js` o alterar esa corrección.
+
+- Se incorpora la plantilla gráfica principal aprobada sin rosas como fondo de la pantalla de aventura.
+- Se refuerza la tinta de narración, ubicación, momento y acción actual para mantener contraste sobre el pergamino.
+- Cabecera, relato, panel de acción y barra inferior quedan en cuatro filas estables; solo el relato tiene desplazamiento vertical propio.
+- El formulario se limita al campo de texto y al botón Enviar; la pluma decorativa queda fuera de la composición compacta.
+- Los cinco accesos inferiores se distribuyen en cinco columnas iguales; los separadores no consumen espacio ni generan una fila adicional.
+- Se actualiza la versión de CSS para evitar que Chrome reutilice estilos anteriores.
+
+**Seguridad:** se conserva el `app.js` actual de la rama de integración, incluido el cambio que elimina «EL GRIMORIO TE RECUERDA». Solo se añade el recurso gráfico y se ajustan CSS, caché y documentación. No se modifica almacenamiento, migraciones ni partidas guardadas. No se fusiona en `main`.
+
+
+## Diagnóstico de vista previa visual — 22/11/2026
+
+- Se revisó el PR #14 sobre la cabeza `2f8ab71c29afaef10969ca322d9374beaad8d5e7`, basada en la integración vigente `05fb37aef40288e0e419819f0850cc98cd9b75cc`. La propuesta no modifica `app.js`, conserva la eliminación de «EL GRIMORIO TE RECUERDA» y limita su alcance a recurso visual, CSS, caché, workflow y documentación.
+- El recurso `app/assets/athun-plantilla-principal-sin-rosas.webp` se inspeccionó directamente: es un WebP VP8 de 400 × 566 px. Contiene ya el marco superior, el área de narración, el campo del jugador y la barra inferior dibujados en la propia imagen; por tanto, la composición HTML/CSS debe alinearse con esos marcos y no duplicarlos.
+- La ejecución visual 44968513797 (job 137042876538) falla después de renderizar y tomar las capturas, en una aserción de progresión de metas narrativas: esperaba archivar «Descubrir el origen de la campana.» y abrir «Investigar quién construyó la cámara bajo el pozo.», pero el resultado conserva la meta anterior completada. No es una aserción de geometría visual. El workflow omitía subir las capturas al fallar.
+- Se cambió únicamente el paso de subida de artefactos para que se ejecute también cuando una aserción posterior falla (`if: always()`); los archivos ausentes ahora generan advertencia, no ocultan el fallo principal. Esto permite inspeccionar las capturas reales de la interfaz y separar defectos visuales de regresiones narrativas.
+- Respaldos previos exactos: `.github/workflows/visual-preview.yml.bak-20261122-artifact-on-failure` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-artifact-on-failure`.
+
+**Estado:** el ajuste del workflow está guardado; todavía no hay una nueva ejecución que confirme la publicación del artefacto. No se declara aprobada la vista previa ni la validación táctil en Chrome Android. No se modifican `main`, PR #4, almacenamiento ni partidas guardadas.
+
+
+## Alineación real de narración y panel del jugador — 22/11/2026
+
+La captura móvil recuperada de la ejecución 45023756290 mostró defectos concretos que las comprobaciones anteriores no detectaban: la narración alcanzaba el separador ornamental, el panel del jugador superponía controles auxiliares, el campo dibujaba un segundo rectángulo y las etiquetas/iconos HTML duplicaban los que ya están impresos en la plantilla.
+
+- Se ajustan las cuatro zonas de la pantalla para que el relato termine antes del panel del jugador y mantenga su propio desplazamiento.
+- Se reduce el encabezado para que el título y los metadatos quepan sin solaparse.
+- El campo de escritura pasa a ser transparente y se desplaza a la zona libre situada a la derecha de la pluma.
+- El botón Enviar y los cinco accesos inferiores conservan sus zonas táctiles HTML, pero dejan de dibujar texto, iconos o fondos duplicados sobre los elementos ya impresos en la plantilla.
+- Los botones auxiliares del encabezado del jugador quedan visualmente ocultos para no invadir el marco; sus manejadores no se eliminan.
+- Se añaden aserciones Playwright para contraste estructural, solapamiento del encabezado, transparencia del campo/botón, duplicación de iconos y desplazamiento narrativo.
+- Se inspeccionó el recurso correcto de alta resolución localizado en la Biblioteca: `Interfaz RPG en pergamino antiguo.webp`, 1054 × 1492 px. El recurso actualmente versionado en el repositorio mide solo 400 × 566 px y es una versión reducida. La sustitución binaria por el original de alta resolución queda pendiente; no se ha degradado ni sobrescrito el original de la Biblioteca.
+- La ejecución 45023756290 confirmó que la captura se genera y ahora se conserva incluso si falla una aserción posterior. La ejecución falló en una regresión independiente de progresión de metas narrativas; no se presenta como validación visual aprobada.
+
+Respaldos previos de esta tanda: `app/css/style.css.bak-20261122-overlay-alignment`, `.github/workflows/visual-preview.yml.bak-20261122-overlay-alignment` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-overlay-alignment`.
+
+**Pendiente:** ejecutar de nuevo Playwright y revisar la captura corregida; incorporar el original WebP de alta resolución al repositorio; validar visual y táctilmente en Chrome Android. No se modifica `app.js`, no se recupera el rótulo «EL GRIMORIO TE RECUERDA», no se toca el almacenamiento ni se modifica `main`.
+
+
+### Ajuste del área táctil inferior — 22/11/2026
+
+La captura de la revisión visual 45024177228 confirma que el campo de acción y los cinco accesos ya quedan alineados con los marcos dibujados y que no se duplican «Enviar», iconos ni etiquetas. La ejecución detectó además que el texto decorativo «Tu turno · Escribe tu acción» interceptaba el clic automatizado sobre el acceso Mapa. Se desactivan únicamente los eventos de puntero en ese rótulo; los cinco botones mantienen sus áreas táctiles y manejadores. Respaldos: `app/css/style.css.bak-20261122-pointer-hitbox` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-pointer-hitbox`.
+
+La misma ejecución sigue sin ser verde porque el clic sobre Mapa expiró por esa intercepción; se debe repetir Playwright después de este ajuste. El fallo anterior de progresión de metas narrativas sigue siendo independiente y no se oculta.
+
+
+### Corrección del contenedor del rótulo táctil — 22/11/2026
+
+La segunda ejecución visual confirmó que el texto ya no interceptaba el toque, pero el contenedor completo `.player-heading` seguía cubriendo parte de la barra inferior. Se desactivan los eventos de puntero en el contenedor decorativo; los controles reales de la barra conservan sus propios eventos. Respaldos: `app/js/core/save.js` no se modifica; copias previas de CSS y documento: `app/css/style.css.bak-20261122-heading-hitbox` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-heading-hitbox`. Pendiente repetir la vista previa para confirmar que Mapa y los demás accesos reciben el toque.
+
+
+### Separación de capas táctiles del panel del jugador — 22/11/2026
+
+La tercera ejecución confirmó que el propio `.player-panel` seguía interceptando el toque destinado a Mapa, aunque el rótulo ya no lo hacía. El contenedor del panel pasa a ser transparente a los eventos de puntero; solo el formulario, el campo de escritura y Enviar reciben interacción. Así se evita que el marco visual del jugador cubra los cinco accesos inferiores. Respaldos: `app/css/style.css.bak-20261122-player-pointer-events` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-player-pointer-events`. Pendiente revalidar en Playwright; no se altera la lógica de guardado ni el texto narrativo.
+
+
+### Corrección del test de exploración oculto — 22/11/2026
+
+La ejecución 45024700037 confirma que las pruebas de regresión narrativa, migración y aislamiento de partidas pasan hasta el paso visual posterior. El fallo ya no es la barra inferior: Playwright intenta tocar `#openExplore`, que deliberadamente está recortado/oculto para no duplicar controles impresos en la plantilla. El test invoca ese manejador interno mediante `HTMLElement.click()`, sin simular una zona táctil inexistente. Los botones visibles (Historial, Mapa, Inventario, Opciones y Pista) siguen comprobándose mediante clics reales de Playwright. Respaldos: `.github/workflows/visual-preview.yml.bak-20261122-hidden-explore-test` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-hidden-explore-test`. Se debe repetir la ejecución; esto no equivale aún a validación táctil en Android.
+
+
+## Ajuste de la prueba de ciclo de objetivos — 22/11/2026
+
+La ejecución visual #493 generó correctamente la captura móvil y superó la regresión narrativa de apertura, descubrimiento gradual y permanencia de Athun. El fallo restante estaba en el propio escenario de prueba del ciclo de objetivos: el texto narrativo simulado no incluía el motivo ni el nombre del personaje, por lo que el filtro de evidencia —correctamente estricto— rechazaba el cambio. Se ajustó el texto simulado para que contenga literalmente el motivo asociado al cambio. No se ha relajado la validación narrativa ni se han modificado partidas, guardados o reglas del juego. Pendiente comprobar la nueva ejecución automatizada y revisar la captura en Chrome Android real.
+
+
+### Fixtures narrativos compatibles con validación estricta — 22/11/2026
+
+La ejecución visual #494 agotó el tiempo de espera en la primera acción interactiva, no en el segundo intercambio. La regresión narrativa previa sí pasó. El diagnóstico posterior de la misma espera en #498 mostró que la fixture pedía añadir «Medallón de cobre» al inventario, pero su texto solo decía «encuentras»; el filtro real exige una fórmula de adquisición admitida, como «encuentras y guardas». También faltaban frases explícitas para respaldar una memoria y un cambio de actitud de Elia. Se ajustó únicamente la respuesta simulada de Playwright para incluir esas evidencias. No se modificó ni relajó el filtro del juego.
+
+
+### Auditoría de resolución del fondo principal — 22/11/2026
+
+Se comprobó el recurso binario que realmente está versionado y referenciado por `app/css/style.css`: `app/assets/athun-plantilla-principal-sin-rosas.webp`. Su cabecera WebP VP8 confirma 400 × 566 píxeles (23.199 bytes), no la resolución 1054 × 1492 del original de alta resolución verificado previamente. Por tanto, la rama todavía contiene la variante reducida y no cumple el requisito de conservar la resolución. No se sustituye por una conversión improvisada ni se declara corregido. La sustitución binaria queda pendiente; antes de cerrarla hay que subir el WebP original y volver a comprobar sus dimensiones desde el propio repositorio. La búsqueda exacta de «el grimorio te recuerda» en `app/js/app.js` y `app/js/game/narrator.js` de esta rama no encontró esa frase.
+
+
+### Evidencia narrativa de objetivos en la segunda interacción de Playwright — 22/11/2026
+
+En paralelo, se añadió a la fixture de la segunda interacción la frase que vincula explícitamente a Tomás con el motivo de su cambio de objetivo, requisito de `Narrator.filterGoalUpdates()`. La ejecución #498 confirmó que el primer bloqueo estaba antes de llegar a ese segundo intercambio; por eso se corrigió ahora la evidencia de adquisición, memoria y actitud del primer turno. La ejecución nueva tras estos ajustes queda pendiente.
+
+## Revisión técnica y visual — 23/11/2026
+
+- La ejecución Playwright del 23/11 completó correctamente las comprobaciones de regresión narrativa, interacción, inventario, guardado/recarga y aislamiento entre dos protagonistas. También confirmó que la vista móvil de 390×844 no desborda horizontalmente y que los paneles mantienen sus límites geométricos.
+- Se retiró de la cabecera el subtítulo no aprobado «Una aventura sin límites» y se ocultaron las dos brújulas superpuestas, respetando la plantilla principal aprobada sin rosas.
+- La captura automatizada muestra la plantilla principal cargada, pero también confirma que app/assets/plantillas/athun-papiro-interfaz.webp devuelve HTTP 404. La plantilla secundaria de pergamino aún no está integrada en esta rama; no considerar terminadas las pantallas que dependen de ella.
+- Se ha actualizado `.github/workflows/visual-preview.yml` para que las respuestas HTTP 400 o superiores de recursos provoquen fallo explícito en móvil y escritorio. La nueva ejecución ha confirmado que regresión narrativa, interacciones, guardado/recarga, aislamiento entre protagonistas y geometría móvil pasan; la comprobación estricta detiene después la validación de escritorio al detectar el 404 de `app/assets/plantillas/athun-papiro-interfaz.webp`. El fallo es ahora visible y bloqueante, no una falsa validación verde.
+- No se ha fusionado PR ni modificado main. La revisión visual real en Chrome Android sigue pendiente de las capturas del usuario.
+
+
+## RECURSO SECUNDARIO DE PERGAMINO — 24 DE NOVIEMBRE DE 2026
+
+- La última vista previa de PR #14 superaba las comprobaciones de composición móvil, interacciones, narración, mapa, selector, guardado y recarga, pero fallaba al cargar `app/assets/plantillas/athun-papiro-interfaz.webp` (404) en las pantallas secundarias.
+- Se comprobó que esa ruta no correspondía al recurso disponible: la plantilla secundaria aprobada es el papiro universal en blanco, sin controles ni texto impresos, conservado en la rama `work/athun-papiro-universal-20261122`.
+- Se incorpora ese mismo blob sin recomprimir ni regenerar la imagen en `app/assets/athun-papiro-universal.webp` y se corrige la referencia de `body.athun-secondary-mode`.
+- Se actualiza la versión de caché de `app/css/style.css` en `index.html` para que Chrome no reutilice la hoja anterior.
+- Respaldos previos: `app/css/style.css.bak-20261124-secondary-papyrus-path`, `index.html.bak-20261124-papiro-universal` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261124-secondary-papyrus-path`.
+- Pendiente: nueva ejecución de Playwright móvil/escritorio para confirmar que no queda ningún recurso 404 ni regresión de interacción. La prueba táctil real en Android continúa siendo manual.
+
+
+
+## TÍTULO ROJO Y BOTÓN TEXTUAL DEL SELECTOR — 24 DE NOVIEMBRE DE 2026
+
+- Se corrigió el título de la pantalla de aventura: `.wordmark h1` usa ahora el rojo granate `#8f1f24`, igual que el título de las pantallas secundarias.
+- Se corrigió específicamente el botón **«Continuar esta historia»** del selector de partidas, no el acceso inferior «Opciones»: se eliminan su fondo, imagen, borde, sombra y contorno rectangular. Se conserva una zona táctil de al menos 44 px; al recibir el foco, el texto se subraya para mantener una señal de teclado sin dibujar un recuadro.
+- Se actualizó la versión de caché de la hoja CSS en `index.html`.
+- Se amplió `.github/workflows/visual-preview.yml`: comprueba el color calculado del título, los estilos calculados del botón, el subrayado de foco y la altura táctil; también genera una captura específica del selector.
+- Respaldos exactos previos: `app/css/style.css.bak-20261124-title-red-selector-text`, `index.html.bak-20261124-title-red-selector-text` y `.github/workflows/visual-preview.yml.bak-20261124-title-red-selector-text`.
+
+### Validación automatizada
+- Las ejecuciones [45362935347](https://github.com/crowley80/Cosmopolis/actions/runs/45362935347) (push) y [45362950142](https://github.com/crowley80/Cosmopolis/actions/runs/45362950142) (pull request) terminaron correctamente.
+- Playwright confirmó las interacciones de historial, mapa, inventario, opciones, exploración, respuesta narrativa, guardado y recarga; no detectó errores de recursos ni errores JavaScript.
+- En el viewport móvil simulado de 390 × 844 px no hay desbordamiento horizontal ni solapamiento entre relato, panel del jugador y barra inferior.
+- El título se calcula como `rgb(143, 31, 36)`. El botón «Continuar esta historia» se calcula con fondo transparente, imagen `none`, borde de 0 px, sombra `none`, contorno `none`, subrayado al recibir foco y altura mínima de 44 px.
+- El artefacto [14906055077](https://github.com/crowley80/Cosmopolis/actions/runs/45362935347) contiene las capturas móvil, escritorio y selector. La inspección de esas capturas confirma el título rojo y el botón de continuación integrado como texto en el pergamino.
+
+### Pendientes que no se dan por resueltos
+- La plantilla principal que sigue versionada en esta rama continúa siendo la variante reducida de **400 × 566 px**. El original WebP de **1054 × 1492 px** se ha verificado localmente dentro de `athun-fondo-alta-resolucion-sin-rosas.zip`, pero todavía no está incorporado al repositorio: el canal de escritura GitHub disponible aquí solo admite contenido textual/base64 y no ofrece transferencia binaria directa desde el archivo local. No se sustituye por una conversión ni se declara integrada.
+- Las pruebas Playwright usan Chromium móvil simulado; no sustituyen la revisión táctil en Chrome Android físico.
+- PR #14 permanece abierta y en borrador, dirigida a `integration/athun-multisave-main-20261116`. No se fusiona ni se modifica `main`.
