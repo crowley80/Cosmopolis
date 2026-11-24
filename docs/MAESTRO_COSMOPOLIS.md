@@ -2331,3 +2331,9 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - Se añade una regresión para lugares visitados y visibles que aún no están en el mundo compartido, incluidos caracteres acentuados y comprobación de ausencia de duplicados.
 - La prueba automatizada queda pendiente de ejecución en GitHub Actions al abrir la propuesta contra la rama de integración. No se declara aprobada todavía.
 - No se modifica `main`, no se fusiona ningún PR y no se accede a guardados del dispositivo.
+
+
+### Cobertura de CI para el atlas — 24 de noviembre de 2026
+- Se ajusta `athun-storage-tests.yml` para ejecutar la suite al recibir cambios en la rama aislada de esta corrección.
+- Se añade también la rama de integración como destino de `pull_request`; esta regla quedará activa cuando el cambio del workflow llegue a la rama base, sin modificarla directamente.
+- La ejecución inmediata se obtendrá mediante el evento `push` de la rama de trabajo. Su resultado se registrará por separado; la modificación del workflow no se considera una prueba.
