@@ -2570,3 +2570,34 @@ Respaldos previos creados en la misma rama:
 - La revisión de código validada está en el commit a09c0e713d41a1868278abe6e605274c3c09a33f. PR #8 sigue abierta y en borrador, con 7 commits de la rama de integración todavía pendientes de incorporar; no se fusiona.
 - La sincronización visual con la rama de integración sigue pendiente hasta disponer del recurso de papiro secundario y revisar de nuevo las dos modificaciones visuales.
 - Siguen pendientes Chrome Android táctil, el flujo con llama-server real y la revisión visual de las pantallas secundaria y de aventura. main permanece intacta.
+
+
+## PROTECCIÓN DE LA ÚLTIMA PARTIDA UTILIZABLE ANTE ÍNDICES HUÉRFANOS — 24 DE NOVIEMBRE DE 2026
+
+### Auditoría previa de repositorio y propuestas
+- Se revisaron las ramas, PR abiertos, la cabeza de la rama de integración y este documento antes de editar.
+- PR #4 sigue abierto y en borrador. Su cabeza es `05fb37aef40288e0e419819f0850cc98cd9b75cc`; la comparación con `main` informa 369 commits por delante y 73 por detrás, y GitHub indica que no es integrable actualmente. No hay estados combinados ni ejecuciones de Actions asociadas a esa cabeza. No se modifica PR #4 ni `main`.
+- PR #8 sigue abierto y en borrador, con base `integration/athun-multisave-main-20261116`. Su rama de trabajo está 47 commits por delante y 7 por detrás de la cabeza actual de integración. No se intenta rebase ni fusión en esta tanda.
+- La revisión anterior de PR #8, commit `db4ff1b8cd7970ac44e545736a147d56290769ef`, pasó sintaxis y **72/72 pruebas** en Actions, ejecución 880 ([45146900836](https://github.com/crowley80/Cosmopolis/actions/runs/45146900836)). Este resultado no valida los cambios nuevos de esta sección.
+
+### Defecto detectado
+- `Save.deleteSlot()` contaba entradas del índice, no partidas con un registro legible.
+- Si quedaba una sola partida utilizable junto a metadatos huérfanos, podía borrar la última partida real.
+- Al borrar la partida activa, seleccionaba `next.saves[0]` sin comprobar que esa entrada tuviera un registro. Si la primera entrada restante era huérfana, el puntero activo quedaba apuntando a una partida inexistente.
+
+### Corrección aplicada
+- La eliminación exige que el identificador solicitado figure entre `Save.availableEntries(index)`.
+- Se rechaza el borrado cuando no queda al menos otra partida utilizable, aunque el índice conserve entradas huérfanas.
+- La nueva selección activa se obtiene de las partidas disponibles del índice resultante, no de su primera entrada sin validar.
+- Los metadatos huérfanos se conservan intactos: esta corrección no limpia ni sobrescribe índices recuperables.
+
+### Archivos y respaldos
+- Modificados: `app/js/core/save.js`, `tests/storage.test.js` y este documento.
+- Respaldos exactos previos: `app/js/core/save.js.bak-20261124-delete-last-available-slot`, `tests/storage.test.js.bak-20261124-delete-last-available-slot` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261124-delete-last-available-slot`.
+- No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
+
+### Pruebas y estado
+- Se añaden dos regresiones: impedir borrar la única partida disponible si hay metadatos huérfanos y elegir una partida real al borrar la activa cuando los metadatos huérfanos preceden a la siguiente entrada válida.
+- La ejecución de CI para este nuevo commit queda pendiente; no se declara aprobada hasta comprobar el resultado remoto.
+- La migración heredada, el aislamiento por protagonista, la persistencia del mundo y la protección de Athun mantienen sus pruebas existentes; esta tanda no altera esos mecanismos.
+- Sigue pendiente la validación táctil en Chrome Android y la revisión final de la integración visual. `main` permanece intacta y PR #4/#8 no se fusionan.

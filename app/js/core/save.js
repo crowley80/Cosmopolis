@@ -516,8 +516,12 @@ const Save = {
 
     deleteSlot(id) {
         const index = this.readJSON(this.indexKey);
-        if (!index || !Array.isArray(index.saves) || !index.saves.some(entry => entry.id === id)) return false;
-        if (index.saves.length <= 1) return false;
+        if (!index || !Array.isArray(index.saves)) return false;
+
+        // El índice puede conservar metadatos huérfanos por seguridad.
+        // Solo se permite borrar un registro disponible si queda otra partida utilizable.
+        const available = this.availableEntries(index);
+        if (available.length <= 1 || !available.some(entry => entry.id === id)) return false;
 
         const slotKey = this.slotPrefix + id;
         const originalIndex = localStorage.getItem(this.indexKey);
@@ -526,6 +530,8 @@ const Save = {
         if (originalSlot === null) return false;
         const wasActive = this.getActiveId() === id;
         const next = { version: 1, saves: index.saves.filter(entry => entry.id !== id) };
+        const nextAvailable = this.availableEntries(next);
+        if (!nextAvailable.length) return false;
 
         try {
             if (!this.writeVerified(this.indexKey, next)) {
@@ -535,7 +541,7 @@ const Save = {
             if (localStorage.getItem(slotKey) !== null) {
                 throw new Error('No se pudo verificar la eliminación de los datos de la partida.');
             }
-            if (wasActive && !this.writeVerified(this.activeKey, { id: next.saves[0].id })) {
+            if (wasActive && !this.writeVerified(this.activeKey, { id: nextAvailable[0].id })) {
                 throw new Error('No se pudo activar la partida que sustituye a la eliminada.');
             }
             return true;

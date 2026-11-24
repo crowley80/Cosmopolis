@@ -780,6 +780,71 @@ test('restaura una selección inicialmente vacía si la verificación del borrad
 });
 
 
+test('impide borrar la última partida disponible cuando el índice conserva metadatos huérfanos', () => {
+    const id = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Partida utilizable', state: { inventory: ['Llave'] }
+    });
+    assert.ok(id);
+
+    const index = Save.readJSON(Save.indexKey);
+    index.saves.push({
+        id: 'orphan-slot-without-record',
+        name: 'Metadatos conservados',
+        title: 'Registro ausente',
+        createdAt: '2026-11-24T00:00:00.000Z',
+        updatedAt: '2026-11-24T00:00:00.000Z'
+    });
+    assert.equal(Save.writeVerified(Save.indexKey, index), true);
+
+    const originalIndex = localStorage.getItem(Save.indexKey);
+    const originalSlot = localStorage.getItem(Save.slotPrefix + id);
+    const originalActive = localStorage.getItem(Save.activeKey);
+    assert.equal(Save.availableEntries(Save.readJSON(Save.indexKey)).length, 1);
+
+    assert.equal(Save.deleteSlot(id), false);
+    assert.equal(localStorage.getItem(Save.indexKey), originalIndex);
+    assert.equal(localStorage.getItem(Save.slotPrefix + id), originalSlot);
+    assert.equal(localStorage.getItem(Save.activeKey), originalActive);
+    assert.equal(Save.list().length, 1);
+    assert.equal(Save.load().character.name, 'Ariadna');
+});
+
+test('al borrar la partida activa elige otra partida disponible y no metadatos huérfanos', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia A', state: { inventory: ['Llave'] }
+    });
+    const second = Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia B', state: { inventory: ['Mapa'] }
+    });
+    assert.ok(first);
+    assert.ok(second);
+
+    const index = Save.readJSON(Save.indexKey);
+    const firstEntry = index.saves.find(entry => entry.id === first);
+    const secondEntry = index.saves.find(entry => entry.id === second);
+    const orphan = {
+        id: 'orphan-slot-before-valid-save',
+        name: 'Metadatos huérfanos',
+        title: 'Sin registro',
+        createdAt: '2026-11-24T00:00:00.000Z',
+        updatedAt: '2026-11-24T00:00:00.000Z'
+    };
+    index.saves = [firstEntry, orphan, secondEntry];
+    assert.equal(Save.writeVerified(Save.indexKey, index), true);
+    assert.equal(Save.activate(first), true);
+
+    assert.equal(Save.deleteSlot(first), true);
+    assert.equal(JSON.parse(localStorage.getItem(Save.activeKey)).id, second);
+    assert.equal(Save.getActiveId(), second);
+    assert.equal(Save.load().character.name, 'Darian');
+    assert.deepEqual(Save.list().map(entry => entry.name), ['Darian']);
+    assert.deepEqual(
+        Save.readJSON(Save.indexKey).saves.map(entry => entry.id),
+        [orphan.id, second]
+    );
+    assert.equal(localStorage.getItem(Save.slotPrefix + first), null);
+});
+
 test('el vínculo, recuerdos y revelaciones de Athun son independientes por protagonista', () => {
     const first = Save.createSlot({ name: 'Ariadna' }, {
         title: 'Historia de Ariadna',
