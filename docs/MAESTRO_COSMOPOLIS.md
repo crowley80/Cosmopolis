@@ -2415,3 +2415,25 @@ En paralelo, se añadió a la fixture de la segunda interacción la frase que vi
 - Se actualiza la versión de caché de `app/css/style.css` en `index.html` para que Chrome no reutilice la hoja anterior.
 - Respaldos previos: `app/css/style.css.bak-20261124-secondary-papyrus-path`, `index.html.bak-20261124-papiro-universal` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261124-secondary-papyrus-path`.
 - Pendiente: nueva ejecución de Playwright móvil/escritorio para confirmar que no queda ningún recurso 404 ni regresión de interacción. La prueba táctil real en Android continúa siendo manual.
+
+
+
+## TÍTULO ROJO Y BOTÓN TEXTUAL DEL SELECTOR — 24 DE NOVIEMBRE DE 2026
+
+- Se corrigió el título de la pantalla de aventura: `.wordmark h1` usa ahora el rojo granate `#8f1f24`, igual que el título de las pantallas secundarias.
+- Se corrigió específicamente el botón **«Continuar esta historia»** del selector de partidas, no el acceso inferior «Opciones»: se eliminan su fondo, imagen, borde, sombra y contorno rectangular. Se conserva una zona táctil de al menos 44 px; al recibir el foco, el texto se subraya para mantener una señal de teclado sin dibujar un recuadro.
+- Se actualizó la versión de caché de la hoja CSS en `index.html`.
+- Se amplió `.github/workflows/visual-preview.yml`: comprueba el color calculado del título, los estilos calculados del botón, el subrayado de foco y la altura táctil; también genera una captura específica del selector.
+- Respaldos exactos previos: `app/css/style.css.bak-20261124-title-red-selector-text`, `index.html.bak-20261124-title-red-selector-text` y `.github/workflows/visual-preview.yml.bak-20261124-title-red-selector-text`.
+
+### Validación automatizada
+- Las ejecuciones [45362935347](https://github.com/crowley80/Cosmopolis/actions/runs/45362935347) (push) y [45362950142](https://github.com/crowley80/Cosmopolis/actions/runs/45362950142) (pull request) terminaron correctamente.
+- Playwright confirmó las interacciones de historial, mapa, inventario, opciones, exploración, respuesta narrativa, guardado y recarga; no detectó errores de recursos ni errores JavaScript.
+- En el viewport móvil simulado de 390 × 844 px no hay desbordamiento horizontal ni solapamiento entre relato, panel del jugador y barra inferior.
+- El título se calcula como `rgb(143, 31, 36)`. El botón «Continuar esta historia» se calcula con fondo transparente, imagen `none`, borde de 0 px, sombra `none`, contorno `none`, subrayado al recibir foco y altura mínima de 44 px.
+- El artefacto [14906055077](https://github.com/crowley80/Cosmopolis/actions/runs/45362935347) contiene las capturas móvil, escritorio y selector. La inspección de esas capturas confirma el título rojo y el botón de continuación integrado como texto en el pergamino.
+
+### Pendientes que no se dan por resueltos
+- La plantilla principal que sigue versionada en esta rama continúa siendo la variante reducida de **400 × 566 px**. El original WebP de **1054 × 1492 px** se ha verificado localmente dentro de `athun-fondo-alta-resolucion-sin-rosas.zip`, pero todavía no está incorporado al repositorio: el canal de escritura GitHub disponible aquí solo admite contenido textual/base64 y no ofrece transferencia binaria directa desde el archivo local. No se sustituye por una conversión ni se declara integrada.
+- Las pruebas Playwright usan Chromium móvil simulado; no sustituyen la revisión táctil en Chrome Android físico.
+- PR #14 permanece abierta y en borrador, dirigida a `integration/athun-multisave-main-20261116`. No se fusiona ni se modifica `main`.
