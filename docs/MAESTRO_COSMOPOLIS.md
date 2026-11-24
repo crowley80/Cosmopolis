@@ -2405,3 +2405,13 @@ En paralelo, se añadió a la fixture de la segunda interacción la frase que vi
 - La captura automatizada muestra la plantilla principal cargada, pero también confirma que app/assets/plantillas/athun-papiro-interfaz.webp devuelve HTTP 404. La plantilla secundaria de pergamino aún no está integrada en esta rama; no considerar terminadas las pantallas que dependen de ella.
 - Se ha actualizado `.github/workflows/visual-preview.yml` para que las respuestas HTTP 400 o superiores de recursos provoquen fallo explícito en móvil y escritorio. La nueva ejecución ha confirmado que regresión narrativa, interacciones, guardado/recarga, aislamiento entre protagonistas y geometría móvil pasan; la comprobación estricta detiene después la validación de escritorio al detectar el 404 de `app/assets/plantillas/athun-papiro-interfaz.webp`. El fallo es ahora visible y bloqueante, no una falsa validación verde.
 - No se ha fusionado PR ni modificado main. La revisión visual real en Chrome Android sigue pendiente de las capturas del usuario.
+
+
+## RECURSO SECUNDARIO DE PERGAMINO — 24 DE NOVIEMBRE DE 2026
+
+- La última vista previa de PR #14 superaba las comprobaciones de composición móvil, interacciones, narración, mapa, selector, guardado y recarga, pero fallaba al cargar `app/assets/plantillas/athun-papiro-interfaz.webp` (404) en las pantallas secundarias.
+- Se comprobó que esa ruta no correspondía al recurso disponible: la plantilla secundaria aprobada es el papiro universal en blanco, sin controles ni texto impresos, conservado en la rama `work/athun-papiro-universal-20261122`.
+- Se incorpora ese mismo blob sin recomprimir ni regenerar la imagen en `app/assets/athun-papiro-universal.webp` y se corrige la referencia de `body.athun-secondary-mode`.
+- Se actualiza la versión de caché de `app/css/style.css` en `index.html` para que Chrome no reutilice la hoja anterior.
+- Respaldos previos: `app/css/style.css.bak-20261124-secondary-papyrus-path`, `index.html.bak-20261124-papiro-universal` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261124-secondary-papyrus-path`.
+- Pendiente: nueva ejecución de Playwright móvil/escritorio para confirmar que no queda ningún recurso 404 ni regresión de interacción. La prueba táctil real en Android continúa siendo manual.
