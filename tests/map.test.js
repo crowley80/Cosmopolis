@@ -137,3 +137,25 @@ test('el atlas mantiene todos los nodos dentro del lienzo cuando se descubren mu
     ));
     assert.equal(new Set(layout.nodes.map(node => node.name)).size, locations.length);
 });
+
+
+test('conserva la escritura original de lugares personales que aún no figuran en el mundo compartido', () => {
+    const visitedName = 'Lugar de Prueba Á';
+    const visibleName = 'Lugar de Prueba Ñ';
+    const atlas = WorldMap.getAtlas({}, {
+        currentLocation: 'Punto de Prueba',
+        visitedLocations: [visitedName],
+        visibleLocations: [visibleName]
+    }, {});
+
+    assert.deepEqual(
+        atlas.entries.find(item => item.name === visitedName),
+        { name: visitedName, status: 'visited' }
+    );
+    assert.deepEqual(
+        atlas.entries.find(item => item.name === visibleName),
+        { name: visibleName, status: 'visible' }
+    );
+    assert.equal(atlas.entries.filter(item => item.name.toLocaleLowerCase('es') === visitedName.toLocaleLowerCase('es')).length, 1);
+    assert.equal(atlas.entries.filter(item => item.name.toLocaleLowerCase('es') === visibleName.toLocaleLowerCase('es')).length, 1);
+});

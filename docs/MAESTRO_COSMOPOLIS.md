@@ -1,6 +1,6 @@
 # ATHUN: EL GRIMORIO OSCURO — DOCUMENTO MAESTRO
 
-Última actualización: 12 de noviembre de 2026.
+Última actualización: 24 de noviembre de 2026.
 
 ## 1. IDENTIDAD DEL PROYECTO
 
@@ -2313,3 +2313,21 @@ La normalización de partidas ya eliminaba las entradas de inventario cuyo texto
 - Sigue pendiente la prueba táctil real en Chrome para Android físico. Las pruebas automatizadas de navegador no la sustituyen.
 
 No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
+
+
+## PRESERVACIÓN DE NOMBRES PERSONALES EN EL ATLAS — 24 DE NOVIEMBRE DE 2026
+
+### Hallazgo y corrección
+- `WorldMap.getAtlas()` normalizaba a minúsculas las listas `visitedLocations` y `visibleLocations` antes de incorporarlas al atlas. Cuando un lugar todavía no estaba publicado en el mundo compartido, su nombre visible podía perder mayúsculas y acentos.
+- Se conserva ahora el nombre limpio original para presentación y se utiliza la versión normalizada únicamente como clave de identidad, deduplicación y clasificación.
+- No se generan lugares, conexiones ni coordenadas nuevas. El conocimiento compartido y el progreso individual permanecen separados.
+
+### Archivos y respaldos
+- Modificados: `app/js/game/map.js`, `tests/map.test.js` y este documento.
+- Respaldos exactos creados antes de editar: `app/js/game/map.js.bak-20261124-atlas-name-case`, `tests/map.test.js.bak-20261124-atlas-name-case` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261124-atlas-name-case`.
+- Rama aislada: `work/athun-atlas-name-preservation-20261124`, basada en la cabeza revisada de la integración.
+
+### Validación
+- Se añade una regresión para lugares visitados y visibles que aún no están en el mundo compartido, incluidos caracteres acentuados y comprobación de ausencia de duplicados.
+- La prueba automatizada queda pendiente de ejecución en GitHub Actions al abrir la propuesta contra la rama de integración. No se declara aprobada todavía.
+- No se modifica `main`, no se fusiona ningún PR y no se accede a guardados del dispositivo.
