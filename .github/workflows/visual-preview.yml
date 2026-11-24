@@ -242,6 +242,9 @@ jobs:
               return 'Apertura, descubrimientos graduales y protección de Athun: OK';
             }).then(result => console.log('NARRATIVE REGRESSION:', result));
 
+            const adventureTitleColor = await page.locator('.wordmark h1').evaluate(element => getComputedStyle(element).color);
+            assert.equal(adventureTitleColor, 'rgb(143, 31, 36)', 'El título principal de Athun debe mostrarse en rojo');
+
             await page.screenshot({ path: 'artifacts/cosmopolis-mobile.png', fullPage: true });
 
             // Prueba de interacción: los cuatro paneles y las ayudas de exploración.
@@ -622,6 +625,29 @@ jobs:
             await desktopPage.reload({ waitUntil: 'networkidle' });
             await desktopPage.locator('[data-load-save]').first().waitFor();
             assert.equal(await desktopPage.locator('[data-load-save]').count(), 2, 'El selector debe mostrar ambos protagonistas');
+            const continueStoryButton = desktopPage.locator('[data-load-save]').first();
+            await continueStoryButton.focus();
+            const continueStoryStyle = await continueStoryButton.evaluate(button => {
+              const style = getComputedStyle(button);
+              return {
+                backgroundColor: style.backgroundColor,
+                backgroundImage: style.backgroundImage,
+                borderWidth: style.borderWidth,
+                boxShadow: style.boxShadow,
+                outlineStyle: style.outlineStyle,
+                textDecorationLine: style.textDecorationLine,
+                minHeight: parseFloat(style.minHeight)
+              };
+            });
+            console.log('SAVE_SELECTOR_BUTTON_STYLE', JSON.stringify(continueStoryStyle));
+            assert.equal(continueStoryStyle.backgroundColor, 'rgba(0, 0, 0, 0)', 'Continuar esta historia no debe tener fondo rectangular');
+            assert.equal(continueStoryStyle.backgroundImage, 'none', 'Continuar esta historia no debe dibujar una imagen de botón');
+            assert.equal(continueStoryStyle.borderWidth, '0px', 'Continuar esta historia no debe tener borde');
+            assert.equal(continueStoryStyle.boxShadow, 'none', 'Continuar esta historia no debe tener sombra');
+            assert.equal(continueStoryStyle.outlineStyle, 'none', 'Continuar esta historia no debe tener contorno rectangular');
+            assert.equal(continueStoryStyle.textDecorationLine, 'underline', 'El foco debe seguir siendo visible mediante subrayado textual');
+            assert.ok(continueStoryStyle.minHeight >= 44, 'El botón sin marco debe conservar una zona táctil de al menos 44 px');
+            await desktopPage.screenshot({ path: 'artifacts/cosmopolis-save-selector.png', fullPage: true });
             await desktopPage.locator('[data-load-save="' + slotIds.ari + '"]').click();
             const ariState = await desktopPage.evaluate(() => Save.load());
             assert.equal(ariState.character.name, 'Ariadna', 'El selector debe abrir la partida elegida');

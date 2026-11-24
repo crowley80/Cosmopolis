@@ -1569,16 +1569,30 @@ body.athun-secondary-mode {
 
 
 /* ATHUN — correcciones visuales confirmadas en la revisión móvil del selector de partidas. */
-#app.athun-secondary-screen > .main-header h1 {
+#app.athun-secondary-screen > .main-header h1,
+.wordmark h1 {
   color:#8f1f24;
 }
 #app.athun-secondary-screen > .secondary-scroll > .character-creation .profile-section button[data-load-save] {
+  display:block;
+  width:100%;
+  min-height:44px;
+  margin:8px 0 0;
+  padding:10px 8px;
   color:#4b2b12;
+  font-weight:normal;
+  letter-spacing:normal;
+  text-align:left;
   background:transparent;
   border:0;
+  border-radius:0;
+  outline:0;
   box-shadow:none;
+  appearance:none;
 }
-#app.athun-secondary-screen > .secondary-scroll > .character-creation .profile-section button[data-load-save]:focus-visible {
-  outline:2px solid #8f1f24;
-  outline-offset:2px;
+#app.athun-secondary-screen > .secondary-scroll > .character-creation .profile-section button[data-load-save]:focus {
+  outline:0;
+  text-decoration-line:underline;
+  text-decoration-color:#8f1f24;
+  text-underline-offset:3px;
 }
