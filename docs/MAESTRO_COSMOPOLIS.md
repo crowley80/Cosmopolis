@@ -2601,3 +2601,16 @@ Respaldos previos creados en la misma rama:
 - La ejecución de CI para este nuevo commit queda pendiente; no se declara aprobada hasta comprobar el resultado remoto.
 - La migración heredada, el aislamiento por protagonista, la persistencia del mundo y la protección de Athun mantienen sus pruebas existentes; esta tanda no altera esos mecanismos.
 - Sigue pendiente la validación táctil en Chrome Android y la revisión final de la integración visual. `main` permanece intacta y PR #4/#8 no se fusionan.
+
+
+
+## RESULTADO DE CI DEL AJUSTE DE ELIMINACIÓN SEGURA — 24 DE NOVIEMBRE DE 2026
+
+- La cabeza de la rama de trabajo es `222dff7eb5c4699ef1af692ffbfdfd27ef9806c6`. La comparación actual con `integration/athun-multisave-main-20261116` (`05fb37aef40288e0e419819f0850cc98cd9b75cc`) informa **48 commits por delante y 7 por detrás**; no se ha intentado sincronizar ni rebasar la rama.
+- Las comprobaciones de GitHub Actions asociadas a esa cabeza terminaron correctamente: [45357873805](https://github.com/crowley80/Cosmopolis/actions/runs/45357873805) y [45357861816](https://github.com/crowley80/Cosmopolis/actions/runs/45357861816).
+- En ambas ejecuciones se completaron la comprobación de sintaxis JavaScript y la suite de almacenamiento/mundo compartido: **74/74 pruebas aprobadas, 0 fallos, 0 omitidas**.
+- La suite incluye las dos regresiones de esta tanda: impedir borrar la última partida utilizable cuando quedan metadatos huérfanos y seleccionar otra partida con registro válido al eliminar la activa, sin borrar los metadatos huérfanos.
+- Las advertencias de dependencias sobre `punycode` y la transición de acciones de Node.js 20 a Node.js 24 no provocaron fallos en estas ejecuciones.
+- PR #8 sigue abierto y en borrador, dirigido únicamente a la rama de integración. No se fusiona ni se altera `main`.
+- PR #4 sigue abierto y en borrador: su cabeza continúa sin comprobaciones de CI asociadas y la comparación con `main` permanece divergente (369 por delante, 73 por detrás); GitHub sigue indicando que no es fusionable.
+- No se han leído ni modificado guardados reales del dispositivo. La validación táctil en Chrome Android, la comprobación con llama-server real y la revisión visual siguen pendientes.
