@@ -1,0 +1,33 @@
+name: Athun storage tests
+
+on:
+  push:
+    branches:
+      - main
+      - feat/athun-multisave-world
+    paths:
+      - 'app/js/**'
+      - 'tests/**'
+      - '.github/workflows/athun-storage-tests.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'app/js/**'
+      - 'tests/**'
+      - '.github/workflows/athun-storage-tests.yml'
+
+jobs:
+  storage-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check JavaScript syntax
+        run: find app/js -name '*.js' -print0 | xargs -0 -n1 node --check
+      - name: Test storage and shared world
+        run: node --test tests/*.test.js
