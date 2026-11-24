@@ -2345,3 +2345,10 @@ No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
 - Se adapta el harness con los stubs DOM y el aislamiento de composición ya contrastados en la rama del PR #8. No se modifica el prólogo aprobado ni el código de producción de la interfaz.
 - Respaldo previo: `tests/prologue.test.js.bak-20261124-pr15-prologue-harness`.
 - La nueva ejecución completa queda pendiente; el fallo inicial no se atribuye al cambio del atlas, cuya prueba específica sí pasó.
+
+
+### Validación final de esta tanda — 24 de noviembre de 2026
+- Tras aislar el harness del prólogo, la ejecución push [45354364664](https://github.com/crowley80/Cosmopolis/actions/runs/45354364664) terminó correctamente: sintaxis JavaScript aprobada y **63/63 pruebas aprobadas, 0 fallos**.
+- La ejecución del evento pull request [45354375068](https://github.com/crowley80/Cosmopolis/actions/runs/45354375068) también terminó correctamente.
+- La nueva regresión del atlas está incluida y pasa dentro de la suite completa. La primera ejecución fallida [45354136134](https://github.com/crowley80/Cosmopolis/actions/runs/45354136134) queda documentada como diagnóstico del harness anterior, no como fallo del código del atlas.
+- PR #15 permanece abierto y en borrador, dirigido a la rama de integración. No se ha fusionado, no se ha modificado `main` y la validación táctil Android continúa pendiente.
