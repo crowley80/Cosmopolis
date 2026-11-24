@@ -17,20 +17,20 @@ const WorldMap = {
         };
 
         (Array.isArray(sharedWorld.locations) ? sharedWorld.locations : []).forEach(item => add(item));
-        const visited = new Set(
-            (Array.isArray(state.visitedLocations) ? state.visitedLocations : [])
-                .map(value => this.cleanName(value).toLocaleLowerCase('es'))
-                .filter(Boolean)
-        );
-        visited.forEach(name => add(name, 'personal'));
+        const visitedNames = (Array.isArray(state.visitedLocations) ? state.visitedLocations : [])
+            .map(value => this.cleanName(value))
+            .filter(Boolean);
+        const visited = new Set(visitedNames.map(name => name.toLocaleLowerCase('es')));
+        visitedNames.forEach(name => add(name, 'personal'));
 
         const current = this.cleanName(state.currentLocation || adventure.location);
         if (current) add(current, 'current');
 
-        const visible = new Set([...(Array.isArray(state.visibleLocations) ? state.visibleLocations : []), current]
-            .map(value => this.cleanName(value).toLocaleLowerCase('es'))
-            .filter(Boolean));
-        visible.forEach(name => add(name, 'visible'));
+        const visibleNames = [...(Array.isArray(state.visibleLocations) ? state.visibleLocations : []), current]
+            .map(value => this.cleanName(value))
+            .filter(Boolean);
+        const visible = new Set(visibleNames.map(name => name.toLocaleLowerCase('es')));
+        visibleNames.forEach(name => add(name, 'visible'));
 
         const entries = Array.from(discovered.entries()).map(([key, name]) => {
             let status = 'known';
