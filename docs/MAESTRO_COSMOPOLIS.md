@@ -2614,3 +2614,27 @@ Respaldos previos creados en la misma rama:
 - PR #8 sigue abierto y en borrador, dirigido únicamente a la rama de integración. No se fusiona ni se altera `main`.
 - PR #4 sigue abierto y en borrador: su cabeza continúa sin comprobaciones de CI asociadas y la comparación con `main` permanece divergente (369 por delante, 73 por detrás); GitHub sigue indicando que no es fusionable.
 - No se han leído ni modificado guardados reales del dispositivo. La validación táctil en Chrome Android, la comprobación con llama-server real y la revisión visual siguen pendientes.
+
+## PREVENCIÓN DE COLISIONES ENTRE IDENTIFICADORES DE PARTIDA — 25 DE NOVIEMBRE DE 2026
+
+### Auditoría previa
+- Se revisaron las ramas y PR abiertos, el documento maestro de la rama de almacenamiento y el estado actual de PR #4 antes de editar.
+- PR #4 continúa abierto y en borrador, con cabeza `05fb37aef40288e0e419819f0850cc98cd9b75cc`, sin estados ni ejecuciones de Actions asociados y marcado por GitHub como no fusionable. No se modifica.
+- PR #8 continúa abierto y en borrador, con base en `integration/athun-multisave-main-20261116`. Su cabeza previa a esta tanda era `3ad219341b8f076a6e2adae2e248757046436939`; la última ejecución disponible, [45361840051](https://github.com/crowley80/Cosmopolis/actions/runs/45361840051), terminó correctamente con 74/74 pruebas.
+- `main` no se modifica y no se fusiona ningún PR.
+
+### Defecto y corrección
+- `Save.createSlot()` construía el identificador combinando hora y un número aleatorio, pero no comprobaba si ese identificador ya existía en el índice o en localStorage.
+- Una colisión extremadamente improbable podía sobrescribir el registro de una partida anterior y asociar sus datos a otro protagonista.
+- Antes de escribir, el generador comprueba los identificadores del índice y las claves de almacenamiento. Si la base ya existe, añade un sufijo incremental hasta encontrar un identificador libre.
+- No se modifica ni elimina ningún registro previo para resolver la colisión.
+
+### Archivos y respaldos
+- Modificados: `app/js/core/save.js`, `tests/storage.test.js` y este documento.
+- Respaldos previos conservados en `app/js/core/save.js.bak-20261125-slot-id-collision`, `tests/storage.test.js.bak-20261125-slot-id-collision` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261125-slot-id-collision`.
+- No se han accedido a los guardados reales de Android ni ejecutado migraciones sobre ellos.
+
+### Prueba y estado
+- Se añade una regresión que fija hora y aleatoriedad para forzar dos creaciones con la misma base de ID. Comprueba que la segunda partida recibe un sufijo, que el registro de la primera permanece byte por byte intacto, que ambas aparecen en el selector y que se pueden alternar sin mezclar protagonistas.
+- La prueba automatizada remota queda pendiente hasta que finalice GitHub Actions; no se declara aprobada antes de consultar su resultado.
+- Siguen pendientes la validación táctil en Chrome Android y la prueba con el modelo local real.

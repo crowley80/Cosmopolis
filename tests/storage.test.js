@@ -1821,3 +1821,36 @@ test('restaura la selección anterior si la verificación de activación devuelv
     assert.equal(Save.load().character.name, 'Ariadna');
     assert.equal(Save.list().length, 2);
 });
+
+test('evita sobrescribir una partida cuando colisiona el identificador generado', () => {
+    localStorage.clear();
+    const originalNow = Date.now;
+    const originalRandom = Math.random;
+    Date.now = () => 1700000000000;
+    Math.random = () => 0.25;
+
+    try {
+        const first = Save.createSlot({ name: 'Ariadna' }, {
+            title: 'Historia A', state: { inventory: ['Llave'] }
+        });
+        assert.ok(first);
+        const originalRecord = localStorage.getItem(Save.slotPrefix + first);
+
+        const second = Save.createSlot({ name: 'Darian' }, {
+            title: 'Historia B', state: { inventory: ['Mapa'] }
+        });
+
+        assert.ok(second);
+        assert.notEqual(second, first);
+        assert.equal(second, first + '-1');
+        assert.equal(localStorage.getItem(Save.slotPrefix + first), originalRecord);
+        assert.equal(Save.list().length, 2);
+        assert.equal(Save.load().character.name, 'Darian');
+
+        assert.equal(Save.activate(first), true);
+        assert.equal(Save.load().character.name, 'Ariadna');
+    } finally {
+        Date.now = originalNow;
+        Math.random = originalRandom;
+    }
+});

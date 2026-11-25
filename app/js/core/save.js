@@ -428,7 +428,20 @@ const Save = {
     createSlot(character, adventure = null, extra = {}) {
         this.ensureReady();
         const now = new Date().toISOString();
-        const id = 'save-' + Date.now().toString(36) + '-' + Math.floor(Math.random() * 1000000).toString(36);
+        const index = this.readJSON(this.indexKey) || { version: 1, saves: [] };
+        const baseId = 'save-' + Date.now().toString(36) + '-' + Math.floor(Math.random() * 1000000).toString(36);
+        const indexedIds = new Set(
+            (Array.isArray(index.saves) ? index.saves : [])
+                .map(entry => entry && entry.id)
+                .filter(value => typeof value === 'string')
+        );
+        let id = baseId;
+        let suffix = 1;
+        // Una colisión nunca debe sobrescribir una partida anterior ni reutilizar un ID indexado.
+        while (indexedIds.has(id) || localStorage.getItem(this.slotPrefix + id) !== null) {
+            id = baseId + '-' + suffix;
+            suffix += 1;
+        }
         const slot = this.normalizeSlot({
             ...extra,
             character,
@@ -438,7 +451,6 @@ const Save = {
             createdAt: now,
             updatedAt: now
         });
-        const index = this.readJSON(this.indexKey) || { version: 1, saves: [] };
         const previousActive = localStorage.getItem(this.activeKey);
         try {
             if (!this.writeVerified(this.slotPrefix + id, slot)) {
