@@ -2636,5 +2636,13 @@ Respaldos previos creados en la misma rama:
 
 ### Prueba y estado
 - Se añade una regresión que fija hora y aleatoriedad para forzar dos creaciones con la misma base de ID. Comprueba que la segunda partida recibe un sufijo, que el registro de la primera permanece byte por byte intacto, que ambas aparecen en el selector y que se pueden alternar sin mezclar protagonistas.
-- La prueba automatizada remota queda pendiente hasta que finalice GitHub Actions; no se declara aprobada antes de consultar su resultado.
+- La ejecución de GitHub Actions [45576758252](https://github.com/crowley80/Cosmopolis/actions/runs/45576758252) terminó correctamente: comprobación de sintaxis y suite completa de almacenamiento/mundo compartido aprobadas. La suite tenía 74 pruebas en el checkpoint anterior y añade una regresión en esta tanda (**75 pruebas esperadas; 0 fallos reportados por el job**).
 - Siguen pendientes la validación táctil en Chrome Android y la prueba con el modelo local real.
+
+
+### Resultado de CI de la prevención de colisiones — 25 de noviembre de 2026
+- El cambio de código y la regresión quedaron registrados en `cb76b94a28b91acf67603f404d24d0e12394a309`.
+- GitHub Actions [45576758252](https://github.com/crowley80/Cosmopolis/actions/runs/45576758252) terminó con conclusión `success`. Los pasos de comprobación de sintaxis y ejecución de la suite de almacenamiento/mundo compartido finalizaron correctamente.
+- El job no expone el contador de pruebas en el resumen accesible del conector; el total esperado es 75, calculado a partir de las 74 pruebas del checkpoint anterior más la regresión añadida.
+- PR #8 sigue abierto y en borrador, con GitHub indicando que la rama es fusionable respecto a su base actual. No se fusiona ni se altera `main`.
+- El respaldo documental previo a este registro se conserva en `docs/MAESTRO_COSMOPOLIS.md.bak-20261125-slot-id-collision-ci`.
