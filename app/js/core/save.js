@@ -193,24 +193,56 @@ const Save = {
     ensureReady() {
         let index = this.readJSON(this.indexKey);
         if (index && Array.isArray(index.saves) && index.saves.length) {
-            if (!localStorage.getItem(this.activeKey)) {
-                const firstAvailable = this.availableEntries(index)[0];
-                if (firstAvailable) this.activate(firstAvailable.id);
+            // Un índice parcialmente actualizado puede omitir registros que sí llegaron a persistirse.
+            // Se exploran las claves de partidas y se añaden solo los IDs ausentes, sin borrar
+            // metadatos huérfanos ni campos adicionales del índice.
+            const recovered = this.rebuildIndexFromSlots();
+            const indexedIds = new Set(
+                index.saves
+                    .map(entry => entry && entry.id)
+                    .filter(id => typeof id === 'string' && id.trim())
+            );
+            const missing = recovered.filter(entry => !indexedIds.has(entry.id));
+
+            if (missing.length) {
+                const repaired = { ...index, saves: [...index.saves, ...missing] };
+                try {
+                    if (!this.writeVerified(this.indexKey, repaired)) {
+                        throw new Error('No se pudo verificar el índice recuperado.');
+                    }
+                    index = repaired;
+                } catch (error) {
+                    console.error('No se pudieron incorporar todas las partidas recuperables al índice:', error);
+                }
+            }
+
+            const available = this.availableEntries(index);
+            const active = this.readJSON(this.activeKey);
+            if (available.length && (!active || !available.some(entry => entry.id === active.id))) {
+                this.activate(available[0].id);
             }
             return index;
         }
 
-        // Si el índice se daña o se elimina, reconstruirlo desde los registros existentes.
+        // Si el índice se dañó o se eliminó, reconstruirlo desde los registros existentes.
         const recovered = this.rebuildIndexFromSlots();
         if (recovered.length) {
-            const rebuilt = { version: 1, saves: recovered };
+            // Si el índice era válido pero estaba vacío, conservar sus metadatos adicionales.
+            const rebuilt = index && Array.isArray(index.saves)
+                ? { ...index, saves: [...index.saves, ...recovered] }
+                : { version: 1, saves: recovered };
             try {
-                this.writeVerified(this.indexKey, rebuilt);
-                if (!localStorage.getItem(this.activeKey)) this.writeVerified(this.activeKey, { id: recovered[0].id });
+                if (!this.writeVerified(this.indexKey, rebuilt)) {
+                    throw new Error('No se pudo verificar el índice reconstruido.');
+                }
+                const active = this.readJSON(this.activeKey);
+                if (!active || !recovered.some(entry => entry.id === active.id)) {
+                    this.activate(recovered[0].id);
+                }
                 return rebuilt;
             } catch (error) {
                 console.error('No se pudo reconstruir el índice de partidas:', error);
-                return { version: 1, saves: recovered };
+                return rebuilt;
             }
         }
 
@@ -291,7 +323,6 @@ const Save = {
             return { version: 1, saves: [], migrationFailed: true };
         }
     },
-
     getIndex() {
         return this.ensureReady();
     },

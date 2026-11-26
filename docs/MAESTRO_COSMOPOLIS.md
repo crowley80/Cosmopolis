@@ -2646,3 +2646,28 @@ Respaldos previos creados en la misma rama:
 - El job no expone el contador de pruebas en el resumen accesible del conector; el total esperado es 75, calculado a partir de las 74 pruebas del checkpoint anterior más la regresión añadida.
 - PR #8 sigue abierto y en borrador, con GitHub indicando que la rama es fusionable respecto a su base actual. No se fusiona ni se altera `main`.
 - El respaldo documental previo a este registro se conserva en `docs/MAESTRO_COSMOPOLIS.md.bak-20261125-slot-id-collision-ci`.
+
+## RECUPERACIÓN DE PARTIDAS AUSENTES DEL ÍNDICE — 26 DE NOVIEMBRE DE 2026
+
+### Auditoría previa
+- Se revisaron las ramas, los PR abiertos, la cabeza actual de PR #8 y el documento maestro de esa misma rama.
+- PR #4 permanece abierto y en borrador, con 369 commits, 184 archivos modificados, mergeable=false y sin estados combinados ni ejecuciones de workflow asociadas a su cabeza. No se modifica ni se intenta fusionar.
+- PR #8 permanece abierto y en borrador sobre integration/athun-multisave-main-20261116; antes de este cambio estaba en 933463f51cfd8dbb6d86eb1142a310da11e9ee99, 56 commits por delante y 7 por detrás de su base.
+- Se verificó que los respaldos app/js/core/save.js.bak-20261126-index-recovery-guard, tests/storage.test.js.bak-20261126-index-recovery-guard y docs/MAESTRO_COSMOPOLIS.md.bak-20261126-index-recovery-guard coinciden byte a byte (mismo SHA de blob) con los tres archivos antes de editarlos.
+
+### Defecto y corrección
+- Save.ensureReady() devolvía inmediatamente un índice no vacío sin buscar registros de partida válidos que pudieran haberse escrito en localStorage pero no añadirse al índice antes de una interrupción.
+- En consecuencia, una partida recuperable podía quedar invisible si el índice conservaba entradas huérfanas o si ya contenía otra partida válida.
+- Ahora se exploran los registros existentes, se añaden al índice únicamente los identificadores válidos que faltan y se conservan las entradas huérfanas y los metadatos adicionales existentes.
+- Si la selección activa apunta a una entrada sin registro, se intenta activar la primera partida disponible. Una selección válida se conserva.
+- La reconstrucción de un índice vacío conserva también sus campos adicionales y verifica la escritura antes de continuar.
+
+### Archivos y pruebas
+- Modificados: app/js/core/save.js, tests/storage.test.js y este documento.
+- Se añaden dos regresiones: recuperación cuando todas las entradas previas son huérfanas, y recuperación de una segunda partida no indexada aunque ya exista otra válida.
+- Las pruebas verifican conservación de metadatos, corrección del puntero activo, aislamiento del protagonista y que la recuperación repetida no vuelve a escribir el índice.
+- No se han leído ni modificado guardados reales del dispositivo; las pruebas usan almacenamiento simulado.
+- La ejecución de GitHub Actions para este commit queda pendiente de resultado. No se declara todavía la suite aprobada.
+- La rama de almacenamiento sigue divergente respecto a su base; no se ha hecho rebase ni fusión. main y PR #4 permanecen intactos.
+- Siguen pendientes la validación táctil en Chrome Android, la prueba con llama-server real y la integración visual final.
+

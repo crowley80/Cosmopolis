@@ -1854,3 +1854,80 @@ test('evita sobrescribir una partida cuando colisiona el identificador generado'
         Math.random = originalRandom;
     }
 });
+
+
+test('recupera partidas guardadas que faltan en un índice no vacío sin borrar metadatos huérfanos', () => {
+    localStorage.clear();
+    const orphanEntry = {
+        id: 'missing-slot',
+        name: 'Partida pendiente',
+        title: 'Metadatos conservados',
+        createdAt: '2026-01-01T00:00:00.000Z',
+        updatedAt: '2026-01-01T00:00:00.000Z'
+    };
+    localStorage.setItem(Save.indexKey, JSON.stringify({
+        version: 1,
+        marker: 'preservar',
+        saves: [orphanEntry]
+    }));
+    localStorage.setItem(Save.slotPrefix + 'recoverable-slot', JSON.stringify({
+        character: { name: 'Ariadna' },
+        adventure: {
+            title: 'Historia recuperada',
+            state: { currentLocation: 'Camino', inventory: ['Athun'] }
+        },
+        actions: [],
+        world: { events: [], facts: [], relationships: {} },
+        createdAt: '2026-01-01T00:00:00.000Z'
+    }));
+    localStorage.setItem(Save.activeKey, JSON.stringify({ id: 'missing-slot' }));
+
+    const entries = Save.list();
+    assert.deepEqual(entries.map(entry => entry.id), ['recoverable-slot']);
+
+    const repaired = JSON.parse(localStorage.getItem(Save.indexKey));
+    assert.equal(repaired.marker, 'preservar');
+    assert.deepEqual(repaired.saves[0], orphanEntry);
+    assert.equal(repaired.saves[1].id, 'recoverable-slot');
+    assert.equal(JSON.parse(localStorage.getItem(Save.activeKey)).id, 'recoverable-slot');
+    assert.equal(Save.load().character.name, 'Ariadna');
+
+    const stableIndex = localStorage.getItem(Save.indexKey);
+    assert.deepEqual(Save.list().map(entry => entry.id), ['recoverable-slot']);
+    assert.equal(localStorage.getItem(Save.indexKey), stableIndex);
+});
+
+test('añade registros no indexados aunque ya exista otra partida válida y conserva la selección activa', () => {
+    localStorage.clear();
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia A',
+        state: { currentLocation: 'Camino', inventory: ['Athun'] }
+    });
+    assert.ok(first);
+    const originalActive = localStorage.getItem(Save.activeKey);
+    const originalEntry = JSON.parse(localStorage.getItem(Save.indexKey)).saves[0];
+
+    localStorage.setItem(Save.slotPrefix + 'unindexed-slot', JSON.stringify({
+        character: { name: 'Darian' },
+        adventure: {
+            title: 'Historia B',
+            state: { currentLocation: 'Plaza', inventory: ['Athun'] }
+        },
+        actions: [],
+        world: { events: [], facts: [], relationships: {} },
+        createdAt: '2026-02-01T00:00:00.000Z'
+    }));
+
+    const entries = Save.list();
+    assert.deepEqual(entries.map(entry => entry.id), [first, 'unindexed-slot']);
+    assert.equal(localStorage.getItem(Save.activeKey), originalActive);
+    assert.equal(Save.load().character.name, 'Ariadna');
+
+    const repaired = JSON.parse(localStorage.getItem(Save.indexKey));
+    assert.deepEqual(repaired.saves[0], originalEntry);
+    assert.equal(repaired.saves[1].id, 'unindexed-slot');
+    const stableIndex = localStorage.getItem(Save.indexKey);
+    Save.list();
+    assert.equal(localStorage.getItem(Save.indexKey), stableIndex);
+});
+
