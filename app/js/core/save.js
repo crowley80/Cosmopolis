@@ -217,8 +217,9 @@ const Save = {
             }
 
             const available = this.availableEntries(index);
-            const active = this.readJSON(this.activeKey);
-            if (available.length && (!active || !available.some(entry => entry.id === active.id))) {
+            // No reescribir un puntero existente aunque sea huérfano: getActiveId()
+            // ya ofrece la primera partida disponible como alternativa sin alterar datos.
+            if (available.length && !localStorage.getItem(this.activeKey)) {
                 this.activate(available[0].id);
             }
             return index;
@@ -235,8 +236,7 @@ const Save = {
                 if (!this.writeVerified(this.indexKey, rebuilt)) {
                     throw new Error('No se pudo verificar el índice reconstruido.');
                 }
-                const active = this.readJSON(this.activeKey);
-                if (!active || !recovered.some(entry => entry.id === active.id)) {
+                if (!localStorage.getItem(this.activeKey)) {
                     this.activate(recovered[0].id);
                 }
                 return rebuilt;

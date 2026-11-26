@@ -1880,7 +1880,8 @@ test('recupera partidas guardadas que faltan en un índice no vacío sin borrar 
         world: { events: [], facts: [], relationships: {} },
         createdAt: '2026-01-01T00:00:00.000Z'
     }));
-    localStorage.setItem(Save.activeKey, JSON.stringify({ id: 'missing-slot' }));
+    const originalActive = JSON.stringify({ id: 'missing-slot' });
+    localStorage.setItem(Save.activeKey, originalActive);
 
     const entries = Save.list();
     assert.deepEqual(entries.map(entry => entry.id), ['recoverable-slot']);
@@ -1889,7 +1890,8 @@ test('recupera partidas guardadas que faltan en un índice no vacío sin borrar 
     assert.equal(repaired.marker, 'preservar');
     assert.deepEqual(repaired.saves[0], orphanEntry);
     assert.equal(repaired.saves[1].id, 'recoverable-slot');
-    assert.equal(JSON.parse(localStorage.getItem(Save.activeKey)).id, 'recoverable-slot');
+    assert.equal(Save.getActiveId(), 'recoverable-slot');
+    assert.equal(localStorage.getItem(Save.activeKey), originalActive);
     assert.equal(Save.load().character.name, 'Ariadna');
 
     const stableIndex = localStorage.getItem(Save.indexKey);

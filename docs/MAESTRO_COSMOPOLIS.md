@@ -2659,15 +2659,15 @@ Respaldos previos creados en la misma rama:
 - Save.ensureReady() devolvía inmediatamente un índice no vacío sin buscar registros de partida válidos que pudieran haberse escrito en localStorage pero no añadirse al índice antes de una interrupción.
 - En consecuencia, una partida recuperable podía quedar invisible si el índice conservaba entradas huérfanas o si ya contenía otra partida válida.
 - Ahora se exploran los registros existentes, se añaden al índice únicamente los identificadores válidos que faltan y se conservan las entradas huérfanas y los metadatos adicionales existentes.
-- Si la selección activa apunta a una entrada sin registro, se intenta activar la primera partida disponible. Una selección válida se conserva.
+- Si la selección activa apunta a una entrada sin registro, las lecturas usan la primera partida disponible como alternativa, pero no reescriben el puntero persistido. Solo se inicializa el puntero cuando está ausente, preservando los metadatos de selección para una recuperación posterior.
 - La reconstrucción de un índice vacío conserva también sus campos adicionales y verifica la escritura antes de continuar.
 
 ### Archivos y pruebas
 - Modificados: app/js/core/save.js, tests/storage.test.js y este documento.
 - Se añaden dos regresiones: recuperación cuando todas las entradas previas son huérfanas, y recuperación de una segunda partida no indexada aunque ya exista otra válida.
-- Las pruebas verifican conservación de metadatos, corrección del puntero activo, aislamiento del protagonista y que la recuperación repetida no vuelve a escribir el índice.
+- Las pruebas verifican conservación de metadatos, selección alternativa sin reescribir un puntero huérfano, conservación de una selección válida, aislamiento del protagonista y que la recuperación repetida no vuelve a escribir el índice.
 - No se han leído ni modificado guardados reales del dispositivo; las pruebas usan almacenamiento simulado.
-- La ejecución de GitHub Actions para este commit queda pendiente de resultado. No se declara todavía la suite aprobada.
+- La primera ejecución de GitHub Actions, [45783716447](https://github.com/crowley80/Cosmopolis/actions/runs/45783716447), completó la sintaxis pero falló una prueba heredada (76/77): exigía conservar exactamente un puntero activo huérfano. Se ajustó la corrección para no reescribir ningún puntero existente y mantener la selección alternativa solo en lectura. La nueva ejecución queda pendiente; no se declara todavía la suite aprobada.
 - La rama de almacenamiento sigue divergente respecto a su base; no se ha hecho rebase ni fusión. main y PR #4 permanecen intactos.
 - Siguen pendientes la validación táctil en Chrome Android, la prueba con llama-server real y la integración visual final.
 
