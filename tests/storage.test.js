@@ -1933,3 +1933,62 @@ test('añade registros no indexados aunque ya exista otra partida válida y cons
     assert.equal(localStorage.getItem(Save.indexKey), stableIndex);
 });
 
+
+test('conserva la versión, los metadatos y las entradas huérfanas del índice al crear, guardar y eliminar partidas', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia A', state: { inventory: ['Llave'] }
+    });
+    const second = Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia B', state: { inventory: ['Mapa'] }
+    });
+    assert.ok(first);
+    assert.ok(second);
+
+    const orphan = {
+        id: 'save-ausente-conservado',
+        name: 'Metadatos recuperables',
+        title: 'Registro no disponible'
+    };
+    const metadata = {
+        migration: { source: 'legacy-v1', completed: true },
+        extension: { owner: 'Athun', revision: 7 }
+    };
+    const currentIndex = Save.readJSON(Save.indexKey);
+    const enrichedIndex = {
+        ...currentIndex,
+        version: 7,
+        ...metadata,
+        saves: [...currentIndex.saves, orphan]
+    };
+    localStorage.setItem(Save.indexKey, JSON.stringify(enrichedIndex));
+
+    assert.equal(Save.activate(first), true);
+    const updated = Save.load();
+    updated.character.name = 'Ariadna actualizada';
+    assert.equal(Save.save(updated), true);
+
+    const afterSave = Save.readJSON(Save.indexKey);
+    assert.equal(afterSave.version, 7);
+    assert.deepEqual(afterSave.migration, metadata.migration);
+    assert.deepEqual(afterSave.extension, metadata.extension);
+    assert.ok(afterSave.saves.some(entry => entry.id === orphan.id));
+
+    const third = Save.createSlot({ name: 'Celia' }, {
+        title: 'Historia C', state: { inventory: ['Brújula'] }
+    });
+    assert.ok(third);
+    const afterCreate = Save.readJSON(Save.indexKey);
+    assert.equal(afterCreate.version, 7);
+    assert.deepEqual(afterCreate.migration, metadata.migration);
+    assert.deepEqual(afterCreate.extension, metadata.extension);
+    assert.ok(afterCreate.saves.some(entry => entry.id === orphan.id));
+
+    assert.equal(Save.deleteSlot(third), true);
+    const afterDelete = Save.readJSON(Save.indexKey);
+    assert.equal(afterDelete.version, 7);
+    assert.deepEqual(afterDelete.migration, metadata.migration);
+    assert.deepEqual(afterDelete.extension, metadata.extension);
+    assert.ok(afterDelete.saves.some(entry => entry.id === orphan.id));
+    assert.ok(afterDelete.saves.some(entry => entry.id === first));
+    assert.ok(afterDelete.saves.some(entry => entry.id === second));
+});

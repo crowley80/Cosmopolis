@@ -2672,3 +2672,32 @@ Respaldos previos creados en la misma rama:
 - La rama de almacenamiento sigue divergente respecto a su base; no se ha hecho rebase ni fusión. main y PR #4 permanecen intactos.
 - Siguen pendientes la validación táctil en Chrome Android, la prueba con llama-server real y la integración visual final.
 
+
+## PRESERVACIÓN DE METADATOS DEL ÍNDICE EN LAS OPERACIONES DE PARTIDA — 27 DE NOVIEMBRE DE 2026
+
+### Auditoría previa
+- Se revisaron las ramas existentes, todos los PR abiertos, la cabeza y el workflow de PR #8, el estado actual de PR #4 y el documento maestro de esta misma rama.
+- PR #4 continúa abierto y en borrador, con cabeza `05fb37aef40288e0e419819f0850cc98cd9b75cc`, `mergeable=false`, 369 commits y 184 archivos modificados. La API de comprobaciones devuelve 0 check-runs para esa cabeza; no se modifica PR #4 ni `main`.
+- PR #8 continúa abierto y en borrador sobre `integration/athun-multisave-main-20261116`, con cabeza previa `a536cd781b03c204ece489be14b8799fed949479`. Su última ejecución, [45784086186](https://github.com/crowley80/Cosmopolis/actions/runs/45784086186), terminó correctamente.
+- Se crearon primero respaldos exactos de `app/js/core/save.js`, `tests/storage.test.js` y este documento. Sus blobs se verificaron iguales a los archivos originales antes de aplicar el cambio.
+
+### Defecto detectado
+- Las rutas `Save.createSlot()`, `Save.updateIndexEntry()` y `Save.deleteSlot()` reconstruían el objeto raíz del índice con solo `version: 1` y `saves`.
+- Aunque conservaban las entradas de otras partidas y los metadatos huérfanos de la lista, descartaban cualquier campo adicional del objeto raíz y podían rebajar una versión de esquema futura.
+- Esto hacía que una operación cotidiana de guardar, crear o eliminar una partida pudiera borrar metadatos de migración o extensión que el lector y la recuperación ya preservaban.
+
+### Corrección aplicada
+- Las tres operaciones construyen el índice nuevo extendiendo el objeto anterior y sustituyendo únicamente `saves`.
+- Se conserva la versión existente, todos los campos raíz desconocidos y las entradas huérfanas.
+- No se cambian los registros individuales, los datos del mundo global ni las reglas de identidad y permanencia de Athun.
+
+### Archivos y respaldos
+- Modificados: `app/js/core/save.js`, `tests/storage.test.js` y `docs/MAESTRO_COSMOPOLIS.md`.
+- Respaldos exactos previos: `app/js/core/save.js.bak-20261127-index-metadata`, `tests/storage.test.js.bak-20261127-index-metadata` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261127-index-metadata`.
+- El cambio se limita a la rama de almacenamiento del PR #8. No se fusiona ningún PR y `main` permanece intacta.
+
+### Prueba y validación
+- Se añade una regresión que incorpora al índice una versión distinta de 1, metadatos de migración/extensión y una entrada huérfana; después ejecuta guardar, crear y eliminar y comprueba que todo ese contenido sobrevive.
+- La prueba usa almacenamiento simulado. No se han leído ni modificado partidas reales del teléfono.
+- La validación remota de esta revisión queda pendiente hasta que finalice GitHub Actions. No se declara aprobada anticipadamente.
+- Siguen pendientes la validación táctil en Chrome Android, la prueba con llama-server real y la integración visual final.

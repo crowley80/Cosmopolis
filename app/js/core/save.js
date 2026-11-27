@@ -451,7 +451,8 @@ const Save = {
             createdAt: slot.createdAt || new Date().toISOString(),
             updatedAt: slot.updatedAt || new Date().toISOString()
         });
-        if (!this.writeVerified(this.indexKey, { version: 1, saves: entries })) {
+        const updatedIndex = { ...index, saves: entries };
+        if (!this.writeVerified(this.indexKey, updatedIndex)) {
             throw new Error('No se pudo verificar el índice actualizado de partidas.');
         }
     },
@@ -488,7 +489,7 @@ const Save = {
                 throw new Error('No se pudo verificar el registro de la partida.');
             }
             const next = {
-                version: 1,
+                ...index,
                 saves: [...index.saves, {
                     id,
                     name: String(character && character.name || 'Partida sin nombre').slice(0, 80),
@@ -572,7 +573,7 @@ const Save = {
         const originalActive = localStorage.getItem(this.activeKey);
         if (originalSlot === null) return false;
         const wasActive = this.getActiveId() === id;
-        const next = { version: 1, saves: index.saves.filter(entry => entry.id !== id) };
+        const next = { ...index, saves: index.saves.filter(entry => entry.id !== id) };
         const nextAvailable = this.availableEntries(next);
         if (!nextAvailable.length) return false;
 
