@@ -2701,3 +2701,12 @@ Respaldos previos creados en la misma rama:
 - La prueba usa almacenamiento simulado. No se han leído ni modificado partidas reales del teléfono.
 - La validación remota de esta revisión queda pendiente hasta que finalice GitHub Actions. No se declara aprobada anticipadamente.
 - Siguen pendientes la validación táctil en Chrome Android, la prueba con llama-server real y la integración visual final.
+
+### Resultado de CI — preservación de metadatos del índice — 27 de noviembre de 2026
+- El cambio de código quedó registrado en `691da655e66a7922589c63d57dd6e27c21187a90`; antes de editar se conservaron copias exactas de `save.js`, `storage.test.js` y este documento en los respaldos `*.bak-20261127-index-metadata`.
+- GitHub Actions «Athun storage tests» terminó correctamente en las dos rutas: [push 45967277773](https://github.com/crowley80/Cosmopolis/actions/runs/45967277773) y [pull request 45967287776](https://github.com/crowley80/Cosmopolis/actions/runs/45967287776).
+- Los registros de ambos jobs confirman comprobación de sintaxis JavaScript y **78/78 pruebas aprobadas, 0 fallos**. La nueva regresión cubre la conservación de versión, metadatos de migración/extensión y entradas huérfanas durante guardar, crear y eliminar partidas.
+- PR #8 sigue abierto y en borrador, dirigido a la rama de integración; GitHub informa que la rama es fusionable respecto a esa base. No se ha fusionado.
+- PR #4 continúa abierto, en borrador y no fusionable; su cabeza sigue sin check-runs asociados. No se ha modificado.
+- `main` permanece intacta. No se han leído ni modificado guardados reales del teléfono.
+- Continúan pendientes la validación táctil en Chrome Android, la prueba con llama-server real y la integración visual final.
