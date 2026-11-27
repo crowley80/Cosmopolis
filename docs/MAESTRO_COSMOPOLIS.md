@@ -2699,7 +2699,7 @@ Respaldos previos creados en la misma rama:
 ### Prueba y validación
 - Se añade una regresión que incorpora al índice una versión distinta de 1, metadatos de migración/extensión y una entrada huérfana; después ejecuta guardar, crear y eliminar y comprueba que todo ese contenido sobrevive.
 - La prueba usa almacenamiento simulado. No se han leído ni modificado partidas reales del teléfono.
-- La validación remota de esta revisión queda pendiente hasta que finalice GitHub Actions. No se declara aprobada anticipadamente.
+- La validación remota se detalla en el apartado siguiente «Resultado de CI»; no se considera aprobada hasta disponer de los dos resultados definitivos.
 - Siguen pendientes la validación táctil en Chrome Android, la prueba con llama-server real y la integración visual final.
 
 ### Resultado de CI — preservación de metadatos del índice — 27 de noviembre de 2026
