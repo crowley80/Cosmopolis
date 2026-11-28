@@ -2313,3 +2313,470 @@ La normalización de partidas ya eliminaba las entradas de inventario cuyo texto
 - Sigue pendiente la prueba táctil real en Chrome para Android físico. Las pruebas automatizadas de navegador no la sustituyen.
 
 No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
+
+
+## CONSOLIDACIÓN DE LA MIGRACIÓN HEREDADA Y RECUPERACIÓN SEGURA — 20 DE NOVIEMBRE DE 2026
+
+### Auditoría previa del repositorio
+
+- Rama principal consultada: `main`, commit `9ce666f64c219faba49adbf80392ee7b58a38d41`.
+- PR #4 sigue abierto y en borrador, con cabeza `9e58abca7ea1510d48835fee1dbab59c97b77f44`. GitHub lo informa como no integrable: su rama está 362 commits por delante y 73 por detrás de `main`, con conflictos. Las últimas ejecuciones localizadas para esa rama corresponden al commit anterior `b357d24` (18/11); no validan la cabeza actual. No se modifica el PR ni se intenta rebase o fusión.
+- PR #3 y PR #1 continúan abiertos y en borrador. PR #5 está cerrado y su trabajo permanece incorporado en la rama de integración. PR #6 continúa abierto y en borrador, separado del sistema de guardado; su corrección del pergamino CSS obtuvo ejecuciones visuales correctas el 20/11 (44683177193 y 44683481775), pero la rama sigue divergente de `main` y pendiente de la prueba táctil Android.
+- Las ramas de arquitectura del mundo vivo se mantienen separadas; no se han copiado ni integrado sus módulos durante esta tanda.
+- Para no alterar la rama del PR #4 ni `main`, se creó `work/athun-storage-migration-atomic-20261120` desde la cabeza exacta del PR #4. Esta rama contiene únicamente respaldos, endurecimiento de migración, regresiones y el disparador de CI específico de la rama.
+
+### Hallazgos
+
+1. La migración heredada podía escribir la partida y el índice antes de publicar los descubrimientos en el mundo compartido. Si fallaba una escritura global, el índice ya indicaba que la migración estaba terminada y las ubicaciones/identidades no se volvían a importar al siguiente arranque.
+2. La migración ignoraba el resultado de la escritura de la selección activa.
+3. Un índice moderno válido pero vacío podía impedir la recuperación de una clave heredada todavía presente.
+4. Si el índice era ilegible y no había registros ni legado válido, la inicialización podía reemplazarlo por un índice vacío, destruyendo el contenido original que debía conservarse para diagnóstico/recuperación.
+5. La migración no debía sobrescribir un registro huérfano con el mismo identificador determinista.
+
+### Corrección aplicada
+
+- Se añadió `Save.buildLegacyWorld(slot)`: construye en memoria una única versión del mundo compartido con las ubicaciones visitadas/actuales y la identidad básica de personajes heredados. No importa recuerdos, confianza, objetivos ni relaciones personales. Athun no se incorpora como entidad del mundo.
+- La migración ahora verifica cada escritura del registro individual, el índice, la selección activa y el mundo compartido. Solo devuelve éxito cuando todas las escrituras necesarias quedan verificadas.
+- Si falla cualquier paso, intenta restaurar byte por byte los valores anteriores del mundo, selección, índice y registro individual. La clave heredada nunca se modifica ni se elimina, de modo que el siguiente arranque puede reintentar la migración.
+- Si ya existe un registro huérfano con el ID heredado, la migración se detiene sin sobrescribirlo.
+- Un índice moderno vacío ya no oculta una partida heredada válida; se intenta recuperar primero cualquier registro individual y después el legado.
+- Un índice ilegible sin partidas recuperables ni legado válido se conserva intacto; no se escribe encima un índice vacío.
+- Se añadieron tres regresiones: migración con índice vacío, conservación de índice corrupto y fallo simulado después de escribir el mundo (incluye rollback exacto y reintento idempotente).
+- Se creó un respaldo exacto previo de cada archivo modificado y se verificó contra la versión de origen de la rama de integración:
+  - `app/js/core/save.js.bak-20261120-legacy-migration-atomicity`
+  - `tests/storage.test.js.bak-20261120-legacy-migration-atomicity`
+  - `.github/workflows/athun-storage-tests.yml.bak-20261120-legacy-migration-atomicity`
+  - `docs/MAESTRO_COSMOPOLIS.md.bak-20261120-legacy-migration-atomicity`
+- El workflow de almacenamiento incluye un disparador `push` limitado a esta rama aislada para poder validar sin modificar el PR #4 ni cambiar su estado de borrador.
+
+### Commits de esta tanda
+
+- Respaldos previos: `5123b390`, `a5e0b939`, `c640ec7b`, `2bf62aec`.
+- CI aislado: `9e9cc581`.
+- Migración transaccional y recuperación: `29e55839`.
+- Regresiones de migración: `1428216b`.
+- Esta actualización documental se registra por separado.
+
+### Validación comprobada
+
+- GitHub Actions «Athun storage tests», ejecución [44706751286](https://github.com/crowley80/Cosmopolis/actions/runs/44706751286), sobre `1428216b4467e43988ca17ec13fc818a1eae74a9`: **correcta**.
+- Comprobación de sintaxis de todos los archivos JavaScript de `app/js`: correcta.
+- Suite completa `node --test tests/*.test.js`: **65/65 pruebas aprobadas, 0 fallos**. El registro del trabajo confirma `# tests 65`, `# pass 65`, `# fail 0`.
+- La prueba nueva simula una escritura global que llega a modificar el registro y después lanza un error; se verifica que el rollback restaura el mundo previo y elimina los registros parciales, y que un segundo intento migra correctamente sin duplicar ubicaciones ni entidades.
+- La rama de trabajo está 7 commits por delante de la cabeza del PR #4 y 0 por detrás de ella. Respecto a `main`, sigue heredando la divergencia del PR #4 (369 por delante y 73 por detrás); no es una rama lista para integrar.
+- No se ha ejecutado una prueba táctil en Chrome sobre Android físico. Tampoco se ha validado aquí el modelo local real: estas pruebas verifican almacenamiento, reglas y JavaScript, no la inferencia en el dispositivo.
+
+### Pendientes y siguiente paso
+
+- Revisar y endurecer la publicación de descubrimientos de `Session.addAction()`: el guardado personal se confirma antes del mundo global, pero conviene comprobar que una tanda con varias ubicaciones/entidades no deje una publicación global parcial si falla una escritura intermedia.
+- Mantener las pruebas de aislamiento entre protagonistas, mundo compartido, atlas y protección de Athun al reconciliar la rama de integración con los cambios posteriores de `main`.
+- No rebasar ni fusionar PR #4 hasta resolver la divergencia mediante una reconciliación selectiva revisada. No modificar `main`.
+- La validación táctil real en Android sigue siendo requisito antes de cualquier integración final que dependa de ella.
+
+
+## PUBLICACIÓN COHERENTE DEL MUNDO COMPARTIDO — 20 DE NOVIEMBRE DE 2026
+
+- Se revisó `Session.addAction()`: tras guardar la partida personal, publicaba por separado cada ruta, localización visible y personaje. Un fallo intermedio podía dejar el mundo compartido con solo una parte de los descubrimientos de una misma acción.
+- Se sustituyó esa secuencia por `Session.syncActionWorld()`: reúne las ubicaciones actuales/visibles, el tramo recorrido y las identidades básicas de personajes secundarios y las publica mediante una única llamada a `Save.saveGlobalWorld()`.
+- Los recuerdos, la confianza y demás datos privados de los personajes no se copian al mundo compartido.
+- Si falla la escritura global, la acción personal permanece guardada y se informa del fallo; no se comunica al juego que la acción personal se perdió.
+- Se añadieron dos regresiones a `tests/storage.test.js`: una verifica que todos los cambios globales de una acción se escriben de una vez; la otra simula un fallo de escritura y comprueba que el historial personal se conserva y que el mundo compartido no queda parcialmente actualizado.
+- Archivos modificados: `app/js/game/session.js` y `tests/storage.test.js`. Se trabaja exclusivamente en `work/athun-storage-migration-atomic-20261120`; no se modifica `main`, no se fusiona ningún PR y no se accede a partidas del dispositivo.
+- Commits: implementación `5ae7345`; pruebas `9b53b89`.
+- **Validación pendiente:** la nueva ejecución de GitHub Actions debe confirmar sintaxis y suite completa. No se declara aún que las dos nuevas pruebas hayan pasado.
+- Próximo paso: comprobar CI; después revisar las reglas de sincronización entre protagonistas y el mundo compartido. La prueba real en Android/Termux se hará contigo cuando estés disponible.
+
+
+### Revisión de integración aislada — 20 de noviembre de 2026
+
+- Se abrió la PR #8 desde `work/athun-storage-migration-atomic-20261120` hacia `integration/athun-multisave-main-20261116`, no hacia `main`. La comparación confirma 13 commits por delante y 0 por detrás de su base.
+- La ejecución de almacenamiento [44706751286](https://github.com/crowley80/Cosmopolis/actions/runs/44706751286), sobre el checkpoint anterior `1428216b`, terminó correctamente: sintaxis JavaScript y **65/65 pruebas aprobadas**.
+- Después de ese checkpoint se añadieron dos pruebas de publicación coherente del mundo compartido. No se ha podido confirmar todavía una ejecución de CI que incluya esas dos pruebas; permanecen pendientes y no se declaran aprobadas.
+- La PR #8 permanece en borrador. No se fusiona en `main` ni se modifica ninguna partida del dispositivo. La prueba física en Android/Termux sigue pendiente.
+
+
+
+## CORRECCIÓN DE REGRESIONES EN LA PUBLICACIÓN DEL ATLAS — 21 DE NOVIEMBRE DE 2026
+
+### Revisión de CI y diagnóstico
+
+- Se volvió a revisar el PR #4 antes de continuar: sigue abierto y en borrador, con cabeza `9e58abca7ea1510d48835fee1dbab59c97b77f44`. La comparación actual de `main` con la rama de integración informa 362 commits por delante y 73 por detrás; GitHub mantiene `mergeable_state: dirty`. No se encontraron ejecuciones de Actions ni estados de commit asociados a esa cabeza actual. No se modifica el PR #4 ni `main`.
+- El PR #8 sigue abierto y en borrador, dirigido exclusivamente a `integration/athun-multisave-main-20261116`. Su cabeza anterior `b1c41491601231467a776462f43369a48252294d` estaba 15 commits por delante y 0 por detrás de esa base.
+- La ejecución [44755250299](https://github.com/crowley80/Cosmopolis/actions/runs/44755250299) terminó con fallo: la comprobación de sintaxis pasó, pero la suite obtuvo 65/67 pruebas aprobadas. No se debe confundir con el checkpoint anterior de 65/65.
+- Los dos fallos se aislaron en `tests/storage.test.js`: una ruta compartida no aparecía en el atlas de otro protagonista porque la sincronización publicaba la conexión sin asegurar la presencia global de ambos extremos; y una prueba de visibilidad recibía `visibleLocations` dentro de `details.adventure.state`, mientras la sesión solo leía el campo superior `details.visibleLocations`.
+
+### Correcciones aplicadas
+
+- `Session.syncActionWorld()` incorpora ahora los dos extremos de una ruta recorrida al mundo compartido antes de publicar la conexión. Se conserva la dirección real del trayecto y no se inventa el camino inverso.
+- `Session.addAction()` acepta la lista de visibilidad ya validada tanto en el campo superior de la respuesta como dentro del estado de la aventura. Si no llega una lista nueva y cambia la ubicación, continúa limpiando la visibilidad anterior.
+- Se reutilizan las pruebas de regresión existentes; no se ha debilitado ni eliminado ninguna aserción.
+
+### Respaldos y archivos
+
+- Antes de modificar cada archivo se creó y releyó un respaldo exacto:
+  - `app/js/game/session.js.bak-20261121-atlas-sync`
+  - `docs/MAESTRO_COSMOPOLIS.md.bak-20261121-atlas-sync`
+- Archivos modificados en esta corrección: `app/js/game/session.js` y este documento maestro.
+- No se han modificado guardados locales, inventarios, datos de partidas ni la rama `main`.
+
+### Validación y siguiente paso
+
+- La corrección de código está guardada en la rama aislada del PR #8. La nueva ejecución de Actions debe confirmar si las 67 pruebas pasan; hasta obtener ese resultado no se declara validada.
+- La prueba táctil real en Chrome Android y la comprobación con el modelo local siguen pendientes.
+- Siguiente paso: revisar el resultado de CI y, si queda verde, añadir una regresión específica de fallo de escritura durante la creación de una aventura nueva, ya que `Session.startNewAdventure()` todavía publica el conocimiento global mediante varias llamadas independientes.
+
+
+
+## AJUSTE DE VISIBILIDAD Y EXTREMOS DE RUTA — 21 DE NOVIEMBRE DE 2026
+
+- La segunda ejecución de CI, [44883539615](https://github.com/crowley80/Cosmopolis/actions/runs/44883539615), volvió a fallar: la sintaxis JavaScript pasó, pero la suite obtuvo 64/67 pruebas. El diagnóstico identificó tres aserciones afectadas por dos detalles de la corrección anterior.
+- Al aceptar `visibleLocations` desde el estado de la aventura sin compararlo con el estado anterior, una lista antigua podía seguir iluminada después de desplazarse. Ahora solo se adopta esa lista anidada cuando ha cambiado respecto al estado previo; el campo superior explícito del narrador conserva prioridad. Si no hay declaración nueva y cambia la ubicación, se limpia la visibilidad anterior.
+- Al publicar una ruta, su origen también se registra como ubicación global. La prueba ahora exige explícitamente que el atlas compartido incluya ese extremo, además del destino y las zonas visibles.
+- Archivos modificados: `app/js/game/session.js` y `tests/storage.test.js`. Se mantienen todas las regresiones de aislamiento, conocimiento compartido y visibilidad.
+- Antes de esta modificación se crearon y verificaron respaldos exactos:
+  - `app/js/game/session.js.bak-20261121-atlas-sync2`
+  - `tests/storage.test.js.bak-20261121-atlas-sync2`
+  - `docs/MAESTRO_COSMOPOLIS.md.bak-20261121-atlas-sync2`
+- La nueva ejecución de GitHub Actions queda pendiente de resultado. No se declara todavía aprobada la suite.
+- La prueba física en Chrome Android y la inferencia con el modelo local real siguen pendientes. `main` y el PR #4 permanecen sin modificar.
+
+
+
+## CONSOLIDACIÓN DE SINCRONIZACIÓN DE NUEVAS AVENTURAS — 21 DE NOVIEMBRE DE 2026
+
+### Cambio implementado
+
+- `Session.startNewAdventure()` sustituye las llamadas separadas a sincronización de ubicaciones y personajes por una única publicación mediante `Session.syncActionWorld()`. La creación normal de una aventura realiza una sola escritura del mundo compartido.
+- La sincronización incluye las ubicaciones visitadas, además de la actual y las visibles. Esto permite reconstruir los descubrimientos personales de la partida en la siguiente acción si una escritura global transitoria falla al crear la aventura.
+- Si falla esa publicación, el registro personal de la nueva aventura se conserva. La siguiente acción vuelve a publicar el conocimiento recuperable de esa partida; no se borra ni se reemplaza el mundo compartido.
+- Se añadió una regresión que cuenta las escrituras globales durante la creación normal y otra que simula un fallo inicial, verifica que la partida permanece guardada y comprueba la recuperación en la siguiente acción. Se mantiene la prueba de aislamiento de recuerdos privados.
+
+### Respaldos y archivos
+
+- Antes de modificar `app/js/game/session.js` y `tests/storage.test.js` se crearon y verificaron:
+  - `app/js/game/session.js.bak-20261121-new-adventure-sync`
+  - `tests/storage.test.js.bak-20261121-new-adventure-sync`
+- Antes de esta actualización documental se creó `docs/MAESTRO_COSMOPOLIS.md.bak-20261121-final-validation`.
+- Archivos de código modificados: `app/js/game/session.js`, `tests/storage.test.js`. Este documento registra los cambios y resultados.
+
+### Validación automatizada
+
+- La ejecución anterior [44883717999](https://github.com/crowley80/Cosmopolis/actions/runs/44883717999) validó la corrección del atlas y la visibilidad: **67/67 pruebas aprobadas**.
+- La ejecución más reciente [44883980979](https://github.com/crowley80/Cosmopolis/actions/runs/44883980979), sobre el commit de código/pruebas `a01ac6a0d9c7e7e37141687d12e6968a1f5e6ca8`, terminó correctamente: comprobación de sintaxis JavaScript aprobada y **68/68 pruebas aprobadas, 0 fallos**.
+- La ejecución paralela de push [44883978719](https://github.com/crowley80/Cosmopolis/actions/runs/44883978719) también terminó correctamente con **68/68**.
+- La nueva regresión confirma que el fallo de publicación global no pierde la partida nueva y que los lugares visitados y personajes básicos se pueden recuperar en la siguiente acción sin copiar recuerdos privados.
+
+### Estado de integración y pendientes
+
+- PR #8 continúa abierto y en borrador, dirigido a `integration/athun-multisave-main-20261116`; su cabeza de código validada es `a01ac6a0d9c7e7e37141687d12e6968a1f5e6ca8`. No se fusiona.
+- PR #4 continúa abierto y en borrador, sin comprobaciones ni ejecuciones de Actions localizadas para su cabeza actual `9e58abca7ea1510d48835fee1dbab59c97b77f44`. La comparación con `main` sigue divergente: 362 commits por delante y 73 por detrás; GitHub informa conflictos. No se modifica.
+- `main` permanece intacta. No se han accedido ni alterado guardados del dispositivo.
+- Pendiente: validar el flujo táctil real en Chrome Android con una partida antigua y otra nueva; comprobar el modelo local real. Las pruebas automatizadas no sustituyen esas verificaciones.
+- Siguiente paso técnico: revisar la recuperación de sincronización al cambiar de protagonista y el selector de partidas, asegurando que la reconstrucción del mundo compartido no filtre recuerdos, objetivos, confianza ni progreso personal.
+
+## ACTIVACIÓN SEGURA DEL SELECTOR DE PARTIDAS — 22 DE NOVIEMBRE DE 2026
+
+### Auditoría previa
+
+- Se revisaron las ramas, PR abiertos, diferencias y el documento maestro antes de continuar.
+- PR #4 sigue abierto y en borrador. La rama de integración que alimenta su propuesta está en la cabeza `05fb37aef40288e0e419819f0850cc98cd9b75cc`; la comparación con `main` informa 369 commits por delante y 73 por detrás. No se encontraron ejecuciones de Actions ni estados combinados para esa cabeza. No se modifica PR #4 ni `main`.
+- PR #8 continúa abierto y dirigido a `integration/athun-multisave-main-20261116`. Su rama de trabajo, `work/athun-storage-migration-atomic-20261120`, está 39 commits por delante y 7 por detrás de la integración actual. La comparación desde su punto común muestra que los siete commits posteriores de la integración solo modificaron `app/css/style.css` y `app/js/app.js`; no se han rebasado ramas ni fusionado PR.
+- Se revisó la última validación de almacenamiento previa: ejecución 44883980979, sobre el checkpoint anterior de 68/68. No cubría los cambios nuevos de esta tanda.
+
+### Hallazgo y corrección
+
+`Save.activate(id)` verificaba la escritura de la selección activa, pero si el almacenamiento escribía el nuevo identificador y después fallaba la verificación o lanzaba una excepción, el método devolvía `false` sin restaurar necesariamente la selección anterior. La interfaz podía informar de un fallo mientras el puntero activo ya había cambiado.
+
+- La función conserva ahora el valor bruto anterior de `athun_active_save_v1`.
+- Si la nueva selección no se puede verificar, intenta restaurar exactamente el valor previo (o mantener la clave ausente si inicialmente no existía) y verifica la restauración.
+- La función sigue validando que el identificador figure en el índice y que su registro exista antes de intentar activarlo.
+- Se añadieron dos regresiones: escritura seguida de excepción y lectura de verificación que devuelve temporalmente el valor anterior. Ambas comprueban que la partida activa y los datos personales permanecen intactos y que después se puede activar la otra partida.
+
+### Ajuste del harness del prólogo
+
+La ejecución de CI sobre la rama de trabajo incorporó la revisión base de integración, cuya pantalla secundaria usa `document.body.classList` y `app.classList`. El harness antiguo del prólogo no simulaba esos elementos del DOM.
+
+- Se añadieron stubs mínimos de `body.classList` y `app.classList`.
+- La prueba que verifica el texto y la continuación del prólogo sustituye `prepareSecondaryLayout()` por un no-op, porque la composición secundaria se valida en las pruebas visuales y no forma parte del objetivo de esta prueba unitaria.
+- No se modificó el prólogo aprobado ni el comportamiento de producción.
+
+### Archivos y respaldos
+
+Archivos de código/pruebas modificados:
+- `app/js/core/save.js`
+- `tests/storage.test.js`
+- `tests/prologue.test.js`
+
+Respaldos previos creados en la misma rama:
+- `app/js/core/save.js.bak-20261122-activate-slot-rollback`
+- `tests/storage.test.js.bak-20261122-activate-slot-rollback`
+- `tests/prologue.test.js.bak-20261122-secondary-layout-harness`
+- `tests/prologue.test.js.bak-20261122-secondary-layout-harness2`
+- `docs/MAESTRO_COSMOPOLIS.md.bak-20261122-activate-slot-rollback`
+
+### Validación automatizada
+
+- Primera ejecución tras añadir las dos regresiones: [45004217243](https://github.com/crowley80/Cosmopolis/actions/runs/45004217243). La sintaxis pasó; 69/70 pruebas pasaron. Falló el harness del prólogo porque no simulaba `document.body.classList`.
+- Segunda ejecución tras añadir los stubs DOM: [45004337597](https://github.com/crowley80/Cosmopolis/actions/runs/45004337597). La sintaxis pasó; 69/70 pruebas pasaron. El diagnóstico mostró que `prepareSecondaryLayout()` también consultaba `app.classList.contains`; se aisló esa composición en la prueba del prólogo, sin alterar código de producción.
+- Validación final [45004396968](https://github.com/crowley80/Cosmopolis/actions/runs/45004396968): comprobación de sintaxis correcta y **70/70 pruebas aprobadas**, 0 fallos.
+- Ejecución paralela [45004396223](https://github.com/crowley80/Cosmopolis/actions/runs/45004396223): también correcta.
+- Las dos regresiones nuevas de activación aparecen aprobadas como pruebas 69 y 70.
+
+### Commits
+
+- Respaldos de `save.js` y `storage.test.js`: `9bac9826`, `749d29bf`.
+- Corrección de activación: `a616a674`.
+- Regresiones del selector: `b1cfc2ff`.
+- Respaldo y adaptación inicial del harness: `a20e08cf`, `ed048cdd`.
+- Respaldo y aislamiento de la prueba del prólogo: `cdf08384`, `91a705be`.
+- La actualización de este documento se registra en un commit separado.
+
+### Pendientes
+
+- PR #8 sigue abierto y sin fusionar; su rama aún está 7 commits por detrás de la integración. Se debe sincronizar de forma selectiva y revisar la comparación final antes de considerar la propuesta lista.
+- PR #4 sigue divergente respecto a `main`; no hay validación de CI localizada para su cabeza actual. No se intenta rebase ni fusión.
+- La prueba táctil en Chrome Android con partidas antiguas y nuevas sigue pendiente. Tampoco se ha probado aquí la inferencia con el modelo local real.
+- No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
+- `main` permanece intacta; ningún PR se ha fusionado.
+
+
+## INTEGRIDAD DEL SELECTOR ANTE REGISTROS HUÉRFANOS — 23 DE NOVIEMBRE DE 2026
+
+### Auditoría previa de ramas y propuestas
+
+- PR #4 continúa abierto y en borrador, con cabeza 05fb37aef40288e0e419819f0850cc98cd9b75cc. La comparación de su rama de integración con main muestra 369 commits por delante y 73 por detrás; GitHub informa que no es fusionable. La cabeza actual no tiene comprobaciones de estado ni ejecuciones de Actions asociadas. No se ha modificado PR #4 ni main.
+- PR #8 continúa abierto y en borrador, dirigido a integration/athun-multisave-main-20261116. Antes de este cambio, su rama tenía 43 commits por delante y 7 por detrás de la integración. La ejecución de almacenamiento 45004520090, sobre 493065c936d5ce79602c25f103a9501a3dc37aec, terminó correctamente: sintaxis aprobada y 70/70 pruebas aprobadas.
+- Los siete commits de la integración que todavía no están en PR #8 solo afectan a app/css/style.css y app/js/app.js. No se incorporan todavía: la CSS de esa revisión referencia app/assets/plantillas/athun-papiro-interfaz.webp, y la ruta devuelve 404 en la rama de integración. Evitamos importar una pantalla secundaria cuyo fondo no está disponible.
+- La validación visual de PR #14 no está aprobada: la ejecución 45029026446 pasó la regresión narrativa inicial, pero Playwright terminó por timeout de 30 segundos en page.waitForFunction (línea 441 del escenario). La comprobación táctil en Chrome Android sigue pendiente.
+
+### Defecto de integridad detectado y corrección
+
+- Si el índice contenía una entrada cuyo registro de partida ya no existía, Save.getActiveId() podía devolver ese identificador y Save.load() quedaba sin partida, aunque hubiera otros registros válidos.
+- El selector también podía presentar entradas huérfanas como si fueran partidas utilizables.
+- Se añade Save.availableEntries(index), que construye una vista de entradas con registro legible, identificadores válidos y sin duplicados. No modifica ni elimina el índice original.
+- Save.getActiveId() elige una partida existente; Save.list() solo presenta registros disponibles y marca como activa la selección válida o, si esta falta, la primera partida íntegra.
+- Cuando falta la selección activa, ensureReady() intenta activar la primera partida disponible, no una entrada huérfana.
+- Se añaden dos regresiones: selección activa apuntando a un registro ausente con otra partida válida disponible, y ausencia de todos los registros seguida de creación de una partida nueva. Ambas verifican que los metadatos huérfanos no se sobrescriben ni se eliminan.
+
+### Archivos y respaldos
+
+- Modificados: app/js/core/save.js, tests/storage.test.js y este documento.
+- Respaldos exactos previos: app/js/core/save.js.bak-20261123-orphan-slot-integrity, tests/storage.test.js.bak-20261123-orphan-slot-integrity y docs/MAESTRO_COSMOPOLIS.md.bak-20261123-orphan-slot-integrity.
+- No se han leído ni modificado partidas del teléfono, no se ha ejecutado ninguna migración sobre datos reales y no se han eliminado archivos .bak.
+
+### Validación y pendientes
+
+- El checkpoint anterior 45004520090 había aprobado 70/70 pruebas. Tras esta corrección, las ejecuciones [45146621380](https://github.com/crowley80/Cosmopolis/actions/runs/45146621380) (pull request) y [45146610109](https://github.com/crowley80/Cosmopolis/actions/runs/45146610109) (push) terminaron correctamente: sintaxis aprobada y **72/72 pruebas aprobadas, 0 fallos**.
+- La revisión de código validada está en el commit a09c0e713d41a1868278abe6e605274c3c09a33f. PR #8 sigue abierta y en borrador, con 7 commits de la rama de integración todavía pendientes de incorporar; no se fusiona.
+- La sincronización visual con la rama de integración sigue pendiente hasta disponer del recurso de papiro secundario y revisar de nuevo las dos modificaciones visuales.
+- Siguen pendientes Chrome Android táctil, el flujo con llama-server real y la revisión visual de las pantallas secundaria y de aventura. main permanece intacta.
+
+
+## PROTECCIÓN DE LA ÚLTIMA PARTIDA UTILIZABLE ANTE ÍNDICES HUÉRFANOS — 24 DE NOVIEMBRE DE 2026
+
+### Auditoría previa de repositorio y propuestas
+- Se revisaron las ramas, PR abiertos, la cabeza de la rama de integración y este documento antes de editar.
+- PR #4 sigue abierto y en borrador. Su cabeza es `05fb37aef40288e0e419819f0850cc98cd9b75cc`; la comparación con `main` informa 369 commits por delante y 73 por detrás, y GitHub indica que no es integrable actualmente. No hay estados combinados ni ejecuciones de Actions asociadas a esa cabeza. No se modifica PR #4 ni `main`.
+- PR #8 sigue abierto y en borrador, con base `integration/athun-multisave-main-20261116`. Su rama de trabajo está 47 commits por delante y 7 por detrás de la cabeza actual de integración. No se intenta rebase ni fusión en esta tanda.
+- La revisión anterior de PR #8, commit `db4ff1b8cd7970ac44e545736a147d56290769ef`, pasó sintaxis y **72/72 pruebas** en Actions, ejecución 880 ([45146900836](https://github.com/crowley80/Cosmopolis/actions/runs/45146900836)). Este resultado no valida los cambios nuevos de esta sección.
+
+### Defecto detectado
+- `Save.deleteSlot()` contaba entradas del índice, no partidas con un registro legible.
+- Si quedaba una sola partida utilizable junto a metadatos huérfanos, podía borrar la última partida real.
+- Al borrar la partida activa, seleccionaba `next.saves[0]` sin comprobar que esa entrada tuviera un registro. Si la primera entrada restante era huérfana, el puntero activo quedaba apuntando a una partida inexistente.
+
+### Corrección aplicada
+- La eliminación exige que el identificador solicitado figure entre `Save.availableEntries(index)`.
+- Se rechaza el borrado cuando no queda al menos otra partida utilizable, aunque el índice conserve entradas huérfanas.
+- La nueva selección activa se obtiene de las partidas disponibles del índice resultante, no de su primera entrada sin validar.
+- Los metadatos huérfanos se conservan intactos: esta corrección no limpia ni sobrescribe índices recuperables.
+
+### Archivos y respaldos
+- Modificados: `app/js/core/save.js`, `tests/storage.test.js` y este documento.
+- Respaldos exactos previos: `app/js/core/save.js.bak-20261124-delete-last-available-slot`, `tests/storage.test.js.bak-20261124-delete-last-available-slot` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261124-delete-last-available-slot`.
+- No se han leído, migrado, sobrescrito ni eliminado guardados del dispositivo.
+
+### Pruebas y estado
+- Se añaden dos regresiones: impedir borrar la única partida disponible si hay metadatos huérfanos y elegir una partida real al borrar la activa cuando los metadatos huérfanos preceden a la siguiente entrada válida.
+- La ejecución de CI para este nuevo commit queda pendiente; no se declara aprobada hasta comprobar el resultado remoto.
+- La migración heredada, el aislamiento por protagonista, la persistencia del mundo y la protección de Athun mantienen sus pruebas existentes; esta tanda no altera esos mecanismos.
+- Sigue pendiente la validación táctil en Chrome Android y la revisión final de la integración visual. `main` permanece intacta y PR #4/#8 no se fusionan.
+
+
+
+## RESULTADO DE CI DEL AJUSTE DE ELIMINACIÓN SEGURA — 24 DE NOVIEMBRE DE 2026
+
+- La cabeza de la rama de trabajo es `222dff7eb5c4699ef1af692ffbfdfd27ef9806c6`. La comparación actual con `integration/athun-multisave-main-20261116` (`05fb37aef40288e0e419819f0850cc98cd9b75cc`) informa **48 commits por delante y 7 por detrás**; no se ha intentado sincronizar ni rebasar la rama.
+- Las comprobaciones de GitHub Actions asociadas a esa cabeza terminaron correctamente: [45357873805](https://github.com/crowley80/Cosmopolis/actions/runs/45357873805) y [45357861816](https://github.com/crowley80/Cosmopolis/actions/runs/45357861816).
+- En ambas ejecuciones se completaron la comprobación de sintaxis JavaScript y la suite de almacenamiento/mundo compartido: **74/74 pruebas aprobadas, 0 fallos, 0 omitidas**.
+- La suite incluye las dos regresiones de esta tanda: impedir borrar la última partida utilizable cuando quedan metadatos huérfanos y seleccionar otra partida con registro válido al eliminar la activa, sin borrar los metadatos huérfanos.
+- Las advertencias de dependencias sobre `punycode` y la transición de acciones de Node.js 20 a Node.js 24 no provocaron fallos en estas ejecuciones.
+- PR #8 sigue abierto y en borrador, dirigido únicamente a la rama de integración. No se fusiona ni se altera `main`.
+- PR #4 sigue abierto y en borrador: su cabeza continúa sin comprobaciones de CI asociadas y la comparación con `main` permanece divergente (369 por delante, 73 por detrás); GitHub sigue indicando que no es fusionable.
+- No se han leído ni modificado guardados reales del dispositivo. La validación táctil en Chrome Android, la comprobación con llama-server real y la revisión visual siguen pendientes.
+
+## PREVENCIÓN DE COLISIONES ENTRE IDENTIFICADORES DE PARTIDA — 25 DE NOVIEMBRE DE 2026
+
+### Auditoría previa
+- Se revisaron las ramas y PR abiertos, el documento maestro de la rama de almacenamiento y el estado actual de PR #4 antes de editar.
+- PR #4 continúa abierto y en borrador, con cabeza `05fb37aef40288e0e419819f0850cc98cd9b75cc`, sin estados ni ejecuciones de Actions asociados y marcado por GitHub como no fusionable. No se modifica.
+- PR #8 continúa abierto y en borrador, con base en `integration/athun-multisave-main-20261116`. Su cabeza previa a esta tanda era `3ad219341b8f076a6e2adae2e248757046436939`; la última ejecución disponible, [45361840051](https://github.com/crowley80/Cosmopolis/actions/runs/45361840051), terminó correctamente con 74/74 pruebas.
+- `main` no se modifica y no se fusiona ningún PR.
+
+### Defecto y corrección
+- `Save.createSlot()` construía el identificador combinando hora y un número aleatorio, pero no comprobaba si ese identificador ya existía en el índice o en localStorage.
+- Una colisión extremadamente improbable podía sobrescribir el registro de una partida anterior y asociar sus datos a otro protagonista.
+- Antes de escribir, el generador comprueba los identificadores del índice y las claves de almacenamiento. Si la base ya existe, añade un sufijo incremental hasta encontrar un identificador libre.
+- No se modifica ni elimina ningún registro previo para resolver la colisión.
+
+### Archivos y respaldos
+- Modificados: `app/js/core/save.js`, `tests/storage.test.js` y este documento.
+- Respaldos previos conservados en `app/js/core/save.js.bak-20261125-slot-id-collision`, `tests/storage.test.js.bak-20261125-slot-id-collision` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261125-slot-id-collision`.
+- No se han accedido a los guardados reales de Android ni ejecutado migraciones sobre ellos.
+
+### Prueba y estado
+- Se añade una regresión que fija hora y aleatoriedad para forzar dos creaciones con la misma base de ID. Comprueba que la segunda partida recibe un sufijo, que el registro de la primera permanece byte por byte intacto, que ambas aparecen en el selector y que se pueden alternar sin mezclar protagonistas.
+- La ejecución de GitHub Actions [45576758252](https://github.com/crowley80/Cosmopolis/actions/runs/45576758252) terminó correctamente: comprobación de sintaxis y suite completa de almacenamiento/mundo compartido aprobadas. La suite tenía 74 pruebas en el checkpoint anterior y añade una regresión en esta tanda (**75 pruebas esperadas; 0 fallos reportados por el job**).
+- Siguen pendientes la validación táctil en Chrome Android y la prueba con el modelo local real.
+
+
+### Resultado de CI de la prevención de colisiones — 25 de noviembre de 2026
+- El cambio de código y la regresión quedaron registrados en `cb76b94a28b91acf67603f404d24d0e12394a309`.
+- GitHub Actions [45576758252](https://github.com/crowley80/Cosmopolis/actions/runs/45576758252) terminó con conclusión `success`. Los pasos de comprobación de sintaxis y ejecución de la suite de almacenamiento/mundo compartido finalizaron correctamente.
+- El job no expone el contador de pruebas en el resumen accesible del conector; el total esperado es 75, calculado a partir de las 74 pruebas del checkpoint anterior más la regresión añadida.
+- PR #8 sigue abierto y en borrador, con GitHub indicando que la rama es fusionable respecto a su base actual. No se fusiona ni se altera `main`.
+- El respaldo documental previo a este registro se conserva en `docs/MAESTRO_COSMOPOLIS.md.bak-20261125-slot-id-collision-ci`.
+
+## RECUPERACIÓN DE PARTIDAS AUSENTES DEL ÍNDICE — 26 DE NOVIEMBRE DE 2026
+
+### Auditoría previa
+- Se revisaron las ramas, los PR abiertos, la cabeza actual de PR #8 y el documento maestro de esa misma rama.
+- PR #4 permanece abierto y en borrador, con 369 commits, 184 archivos modificados, mergeable=false y sin estados combinados ni ejecuciones de workflow asociadas a su cabeza. No se modifica ni se intenta fusionar.
+- PR #8 permanece abierto y en borrador sobre integration/athun-multisave-main-20261116; antes de este cambio estaba en 933463f51cfd8dbb6d86eb1142a310da11e9ee99, 56 commits por delante y 7 por detrás de su base.
+- Se verificó que los respaldos app/js/core/save.js.bak-20261126-index-recovery-guard, tests/storage.test.js.bak-20261126-index-recovery-guard y docs/MAESTRO_COSMOPOLIS.md.bak-20261126-index-recovery-guard coinciden byte a byte (mismo SHA de blob) con los tres archivos antes de editarlos.
+
+### Defecto y corrección
+- Save.ensureReady() devolvía inmediatamente un índice no vacío sin buscar registros de partida válidos que pudieran haberse escrito en localStorage pero no añadirse al índice antes de una interrupción.
+- En consecuencia, una partida recuperable podía quedar invisible si el índice conservaba entradas huérfanas o si ya contenía otra partida válida.
+- Ahora se exploran los registros existentes, se añaden al índice únicamente los identificadores válidos que faltan y se conservan las entradas huérfanas y los metadatos adicionales existentes.
+- Si la selección activa apunta a una entrada sin registro, las lecturas usan la primera partida disponible como alternativa, pero no reescriben el puntero persistido. Solo se inicializa el puntero cuando está ausente, preservando los metadatos de selección para una recuperación posterior.
+- La reconstrucción de un índice vacío conserva también sus campos adicionales y verifica la escritura antes de continuar.
+
+### Archivos y pruebas
+- Modificados: app/js/core/save.js, tests/storage.test.js y este documento.
+- Se añaden dos regresiones: recuperación cuando todas las entradas previas son huérfanas, y recuperación de una segunda partida no indexada aunque ya exista otra válida.
+- Las pruebas verifican conservación de metadatos, selección alternativa sin reescribir un puntero huérfano, conservación de una selección válida, aislamiento del protagonista y que la recuperación repetida no vuelve a escribir el índice.
+- No se han leído ni modificado guardados reales del dispositivo; las pruebas usan almacenamiento simulado.
+- La primera ejecución de GitHub Actions, [45783716447](https://github.com/crowley80/Cosmopolis/actions/runs/45783716447), completó la sintaxis pero falló una prueba heredada (76/77): exigía conservar exactamente un puntero activo huérfano. Se ajustó la corrección para no reescribir ningún puntero existente y mantener la selección alternativa solo en lectura.
+- Validación final de la corrección: [45783952887 (push)](https://github.com/crowley80/Cosmopolis/actions/runs/45783952887) y [45783960863 (pull request)](https://github.com/crowley80/Cosmopolis/actions/runs/45783960863), ambas correctas. En las dos se completaron la sintaxis JavaScript y la suite de almacenamiento/mundo compartido: **77/77 pruebas aprobadas, 0 fallos**.
+- La rama de almacenamiento sigue divergente respecto a su base; no se ha hecho rebase ni fusión. main y PR #4 permanecen intactos.
+- Siguen pendientes la validación táctil en Chrome Android, la prueba con llama-server real y la integración visual final.
+
+
+## PRESERVACIÓN DE METADATOS DEL ÍNDICE EN LAS OPERACIONES DE PARTIDA — 27 DE NOVIEMBRE DE 2026
+
+### Auditoría previa
+- Se revisaron las ramas existentes, todos los PR abiertos, la cabeza y el workflow de PR #8, el estado actual de PR #4 y el documento maestro de esta misma rama.
+- PR #4 continúa abierto y en borrador, con cabeza `05fb37aef40288e0e419819f0850cc98cd9b75cc`, `mergeable=false`, 369 commits y 184 archivos modificados. La API de comprobaciones devuelve 0 check-runs para esa cabeza; no se modifica PR #4 ni `main`.
+- PR #8 continúa abierto y en borrador sobre `integration/athun-multisave-main-20261116`, con cabeza previa `a536cd781b03c204ece489be14b8799fed949479`. Su última ejecución, [45784086186](https://github.com/crowley80/Cosmopolis/actions/runs/45784086186), terminó correctamente.
+- Se crearon primero respaldos exactos de `app/js/core/save.js`, `tests/storage.test.js` y este documento. Sus blobs se verificaron iguales a los archivos originales antes de aplicar el cambio.
+
+### Defecto detectado
+- Las rutas `Save.createSlot()`, `Save.updateIndexEntry()` y `Save.deleteSlot()` reconstruían el objeto raíz del índice con solo `version: 1` y `saves`.
+- Aunque conservaban las entradas de otras partidas y los metadatos huérfanos de la lista, descartaban cualquier campo adicional del objeto raíz y podían rebajar una versión de esquema futura.
+- Esto hacía que una operación cotidiana de guardar, crear o eliminar una partida pudiera borrar metadatos de migración o extensión que el lector y la recuperación ya preservaban.
+
+### Corrección aplicada
+- Las tres operaciones construyen el índice nuevo extendiendo el objeto anterior y sustituyendo únicamente `saves`.
+- Se conserva la versión existente, todos los campos raíz desconocidos y las entradas huérfanas.
+- No se cambian los registros individuales, los datos del mundo global ni las reglas de identidad y permanencia de Athun.
+
+### Archivos y respaldos
+- Modificados: `app/js/core/save.js`, `tests/storage.test.js` y `docs/MAESTRO_COSMOPOLIS.md`.
+- Respaldos exactos previos: `app/js/core/save.js.bak-20261127-index-metadata`, `tests/storage.test.js.bak-20261127-index-metadata` y `docs/MAESTRO_COSMOPOLIS.md.bak-20261127-index-metadata`.
+- El cambio se limita a la rama de almacenamiento del PR #8. No se fusiona ningún PR y `main` permanece intacta.
+
+### Prueba y validación
+- Se añade una regresión que incorpora al índice una versión distinta de 1, metadatos de migración/extensión y una entrada huérfana; después ejecuta guardar, crear y eliminar y comprueba que todo ese contenido sobrevive.
+- La prueba usa almacenamiento simulado. No se han leído ni modificado partidas reales del teléfono.
+- La validación remota se detalla en el apartado siguiente «Resultado de CI»; no se considera aprobada hasta disponer de los dos resultados definitivos.
+- Siguen pendientes la validación táctil en Chrome Android, la prueba con llama-server real y la integración visual final.
+
+### Resultado de CI — preservación de metadatos del índice — 27 de noviembre de 2026
+- El cambio de código quedó registrado en `691da655e66a7922589c63d57dd6e27c21187a90`; antes de editar se conservaron copias exactas de `save.js`, `storage.test.js` y este documento en los respaldos `*.bak-20261127-index-metadata`.
+- GitHub Actions «Athun storage tests» terminó correctamente en las dos rutas: [push 45967277773](https://github.com/crowley80/Cosmopolis/actions/runs/45967277773) y [pull request 45967287776](https://github.com/crowley80/Cosmopolis/actions/runs/45967287776).
+- Los registros de ambos jobs confirman comprobación de sintaxis JavaScript y **78/78 pruebas aprobadas, 0 fallos**. La nueva regresión cubre la conservación de versión, metadatos de migración/extensión y entradas huérfanas durante guardar, crear y eliminar partidas.
+- PR #8 sigue abierto y en borrador, dirigido a la rama de integración; GitHub informa que la rama es fusionable respecto a esa base. No se ha fusionado.
+- PR #4 continúa abierto, en borrador y no fusionable; su cabeza sigue sin check-runs asociados. No se ha modificado.
+- `main` permanece intacta. No se han leído ni modificado guardados reales del teléfono.
+- Continúan pendientes la validación táctil en Chrome Android, la prueba con llama-server real y la integración visual final.
+
+## BLOQUEO DE CREACIÓN SI EL ÍNDICE NO SE PUEDE RECUPERAR — 28 DE NOVIEMBRE DE 2026
+
+### Auditoría previa
+- Se revisó el estado del repositorio, las ramas existentes, los PR abiertos y el documento maestro tanto en main como en la rama de almacenamiento.
+- main permanece en 9ce666f64c219faba49adbf80392ee7b58a38d41; la rama de integración está en 05fb37aef40288e0e419819f0850cc98cd9b75cc. No se modifica ninguna de ellas.
+- PR #4 continúa abierto y en borrador, con 369 commits y 184 archivos modificados; GitHub informa mergeable=false y mergeable_state=dirty. Para su cabeza 05fb37aef40288e0e419819f0850cc98cd9b75cc, la API devuelve cero check-runs y un estado combinado pending con cero estados publicados. Esto significa que no hay comprobaciones asociadas a esa revisión, no que exista una prueba fallida. No se intenta fusionar, rebasar ni modificar PR #4.
+- PR #8 sigue abierto y en borrador. Su rama de trabajo está en ffe302ab1129e4c9dc0a22aba5cd7b2117f11b2f; la base de integración está actualmente en 05fb37aef40288e0e419819f0850cc98cd9b75cc. La comparación indica 67 commits por delante y 7 por detrás. Aunque la API del PR informa que no hay conflictos en su referencia base registrada, la rama no está actualizada con los siete commits actuales de integración; no se hace rebase ni fusión automática.
+- La última ejecución previa del módulo de almacenamiento, sobre 5f453f03ed71a5f0a49737cfe63e6749b419c549, fue correcta: ejecución 45967652913. Se inspeccionaron los archivos de código, pruebas y workflow antes de elegir el cambio.
+
+### Defecto detectado
+- Save.ensureReady() preservaba correctamente un índice ilegible o con esquema inválido cuando no había registros recuperables ni una partida heredada válida, devolviendo un indicador recoveryFailed.
+- Save.createSlot() ignoraba el resultado de esa recuperación. Después interpretaba la lectura fallida como un índice vacío y podía crear una partida nueva escribiendo encima del índice dañado.
+- El resultado posible era perder el contenido original del índice precisamente durante una operación de creación, contradiciendo la protección que ya ofrecía ensureReady().
+
+### Corrección aplicada
+- Save.createSlot() ahora comprueba el resultado de ensureReady() y se detiene si la recuperación o migración falló, o si no se obtuvo una lista de partidas válida.
+- Vuelve a leer el índice persistido y exige que sea legible y contenga un array saves antes de escribir un nuevo registro.
+- En ese estado de error no crea un registro, no cambia la selección activa y no reemplaza el contenido original del índice.
+
+### Archivos, respaldos y commits
+- Modificados: app/js/core/save.js y tests/storage.test.js.
+- Documentación actualizada: docs/MAESTRO_COSMOPOLIS.md.
+- Antes de editar se creó el commit de respaldo exacto 3bc9f2543a79bd50cd1bda7d664d1f9c520fd304, que conserva app/js/core/save.js.bak-20261128-create-index-corruption-guard, tests/storage.test.js.bak-20261128-create-index-corruption-guard y docs/MAESTRO_COSMOPOLIS.md.bak-20261128-create-index-corruption-guard.
+- Commit de código y regresión: ffe302ab1129e4c9dc0a22aba5cd7b2117f11b2f.
+
+### Pruebas y resultado
+- Nueva regresión con dos entradas dañadas: JSON truncado y JSON válido con el campo saves de tipo incompatible.
+- En ambos casos comprueba que la creación devuelve false, el índice se conserva byte por byte, el puntero activo permanece idéntico y no se escribe ningún registro de partida.
+- GitHub Actions Athun storage tests, ejecución https://github.com/crowley80/Cosmopolis/actions/runs/46127106187: correcta. Los pasos de sintaxis JavaScript y suite de almacenamiento/mundo compartido finalizaron correctamente; el log confirma 79/79 pruebas aprobadas, 0 fallos, 0 omitidas.
+- El workflow informa de una advertencia no bloqueante sobre la transición de Node.js 20 a Node.js 24 en las acciones del runner; no afecta al resultado de esta ejecución.
+- Las pruebas usan almacenamiento simulado. No se han leído, migrado, sobrescrito ni eliminado guardados reales del teléfono.
+
+### Pendientes
+- PR #8 permanece abierto y en borrador; sus siete commits por detrás de la integración deben revisarse selectivamente antes de cualquier consolidación. No se modifica la rama base.
+- PR #4 permanece abierto, en borrador y sin comprobaciones asociadas a su cabeza actual.
+- Siguen pendientes la validación táctil en Chrome Android físico, el almacenamiento real del navegador con copia de seguridad y la prueba con llama-server local. Ninguna de ellas queda sustituida por el CI simulado.
+### Revisión selectiva de la divergencia con la integración — 28 de noviembre de 2026
+- Se comparó el punto base registrado por PR #8 (9e58abca7ea1510d48835fee1dbab59c97b77f44) con la cabeza actual de integración (05fb37aef40288e0e419819f0850cc98cd9b75cc). Los siete commits que separan ambas revisiones son exclusivamente de presentación de pantallas secundarias y disposición del contenido visual.
+- La comparación de GitHub identifica únicamente dos archivos modificados por esos siete commits: app/css/style.css y app/js/app.js. No cambian app/js/core/save.js, app/js/game/session.js, migraciones, pruebas de almacenamiento ni el esquema del mundo compartido.
+- Decisión: no copiar esos commits a la rama del PR #8. Son trabajo del módulo de interfaz y deben integrarse desde su rama visual correspondiente, no mezclarse con el módulo de persistencia. Esto mantiene el límite entre almacenamiento y presentación y evita introducir cambios ajenos al objetivo de PR #8.
+- La rama de almacenamiento sigue 67 commits por delante y 7 por detrás de la cabeza actual de integración. La revisión de contenido confirma que los siete commits pendientes no requieren adaptación del almacenamiento; no se realiza rebase ni fusión automática.
+- Respaldo previo de este registro: docs/MAESTRO_COSMOPOLIS.md.bak-20261128-review-integration-delta, commit 947f0b2cbde05b464a60e79de7e60249cb5b4662.
+## MIGRACIÓN HEREDADA SIN PÉRDIDA DEL ÍNDICE MODERNO — 28 DE NOVIEMBRE DE 2026
+
+### Auditoría y defecto
+- La revisión del flujo de recuperación encontró una segunda ruta que podía reemplazar metadatos: cuando coexistían una partida heredada válida y un índice moderno vacío con versión/extensiones, la migración construía un índice nuevo con version=1 y saves, descartando los campos adicionales.
+- También podía continuar la migración si el índice moderno existente era ilegible o tenía un campo saves de tipo incompatible, reemplazándolo con el índice de la partida heredada. La presencia de un legado válido no demuestra que el contenido del índice moderno sea descartable.
+
+### Corrección
+- ensureReady() ahora distingue un índice ausente de uno existente pero ilegible o estructuralmente incompatible. Si no hay registros modernos recuperables, bloquea la migración automática y conserva tanto el índice original como la clave heredada.
+- Si el índice existente es válido y tiene saves como array, la migración sustituye únicamente esa lista y conserva la versión y los metadatos raíz adicionales.
+- Se mantiene la recuperación desde registros individuales cuando sí existen partidas modernas legibles; esa vía reconstruye el índice a partir de datos recuperables.
+
+### Archivos, respaldos y commits
+- Modificados: app/js/core/save.js y tests/storage.test.js.
+- Respaldo exacto previo: commit 8f2eb7c5ca85e3376decd649d517bbb43184aaff, con app/js/core/save.js.bak-20261128-legacy-index-preservation, tests/storage.test.js.bak-20261128-legacy-index-preservation y docs/MAESTRO_COSMOPOLIS.md.bak-20261128-legacy-index-preservation.
+- Commit de código y pruebas: f0777fde5163cf92e4f5aff6bdc2f3baa00cb34e.
+
+### Pruebas y resultado
+- Se añade una regresión que migra un legado sobre un índice moderno vacío de versión 7 y comprueba la conservación de sus metadatos de migración/extensión.
+- Otra regresión cubre JSON truncado y esquema incompatible con legado válido; verifica que no se crea slot, no se modifica la selección, no se publica mundo parcial y ambos registros originales permanecen byte por byte.
+- GitHub Actions «Athun storage tests»: push [46127475280](https://github.com/crowley80/Cosmopolis/actions/runs/46127475280) y pull request [46127479795](https://github.com/crowley80/Cosmopolis/actions/runs/46127479795), ambos concluidos correctamente.
+- Los logs de ambas ejecuciones confirman sintaxis JavaScript correcta y **81/81 pruebas aprobadas, 0 fallos, 0 omitidas**.
+- Las pruebas usan almacenamiento simulado; no se han inspeccionado ni alterado guardados reales del dispositivo.
+
+### Estado de integración
+- PR #8 permanece abierto y en borrador. El módulo de persistencia sigue aislado de los siete commits visuales de integración, que solo cambian app/css/style.css y app/js/app.js.
+- PR #4 continúa abierto, en borrador y sin comprobaciones asociadas a su cabeza; no se modifica ni se fusiona.
+- Siguen pendientes la validación en Chrome Android físico, la comprobación con almacenamiento real del navegador usando una copia y la integración con llama-server local.

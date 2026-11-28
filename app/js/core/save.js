@@ -132,31 +132,135 @@ const Save = {
         return saves;
     },
 
+    buildLegacyWorld(slot) {
+        const world = this.getGlobalWorld();
+        const state = slot && slot.adventure && slot.adventure.state || {};
+        const discoveredBy = String(slot && slot.character && slot.character.name || '').trim().slice(0, 80);
+        let changed = false;
+
+        const locations = [
+            ...(Array.isArray(state.visitedLocations) ? state.visitedLocations : []),
+            state.currentLocation || (slot.adventure && slot.adventure.location) || ''
+        ];
+        locations.forEach(value => {
+            const name = String(value || '').trim().slice(0, 120);
+            if (!name) return;
+            const key = name.toLocaleLowerCase('es');
+            const exists = world.locations.some(item => {
+                const existingName = typeof item === 'string'
+                    ? item
+                    : (item && typeof item === 'object' ? item.name : '');
+                return String(existingName || '').trim().toLocaleLowerCase('es') === key;
+            });
+            if (!exists) {
+                world.locations.push({
+                    name,
+                    discoveredBy,
+                    discoveredAt: new Date().toISOString()
+                });
+                changed = true;
+            }
+        });
+
+        const characters = state.characters && typeof state.characters === 'object' && !Array.isArray(state.characters)
+            ? state.characters
+            : {};
+        Object.entries(characters).forEach(([fallbackName, entity]) => {
+            if (!entity || typeof entity !== 'object' || Array.isArray(entity)) return;
+            const name = String(entity.name || fallbackName || '').trim().slice(0, 80);
+            if (!name || name.toLocaleLowerCase('es') === 'athun') return;
+            const key = name.toLocaleLowerCase('es');
+            if (Object.prototype.hasOwnProperty.call(world.entities, key)) return;
+
+            Object.defineProperty(world.entities, key, {
+                configurable: true,
+                enumerable: true,
+                writable: true,
+                value: {
+                    name,
+                    role: String(entity.role || 'Personaje').trim().slice(0, 100),
+                    firstKnownLocation: String(entity.location || '').trim().slice(0, 120),
+                    discoveredBy,
+                    discoveredAt: new Date().toISOString()
+                }
+            });
+            changed = true;
+        });
+
+        return { world, changed };
+    },
+
     ensureReady() {
+        const rawIndex = localStorage.getItem(this.indexKey);
         let index = this.readJSON(this.indexKey);
-        if (index && Array.isArray(index.saves)) {
-            if (!localStorage.getItem(this.activeKey) && index.saves.length) {
-                this.activate(index.saves[0].id);
+        if (index && Array.isArray(index.saves) && index.saves.length) {
+            // Un índice parcialmente actualizado puede omitir registros que sí llegaron a persistirse.
+            // Se exploran las claves de partidas y se añaden solo los IDs ausentes, sin borrar
+            // metadatos huérfanos ni campos adicionales del índice.
+            const recovered = this.rebuildIndexFromSlots();
+            const indexedIds = new Set(
+                index.saves
+                    .map(entry => entry && entry.id)
+                    .filter(id => typeof id === 'string' && id.trim())
+            );
+            const missing = recovered.filter(entry => !indexedIds.has(entry.id));
+
+            if (missing.length) {
+                const repaired = { ...index, saves: [...index.saves, ...missing] };
+                try {
+                    if (!this.writeVerified(this.indexKey, repaired)) {
+                        throw new Error('No se pudo verificar el índice recuperado.');
+                    }
+                    index = repaired;
+                } catch (error) {
+                    console.error('No se pudieron incorporar todas las partidas recuperables al índice:', error);
+                }
+            }
+
+            const available = this.availableEntries(index);
+            // No reescribir un puntero existente aunque sea huérfano: getActiveId()
+            // ya ofrece la primera partida disponible como alternativa sin alterar datos.
+            if (available.length && !localStorage.getItem(this.activeKey)) {
+                this.activate(available[0].id);
             }
             return index;
         }
 
-        // Si el índice se daña o se elimina, reconstruirlo desde los registros existentes.
+        // Si el índice se dañó o se eliminó, reconstruirlo desde los registros existentes.
         const recovered = this.rebuildIndexFromSlots();
         if (recovered.length) {
-            const rebuilt = { version: 1, saves: recovered };
+            // Si el índice era válido pero estaba vacío, conservar sus metadatos adicionales.
+            const rebuilt = index && Array.isArray(index.saves)
+                ? { ...index, saves: [...index.saves, ...recovered] }
+                : { version: 1, saves: recovered };
             try {
-                this.writeVerified(this.indexKey, rebuilt);
-                if (!localStorage.getItem(this.activeKey)) this.writeVerified(this.activeKey, { id: recovered[0].id });
+                if (!this.writeVerified(this.indexKey, rebuilt)) {
+                    throw new Error('No se pudo verificar el índice reconstruido.');
+                }
+                if (!localStorage.getItem(this.activeKey)) {
+                    this.activate(recovered[0].id);
+                }
                 return rebuilt;
             } catch (error) {
                 console.error('No se pudo reconstruir el índice de partidas:', error);
-                return { version: 1, saves: recovered };
+                return rebuilt;
             }
         }
 
         const legacy = this.readJSON(this.key);
+        if (rawIndex !== null && (!index || !Array.isArray(index.saves))) {
+            // Una partida heredada válida no autoriza a borrar un índice moderno ilegible.
+            // Primero debe recuperarse el índice o revisarse su contenido de forma explícita.
+            console.error('La migración se detuvo porque el índice moderno existente no es recuperable.');
+            return { version: 1, saves: [], recoveryFailed: true };
+        }
         if (!legacy) {
+            if (index && Array.isArray(index.saves)) return index;
+            // No reemplazar un índice ilegible si tampoco hay registros recuperables.
+            if (localStorage.getItem(this.indexKey) !== null) {
+                console.error('Se conserva el índice de partidas ilegible para evitar sobrescribir datos recuperables.');
+                return { version: 1, saves: [], recoveryFailed: true };
+            }
             const empty = { version: 1, saves: [] };
             try {
                 this.writeVerified(this.indexKey, empty);
@@ -177,48 +281,88 @@ const Save = {
             createdAt: slot.createdAt || legacy.updatedAt || new Date().toISOString(),
             updatedAt: slot.updatedAt || legacy.updatedAt || new Date().toISOString()
         };
-        const migratedIndex = { version: 1, saves: [entry] };
+        const migratedIndex = index && Array.isArray(index.saves)
+            ? { ...index, saves: [entry] }
+            : { version: 1, saves: [entry] };
+        const slotKey = this.slotPrefix + id;
+        const originalSlot = localStorage.getItem(slotKey);
+        const originalIndex = localStorage.getItem(this.indexKey);
+        const originalActive = localStorage.getItem(this.activeKey);
+        const originalWorld = localStorage.getItem(this.worldKey);
 
+        // Un registro huérfano con el mismo ID no se sobrescribe, aunque su contenido sea ilegible.
+        if (originalSlot !== null) {
+            console.error('La migración se detuvo porque ya existe un registro con el identificador heredado.');
+            return { version: 1, saves: [], migrationFailed: true };
+        }
+
+        const migratedWorld = this.buildLegacyWorld(slot);
         try {
-            if (!this.writeVerified(this.slotPrefix + id, slot)) return { version: 1, saves: [], migrationFailed: true };
-            if (!this.writeVerified(this.indexKey, migratedIndex)) {
-                localStorage.removeItem(this.slotPrefix + id);
-                return { version: 1, saves: [], migrationFailed: true };
+            if (!this.writeVerified(slotKey, slot)) {
+                throw new Error('No se pudo verificar el registro migrado.');
             }
-            this.writeVerified(this.activeKey, { id });
-            const legacyState = slot.adventure && slot.adventure.state || {};
-            const discovered = [
-                ...(Array.isArray(legacyState.visitedLocations) ? legacyState.visitedLocations : []),
-                legacyState.currentLocation || (slot.adventure && slot.adventure.location) || ''
-            ];
-            discovered.forEach(location => this.addGlobalLocation(location, slot.character && slot.character.name));
-            Object.entries(legacyState.characters || {}).forEach(([key, entity]) => {
-                if (entity && typeof entity === 'object') {
-                    this.addGlobalEntity({ ...entity, name: entity.name || key }, slot.character && slot.character.name);
-                }
-            });
+            if (!this.writeVerified(this.indexKey, migratedIndex)) {
+                throw new Error('No se pudo verificar el índice migrado.');
+            }
+            if (!this.writeVerified(this.activeKey, { id })) {
+                throw new Error('No se pudo verificar la selección de la partida migrada.');
+            }
+            if (migratedWorld.changed && !this.writeGlobalWorldVerified(migratedWorld.world)) {
+                throw new Error('No se pudo publicar el mundo compartido migrado.');
+            }
             return migratedIndex;
         } catch (error) {
+            // La migración solo se considera completa si también queda persistido el mundo compartido.
+            // Ante cualquier fallo se restauran los valores exactos previos; la clave heredada permanece intacta.
+            const rollback = [
+                [this.worldKey, originalWorld],
+                [this.activeKey, originalActive],
+                [this.indexKey, originalIndex],
+                [slotKey, originalSlot]
+            ];
+            rollback.forEach(([key, originalValue]) => {
+                try {
+                    if (originalValue === null) localStorage.removeItem(key);
+                    else localStorage.setItem(key, originalValue);
+                } catch (rollbackError) {
+                    console.error('No se pudo restaurar el registro ' + key + ' tras la migración:', rollbackError);
+                }
+            });
             console.error('La migración de la partida heredada no se completó:', error);
             return { version: 1, saves: [], migrationFailed: true };
         }
     },
-
     getIndex() {
         return this.ensureReady();
     },
 
+    availableEntries(index) {
+        if (!index || !Array.isArray(index.saves)) return [];
+        const seen = new Set();
+        return index.saves.filter(entry => {
+            const id = entry && typeof entry.id === 'string' ? entry.id : '';
+            if (!id.trim() || seen.has(id) || !this.readSlot(id)) return false;
+            seen.add(id);
+            return true;
+        });
+    },
+
     getActiveId() {
-        this.ensureReady();
+        const index = this.ensureReady();
+        const available = this.availableEntries(index);
         const active = this.readJSON(this.activeKey);
-        const index = this.readJSON(this.indexKey);
-        if (active && index && index.saves.some(entry => entry.id === active.id)) return active.id;
-        return index && index.saves.length ? index.saves[0].id : null;
+        if (active && available.some(entry => entry.id === active.id)) return active.id;
+        return available.length ? available[0].id : null;
     },
 
     list() {
         const index = this.ensureReady();
-        return index.saves.map(entry => ({ ...entry, active: entry.id === this.getActiveId() }));
+        const available = this.availableEntries(index);
+        const active = this.readJSON(this.activeKey);
+        const activeId = active && available.some(entry => entry.id === active.id)
+            ? active.id
+            : (available.length ? available[0].id : null);
+        return available.map(entry => ({ ...entry, active: entry.id === activeId }));
     },
 
     readSlot(id) {
@@ -316,15 +460,39 @@ const Save = {
             createdAt: slot.createdAt || new Date().toISOString(),
             updatedAt: slot.updatedAt || new Date().toISOString()
         });
-        if (!this.writeVerified(this.indexKey, { version: 1, saves: entries })) {
+        const updatedIndex = { ...index, saves: entries };
+        if (!this.writeVerified(this.indexKey, updatedIndex)) {
             throw new Error('No se pudo verificar el índice actualizado de partidas.');
         }
     },
 
     createSlot(character, adventure = null, extra = {}) {
-        this.ensureReady();
+        const readiness = this.ensureReady();
+        // No crear una partida sobre un índice ilegible o una migración incompleta:
+        // el fallback a un índice vacío podría destruir datos que no se han podido recuperar.
+        if (!readiness || readiness.recoveryFailed || readiness.migrationFailed || !Array.isArray(readiness.saves)) {
+            console.error('No se puede crear una partida hasta recuperar el índice existente.');
+            return false;
+        }
+        const index = this.readJSON(this.indexKey);
+        if (!index || !Array.isArray(index.saves)) {
+            console.error('No se puede crear una partida: el índice no es legible.');
+            return false;
+        }
         const now = new Date().toISOString();
-        const id = 'save-' + Date.now().toString(36) + '-' + Math.floor(Math.random() * 1000000).toString(36);
+        const baseId = 'save-' + Date.now().toString(36) + '-' + Math.floor(Math.random() * 1000000).toString(36);
+        const indexedIds = new Set(
+            (Array.isArray(index.saves) ? index.saves : [])
+                .map(entry => entry && entry.id)
+                .filter(value => typeof value === 'string')
+        );
+        let id = baseId;
+        let suffix = 1;
+        // Una colisión nunca debe sobrescribir una partida anterior ni reutilizar un ID indexado.
+        while (indexedIds.has(id) || localStorage.getItem(this.slotPrefix + id) !== null) {
+            id = baseId + '-' + suffix;
+            suffix += 1;
+        }
         const slot = this.normalizeSlot({
             ...extra,
             character,
@@ -334,14 +502,13 @@ const Save = {
             createdAt: now,
             updatedAt: now
         });
-        const index = this.readJSON(this.indexKey) || { version: 1, saves: [] };
         const previousActive = localStorage.getItem(this.activeKey);
         try {
             if (!this.writeVerified(this.slotPrefix + id, slot)) {
                 throw new Error('No se pudo verificar el registro de la partida.');
             }
             const next = {
-                version: 1,
+                ...index,
                 saves: [...index.saves, {
                     id,
                     name: String(character && character.name || 'Partida sin nombre').slice(0, 80),
@@ -384,18 +551,40 @@ const Save = {
         const index = this.readJSON(this.indexKey);
         if (!index || !Array.isArray(index.saves) || !index.saves.some(entry => entry.id === id)) return false;
         if (!this.readSlot(id)) return false;
+
+        const originalActive = localStorage.getItem(this.activeKey);
+        let failure = null;
         try {
-            return this.writeVerified(this.activeKey, { id });
+            if (this.writeVerified(this.activeKey, { id })) return true;
+            failure = new Error('No se pudo verificar la nueva selección de partida.');
         } catch (error) {
-            console.error('No se pudo activar la partida:', error);
-            return false;
+            failure = error;
         }
+
+        // Una escritura puede cambiar el valor y aun así fallar al verificarlo.
+        // En ese caso, la selección anterior debe quedar exactamente como estaba.
+        try {
+            if (originalActive === null) localStorage.removeItem(this.activeKey);
+            else localStorage.setItem(this.activeKey, originalActive);
+            if (localStorage.getItem(this.activeKey) !== originalActive) {
+                throw new Error('No se pudo verificar la restauración de la partida activa anterior.');
+            }
+        } catch (rollbackError) {
+            console.error('No se pudo restaurar la partida activa anterior:', rollbackError);
+        }
+
+        console.error('No se pudo activar la partida:', failure);
+        return false;
     },
 
     deleteSlot(id) {
         const index = this.readJSON(this.indexKey);
-        if (!index || !Array.isArray(index.saves) || !index.saves.some(entry => entry.id === id)) return false;
-        if (index.saves.length <= 1) return false;
+        if (!index || !Array.isArray(index.saves)) return false;
+
+        // El índice puede conservar metadatos huérfanos por seguridad.
+        // Solo se permite borrar un registro disponible si queda otra partida utilizable.
+        const available = this.availableEntries(index);
+        if (available.length <= 1 || !available.some(entry => entry.id === id)) return false;
 
         const slotKey = this.slotPrefix + id;
         const originalIndex = localStorage.getItem(this.indexKey);
@@ -403,7 +592,9 @@ const Save = {
         const originalActive = localStorage.getItem(this.activeKey);
         if (originalSlot === null) return false;
         const wasActive = this.getActiveId() === id;
-        const next = { version: 1, saves: index.saves.filter(entry => entry.id !== id) };
+        const next = { ...index, saves: index.saves.filter(entry => entry.id !== id) };
+        const nextAvailable = this.availableEntries(next);
+        if (!nextAvailable.length) return false;
 
         try {
             if (!this.writeVerified(this.indexKey, next)) {
@@ -413,7 +604,7 @@ const Save = {
             if (localStorage.getItem(slotKey) !== null) {
                 throw new Error('No se pudo verificar la eliminación de los datos de la partida.');
             }
-            if (wasActive && !this.writeVerified(this.activeKey, { id: next.saves[0].id })) {
+            if (wasActive && !this.writeVerified(this.activeKey, { id: nextAvailable[0].id })) {
                 throw new Error('No se pudo activar la partida que sustituye a la eliminada.');
             }
             return true;

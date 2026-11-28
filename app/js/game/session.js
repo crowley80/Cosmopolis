@@ -25,8 +25,9 @@ const Session = {
             }
             if (saved) {
                 const state = adventure && adventure.state || {};
-                this.syncMapKnowledge(state, character);
-                this.syncSharedEntities(adventure, character);
+                if (!this.syncActionWorld(state, adventure, character, null)) {
+                    console.warn('La nueva aventura se guardó, pero el mundo compartido no pudo actualizarse; se reintentará al registrar otra acción.');
+                }
             }
             return saved;
         } catch (error) {
@@ -65,10 +66,23 @@ const Session = {
             : null;
         const locationChanged = previousLocation && currentLocation &&
             previousLocation.toLocaleLowerCase('es') !== currentLocation.toLocaleLowerCase('es');
-        if (Array.isArray(details.visibleLocations)) {
-            // Explorar desde el mismo sitio también puede revelar zonas cercanas.
-            // La visibilidad solo cambia si la respuesta narrativa la declara explícitamente.
-            state.visibleLocations = details.visibleLocations
+        const adventureVisibleLocations = details.adventure && details.adventure.state &&
+            Array.isArray(details.adventure.state.visibleLocations)
+            ? details.adventure.state.visibleLocations
+            : null;
+        const previousVisibleLocations = Array.isArray(previousState.visibleLocations)
+            ? previousState.visibleLocations
+            : [];
+        const stateVisibilityChanged = Array.isArray(adventureVisibleLocations) &&
+            (adventureVisibleLocations.length !== previousVisibleLocations.length ||
+                adventureVisibleLocations.some((name, index) => name !== previousVisibleLocations[index]));
+        const declaredVisibleLocations = Array.isArray(details.visibleLocations)
+            ? details.visibleLocations
+            : (stateVisibilityChanged ? adventureVisibleLocations : null);
+        if (Array.isArray(declaredVisibleLocations)) {
+            // El narrador ya ha filtrado esta lista; también se admite el estado
+            // de la aventura para conservar compatibilidad con llamadas anteriores.
+            state.visibleLocations = declaredVisibleLocations
                 .filter(name => typeof name === 'string' && name.trim())
                 .map(name => name.trim().slice(0, 120))
                 .slice(0, 12);
@@ -114,13 +128,111 @@ const Session = {
         // registrar descubrimientos de una acción cuyo guardado haya fallado.
         if (!Save.save(saved)) return false;
 
-        if (traversedRoute) {
-            // Solo una respuesta clasificada como desplazamiento confirma un tramo recorrido.
-            Save.addGlobalConnection(traversedRoute.from, traversedRoute.to, saved.character.name);
+        // Publicar todos los descubrimientos de esta acción con una sola escritura
+        // del mundo compartido. Así, un fallo no deja ubicaciones, rutas o entidades a medias.
+        if (!this.syncActionWorld(state, saved.adventure, saved.character, traversedRoute)) {
+            console.warn('La partida se guardó, pero no se pudieron publicar todos los cambios del mundo compartido.');
         }
-        this.syncMapKnowledge(state, saved.character);
-        this.syncSharedEntities(saved.adventure, saved.character);
         return true;
+    },
+
+    syncActionWorld(state, adventure, character, traversedRoute) {
+        try {
+            const current = Save.getGlobalWorld();
+            const world = {
+                ...current,
+                locations: Array.isArray(current.locations) ? current.locations.slice() : [],
+                connections: Array.isArray(current.connections) ? current.connections.slice() : [],
+                entities: current.entities && typeof current.entities === 'object' ? { ...current.entities } : {}
+            };
+            const discoveredBy = character && character.name ? character.name : '';
+
+            const locations = [
+                state && state.currentLocation,
+                ...(state && Array.isArray(state.visitedLocations) ? state.visitedLocations : []),
+                ...(state && Array.isArray(state.visibleLocations) ? state.visibleLocations : [])
+            ];
+            locations.forEach(value => {
+                const name = String(value || '').trim().slice(0, 120);
+                if (!name) return;
+                const key = name.toLocaleLowerCase('es');
+                const exists = world.locations.some(item => {
+                    const existingName = typeof item === 'string'
+                        ? item
+                        : (item && typeof item === 'object' ? item.name : '');
+                    return String(existingName || '').trim().toLocaleLowerCase('es') === key;
+                });
+                if (!exists) {
+                    world.locations.push({
+                        name,
+                        discoveredBy,
+                        discoveredAt: new Date().toISOString()
+                    });
+                }
+            });
+
+            if (traversedRoute) {
+                const from = String(traversedRoute.from || '').trim().slice(0, 120);
+                const to = String(traversedRoute.to || '').trim().slice(0, 120);
+                const ensureEndpoint = name => {
+                    const key = name.toLocaleLowerCase('es');
+                    const exists = world.locations.some(item => {
+                        const existingName = typeof item === 'string'
+                            ? item
+                            : (item && typeof item === 'object' ? item.name : '');
+                        return String(existingName || '').trim().toLocaleLowerCase('es') === key;
+                    });
+                    if (!exists) {
+                        world.locations.push({
+                            name,
+                            discoveredBy,
+                            discoveredAt: new Date().toISOString()
+                        });
+                    }
+                };
+                // Una conexión global debe publicar también sus dos extremos.
+                // De lo contrario, el atlas de otro protagonista la filtra como ruta huérfana.
+                if (from && to) {
+                    ensureEndpoint(from);
+                    ensureEndpoint(to);
+                }
+                const exists = from && to && world.connections.some(item =>
+                    item && String(item.from || '').toLocaleLowerCase('es') === from.toLocaleLowerCase('es') &&
+                    String(item.to || '').toLocaleLowerCase('es') === to.toLocaleLowerCase('es')
+                );
+                if (from && to && !exists) {
+                    world.connections.push({ from, to, discoveredBy, discoveredAt: new Date().toISOString() });
+                }
+            }
+
+            const people = adventure && adventure.state && adventure.state.characters;
+            if (people && typeof people === 'object' && !Array.isArray(people)) {
+                Object.entries(people).forEach(([fallbackName, person]) => {
+                    if (!person || typeof person !== 'object' || Array.isArray(person)) return;
+                    const name = String(person.name || fallbackName || '').trim().slice(0, 80);
+                    if (!name || name.toLocaleLowerCase('es') === 'athun') return;
+                    const key = name.toLocaleLowerCase('es');
+                    if (Object.prototype.hasOwnProperty.call(world.entities, key)) return;
+                    Object.defineProperty(world.entities, key, {
+                        configurable: true,
+                        enumerable: true,
+                        writable: true,
+                        value: {
+                            name,
+                            role: String(person.role || 'Personaje').trim().slice(0, 100),
+                            firstKnownLocation: String(person.location || '').trim().slice(0, 120),
+                            discoveredBy,
+                            discoveredAt: new Date().toISOString()
+                        }
+                    });
+                });
+            }
+
+            return Save.saveGlobalWorld(world);
+        } catch (error) {
+            console.error('No se pudieron publicar los descubrimientos del mundo compartido:', error);
+            return false;
+        }
     },
 
     syncMapKnowledge(state, character) {

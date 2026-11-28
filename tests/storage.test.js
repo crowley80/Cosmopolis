@@ -126,6 +126,55 @@ test('mantiene independientes dos protagonistas y permite alternar entre partida
     assert.ok(Save.load().adventure.state.inventory.includes('Mapa'));
 });
 
+test('omite partidas sin registro y recupera una partida válida sin reescribir el índice ni la selección', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia conservada', state: { inventory: ['Llave'] }
+    });
+    const second = Save.createSlot({ name: 'Darian' }, {
+        title: 'Registro ausente', state: { inventory: ['Mapa'] }
+    });
+    assert.ok(first);
+    assert.ok(second);
+
+    const originalIndex = localStorage.getItem(Save.indexKey);
+    const originalActive = localStorage.getItem(Save.activeKey);
+    localStorage.removeItem(Save.slotPrefix + second);
+
+    assert.equal(Save.getActiveId(), first);
+    assert.equal(Save.load().character.name, 'Ariadna');
+    assert.deepEqual(Save.list().map(entry => entry.id), [first]);
+    assert.equal(Save.list()[0].active, true);
+    assert.equal(localStorage.getItem(Save.indexKey), originalIndex);
+    assert.equal(localStorage.getItem(Save.activeKey), originalActive);
+});
+
+test('si faltan todos los registros, conserva el índice huérfano y permite crear una partida nueva', () => {
+    const missing = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Registro perdido', state: { inventory: ['Llave'] }
+    });
+    assert.ok(missing);
+
+    const originalIndex = localStorage.getItem(Save.indexKey);
+    const originalActive = localStorage.getItem(Save.activeKey);
+    localStorage.removeItem(Save.slotPrefix + missing);
+
+    assert.equal(Save.getActiveId(), null);
+    assert.equal(Save.load(), null);
+    assert.deepEqual(Save.list(), []);
+    assert.equal(localStorage.getItem(Save.indexKey), originalIndex);
+    assert.equal(localStorage.getItem(Save.activeKey), originalActive);
+
+    const recovered = Save.createSlot({ name: 'Celia' }, {
+        title: 'Nueva historia', state: { inventory: ['Mapa'] }
+    });
+    assert.ok(recovered);
+    assert.equal(Save.load().character.name, 'Celia');
+    assert.deepEqual(Save.list().map(entry => entry.id), [recovered]);
+    const updatedIndex = Save.readJSON(Save.indexKey);
+    assert.ok(updatedIndex.saves.some(entry => entry.id === missing));
+    assert.ok(updatedIndex.saves.some(entry => entry.id === recovered));
+});
+
 test('las localizaciones descubiertas se comparten, pero las acciones siguen siendo personales', () => {
     const first = Save.createSlot({ name: 'Ariadna' }, {
         title: 'Historia A', location: 'Valdebruma',
@@ -156,9 +205,22 @@ test('una aventura nueva no elimina la anterior ni reinicia el mundo compartido'
     });
     Save.addGlobalLocation('Valdebruma', 'Ariadna');
 
-    assert.equal(Session.startNewAdventure({ name: 'Ariadna' }, {
-        title: 'Segunda aventura', state: { currentLocation: 'Puerto', inventory: [], characters: { Elia: { role: 'Cartógrafa', location: 'Valdebruma', trust: 0, memories: ['Recuerdo de Darian'] } } }
-    }), true);
+    let worldWrites = 0;
+    const originalSetItem = localStorage.setItem.bind(localStorage);
+    let started;
+    try {
+        localStorage.setItem = (key, value) => {
+            if (key === Save.worldKey) worldWrites += 1;
+            return originalSetItem(key, value);
+        };
+        started = Session.startNewAdventure({ name: 'Ariadna' }, {
+            title: 'Segunda aventura', state: { currentLocation: 'Puerto', visitedLocations: ['Puerto'], inventory: [], characters: { Elia: { role: 'Cartógrafa', location: 'Valdebruma', trust: 0, memories: ['Recuerdo de Darian'] } } }
+        });
+    } finally {
+        localStorage.setItem = originalSetItem;
+    }
+    assert.equal(started, true);
+    assert.equal(worldWrites, 1);
 
     const second = Save.getActiveId();
     assert.notEqual(second, first);
@@ -169,6 +231,57 @@ test('una aventura nueva no elimina la anterior ni reinicia el mundo compartido'
     assert.ok(Save.getGlobalWorld().entities.elia);
     assert.equal(Save.activate(first), true);
     assert.equal(Save.load().adventure.title, 'Primera aventura');
+});
+
+
+test('si falla la sincronización inicial, la partida nueva se conserva y sus descubrimientos se reintentan en la siguiente acción', () => {
+    Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Aventura anterior',
+        state: { currentLocation: 'Plaza', visitedLocations: ['Plaza'], inventory: [] }
+    });
+    const worldBefore = JSON.stringify(Save.getGlobalWorld());
+    const originalSetItem = localStorage.setItem.bind(localStorage);
+    let failWorldWrite = true;
+    localStorage.setItem = (key, value) => {
+        if (key === Save.worldKey && failWorldWrite) {
+            failWorldWrite = false;
+            throw new Error('Fallo de escritura global simulado');
+        }
+        return originalSetItem(key, value);
+    };
+
+    let created;
+    try {
+        created = Session.startNewAdventure({ name: 'Darian' }, {
+            title: 'Aventura recuperable',
+            state: {
+                currentLocation: 'Puerto',
+                visitedLocations: ['Puerto', 'Camino del puerto'],
+                visibleLocations: ['Muelle'],
+                inventory: [],
+                characters: {
+                    Elia: { name: 'Elia', role: 'Cartógrafa', location: 'Puerto', memories: ['Recuerdo privado'] }
+                }
+            }
+        });
+    } finally {
+        localStorage.setItem = originalSetItem;
+    }
+
+    assert.equal(created, true);
+    assert.equal(Save.load().adventure.title, 'Aventura recuperable');
+    assert.equal(JSON.stringify(Save.getGlobalWorld()), worldBefore);
+
+    assert.equal(Session.addAction('Observo el puerto', 'El muelle se extiende ante ti.', {
+        adventure: Save.load().adventure
+    }), true);
+
+    const world = Save.getGlobalWorld();
+    assert.ok(world.locations.some(item => item.name === 'Puerto'));
+    assert.ok(world.locations.some(item => item.name === 'Camino del puerto'));
+    assert.ok(world.locations.some(item => item.name === 'Muelle'));
+    assert.equal(world.entities.elia.role, 'Cartógrafa');
+    assert.equal('memories' in world.entities.elia, false);
 });
 
 test('reconstruye el índice si desaparece sin perder los registros de partidas', () => {
@@ -265,6 +378,106 @@ test('la migración heredada es idempotente y no duplica partidas ni lugares', (
     assert.deepEqual(Save.load().actions, firstSlot.actions);
     assert.equal(localStorage.getItem(Save.key), original);
 });
+
+test('migra una partida heredada aunque ya exista un índice moderno vacío', () => {
+    const legacy = {
+        character: { name: 'Ariadna' },
+        adventure: {
+            title: 'Historia heredada',
+            location: 'Valdebruma',
+            state: { currentLocation: 'Valdebruma', visitedLocations: ['Valdebruma'] }
+        },
+        createdAt: '2026-01-02T00:00:00.000Z'
+    };
+    const original = JSON.stringify(legacy);
+    localStorage.setItem(Save.key, original);
+    localStorage.setItem(Save.indexKey, JSON.stringify({ version: 1, saves: [] }));
+
+    assert.equal(Save.list().length, 1);
+    assert.equal(Save.load().character.name, 'Ariadna');
+    assert.ok(Save.getGlobalWorld().locations.some(item => item.name === 'Valdebruma'));
+    assert.equal(localStorage.getItem(Save.key), original);
+    assert.equal(Save.list().length, 1);
+});
+
+test('conserva un índice ilegible si no hay partidas recuperables ni legado válido', () => {
+    const damagedIndex = '{"version":1,"saves":';
+    localStorage.setItem(Save.indexKey, damagedIndex);
+
+    assert.deepEqual(Save.list(), []);
+    assert.equal(localStorage.getItem(Save.indexKey), damagedIndex);
+    assert.equal(localStorage.getItem(Save.activeKey), null);
+});
+
+test('la migración revierte slot, índice, selección y mundo si falla la publicación global y permite reintentarse', () => {
+    const legacy = {
+        character: { name: 'Ariadna' },
+        adventure: {
+            title: 'Historia heredada',
+            location: 'Valdebruma',
+            state: {
+                currentLocation: 'Valdebruma',
+                visitedLocations: ['Valdebruma'],
+                characters: {
+                    Elia: {
+                        name: 'Elia',
+                        role: 'Cartógrafa',
+                        location: 'Valdebruma',
+                        trust: 9,
+                        memories: ['Recuerdo privado']
+                    }
+                }
+            }
+        },
+        createdAt: '2026-01-03T00:00:00.000Z'
+    };
+    const originalLegacy = JSON.stringify(legacy);
+    const originalWorld = JSON.stringify({
+        ...Save.emptyWorld(),
+        locations: [{ name: 'Puerto', discoveredBy: 'Darian', discoveredAt: '2026-01-01T00:00:00.000Z' }],
+        facts: ['Hecho previo']
+    });
+    const id = 'legacy-' + legacy.createdAt.replace(/[^a-zA-Z0-9-]/g, '').slice(0, 40);
+    localStorage.setItem(Save.key, originalLegacy);
+    localStorage.setItem(Save.worldKey, originalWorld);
+
+    const setItem = localStorage.setItem.bind(localStorage);
+    let failOnce = true;
+    localStorage.setItem = (key, value) => {
+        if (key === Save.worldKey && failOnce) {
+            failOnce = false;
+            setItem(key, value);
+            throw new Error('Fallo simulado después de escribir el mundo compartido');
+        }
+        setItem(key, value);
+    };
+
+    assert.deepEqual(Save.list(), []);
+    localStorage.setItem = setItem;
+
+    assert.equal(localStorage.getItem(Save.key), originalLegacy);
+    assert.equal(localStorage.getItem(Save.slotPrefix + id), null);
+    assert.equal(localStorage.getItem(Save.indexKey), null);
+    assert.equal(localStorage.getItem(Save.activeKey), null);
+    assert.equal(localStorage.getItem(Save.worldKey), originalWorld);
+
+    const migrated = Save.list();
+    assert.equal(migrated.length, 1);
+    assert.equal(Save.load().character.name, 'Ariadna');
+
+    const world = Save.getGlobalWorld();
+    assert.ok(world.locations.some(item => item.name === 'Puerto'));
+    assert.equal(world.locations.filter(item => item.name === 'Valdebruma').length, 1);
+    assert.equal(world.entities.elia.role, 'Cartógrafa');
+    assert.equal('memories' in world.entities.elia, false);
+    assert.ok(world.facts.includes('Hecho previo'));
+
+    const stableWorld = localStorage.getItem(Save.worldKey);
+    assert.equal(Save.list().length, 1);
+    assert.equal(localStorage.getItem(Save.worldKey), stableWorld);
+    assert.equal(localStorage.getItem(Save.key), originalLegacy);
+});
+
 
 test('si falla la activación de una partida nueva, conserva la partida anterior', () => {
     const first = Save.createSlot({ name: 'Ariadna' }, {
@@ -566,6 +779,71 @@ test('restaura una selección inicialmente vacía si la verificación del borrad
     assert.equal(Save.load().character.name, 'Ariadna');
 });
 
+
+test('impide borrar la última partida disponible cuando el índice conserva metadatos huérfanos', () => {
+    const id = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Partida utilizable', state: { inventory: ['Llave'] }
+    });
+    assert.ok(id);
+
+    const index = Save.readJSON(Save.indexKey);
+    index.saves.push({
+        id: 'orphan-slot-without-record',
+        name: 'Metadatos conservados',
+        title: 'Registro ausente',
+        createdAt: '2026-11-24T00:00:00.000Z',
+        updatedAt: '2026-11-24T00:00:00.000Z'
+    });
+    assert.equal(Save.writeVerified(Save.indexKey, index), true);
+
+    const originalIndex = localStorage.getItem(Save.indexKey);
+    const originalSlot = localStorage.getItem(Save.slotPrefix + id);
+    const originalActive = localStorage.getItem(Save.activeKey);
+    assert.equal(Save.availableEntries(Save.readJSON(Save.indexKey)).length, 1);
+
+    assert.equal(Save.deleteSlot(id), false);
+    assert.equal(localStorage.getItem(Save.indexKey), originalIndex);
+    assert.equal(localStorage.getItem(Save.slotPrefix + id), originalSlot);
+    assert.equal(localStorage.getItem(Save.activeKey), originalActive);
+    assert.equal(Save.list().length, 1);
+    assert.equal(Save.load().character.name, 'Ariadna');
+});
+
+test('al borrar la partida activa elige otra partida disponible y no metadatos huérfanos', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia A', state: { inventory: ['Llave'] }
+    });
+    const second = Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia B', state: { inventory: ['Mapa'] }
+    });
+    assert.ok(first);
+    assert.ok(second);
+
+    const index = Save.readJSON(Save.indexKey);
+    const firstEntry = index.saves.find(entry => entry.id === first);
+    const secondEntry = index.saves.find(entry => entry.id === second);
+    const orphan = {
+        id: 'orphan-slot-before-valid-save',
+        name: 'Metadatos huérfanos',
+        title: 'Sin registro',
+        createdAt: '2026-11-24T00:00:00.000Z',
+        updatedAt: '2026-11-24T00:00:00.000Z'
+    };
+    index.saves = [firstEntry, orphan, secondEntry];
+    assert.equal(Save.writeVerified(Save.indexKey, index), true);
+    assert.equal(Save.activate(first), true);
+
+    assert.equal(Save.deleteSlot(first), true);
+    assert.equal(JSON.parse(localStorage.getItem(Save.activeKey)).id, second);
+    assert.equal(Save.getActiveId(), second);
+    assert.equal(Save.load().character.name, 'Darian');
+    assert.deepEqual(Save.list().map(entry => entry.name), ['Darian']);
+    assert.deepEqual(
+        Save.readJSON(Save.indexKey).saves.map(entry => entry.id),
+        [orphan.id, second]
+    );
+    assert.equal(localStorage.getItem(Save.slotPrefix + first), null);
+});
 
 test('el vínculo, recuerdos y revelaciones de Athun son independientes por protagonista', () => {
     const first = Save.createSlot({ name: 'Ariadna' }, {
@@ -1380,4 +1658,428 @@ test('las afirmaciones negativas no marcan el descubrimiento del pozo ni de la c
     assert.equal(state.clues.length, 1);
     assert.equal(state.wellDiscovered, undefined);
     assert.equal(state.bellDiscovered, undefined);
+});
+
+
+test('una acción publica ubicaciones, ruta y personajes con una sola escritura global', () => {
+    Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Exploración',
+        state: {
+            currentLocation: 'Camino',
+            inventory: ['Athun'],
+            characters: {}
+        }
+    });
+
+    let worldWrites = 0;
+    const originalSetItem = localStorage.setItem.bind(localStorage);
+    localStorage.setItem = (key, value) => {
+        if (key === Save.worldKey) worldWrites += 1;
+        return originalSetItem(key, value);
+    };
+
+    const adventure = {
+        title: 'Exploración',
+        state: {
+            currentLocation: 'Plaza',
+            visibleLocations: ['Calle Mayor', 'Puente viejo'],
+            inventory: ['Athun'],
+            characters: {
+                Elia: { name: 'Elia', role: 'Cartógrafa', location: 'Plaza', memories: ['Recuerdo privado'] },
+                Tomás: { name: 'Tomás', role: 'Vecino', location: 'Calle Mayor' }
+            }
+        }
+    };
+
+    assert.equal(Session.addAction('Camino hacia la plaza', 'Llegas a la plaza.', {
+        category: 'movement',
+        adventure
+    }), true);
+
+    assert.equal(worldWrites, 1);
+    const world = Save.getGlobalWorld();
+    assert.deepEqual(
+        world.locations.map(item => item.name),
+        ['Plaza', 'Calle Mayor', 'Puente viejo', 'Camino']
+    );
+    assert.deepEqual(world.connections.map(item => [item.from, item.to]), [['Camino', 'Plaza']]);
+    assert.equal(world.entities.elia.role, 'Cartógrafa');
+    assert.equal(world.entities['tomás'].role, 'Vecino');
+    assert.equal('memories' in world.entities.elia, false);
+});
+
+
+test('si falla la publicación global, la acción personal queda guardada y el mundo no queda a medias', () => {
+    Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Exploración',
+        state: {
+            currentLocation: 'Camino',
+            inventory: ['Athun'],
+            characters: {}
+        }
+    });
+    const before = JSON.stringify(Save.getGlobalWorld());
+    const originalSetItem = localStorage.setItem.bind(localStorage);
+    localStorage.setItem = (key, value) => {
+        if (key === Save.worldKey) throw new Error('Fallo de escritura simulado');
+        return originalSetItem(key, value);
+    };
+
+    const adventure = {
+        title: 'Exploración',
+        state: {
+            currentLocation: 'Plaza',
+            visibleLocations: ['Calle Mayor'],
+            inventory: ['Athun'],
+            characters: {
+                Elia: { name: 'Elia', role: 'Cartógrafa', location: 'Plaza' }
+            }
+        }
+    };
+
+    assert.equal(Session.addAction('Camino hacia la plaza', 'Llegas a la plaza.', {
+        category: 'movement',
+        adventure
+    }), true);
+    assert.equal(Save.load().actions.length, 1);
+    assert.equal(Save.load().actions[0].text, 'Camino hacia la plaza');
+    assert.equal(JSON.stringify(Save.getGlobalWorld()), before);
+});
+
+test('restaura la selección anterior si activar otra partida escribe y después falla', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia A', state: { inventory: ['Llave'] }
+    });
+    const second = Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia B', state: { inventory: ['Mapa'] }
+    });
+    assert.ok(first);
+    assert.ok(second);
+    assert.equal(Save.activate(first), true);
+
+    const originalActive = localStorage.getItem(Save.activeKey);
+    const originalIndex = localStorage.getItem(Save.indexKey);
+    const originalFirst = localStorage.getItem(Save.slotPrefix + first);
+    const originalSecond = localStorage.getItem(Save.slotPrefix + second);
+    const setItem = localStorage.setItem.bind(localStorage);
+    let failAfterWrite = true;
+
+    localStorage.setItem = (key, value) => {
+        if (key === Save.activeKey && JSON.parse(String(value)).id === second && failAfterWrite) {
+            setItem(key, value);
+            failAfterWrite = false;
+            throw new Error('Fallo simulado después de escribir la selección');
+        }
+        return setItem(key, value);
+    };
+
+    assert.equal(Save.activate(second), false);
+    localStorage.setItem = setItem;
+
+    assert.equal(localStorage.getItem(Save.activeKey), originalActive);
+    assert.equal(localStorage.getItem(Save.indexKey), originalIndex);
+    assert.equal(localStorage.getItem(Save.slotPrefix + first), originalFirst);
+    assert.equal(localStorage.getItem(Save.slotPrefix + second), originalSecond);
+    assert.equal(Save.getActiveId(), first);
+    assert.equal(Save.load().character.name, 'Ariadna');
+
+    assert.equal(Save.activate(second), true);
+    assert.equal(Save.load().character.name, 'Darian');
+});
+
+
+test('restaura la selección anterior si la verificación de activación devuelve un valor antiguo', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia A', state: { inventory: ['Llave'] }
+    });
+    const second = Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia B', state: { inventory: ['Mapa'] }
+    });
+    assert.ok(first);
+    assert.ok(second);
+    assert.equal(Save.activate(first), true);
+
+    const originalActive = localStorage.getItem(Save.activeKey);
+    const getItem = localStorage.getItem.bind(localStorage);
+    const setItem = localStorage.setItem.bind(localStorage);
+    let activeReads = 0;
+
+    localStorage.getItem = key => {
+        if (key === Save.activeKey) {
+            activeReads += 1;
+            if (activeReads === 2) return originalActive;
+        }
+        return getItem(key);
+    };
+
+    assert.equal(Save.activate(second), false);
+    localStorage.getItem = getItem;
+    localStorage.setItem = setItem;
+
+    assert.equal(localStorage.getItem(Save.activeKey), originalActive);
+    assert.equal(Save.getActiveId(), first);
+    assert.equal(Save.load().character.name, 'Ariadna');
+    assert.equal(Save.list().length, 2);
+});
+
+test('evita sobrescribir una partida cuando colisiona el identificador generado', () => {
+    localStorage.clear();
+    const originalNow = Date.now;
+    const originalRandom = Math.random;
+    Date.now = () => 1700000000000;
+    Math.random = () => 0.25;
+
+    try {
+        const first = Save.createSlot({ name: 'Ariadna' }, {
+            title: 'Historia A', state: { inventory: ['Llave'] }
+        });
+        assert.ok(first);
+        const originalRecord = localStorage.getItem(Save.slotPrefix + first);
+
+        const second = Save.createSlot({ name: 'Darian' }, {
+            title: 'Historia B', state: { inventory: ['Mapa'] }
+        });
+
+        assert.ok(second);
+        assert.notEqual(second, first);
+        assert.equal(second, first + '-1');
+        assert.equal(localStorage.getItem(Save.slotPrefix + first), originalRecord);
+        assert.equal(Save.list().length, 2);
+        assert.equal(Save.load().character.name, 'Darian');
+
+        assert.equal(Save.activate(first), true);
+        assert.equal(Save.load().character.name, 'Ariadna');
+    } finally {
+        Date.now = originalNow;
+        Math.random = originalRandom;
+    }
+});
+
+
+test('recupera partidas guardadas que faltan en un índice no vacío sin borrar metadatos huérfanos', () => {
+    localStorage.clear();
+    const orphanEntry = {
+        id: 'missing-slot',
+        name: 'Partida pendiente',
+        title: 'Metadatos conservados',
+        createdAt: '2026-01-01T00:00:00.000Z',
+        updatedAt: '2026-01-01T00:00:00.000Z'
+    };
+    localStorage.setItem(Save.indexKey, JSON.stringify({
+        version: 1,
+        marker: 'preservar',
+        saves: [orphanEntry]
+    }));
+    localStorage.setItem(Save.slotPrefix + 'recoverable-slot', JSON.stringify({
+        character: { name: 'Ariadna' },
+        adventure: {
+            title: 'Historia recuperada',
+            state: { currentLocation: 'Camino', inventory: ['Athun'] }
+        },
+        actions: [],
+        world: { events: [], facts: [], relationships: {} },
+        createdAt: '2026-01-01T00:00:00.000Z'
+    }));
+    const originalActive = JSON.stringify({ id: 'missing-slot' });
+    localStorage.setItem(Save.activeKey, originalActive);
+
+    const entries = Save.list();
+    assert.deepEqual(entries.map(entry => entry.id), ['recoverable-slot']);
+
+    const repaired = JSON.parse(localStorage.getItem(Save.indexKey));
+    assert.equal(repaired.marker, 'preservar');
+    assert.deepEqual(repaired.saves[0], orphanEntry);
+    assert.equal(repaired.saves[1].id, 'recoverable-slot');
+    assert.equal(Save.getActiveId(), 'recoverable-slot');
+    assert.equal(localStorage.getItem(Save.activeKey), originalActive);
+    assert.equal(Save.load().character.name, 'Ariadna');
+
+    const stableIndex = localStorage.getItem(Save.indexKey);
+    assert.deepEqual(Save.list().map(entry => entry.id), ['recoverable-slot']);
+    assert.equal(localStorage.getItem(Save.indexKey), stableIndex);
+});
+
+test('añade registros no indexados aunque ya exista otra partida válida y conserva la selección activa', () => {
+    localStorage.clear();
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia A',
+        state: { currentLocation: 'Camino', inventory: ['Athun'] }
+    });
+    assert.ok(first);
+    const originalActive = localStorage.getItem(Save.activeKey);
+    const originalEntry = JSON.parse(localStorage.getItem(Save.indexKey)).saves[0];
+
+    localStorage.setItem(Save.slotPrefix + 'unindexed-slot', JSON.stringify({
+        character: { name: 'Darian' },
+        adventure: {
+            title: 'Historia B',
+            state: { currentLocation: 'Plaza', inventory: ['Athun'] }
+        },
+        actions: [],
+        world: { events: [], facts: [], relationships: {} },
+        createdAt: '2026-02-01T00:00:00.000Z'
+    }));
+
+    const entries = Save.list();
+    assert.deepEqual(entries.map(entry => entry.id), [first, 'unindexed-slot']);
+    assert.equal(localStorage.getItem(Save.activeKey), originalActive);
+    assert.equal(Save.load().character.name, 'Ariadna');
+
+    const repaired = JSON.parse(localStorage.getItem(Save.indexKey));
+    assert.deepEqual(repaired.saves[0], originalEntry);
+    assert.equal(repaired.saves[1].id, 'unindexed-slot');
+    const stableIndex = localStorage.getItem(Save.indexKey);
+    Save.list();
+    assert.equal(localStorage.getItem(Save.indexKey), stableIndex);
+});
+
+
+test('conserva la versión, los metadatos y las entradas huérfanas del índice al crear, guardar y eliminar partidas', () => {
+    const first = Save.createSlot({ name: 'Ariadna' }, {
+        title: 'Historia A', state: { inventory: ['Llave'] }
+    });
+    const second = Save.createSlot({ name: 'Darian' }, {
+        title: 'Historia B', state: { inventory: ['Mapa'] }
+    });
+    assert.ok(first);
+    assert.ok(second);
+
+    const orphan = {
+        id: 'save-ausente-conservado',
+        name: 'Metadatos recuperables',
+        title: 'Registro no disponible'
+    };
+    const metadata = {
+        migration: { source: 'legacy-v1', completed: true },
+        extension: { owner: 'Athun', revision: 7 }
+    };
+    const currentIndex = Save.readJSON(Save.indexKey);
+    const enrichedIndex = {
+        ...currentIndex,
+        version: 7,
+        ...metadata,
+        saves: [...currentIndex.saves, orphan]
+    };
+    localStorage.setItem(Save.indexKey, JSON.stringify(enrichedIndex));
+
+    assert.equal(Save.activate(first), true);
+    const updated = Save.load();
+    updated.character.name = 'Ariadna actualizada';
+    assert.equal(Save.save(updated), true);
+
+    const afterSave = Save.readJSON(Save.indexKey);
+    assert.equal(afterSave.version, 7);
+    assert.deepEqual(afterSave.migration, metadata.migration);
+    assert.deepEqual(afterSave.extension, metadata.extension);
+    assert.ok(afterSave.saves.some(entry => entry.id === orphan.id));
+
+    const third = Save.createSlot({ name: 'Celia' }, {
+        title: 'Historia C', state: { inventory: ['Brújula'] }
+    });
+    assert.ok(third);
+    const afterCreate = Save.readJSON(Save.indexKey);
+    assert.equal(afterCreate.version, 7);
+    assert.deepEqual(afterCreate.migration, metadata.migration);
+    assert.deepEqual(afterCreate.extension, metadata.extension);
+    assert.ok(afterCreate.saves.some(entry => entry.id === orphan.id));
+
+    assert.equal(Save.deleteSlot(third), true);
+    const afterDelete = Save.readJSON(Save.indexKey);
+    assert.equal(afterDelete.version, 7);
+    assert.deepEqual(afterDelete.migration, metadata.migration);
+    assert.deepEqual(afterDelete.extension, metadata.extension);
+    assert.ok(afterDelete.saves.some(entry => entry.id === orphan.id));
+    assert.ok(afterDelete.saves.some(entry => entry.id === first));
+    assert.ok(afterDelete.saves.some(entry => entry.id === second));
+});
+
+
+test('crear una partida no sobrescribe un índice ilegible o de esquema inválido', () => {
+    const damagedIndexes = [
+        '{"version":1,"saves":',
+        JSON.stringify({ version: 2, saves: 'contenido-incompatible', migration: { marker: 'preservar' } })
+    ];
+
+    damagedIndexes.forEach((damagedIndex, index) => {
+        localStorage.clear();
+        localStorage.setItem(Save.indexKey, damagedIndex);
+        const originalActive = JSON.stringify({ id: 'seleccion-huerfana-' + index });
+        localStorage.setItem(Save.activeKey, originalActive);
+
+        const created = Save.createSlot({ name: 'Celia' }, {
+            title: 'No debe sobrescribir el índice',
+            state: { inventory: [] }
+        });
+
+        assert.equal(created, false);
+        assert.equal(localStorage.getItem(Save.indexKey), damagedIndex);
+        assert.equal(localStorage.getItem(Save.activeKey), originalActive);
+        const slotKeys = Array.from({ length: localStorage.length }, (_, i) => localStorage.key(i))
+            .filter(key => key && key.startsWith(Save.slotPrefix));
+        assert.deepEqual(slotKeys, []);
+    });
+});
+
+
+test('la migración heredada conserva versión y metadatos de un índice moderno vacío', () => {
+    const legacy = {
+        character: { name: 'Ariadna' },
+        adventure: {
+            title: 'Historia heredada',
+            state: { currentLocation: 'Lugar conocido', visitedLocations: ['Lugar conocido'], inventory: [] }
+        },
+        createdAt: '2026-01-04T00:00:00.000Z'
+    };
+    const originalLegacy = JSON.stringify(legacy);
+    const originalIndex = {
+        version: 7,
+        saves: [],
+        migration: { schema: 3, completed: ['primer-paso'] },
+        extensions: { futureField: { keep: true } }
+    };
+    localStorage.setItem(Save.key, originalLegacy);
+    localStorage.setItem(Save.indexKey, JSON.stringify(originalIndex));
+
+    const entries = Save.list();
+    const migratedIndex = Save.readJSON(Save.indexKey);
+
+    assert.equal(entries.length, 1);
+    assert.equal(Save.load().character.name, 'Ariadna');
+    assert.equal(migratedIndex.version, 7);
+    assert.deepEqual(migratedIndex.migration, originalIndex.migration);
+    assert.deepEqual(migratedIndex.extensions, originalIndex.extensions);
+    assert.equal(migratedIndex.saves.length, 1);
+    assert.equal(localStorage.getItem(Save.key), originalLegacy);
+});
+
+test('la migración heredada no sobrescribe un índice ilegible aunque exista un legado válido', () => {
+    const legacy = {
+        character: { name: 'Ariadna' },
+        adventure: {
+            title: 'Historia heredada',
+            state: { currentLocation: 'Lugar conocido', visitedLocations: ['Lugar conocido'] }
+        },
+        createdAt: '2026-01-05T00:00:00.000Z'
+    };
+    const originalLegacy = JSON.stringify(legacy);
+    const damagedIndexes = [
+        '{"version":1,"saves":',
+        JSON.stringify({ version: 4, saves: 'incompatible', migration: { marker: 'preservar' } })
+    ];
+
+    damagedIndexes.forEach((damagedIndex, index) => {
+        localStorage.clear();
+        localStorage.setItem(Save.key, originalLegacy);
+        localStorage.setItem(Save.indexKey, damagedIndex);
+
+        assert.deepEqual(Save.list(), []);
+        assert.equal(Save.createSlot({ name: 'Celia' }, { title: 'No sobrescribir' }), false);
+        assert.equal(localStorage.getItem(Save.key), originalLegacy);
+        assert.equal(localStorage.getItem(Save.indexKey), damagedIndex);
+        assert.equal(localStorage.getItem(Save.activeKey), null);
+        assert.equal(localStorage.getItem(Save.worldKey), null);
+        const slotKeys = Array.from({ length: localStorage.length }, (_, i) => localStorage.key(i))
+            .filter(key => key && key.startsWith(Save.slotPrefix));
+        assert.deepEqual(slotKeys, [], 'no debe crearse un registro durante una migración bloqueada: caso ' + index);
+    });
 });
