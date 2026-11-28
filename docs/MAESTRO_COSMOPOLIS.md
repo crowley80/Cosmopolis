@@ -2753,3 +2753,30 @@ Respaldos previos creados en la misma rama:
 - Decisión: no copiar esos commits a la rama del PR #8. Son trabajo del módulo de interfaz y deben integrarse desde su rama visual correspondiente, no mezclarse con el módulo de persistencia. Esto mantiene el límite entre almacenamiento y presentación y evita introducir cambios ajenos al objetivo de PR #8.
 - La rama de almacenamiento sigue 67 commits por delante y 7 por detrás de la cabeza actual de integración. La revisión de contenido confirma que los siete commits pendientes no requieren adaptación del almacenamiento; no se realiza rebase ni fusión automática.
 - Respaldo previo de este registro: docs/MAESTRO_COSMOPOLIS.md.bak-20261128-review-integration-delta, commit 947f0b2cbde05b464a60e79de7e60249cb5b4662.
+## MIGRACIÓN HEREDADA SIN PÉRDIDA DEL ÍNDICE MODERNO — 28 DE NOVIEMBRE DE 2026
+
+### Auditoría y defecto
+- La revisión del flujo de recuperación encontró una segunda ruta que podía reemplazar metadatos: cuando coexistían una partida heredada válida y un índice moderno vacío con versión/extensiones, la migración construía un índice nuevo con version=1 y saves, descartando los campos adicionales.
+- También podía continuar la migración si el índice moderno existente era ilegible o tenía un campo saves de tipo incompatible, reemplazándolo con el índice de la partida heredada. La presencia de un legado válido no demuestra que el contenido del índice moderno sea descartable.
+
+### Corrección
+- ensureReady() ahora distingue un índice ausente de uno existente pero ilegible o estructuralmente incompatible. Si no hay registros modernos recuperables, bloquea la migración automática y conserva tanto el índice original como la clave heredada.
+- Si el índice existente es válido y tiene saves como array, la migración sustituye únicamente esa lista y conserva la versión y los metadatos raíz adicionales.
+- Se mantiene la recuperación desde registros individuales cuando sí existen partidas modernas legibles; esa vía reconstruye el índice a partir de datos recuperables.
+
+### Archivos, respaldos y commits
+- Modificados: app/js/core/save.js y tests/storage.test.js.
+- Respaldo exacto previo: commit 8f2eb7c5ca85e3376decd649d517bbb43184aaff, con app/js/core/save.js.bak-20261128-legacy-index-preservation, tests/storage.test.js.bak-20261128-legacy-index-preservation y docs/MAESTRO_COSMOPOLIS.md.bak-20261128-legacy-index-preservation.
+- Commit de código y pruebas: f0777fde5163cf92e4f5aff6bdc2f3baa00cb34e.
+
+### Pruebas y resultado
+- Se añade una regresión que migra un legado sobre un índice moderno vacío de versión 7 y comprueba la conservación de sus metadatos de migración/extensión.
+- Otra regresión cubre JSON truncado y esquema incompatible con legado válido; verifica que no se crea slot, no se modifica la selección, no se publica mundo parcial y ambos registros originales permanecen byte por byte.
+- GitHub Actions «Athun storage tests»: push [46127475280](https://github.com/crowley80/Cosmopolis/actions/runs/46127475280) y pull request [46127479795](https://github.com/crowley80/Cosmopolis/actions/runs/46127479795), ambos concluidos correctamente.
+- Los logs de ambas ejecuciones confirman sintaxis JavaScript correcta y **81/81 pruebas aprobadas, 0 fallos, 0 omitidas**.
+- Las pruebas usan almacenamiento simulado; no se han inspeccionado ni alterado guardados reales del dispositivo.
+
+### Estado de integración
+- PR #8 permanece abierto y en borrador. El módulo de persistencia sigue aislado de los siete commits visuales de integración, que solo cambian app/css/style.css y app/js/app.js.
+- PR #4 continúa abierto, en borrador y sin comprobaciones asociadas a su cabeza; no se modifica ni se fusiona.
+- Siguen pendientes la validación en Chrome Android físico, la comprobación con almacenamiento real del navegador usando una copia y la integración con llama-server local.
