@@ -2710,3 +2710,40 @@ Respaldos previos creados en la misma rama:
 - PR #4 continúa abierto, en borrador y no fusionable; su cabeza sigue sin check-runs asociados. No se ha modificado.
 - `main` permanece intacta. No se han leído ni modificado guardados reales del teléfono.
 - Continúan pendientes la validación táctil en Chrome Android, la prueba con llama-server real y la integración visual final.
+
+## BLOQUEO DE CREACIÓN SI EL ÍNDICE NO SE PUEDE RECUPERAR — 28 DE NOVIEMBRE DE 2026
+
+### Auditoría previa
+- Se revisó el estado del repositorio, las ramas existentes, los PR abiertos y el documento maestro tanto en main como en la rama de almacenamiento.
+- main permanece en 9ce666f64c219faba49adbf80392ee7b58a38d41; la rama de integración está en 05fb37aef40288e0e419819f0850cc98cd9b75cc. No se modifica ninguna de ellas.
+- PR #4 continúa abierto y en borrador, con 369 commits y 184 archivos modificados; GitHub informa mergeable=false y mergeable_state=dirty. Para su cabeza 05fb37aef40288e0e419819f0850cc98cd9b75cc, la API devuelve cero check-runs y un estado combinado pending con cero estados publicados. Esto significa que no hay comprobaciones asociadas a esa revisión, no que exista una prueba fallida. No se intenta fusionar, rebasar ni modificar PR #4.
+- PR #8 sigue abierto y en borrador. Su rama de trabajo está en ffe302ab1129e4c9dc0a22aba5cd7b2117f11b2f; la base de integración está actualmente en 05fb37aef40288e0e419819f0850cc98cd9b75cc. La comparación indica 67 commits por delante y 7 por detrás. Aunque la API del PR informa que no hay conflictos en su referencia base registrada, la rama no está actualizada con los siete commits actuales de integración; no se hace rebase ni fusión automática.
+- La última ejecución previa del módulo de almacenamiento, sobre 5f453f03ed71a5f0a49737cfe63e6749b419c549, fue correcta: ejecución 45967652913. Se inspeccionaron los archivos de código, pruebas y workflow antes de elegir el cambio.
+
+### Defecto detectado
+- Save.ensureReady() preservaba correctamente un índice ilegible o con esquema inválido cuando no había registros recuperables ni una partida heredada válida, devolviendo un indicador recoveryFailed.
+- Save.createSlot() ignoraba el resultado de esa recuperación. Después interpretaba la lectura fallida como un índice vacío y podía crear una partida nueva escribiendo encima del índice dañado.
+- El resultado posible era perder el contenido original del índice precisamente durante una operación de creación, contradiciendo la protección que ya ofrecía ensureReady().
+
+### Corrección aplicada
+- Save.createSlot() ahora comprueba el resultado de ensureReady() y se detiene si la recuperación o migración falló, o si no se obtuvo una lista de partidas válida.
+- Vuelve a leer el índice persistido y exige que sea legible y contenga un array saves antes de escribir un nuevo registro.
+- En ese estado de error no crea un registro, no cambia la selección activa y no reemplaza el contenido original del índice.
+
+### Archivos, respaldos y commits
+- Modificados: app/js/core/save.js y tests/storage.test.js.
+- Documentación actualizada: docs/MAESTRO_COSMOPOLIS.md.
+- Antes de editar se creó el commit de respaldo exacto 3bc9f2543a79bd50cd1bda7d664d1f9c520fd304, que conserva app/js/core/save.js.bak-20261128-create-index-corruption-guard, tests/storage.test.js.bak-20261128-create-index-corruption-guard y docs/MAESTRO_COSMOPOLIS.md.bak-20261128-create-index-corruption-guard.
+- Commit de código y regresión: ffe302ab1129e4c9dc0a22aba5cd7b2117f11b2f.
+
+### Pruebas y resultado
+- Nueva regresión con dos entradas dañadas: JSON truncado y JSON válido con el campo saves de tipo incompatible.
+- En ambos casos comprueba que la creación devuelve false, el índice se conserva byte por byte, el puntero activo permanece idéntico y no se escribe ningún registro de partida.
+- GitHub Actions Athun storage tests, ejecución https://github.com/crowley80/Cosmopolis/actions/runs/46127106187: correcta. Los pasos de sintaxis JavaScript y suite de almacenamiento/mundo compartido finalizaron correctamente; el log confirma 79/79 pruebas aprobadas, 0 fallos, 0 omitidas.
+- El workflow informa de una advertencia no bloqueante sobre la transición de Node.js 20 a Node.js 24 en las acciones del runner; no afecta al resultado de esta ejecución.
+- Las pruebas usan almacenamiento simulado. No se han leído, migrado, sobrescrito ni eliminado guardados reales del teléfono.
+
+### Pendientes
+- PR #8 permanece abierto y en borrador; sus siete commits por detrás de la integración deben revisarse selectivamente antes de cualquier consolidación. No se modifica la rama base.
+- PR #4 permanece abierto, en borrador y sin comprobaciones asociadas a su cabeza actual.
+- Siguen pendientes la validación táctil en Chrome Android físico, el almacenamiento real del navegador con copia de seguridad y la prueba con llama-server local. Ninguna de ellas queda sustituida por el CI simulado.
