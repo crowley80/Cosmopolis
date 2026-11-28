@@ -2019,3 +2019,67 @@ test('crear una partida no sobrescribe un índice ilegible o de esquema inválid
         assert.deepEqual(slotKeys, []);
     });
 });
+
+
+test('la migración heredada conserva versión y metadatos de un índice moderno vacío', () => {
+    const legacy = {
+        character: { name: 'Ariadna' },
+        adventure: {
+            title: 'Historia heredada',
+            state: { currentLocation: 'Lugar conocido', visitedLocations: ['Lugar conocido'], inventory: [] }
+        },
+        createdAt: '2026-01-04T00:00:00.000Z'
+    };
+    const originalLegacy = JSON.stringify(legacy);
+    const originalIndex = {
+        version: 7,
+        saves: [],
+        migration: { schema: 3, completed: ['primer-paso'] },
+        extensions: { futureField: { keep: true } }
+    };
+    localStorage.setItem(Save.key, originalLegacy);
+    localStorage.setItem(Save.indexKey, JSON.stringify(originalIndex));
+
+    const entries = Save.list();
+    const migratedIndex = Save.readJSON(Save.indexKey);
+
+    assert.equal(entries.length, 1);
+    assert.equal(Save.load().character.name, 'Ariadna');
+    assert.equal(migratedIndex.version, 7);
+    assert.deepEqual(migratedIndex.migration, originalIndex.migration);
+    assert.deepEqual(migratedIndex.extensions, originalIndex.extensions);
+    assert.equal(migratedIndex.saves.length, 1);
+    assert.equal(localStorage.getItem(Save.key), originalLegacy);
+});
+
+test('la migración heredada no sobrescribe un índice ilegible aunque exista un legado válido', () => {
+    const legacy = {
+        character: { name: 'Ariadna' },
+        adventure: {
+            title: 'Historia heredada',
+            state: { currentLocation: 'Lugar conocido', visitedLocations: ['Lugar conocido'] }
+        },
+        createdAt: '2026-01-05T00:00:00.000Z'
+    };
+    const originalLegacy = JSON.stringify(legacy);
+    const damagedIndexes = [
+        '{"version":1,"saves":',
+        JSON.stringify({ version: 4, saves: 'incompatible', migration: { marker: 'preservar' } })
+    ];
+
+    damagedIndexes.forEach((damagedIndex, index) => {
+        localStorage.clear();
+        localStorage.setItem(Save.key, originalLegacy);
+        localStorage.setItem(Save.indexKey, damagedIndex);
+
+        assert.deepEqual(Save.list(), []);
+        assert.equal(Save.createSlot({ name: 'Celia' }, { title: 'No sobrescribir' }), false);
+        assert.equal(localStorage.getItem(Save.key), originalLegacy);
+        assert.equal(localStorage.getItem(Save.indexKey), damagedIndex);
+        assert.equal(localStorage.getItem(Save.activeKey), null);
+        assert.equal(localStorage.getItem(Save.worldKey), null);
+        const slotKeys = Array.from({ length: localStorage.length }, (_, i) => localStorage.key(i))
+            .filter(key => key && key.startsWith(Save.slotPrefix));
+        assert.deepEqual(slotKeys, [], 'no debe crearse un registro durante una migración bloqueada: caso ' + index);
+    });
+});

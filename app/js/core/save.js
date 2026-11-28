@@ -191,6 +191,7 @@ const Save = {
     },
 
     ensureReady() {
+        const rawIndex = localStorage.getItem(this.indexKey);
         let index = this.readJSON(this.indexKey);
         if (index && Array.isArray(index.saves) && index.saves.length) {
             // Un índice parcialmente actualizado puede omitir registros que sí llegaron a persistirse.
@@ -247,6 +248,12 @@ const Save = {
         }
 
         const legacy = this.readJSON(this.key);
+        if (rawIndex !== null && (!index || !Array.isArray(index.saves))) {
+            // Una partida heredada válida no autoriza a borrar un índice moderno ilegible.
+            // Primero debe recuperarse el índice o revisarse su contenido de forma explícita.
+            console.error('La migración se detuvo porque el índice moderno existente no es recuperable.');
+            return { version: 1, saves: [], recoveryFailed: true };
+        }
         if (!legacy) {
             if (index && Array.isArray(index.saves)) return index;
             // No reemplazar un índice ilegible si tampoco hay registros recuperables.
@@ -274,7 +281,9 @@ const Save = {
             createdAt: slot.createdAt || legacy.updatedAt || new Date().toISOString(),
             updatedAt: slot.updatedAt || legacy.updatedAt || new Date().toISOString()
         };
-        const migratedIndex = { version: 1, saves: [entry] };
+        const migratedIndex = index && Array.isArray(index.saves)
+            ? { ...index, saves: [entry] }
+            : { version: 1, saves: [entry] };
         const slotKey = this.slotPrefix + id;
         const originalSlot = localStorage.getItem(slotKey);
         const originalIndex = localStorage.getItem(this.indexKey);
