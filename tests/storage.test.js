@@ -1992,3 +1992,30 @@ test('conserva la versión, los metadatos y las entradas huérfanas del índice 
     assert.ok(afterDelete.saves.some(entry => entry.id === first));
     assert.ok(afterDelete.saves.some(entry => entry.id === second));
 });
+
+
+test('crear una partida no sobrescribe un índice ilegible o de esquema inválido', () => {
+    const damagedIndexes = [
+        '{"version":1,"saves":',
+        JSON.stringify({ version: 2, saves: 'contenido-incompatible', migration: { marker: 'preservar' } })
+    ];
+
+    damagedIndexes.forEach((damagedIndex, index) => {
+        localStorage.clear();
+        localStorage.setItem(Save.indexKey, damagedIndex);
+        const originalActive = JSON.stringify({ id: 'seleccion-huerfana-' + index });
+        localStorage.setItem(Save.activeKey, originalActive);
+
+        const created = Save.createSlot({ name: 'Celia' }, {
+            title: 'No debe sobrescribir el índice',
+            state: { inventory: [] }
+        });
+
+        assert.equal(created, false);
+        assert.equal(localStorage.getItem(Save.indexKey), damagedIndex);
+        assert.equal(localStorage.getItem(Save.activeKey), originalActive);
+        const slotKeys = Array.from({ length: localStorage.length }, (_, i) => localStorage.key(i))
+            .filter(key => key && key.startsWith(Save.slotPrefix));
+        assert.deepEqual(slotKeys, []);
+    });
+});

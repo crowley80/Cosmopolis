@@ -458,9 +458,19 @@ const Save = {
     },
 
     createSlot(character, adventure = null, extra = {}) {
-        this.ensureReady();
+        const readiness = this.ensureReady();
+        // No crear una partida sobre un índice ilegible o una migración incompleta:
+        // el fallback a un índice vacío podría destruir datos que no se han podido recuperar.
+        if (!readiness || readiness.recoveryFailed || readiness.migrationFailed || !Array.isArray(readiness.saves)) {
+            console.error('No se puede crear una partida hasta recuperar el índice existente.');
+            return false;
+        }
+        const index = this.readJSON(this.indexKey);
+        if (!index || !Array.isArray(index.saves)) {
+            console.error('No se puede crear una partida: el índice no es legible.');
+            return false;
+        }
         const now = new Date().toISOString();
-        const index = this.readJSON(this.indexKey) || { version: 1, saves: [] };
         const baseId = 'save-' + Date.now().toString(36) + '-' + Math.floor(Math.random() * 1000000).toString(36);
         const indexedIds = new Set(
             (Array.isArray(index.saves) ? index.saves : [])
