@@ -2747,3 +2747,9 @@ Respaldos previos creados en la misma rama:
 - PR #8 permanece abierto y en borrador; sus siete commits por detrás de la integración deben revisarse selectivamente antes de cualquier consolidación. No se modifica la rama base.
 - PR #4 permanece abierto, en borrador y sin comprobaciones asociadas a su cabeza actual.
 - Siguen pendientes la validación táctil en Chrome Android físico, el almacenamiento real del navegador con copia de seguridad y la prueba con llama-server local. Ninguna de ellas queda sustituida por el CI simulado.
+### Revisión selectiva de la divergencia con la integración — 28 de noviembre de 2026
+- Se comparó el punto base registrado por PR #8 (9e58abca7ea1510d48835fee1dbab59c97b77f44) con la cabeza actual de integración (05fb37aef40288e0e419819f0850cc98cd9b75cc). Los siete commits que separan ambas revisiones son exclusivamente de presentación de pantallas secundarias y disposición del contenido visual.
+- La comparación de GitHub identifica únicamente dos archivos modificados por esos siete commits: app/css/style.css y app/js/app.js. No cambian app/js/core/save.js, app/js/game/session.js, migraciones, pruebas de almacenamiento ni el esquema del mundo compartido.
+- Decisión: no copiar esos commits a la rama del PR #8. Son trabajo del módulo de interfaz y deben integrarse desde su rama visual correspondiente, no mezclarse con el módulo de persistencia. Esto mantiene el límite entre almacenamiento y presentación y evita introducir cambios ajenos al objetivo de PR #8.
+- La rama de almacenamiento sigue 67 commits por delante y 7 por detrás de la cabeza actual de integración. La revisión de contenido confirma que los siete commits pendientes no requieren adaptación del almacenamiento; no se realiza rebase ni fusión automática.
+- Respaldo previo de este registro: docs/MAESTRO_COSMOPOLIS.md.bak-20261128-review-integration-delta, commit 947f0b2cbde05b464a60e79de7e60249cb5b4662.
